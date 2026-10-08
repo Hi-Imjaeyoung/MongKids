@@ -17,7 +17,8 @@ MongKids/
 │  ├─ requirements.md   요구사항 (단일 출처)
 │  ├─ progress.md       진행 사항
 │  ├─ git-workflow.md   브랜치·커밋·PR 규칙
-│  └─ design/           디자인 시안
+│  ├─ design/           디자인 시안
+│  └─ meetings/         회의록 (요구사항 추출 전용, 아래 "회의록 규칙" 참고)
 ├─ back/              백엔드: Spring Boot REST API  → back/CLAUDE.md
 └─ front/             프론트엔드: Vite + React      → front/CLAUDE.md
 ```
@@ -30,11 +31,23 @@ MongKids/
 | [docs/progress.md](docs/progress.md) | 공유 | 영역별 현재 상태, 진행 로그, 다음 할 일 |
 | [docs/git-workflow.md](docs/git-workflow.md) | 공유 | 브랜치, 커밋 scope, PR 체크리스트 |
 | [docs/design/](docs/design/) | 공유 | 디자인 시안 이미지 |
+| `docs/meetings/` | 공유 | 회의록. `/extract-requirements`에서만 사용 |
 | [back/CLAUDE.md](back/CLAUDE.md), `back/docs/` | 백엔드 | 아키텍처, 코딩 컨벤션, API, DB, 테스트 |
 | [front/CLAUDE.md](front/CLAUDE.md), `front/docs/` | 프론트엔드 | 폴더 구조, 컴포넌트·스타일 규칙 |
 
 - 요구사항은 영역별로 따로 두지 않는다. 항상 `docs/requirements.md`를 갱신하고 영역 문서에서는 ID로 참조한다.
 - 영역별 구현 규칙은 공유 문서에 쓰지 않는다. 각 영역의 `docs/`에 둔다.
+
+## 회의록 규칙
+
+요구사항은 `회의록(docs/meetings/) → /extract-requirements → docs/requirements.md` 순서로만 만든다.
+
+- 회의록에 접근하는 작업은 `/extract-requirements` 하나뿐이다. 사용자가 이 명령을 실행했을 때만 회의록을 읽는다.
+- 그 밖의 작업(코드, 설계, 문서, 리뷰 등)에서는 회의록을 읽지도, 검색하지도, 인용하지도 않는다. 기준은 `docs/requirements.md`다.
+  - Bash(`cat`, `grep` 등)로 우회해서 읽는 것도 금지한다.
+- 요구사항이 부족하거나 모호하면 회의록을 찾아보지 말고 사용자에게 묻거나 `/extract-requirements` 실행을 제안한다.
+- 회의록은 수정하지 않는다.
+- 설정으로도 제한되어 있다: 읽기는 매번 승인 요청(`.claude/settings.json`), 수정은 차단, Grep·Glob 검색에서 제외(`docs/meetings/.ignore`).
 
 ## 자주 쓰는 명령
 

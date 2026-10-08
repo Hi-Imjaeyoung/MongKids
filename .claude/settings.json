@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "ask": [
+      "Read(/docs/meetings/**)"
+    ],
+    "deny": [
+      "Edit(/docs/meetings/**)"
+    ]
+  }
+}
