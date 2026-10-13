@@ -50,7 +50,8 @@ docs: 요구사항에 문의 기능 추가
 ```
 
 - 한 커밋에는 하나의 논리적 변경만. 프론트와 백 변경은 가능하면 커밋을 나눈다.
-- 요약은 한글 또는 영어 중 하나로 통일 (기존 커밋은 영어 `chore: initialize spring project`).
+- 요약과 본문은 한글로 작성한다. `type`, `scope`와 코드 식별자·파일명·명령어는 원문 그대로 둔다 (`feat(back): MemberService 가입 검증 추가`).
+- 이 규칙 이전의 영어 커밋(`chore: initialize spring project` 등)은 고치지 않는다.
 
 ## 3. Pull Request
 
