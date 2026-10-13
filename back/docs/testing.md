@@ -13,18 +13,30 @@
 | Entity / 도메인 로직 | 순수 JUnit 5 | Spring 컨텍스트 없이, 가장 빠름 |
 | Service | JUnit 5 + Mockito (`@ExtendWith(MockitoExtension.class)`) | Repository를 mock |
 | Controller | `@WebMvcTest(XxxController.class)` + `MockMvc` | Service는 `@MockitoBean` |
-| Repository | `@DataJpaTest` | 커스텀 쿼리(`@Query`, fetch join)만 테스트 |
-| 통합 | `@SpringBootTest` | 핵심 시나리오 위주로 최소한 |
+| Repository | `@DataJpaTest` | 커스텀 쿼리(`@Query`, fetch join)만 테스트. H2로 검증 |
+| 통합 | `@SpringBootTest` | 핵심 시나리오 위주로 최소한. H2로 검증 |
 
 > Spring Boot 4: `@MockBean`은 제거되었다 → `@MockitoBean`(Spring Framework) 사용.
 > 테스트 슬라이스 어노테이션은 `spring-boot-starter-*-test` 모듈별 패키지에 있으므로 import 경로를 확인한다.
 
 ## 3. 테스트 DB 전략
 
-- 현재 테스트 의존성에 H2/Testcontainers가 없다.
-- 권장: 실제 DB와 동일한 **Testcontainers(MariaDB)** 도입. 차선책으로 H2(MariaDB 모드).
-  - 어느 쪽이든 의존성 추가는 사용자 확인 후 진행.
+- DB가 필요한 테스트(`@DataJpaTest`, `@SpringBootTest`)는 **H2 인메모리 DB(MariaDB 모드)**로 검증한다. 로컬 MariaDB 없이 실행할 수 있어야 한다.
+- 의존성: `testRuntimeOnly 'com.h2database:h2'` (버전은 Spring Boot가 관리). 테스트에서만 쓰며 운영 코드에서는 참조하지 않는다.
 - 테스트 설정은 `src/test/resources/application-test.yml` + `@ActiveProfiles("test")`.
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:mem:mongkids;MODE=MariaDB;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+```
+
+- H2의 MariaDB 모드는 문법 일부만 호환한다. MariaDB 전용 함수·네이티브 쿼리는 H2에서 검증되지 않으므로 로컬 MariaDB에서 따로 확인한다.
 
 ## 4. 작성 규칙
 

@@ -5,7 +5,9 @@
 - 드라이버: `org.mariadb.jdbc:mariadb-java-client` (runtimeOnly)
 - `application.yml` 기반 profile 구성(`local`, `prod`)이 적용되어 있다. 기본 profile은 `local`.
 - 로컬 DB 계정은 `back/.env`에서 읽는다. `.env`와 `application-local.yml`은 gitignore 대상이다.
-- 로컬 MariaDB와 `mongkids` DB가 준비되기 전에는 앱 기동과 `contextLoads` 테스트가 접속 오류로 실패한다.
+- `local` profile의 DataSource 설정은 로컬 MariaDB(`mongkids` DB)로 기동 검증을 마쳤다 (`bootRun` 기동, `/actuator/health` `UP`). 로컬 MariaDB가 없으면 앱 기동은 접속 오류로 실패한다.
+- 테스트는 `test` profile의 H2로 실행하므로 로컬 MariaDB가 없어도 통과한다. → [testing.md](testing.md)
+- `.env`는 properties 형식으로 읽히므로 값 뒤의 공백이 값에 포함된다. 공백 없이 `KEY=value`로 적는다.
 
 ## 2. 설정 가이드
 
