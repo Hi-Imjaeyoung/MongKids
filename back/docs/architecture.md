@@ -7,7 +7,7 @@
 기능(도메인) 단위로 묶고, 각 도메인 안에서 레이어를 나눈다. 여러 도메인이 공유하는 코드는 `global`에 둔다.
 
 ```
-com.example.demo            # → com.mongkids 로 변경 예정
+com.mongkids
 ├─ DemoApplication.java
 ├─ domain
 │  ├─ member

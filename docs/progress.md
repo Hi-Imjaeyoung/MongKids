@@ -7,7 +7,7 @@
 | 영역 | 상태 |
 |---|---|
 | 공통 | 모노레포 구성 완료. 요구사항 문서는 아직 비어 있음 |
-| 백엔드 | Spring Boot 초기 프로젝트 + 개발 규칙 문서. 도메인 코드 없음, DataSource 미설정 |
+| 백엔드 | Spring Boot 초기 프로젝트 + 개발 규칙 문서. 도메인 코드 없음, DataSource 설정 추가(미검증) |
 | 프론트엔드 | Vite + React 프로젝트. 홈 화면(SCR-001) 시안을 정적 데이터로 구현 |
 
 ## 마일스톤
@@ -20,10 +20,12 @@
 | 2026-10-07 | 백엔드 | `CLAUDE.md`, 개발 규칙 문서(`back/docs/`) 작성 |
 | 2026-10-08 | 프론트엔드 | 홈 화면 시안 구현 (SCR-001, API 미연동) |
 | 2026-10-08 | 공통 | 프론트·백 모노레포로 통합, 공유 문서(`docs/`) 구성 |
+| 2026-10-13 | 백엔드 | yml profile 설정(`local`, `prod`)과 `.env` 구성 추가 (빌드 검증은 DB·Entity 생성 후) |
+| 2026-10-13 | 백엔드 | 기본 패키지 `com.example.demo` → `com.mongkids`, 프로젝트명 `demo` → `mongkids` 변경 |
 
 ## 이슈 / 블로커
 
-- 백엔드: DataSource 설정이 없어 앱 기동과 `contextLoads` 테스트가 실패한다.
+- 백엔드: DataSource 설정은 추가했지만 로컬 DB가 준비되지 않아 앱 기동과 `contextLoads` 테스트를 아직 검증하지 못했다.
 - 프론트엔드: 실제 사진·로고·아이콘 리소스가 없어 플레이스홀더와 이모지로 대체되어 있다.
 
 ## 다음 할 일
@@ -32,8 +34,9 @@
 - [ ] 요구사항(사용자 역할, 기능 목록) 정리
 
 ### 백엔드
-- [ ] DataSource / profile 설정
-- [ ] 패키지 `com.example.demo` → `com.mongkids` 변경
+- [x] DataSource / profile 설정
+- [ ] 로컬 DB·Entity 생성 후 DataSource 설정 검증 (`gradlew build`)
+- [x] 패키지 `com.example.demo` → `com.mongkids` 변경
 - [ ] `global/` 공통 클래스 구현
 
 ### 프론트엔드

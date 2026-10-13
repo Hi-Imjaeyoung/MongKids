@@ -3,11 +3,11 @@
 ## 1. 현재 상태
 
 - 드라이버: `org.mariadb.jdbc:mariadb-java-client` (runtimeOnly)
-- `application.properties`에 DataSource 설정이 **없다** → 앱 기동과 `contextLoads` 테스트가 실패한다.
+- `application.yml` 기반 profile 구성(`local`, `prod`)이 적용되어 있다. 기본 profile은 `local`.
+- 로컬 DB 계정은 `back/.env`에서 읽는다. `.env`와 `application-local.yml`은 gitignore 대상이다.
+- 로컬 MariaDB와 `mongkids` DB가 준비되기 전에는 앱 기동과 `contextLoads` 테스트가 접속 오류로 실패한다.
 
-## 2. 설정 가이드 (권장)
-
-`application.properties`를 `application.yml` 기반 profile 구성으로 옮기는 것을 권장한다.
+## 2. 설정 가이드
 
 `application.yml` (공통, 커밋 O)
 ```yaml
@@ -16,6 +16,8 @@ spring:
     name: mongkids
   profiles:
     default: local
+  config:
+    import: optional:file:.env[.properties]
   jpa:
     open-in-view: false
     properties:
@@ -52,6 +54,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+```
+
+### `.env`
+
+- Spring Boot는 `.env`를 자동으로 읽지 않으므로 `spring.config.import`로 불러온다. 경로는 실행 디렉터리 기준이라 `back/`에서 실행해야 `back/.env`를 읽는다.
+- `optional:`이므로 파일이 없으면 OS 환경변수만 사용한다. 같은 키가 있으면 OS 환경변수가 우선한다.
+- 새로 받은 저장소에서는 `.env.example`을 `.env`로 복사해 값을 채우고, `application-local.yml`은 위 내용으로 직접 만든다.
+
+```
+DB_USERNAME=
+DB_PASSWORD=
 ```
 
 ### `ddl-auto` 정책

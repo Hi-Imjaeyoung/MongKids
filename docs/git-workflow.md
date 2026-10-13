@@ -63,6 +63,7 @@ docs: 요구사항에 문의 기능 추가
   - [ ] 비밀값·개인정보 미포함
   - [ ] 규칙·구조 변경 시 해당 `CLAUDE.md`, `docs/` 갱신
   - [ ] 요구사항·진행 상황 변경 시 [requirements.md](requirements.md), [progress.md](progress.md) 갱신
+  - [ ] 회의록(`docs/meetings/`)을 추가했다면 `/extract-requirements`로 요구사항에 반영
 
 ## 4. 커밋하면 안 되는 것
 
