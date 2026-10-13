@@ -21,6 +21,7 @@
 | 2026-10-08 | 프론트엔드 | 홈 화면 시안 구현 (SCR-001, API 미연동) |
 | 2026-10-08 | 공통 | 프론트·백 모노레포로 통합, 공유 문서(`docs/`) 구성 |
 | 2026-10-13 | 백엔드 | yml profile 설정(`local`, `prod`)과 `.env` 구성 추가 (빌드 검증은 DB·Entity 생성 후) |
+| 2026-10-13 | 백엔드 | 기본 패키지 `com.example.demo` → `com.mongkids`, 프로젝트명 `demo` → `mongkids` 변경 |
 
 ## 이슈 / 블로커
 
@@ -35,7 +36,7 @@
 ### 백엔드
 - [x] DataSource / profile 설정
 - [ ] 로컬 DB·Entity 생성 후 DataSource 설정 검증 (`gradlew build`)
-- [ ] 패키지 `com.example.demo` → `com.mongkids` 변경
+- [x] 패키지 `com.example.demo` → `com.mongkids` 변경
 - [ ] `global/` 공통 클래스 구현
 
 ### 프론트엔드
