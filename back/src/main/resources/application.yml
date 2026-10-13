@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: mongkids
+  profiles:
+    default: local
+  config:
+    import: optional:file:.env[.properties]
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        jdbc.time_zone: Asia/Seoul

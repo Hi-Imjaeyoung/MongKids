@@ -85,7 +85,7 @@
 
 ## 알려진 이슈 / TODO
 
-- [ ] DataSource 미설정: 현재 `application.properties`에 DB 설정이 없어 앱 기동과 `DemoApplicationTests.contextLoads`가 실패한다. → [docs/database.md](docs/database.md)의 설정 가이드대로 profile별 설정 추가 필요.
+- [ ] DataSource 설정 검증 필요: profile별 yml과 `.env` 구성은 추가했으나 빌드·기동 검증은 하지 않았다. 로컬 MariaDB와 `mongkids` DB, Entity 생성 후 `DemoApplicationTests.contextLoads`로 확인한다. → [docs/database.md](docs/database.md)
 - [ ] 기본 패키지 `com.example.demo` → `com.mongkids`, `rootProject.name`/`spring.application.name` `demo` → `mongkids` 변경 예정. 변경 전까지 새 코드는 현재 패키지(`com.example.demo`) 아래에 동일한 구조로 작성한다.
 - [ ] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`, `BaseTimeEntity`) 미구현.
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.
