@@ -17,7 +17,7 @@ MongKids/
 │  ├─ requirements.md   요구사항 (단일 출처)
 │  ├─ progress.md       진행 사항
 │  ├─ git-workflow.md   브랜치·커밋·PR 규칙
-│  ├─ design/           디자인 시안
+│  ├─ design/           디자인 시안 (확정본 PNG, 관리 규칙)
 │  └─ meetings/         회의록 (요구사항 추출 전용, 아래 "회의록 규칙" 참고)
 ├─ back/              백엔드: Spring Boot REST API  → back/CLAUDE.md
 └─ front/             프론트엔드: Vite + React      → front/CLAUDE.md
@@ -30,7 +30,7 @@ MongKids/
 | [docs/requirements.md](docs/requirements.md) | 공유 | 화면·기능 요구사항과 ID |
 | [docs/progress.md](docs/progress.md) | 공유 | 영역별 현재 상태, 진행 로그, 다음 할 일 |
 | [docs/git-workflow.md](docs/git-workflow.md) | 공유 | 브랜치, 커밋 scope, PR 체크리스트 |
-| [docs/design/](docs/design/) | 공유 | 디자인 시안 이미지 |
+| [docs/design/](docs/design/) | 공유 | 디자인 시안 이미지(확정본)와 관리 규칙 |
 | `docs/meetings/` | 공유 | 회의록. `/extract-requirements`에서만 사용 |
 | [back/CLAUDE.md](back/CLAUDE.md), `back/docs/` | 백엔드 | 아키텍처, 코딩 컨벤션, API, DB, 테스트 |
 | [front/CLAUDE.md](front/CLAUDE.md), `front/docs/` | 프론트엔드 | 폴더 구조, 컴포넌트·스타일 규칙 |
