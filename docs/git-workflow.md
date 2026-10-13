@@ -57,6 +57,7 @@ docs: 요구사항에 문의 기능 추가
 
 - `main` 대상 PR로 병합. 병합 방식은 Squash merge 권장.
 - PR 설명: 변경 내용, 변경 이유, 테스트 방법, 관련 요구사항 ID([requirements.md](requirements.md)) 또는 이슈.
+- PR 병합 후 브랜치(로컬·원격)를 제거할지는 사용자에게 승인받는다. 승인 없이 삭제하지 않는다.
 - 병합 전 체크리스트 (변경한 영역만)
   - [ ] back: `./gradlew build` 통과 (`back/`에서 실행)
   - [ ] front: `npm run lint && npm run build` 통과 (`front/`에서 실행)
