@@ -21,7 +21,7 @@
 | Data | `spring-boot-starter-data-jpa` (Hibernate), `spring-boot-starter-jdbc` |
 | DB | MariaDB (`mariadb-java-client`) |
 | 기타 | Actuator, Lombok |
-| Test | JUnit 5, 각 starter의 `*-test` 모듈 |
+| Test | JUnit 5, 각 starter의 `*-test` 모듈, H2 (테스트 DB) |
 
 > Spring Boot 4는 auto-configuration·테스트 어노테이션이 모듈별로 분리되었다.
 > 3.x 시절 예제 코드의 import 경로를 그대로 쓰지 말고 실제 의존성 기준으로 확인한다.
@@ -85,6 +85,6 @@
 
 ## 알려진 이슈 / TODO
 
-- [ ] DataSource 설정 검증 필요: profile별 yml과 `.env` 구성은 추가했으나 빌드·기동 검증은 하지 않았다. 로컬 MariaDB와 `mongkids` DB, Entity 생성 후 `DemoApplicationTests.contextLoads`로 확인한다. → [docs/database.md](docs/database.md)
+- [x] DataSource 설정 검증: `local` profile은 로컬 MariaDB(`mongkids`)로 기동 확인, 테스트는 `test` profile의 H2로 통과. `prod` profile은 미검증. → [docs/database.md](docs/database.md)
 - [ ] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`, `BaseTimeEntity`) 미구현.
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.
