@@ -7,7 +7,7 @@
 | 영역 | 상태 |
 |---|---|
 | 공통 | 모노레포 구성 완료. MVP 요구사항 정리(SCR-001~014, FR-001~023, NFR-001~004). 미결은 SCR-002~003 범위만 남음 |
-| 백엔드 | Spring Boot 초기 프로젝트 + 개발 규칙 문서. 도메인 코드 없음, DataSource 설정 검증 완료(`local`), 테스트는 H2 |
+| 백엔드 | 도메인 Entity 10개 구현, 로컬 MariaDB에 Hibernate로 테이블 생성 확인. Repository·API 없음. 테스트는 H2 |
 | 프론트엔드 | Vite + React 프로젝트. 홈 화면(SCR-001) 시안을 정적 데이터로 구현 |
 
 ## 마일스톤
@@ -30,6 +30,8 @@
 | 2026-10-13 | 공통 | 수업 현장 화면(SCR-006) 디자인 초안 작성 (데스크톱·모바일, 사진 갤러리 + 영상. 구성 확정 필요). 초안 아티팩트를 "MongKids 화면 초안"으로 통합 |
 | 2026-10-14 | 공통 | 회의록 2026-10-08, 2026-10-14 요구사항 반영 (SCR-012~014, FR-001~020, NFR-001~004) |
 | 2026-10-14 | 공통 | 요구사항 미결 사항 결정 반영 (FR-002·007·008·010~013·016·019 변경, FR-020 폐기, FR-021~023 신규, SCR-006 "몽키즈 소식") |
+| 2026-10-14 | 백엔드 | 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`, 테이블 10개) |
+| 2026-10-14 | 백엔드 | 스키마 기반 Entity·`BaseTimeEntity`·`JpaConfig` 구현, 매핑 테스트(H2) 추가, 로컬 MariaDB에 테이블 10개 생성 |
 
 ## 이슈 / 블로커
 
@@ -46,7 +48,9 @@
 - [x] 로컬 DB로 DataSource 설정 검증 (`gradlew bootRun`)
 - [x] 패키지 `com.example.demo` → `com.mongkids` 변경
 - [x] `src/test/resources/application-test.yml` 작성 + 테스트에 `@ActiveProfiles("test")` 적용 (H2로 `contextLoads` 통과 확인)
-- [ ] `global/` 공통 클래스 구현
+- [ ] `global/` 공통 클래스 구현 (`BaseTimeEntity`, `JpaConfig` 완료)
+- [x] 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`)
+- [x] 스키마 기반 Entity 구현, 로컬 MariaDB 테이블 생성 (`ddl-auto: update`)
 
 ### 프론트엔드
 - [ ] 실제 이미지·로고 리소스 반영
