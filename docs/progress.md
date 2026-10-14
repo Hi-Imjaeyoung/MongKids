@@ -7,8 +7,8 @@
 | 영역 | 상태 |
 |---|---|
 | 공통 | 모노레포 구성 완료. MVP 요구사항 정리(SCR-001~014, FR-001~023, NFR-001~004). 미결은 SCR-002~003 범위만 남음 |
-| 백엔드 | 도메인 Entity 10개 구현, 로컬 MariaDB에 Hibernate로 테이블 생성 확인. Repository·API 없음. 테스트는 H2 |
-| 프론트엔드 | Vite + React 프로젝트. 홈 화면(SCR-001) 시안을 정적 데이터로 구현 |
+| 백엔드 | 도메인 Entity 10개, `global` 공통 클래스, 소셜 로그인(FR-018, OAuth2 + JWT 쿠키)·내 정보 API 구현. 그 밖의 API 없음. 테스트는 H2 |
+| 프론트엔드 | Vite + React 프로젝트. 홈 화면(SCR-001) 시안을 정적 데이터로 구현. 로그인 모달(SCR-013)·헤더 로그인 상태 API 연동 |
 
 ## 마일스톤
 
@@ -33,9 +33,13 @@
 | 2026-10-14 | 백엔드 | 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`, 테이블 10개) |
 | 2026-10-14 | 백엔드 | 스키마 기반 Entity·`BaseTimeEntity`·`JpaConfig` 구현, 매핑 테스트(H2) 추가, 로컬 MariaDB에 테이블 10개 생성 |
 
+| 2026-10-14 | 백엔드 | 소셜 로그인 구현 (FR-018, #10): OAuth2 Client + JWT HttpOnly 쿠키, `GET /api/v1/members/me`, `POST /api/v1/auth/logout`, `global` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) |
+| 2026-10-14 | 프론트엔드 | 로그인 모달(SCR-013)·헤더 로그인 상태 구현 (FR-018, #10), `src/api/` 추가, Vite 프록시 설정 |
+
 ## 이슈 / 블로커
 
 - 프론트엔드: 실제 사진·로고·아이콘 리소스가 없어 플레이스홀더와 이모지로 대체되어 있다.
+- 공통: 카카오·네이버 개발자 앱(키) 미등록. 실제 소셜 로그인은 키를 `back/.env`에 넣은 뒤 확인해야 한다 (FR-018).
 
 ## 다음 할 일
 
@@ -48,11 +52,16 @@
 - [x] 로컬 DB로 DataSource 설정 검증 (`gradlew bootRun`)
 - [x] 패키지 `com.example.demo` → `com.mongkids` 변경
 - [x] `src/test/resources/application-test.yml` 작성 + 테스트에 `@ActiveProfiles("test")` 적용 (H2로 `contextLoads` 통과 확인)
-- [ ] `global/` 공통 클래스 구현 (`BaseTimeEntity`, `JpaConfig` 완료)
+- [x] `global/` 공통 클래스 구현
+- [x] 소셜 로그인 (FR-018)
+- [ ] 카카오·네이버 실제 키로 로그인 확인
+- [ ] 가입 정보 입력 (FR-019)
 - [x] 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`)
 - [x] 스키마 기반 Entity 구현, 로컬 MariaDB 테이블 생성 (`ddl-auto: update`)
 
 ### 프론트엔드
 - [ ] 실제 이미지·로고 리소스 반영
 - [ ] 라우팅 도입 및 하위 페이지 구성
-- [ ] API 연동 (`/api` 프록시 설정 포함)
+- [x] `/api` 프록시 설정
+- [x] 로그인 모달 (SCR-013, FR-018)
+- [ ] 나머지 API 연동
