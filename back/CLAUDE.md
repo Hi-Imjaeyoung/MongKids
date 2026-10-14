@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 백엔드 API 서버 (Spring Boot 기반 REST API)
-- 현재 상태: Entity(member, consultation, post, review)와 `BaseTimeEntity`·`JpaConfig`만 구현. Repository·Service·API 없음.
+- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API 구현. 그 밖의 도메인 API 없음.
 - 요구사항 (프론트와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (프론트와 공유) → [../docs/progress.md](../docs/progress.md)
 
@@ -20,6 +20,7 @@
 | Web | `spring-boot-starter-webmvc` (서블릿 기반 MVC) |
 | Data | `spring-boot-starter-data-jpa` (Hibernate), `spring-boot-starter-jdbc` |
 | DB | MariaDB (`mariadb-java-client`) |
+| Security | `spring-boot-starter-security`, `spring-boot-starter-oauth2-client` (카카오·네이버), JWT `jjwt` 0.12 |
 | 기타 | Actuator, Lombok |
 | Test | JUnit 5, 각 starter의 `*-test` 모듈, H2 (테스트 DB) |
 
@@ -38,7 +39,8 @@
 
 ## 아키텍처 요약 → [docs/architecture.md](docs/architecture.md)
 
-- **도메인형 패키지 구조**: `domain/{기능}/{controller,service,repository,dto,entity}` + `global/{config,exception,common}`
+- **도메인형 패키지 구조**: `domain/{기능}/{controller,service,repository,dto,entity}` + `global/{config,exception,common,security}`
+- 인증: 소셜 로그인 → JWT HttpOnly 쿠키. Controller는 `@AuthenticationPrincipal Long memberId`로 회원 ID를 받는다 → [docs/architecture.md](docs/architecture.md#7-인증-fr-018)
 - 의존 방향: `Controller → Service → Repository` (역방향·건너뛰기 금지)
 - Controller는 Entity를 직접 받거나 반환하지 않는다. 항상 DTO를 사용한다.
 - 다른 도메인의 Repository를 직접 호출하지 않는다. 해당 도메인의 Service를 통한다.
@@ -87,5 +89,7 @@
 ## 알려진 이슈 / TODO
 
 - [x] DataSource 설정 검증: `local` profile은 로컬 MariaDB(`mongkids`)로 기동 확인, 테스트는 `test` profile의 H2로 통과. `prod` profile은 미검증. → [docs/database.md](docs/database.md)
-- [ ] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) 미구현. (`BaseTimeEntity`, `JpaConfig`는 구현)
+- [x] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) 구현
+- [ ] 소셜 로그인 실제 키로 카카오·네이버 로그인 확인 필요 (`.env`에 `KAKAO_*`, `NAVER_*`, `JWT_SECRET` 없으면 기동 실패)
+- [ ] 운영 배포 시 CloudFront 뒤에서 OAuth redirect_uri가 서비스 도메인으로 만들어지도록 Host·`X-Forwarded-*` 전달 설정 확인
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.

@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 웹 프론트엔드 (Vite + React SPA)
-- 현재 상태: 홈 화면(SCR-001) 시안을 정적 데이터로 구현. API 미연동, 라우팅 없음.
+- 현재 상태: 홈 화면(SCR-001) 시안을 정적 데이터로 구현. 소셜 로그인 모달(SCR-013, FR-018)과 로그인 상태만 API 연동. 라우팅 없음.
 - 요구사항 (백엔드와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (백엔드와 공유) → [../docs/progress.md](../docs/progress.md)
 - 디자인 시안 → [../docs/design/](../docs/design/)
@@ -34,7 +34,8 @@ npm run preview    # 빌드 결과 미리보기
 
 ## 아키텍처 요약 → [docs/architecture.md](docs/architecture.md)
 
-- `pages/`(화면 조립) → `components/{layout,home,common}/`(UI) ← `data/`(콘텐츠)
+- `pages/`(화면 조립) → `components/{layout,home,auth,common}/`(UI) ← `data/`(콘텐츠)
+- API 호출은 `src/api/`(`client.js`의 `request`가 `ApiResponse`를 풀어 `data`만 반환). 인증은 HttpOnly 쿠키라 토큰을 JS에서 다루지 않는다.
 - 화면 문구·수치·목록은 컴포넌트에 하드코딩하지 않고 `src/data/`에 둔다. API 연동 시 이 데이터만 응답값으로 교체한다.
 
 ## 핵심 코딩 규칙 → [docs/coding-conventions.md](docs/coding-conventions.md)
@@ -61,4 +62,5 @@ npm run preview    # 빌드 결과 미리보기
 
 - [ ] 실제 사진·로고·아이콘 리소스 없음 → `ImagePlaceholder`, 이모지로 대체 중
 - [ ] 라우팅 미도입 (메뉴 링크는 `#` 앵커)
-- [ ] API 미연동, `vite.config.js`에 `/api` 프록시 미설정
+- [x] `vite.config.js`에 `/api`, `/oauth2`, `/login/oauth2` 프록시 설정 (`changeOrigin: false` 유지: OAuth redirect_uri가 프론트 주소로 만들어져야 함)
+- [ ] 로그인 외 API 미연동

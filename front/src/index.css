@@ -8,6 +8,11 @@
   --green: #74b944;
   --green-soft: #eef6e8;
 
+  /* 소셜 로그인 브랜드 컬러 */
+  --kakao: #fee500;
+  --kakao-text: #191919;
+  --naver: #03c75a;
+
   /* 텍스트 · 배경 */
   --text: #1f2430;
   --text-sub: #555c6b;
