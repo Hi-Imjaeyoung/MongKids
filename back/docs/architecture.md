@@ -23,6 +23,7 @@ com.mongkids
    ├─ config          JpaConfig, WebConfig ...
    ├─ exception       BusinessException, ErrorCode, GlobalExceptionHandler
    ├─ common          ApiResponse, BaseTimeEntity, 페이징 DTO
+   ├─ security        JWT 발급·검증, 토큰 쿠키, 인증 필터, 401·403 응답
    └─ util            (정말 범용인 것만)
 ```
 
@@ -65,7 +66,7 @@ HTTP Response
 예외 발생 시: throw BusinessException(ErrorCode) → GlobalExceptionHandler → ApiResponse.error(...)
 ```
 
-## 5. global 공통 구성 (구현 예정)
+## 5. global 공통 구성
 
 | 클래스 | 위치 | 역할 |
 |---|---|---|
@@ -75,9 +76,40 @@ HTTP Response
 | `GlobalExceptionHandler` | `global/exception` | `@RestControllerAdvice` 예외 → 응답 변환 |
 | `BaseTimeEntity` | `global/common` | `createdAt`, `updatedAt` Auditing ([database.md](database.md)) |
 | `JpaConfig` | `global/config` | `@EnableJpaAuditing` |
+| `SecurityConfig` | `global/config` | 시큐리티 필터 체인 (아래 7절) |
+| `JwtProvider`, `TokenCookieManager`, `JwtAuthenticationFilter`, `SecurityResponseWriter`, `AuthProperties` | `global/security` | JWT·쿠키 인증 (아래 7절) |
 
 ## 6. 설정 파일
 
 - `application.yml`(공통) + `application-{local,dev,prod}.yml`(환경별)로 관리하는 것을 권장한다. (현재는 `application.properties` 하나뿐)
 - 비밀값은 `${ENV_VAR}` 플레이스홀더로 주입한다.
 - Actuator는 운영에서 `health`, `info`만 노출한다.
+
+## 7. 인증 (FR-018)
+
+카카오·네이버 소셜 로그인은 Spring Security OAuth2 Client로 처리하고, 로그인 상태는 HttpOnly 쿠키의 JWT로 유지한다.
+
+```
+[로그인 모달] → GET /oauth2/authorization/{kakao|naver}
+  → 카카오·네이버 인가 페이지 → GET /login/oauth2/code/{kakao|naver}
+  → CustomOAuth2UserService: 사용자 정보 → MemberService.loginOrRegister (최초 로그인 시 가입)
+  → OAuth2LoginSuccessHandler: JWT 발급 → access_token 쿠키 → app.auth.login-success-url 로 리다이렉트
+  (실패: OAuth2LoginFailureHandler → app.auth.login-failure-url)
+
+이후 요청: JwtAuthenticationFilter가 쿠키의 JWT를 검증 → principal = 회원 ID(Long)
+  → Controller에서 @AuthenticationPrincipal Long memberId
+```
+
+| 항목 | 내용 |
+|---|---|
+| 위치 | 도메인 무관 부분은 `global/security`, 회원 연동은 `domain/auth` (`CustomOAuth2UserService`, 성공·실패 핸들러). `SecurityConfig`는 이들을 Spring 인터페이스 타입 빈으로 주입받아 `global`이 `domain`에 의존하지 않는다 |
+| 토큰 | HS256, `sub`=회원 ID, `role` 클레임. 유효 기간 `app.auth.token-expiration`(기본 1일). 리프레시 토큰 없음 |
+| 쿠키 | `access_token`, HttpOnly, SameSite=Lax, Path=/, Secure는 `app.auth.cookie-secure`(prod true) |
+| CSRF | Spring CSRF는 끄고 SameSite=Lax 쿠키로 교차 사이트 POST를 막는다 |
+| 세션 | `STATELESS`. OAuth2 인가 요청(state, PKCE)만 로그인 과정 동안 세션에 보관하고 성공 시 무효화한다 |
+| 로그아웃 | `POST /api/v1/auth/logout` → 쿠키 삭제. 이미 발급된 토큰은 만료 전까지 서버에서 무효화하지 않는다 |
+| 탈퇴 회원 | 소셜 로그인 실패 처리. 토큰이 남아 있어도 `/members/me`는 `M002`(403) |
+| 인가 규칙 | `SecurityConfig.authorizeHttpRequests`에 경로별로 추가한다 (현재 `/api/v1/members/me`만 인증 필요) |
+
+설정·환경변수: `spring.security.oauth2.client.*`(application.yml), `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `JWT_SECRET` (`.env.example` 참고).
+각 개발자 콘솔에는 Redirect URI `{서비스 주소}/login/oauth2/code/kakao`, `.../naver`를 등록한다. 로컬은 Vite 프록시를 거치므로 `http://localhost:5173/login/oauth2/code/{kakao|naver}`.

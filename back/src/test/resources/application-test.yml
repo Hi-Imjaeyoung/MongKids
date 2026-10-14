@@ -6,3 +6,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: test-kakao-client-id
+            client-secret: test-kakao-client-secret
+          naver:
+            client-id: test-naver-client-id
+            client-secret: test-naver-client-secret
+
+app:
+  auth:
+    jwt-secret: test-jwt-secret-key-must-be-at-least-32-bytes

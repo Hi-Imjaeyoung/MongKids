@@ -94,7 +94,18 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 ```
 - Spring `Page` 객체를 그대로 직렬화하지 말고 `PageResponse<T>` record로 변환한다.
 
-## 6. 기타
+## 6. 인증 API (FR-018)
+
+| 메서드 | URL | 설명 | 인증 |
+|---|---|---|---|
+| GET | `/oauth2/authorization/{kakao\|naver}` | 소셜 로그인 시작 (브라우저 이동, API 아님) | - |
+| GET | `/api/v1/members/me` | 내 정보 (`id`, `provider`, `name`, `email`, `role`) | 필요 |
+| POST | `/api/v1/auth/logout` | 로그아웃 (토큰 쿠키 삭제) | - |
+
+- 인증은 `access_token` HttpOnly 쿠키로 한다. 흐름은 [architecture.md](architecture.md#7-인증-fr-018) 참고.
+- 미인증 401 `A001`, 권한 없음 403 `A002`.
+
+## 7. 기타
 
 - 날짜/시간: ISO-8601 (`2026-10-07T14:30:00`), 서버 타임존 `Asia/Seoul`.
 - JSON 필드는 camelCase.
