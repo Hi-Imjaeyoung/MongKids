@@ -1,13 +1,16 @@
 # DB 스키마
 
 > 기준: [docs/requirements.md](../../docs/requirements.md) (2026-10-14 시점, FR-001~023).
-> 네이밍·JPA 규칙은 [database.md](database.md)를 따른다. 초기 설계안이며 Entity 구현 시 이 문서를 함께 갱신한다.
+> 네이밍·JPA 규칙은 [database.md](database.md)를 따른다. Entity는 `com.mongkids.domain.{member,consultation,post,review}.entity`에 있고, 스키마를 바꾸면 이 문서를 함께 갱신한다.
 
 ## 1. 공통 규칙
 
 - PK: `id BIGINT AUTO_INCREMENT` (`@GeneratedValue(strategy = IDENTITY)`).
 - 모든 테이블에 `created_at`, `updated_at` (`DATETIME(6)`, `BaseTimeEntity`). 아래 컬럼 표에서는 생략한다.
 - enum은 `VARCHAR` + `@Enumerated(EnumType.STRING)`. DB enum 타입은 쓰지 않는다.
+  - Hibernate 7은 enum 필드를 MariaDB 네이티브 `enum(...)`(H2는 CHECK 제약)으로 만들어 값 추가 때마다 DDL 변경이 필요하다. 그래서 `@Column(columnDefinition = "varchar(n)")`을 명시한다.
+  - 같은 이유로 상속 판별 컬럼(`@DiscriminatorColumn`)도 쓰지 않는다 (`consultation.type` 참고).
+- boolean은 Hibernate MariaDB 기본 매핑인 `BIT(1)`로 생성된다.
 - 이미지·파일은 S3에 저장하고 DB에는 **객체 키**만 둔다 (`image_key`). URL은 CloudFront 도메인과 조합해 응답에서 만든다.
 - 삭제 정책: 회원·게시물·댓글·후기는 soft delete(`deleted_at`). 공감, 이미지 행은 hard delete.
 - 개수 제한(사진 20장, 10MB 등)은 DB 제약이 아니라 Service 검증으로 처리한다.
@@ -47,7 +50,7 @@ erDiagram
 | name | VARCHAR(50) | NOT NULL | 소셜 프로필 이름(닉네임). 후기 마스킹 표시 대상(FR-014) |
 | email | VARCHAR(255) | NULL | 소셜에서 제공될 때만 |
 | phone | VARCHAR(20) | NULL | 가입 정보 입력(FR-019) 전에는 NULL |
-| sns_agreed | BOOLEAN | NOT NULL, 기본 false | SNS 수신 동의 |
+| sns_agreed | BIT(1) | NOT NULL, 기본 false | SNS 수신 동의 |
 | sns_agreed_at | DATETIME(6) | NULL | 동의 시각 (동의 철회 시 NULL) |
 | role | VARCHAR(10) | NOT NULL, 기본 `MEMBER` | `MEMBER`, `STAFF`, `ADMIN` |
 | deleted_at | DATETIME(6) | NULL | 탈퇴 시각 |
@@ -64,7 +67,7 @@ erDiagram
 | 컬럼 | 타입 | 제약 | 설명 |
 |---|---|---|---|
 | id | BIGINT | PK | |
-| type | VARCHAR(20) | NOT NULL | `INSTITUTION`, `PERSONAL` (`@DiscriminatorColumn`) |
+| type | VARCHAR(20) | NOT NULL | `INSTITUTION`, `PERSONAL` (일반 컬럼, 생성 후 변경 불가) |
 | phone | VARCHAR(20) | NOT NULL | 연락받을 전화번호 (두 폼 공통) |
 | status | VARCHAR(20) | NOT NULL, 기본 `RECEIVED` | `RECEIVED`(접수), `CONTACTED`(연락 완료) |
 | privacy_agreed_at | DATETIME(6) | NOT NULL | 개인정보 수집 동의 시각 (필수) |
@@ -95,7 +98,7 @@ erDiagram
 | child_birth_date | DATE | NULL | 생년월일 |
 | child_age_months | INT | NULL | 개월 수 (생년월일과 둘 중 하나 필수, Service 검증) |
 | address | VARCHAR(255) | NOT NULL | 수업받을 주소 |
-| attends_daycare | BOOLEAN | NOT NULL | 어린이집 이용 여부 |
+| attends_daycare | BIT(1) | NOT NULL | 어린이집 이용 여부 |
 | temperament | TEXT | NULL | 아이 성향 |
 | favorite_play | TEXT | NULL | 좋아하는 놀이·장난감 |
 | favorite_character | TEXT | NULL | 좋아하는 캐릭터·노래 |

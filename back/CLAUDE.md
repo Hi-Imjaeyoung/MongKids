@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 백엔드 API 서버 (Spring Boot 기반 REST API)
-- 현재 상태: Spring Initializr로 생성한 직후의 초기 프로젝트. 도메인 코드 없음.
+- 현재 상태: Entity(member, consultation, post, review)와 `BaseTimeEntity`·`JpaConfig`만 구현. Repository·Service·API 없음.
 - 요구사항 (프론트와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (프론트와 공유) → [../docs/progress.md](../docs/progress.md)
 
@@ -87,5 +87,5 @@
 ## 알려진 이슈 / TODO
 
 - [x] DataSource 설정 검증: `local` profile은 로컬 MariaDB(`mongkids`)로 기동 확인, 테스트는 `test` profile의 H2로 통과. `prod` profile은 미검증. → [docs/database.md](docs/database.md)
-- [ ] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`, `BaseTimeEntity`) 미구현.
+- [ ] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) 미구현. (`BaseTimeEntity`, `JpaConfig`는 구현)
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.
