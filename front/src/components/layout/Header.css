@@ -67,6 +67,32 @@
   gap: 8px;
 }
 
+.header__auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.header__member {
+  font-weight: 700;
+}
+
+.header__auth-button {
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--text-sub);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.header__auth-button:hover {
+  color: var(--blue);
+}
+
 .header__toggle {
   display: none;
   flex-direction: column;
@@ -136,5 +162,9 @@
 
   .header__cta {
     flex-direction: column;
+  }
+
+  .header__auth {
+    justify-content: center;
   }
 }
