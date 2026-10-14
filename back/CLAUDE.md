@@ -61,6 +61,7 @@
 
 ## DB 규칙 → [docs/database.md](docs/database.md)
 
+- 테이블 정의(ERD·컬럼) → [docs/schema.md](docs/schema.md)
 - 기본은 Spring Data JPA. 대량 배치·복잡한 통계 쿼리만 `JdbcClient` 허용.
 - 테이블·컬럼은 snake_case. 모든 Entity는 `BaseTimeEntity`(생성/수정 시각) 상속.
 - `spring.jpa.open-in-view=false`, 운영 환경 `ddl-auto`는 `validate` 또는 `none`.

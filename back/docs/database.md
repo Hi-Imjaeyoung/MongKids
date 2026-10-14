@@ -1,5 +1,7 @@
 # 데이터베이스
 
+> 테이블 정의(ERD·컬럼)는 [schema.md](schema.md)를 참고한다.
+
 ## 1. 현재 상태
 
 - 드라이버: `org.mariadb.jdbc:mariadb-java-client` (runtimeOnly)
