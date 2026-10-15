@@ -90,6 +90,6 @@
 
 - [x] DataSource 설정 검증: `local` profile은 로컬 MariaDB(`mongkids`)로 기동 확인, 테스트는 `test` profile의 H2로 통과. `prod` profile은 미검증. → [docs/database.md](docs/database.md)
 - [x] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) 구현
-- [ ] 소셜 로그인 실제 키로 카카오·네이버 로그인 확인 필요 (`.env`에 `KAKAO_*`, `NAVER_*`, `JWT_SECRET` 없으면 기동 실패)
-- [ ] 운영 배포 시 CloudFront 뒤에서 OAuth redirect_uri가 서비스 도메인으로 만들어지도록 Host·`X-Forwarded-*` 전달 설정 확인
+- [x] 소셜 로그인 실제 키로 카카오·네이버 로그인 확인 (로컬). `.env`에 `KAKAO_*`, `NAVER_*`, `JWT_SECRET` 없으면 기동 실패
+- [ ] 운영 배포 시 CloudFront 뒤에서 OAuth redirect_uri가 서비스 도메인으로 만들어지도록 Host·`X-Forwarded-*` 전달 설정 확인 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md)
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.

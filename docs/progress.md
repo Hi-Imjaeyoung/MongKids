@@ -35,11 +35,12 @@
 
 | 2026-10-14 | 백엔드 | 소셜 로그인 구현 (FR-018, #10): OAuth2 Client + JWT HttpOnly 쿠키, `GET /api/v1/members/me`, `POST /api/v1/auth/logout`, `global` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) |
 | 2026-10-14 | 프론트엔드 | 로그인 모달(SCR-013)·헤더 로그인 상태 구현 (FR-018, #10), `src/api/` 추가, Vite 프록시 설정 |
+| 2026-10-15 | 공통 | 카카오·네이버 소셜 로그인 로컬 확인 완료 (FR-018). redirect-uri는 `{baseUrl}` 유지, 각 콘솔에 `http://localhost:5173/login/oauth2/code/{kakao\|naver}` 등록 |
+| 2026-10-15 | 공통 | 배포 후 점검 체크리스트 작성 ([deploy-checklist.md](deploy-checklist.md)) |
 
 ## 이슈 / 블로커
 
 - 프론트엔드: 실제 사진·로고·아이콘 리소스가 없어 플레이스홀더와 이모지로 대체되어 있다.
-- 공통: 카카오·네이버 개발자 앱(키) 미등록. 실제 소셜 로그인은 키를 `back/.env`에 넣은 뒤 확인해야 한다 (FR-018).
 
 ## 다음 할 일
 
@@ -54,7 +55,8 @@
 - [x] `src/test/resources/application-test.yml` 작성 + 테스트에 `@ActiveProfiles("test")` 적용 (H2로 `contextLoads` 통과 확인)
 - [x] `global/` 공통 클래스 구현
 - [x] 소셜 로그인 (FR-018)
-- [ ] 카카오·네이버 실제 키로 로그인 확인
+- [x] 카카오·네이버 실제 키로 로그인 확인 (로컬)
+- [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md))
 - [ ] 가입 정보 입력 (FR-019)
 - [x] 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`)
 - [x] 스키마 기반 Entity 구현, 로컬 MariaDB 테이블 생성 (`ddl-auto: update`)
