@@ -23,6 +23,7 @@
 | Security | `spring-boot-starter-security`, `spring-boot-starter-oauth2-client` (카카오·네이버), JWT `jjwt` 0.12 |
 | Validation | `spring-boot-starter-validation` (Bean Validation) |
 | Storage | AWS SDK for Java v2 `s3` (BOM 2.55.x) — 파일 저장소 → [docs/architecture.md](docs/architecture.md#8-파일-저장소-fr-008) |
+| HTML | jsoup — 게시물 본문 HTML 정화 (`PostContentSanitizer`) |
 | 기타 | Actuator, Lombok |
 | Test | JUnit 5, 각 starter의 `*-test` 모듈, H2 (테스트 DB) |
 

@@ -114,7 +114,7 @@ erDiagram
 | member_id | BIGINT | NOT NULL, FK → member.id | 작성 직원 |
 | category | VARCHAR(20) | NOT NULL | SCR-006 탭: `GENERAL`(게시글), `NEWS`(소식), `EVENT`(행사 프로그램) |
 | title | VARCHAR(100) | NOT NULL | 제목 |
-| content | TEXT | NOT NULL | 본문 |
+| content | TEXT | NOT NULL | 본문 HTML. 서버가 허용 목록으로 정화해 저장하고, 사진은 `src` 없이 `<img data-image-key>`로만 둔다 (응답 때 URL을 채움) |
 | like_count | INT | NOT NULL, 기본 0 | 공감 수 (목록 조회용 비정규화) |
 | comment_count | INT | NOT NULL, 기본 0 | 댓글 수 (목록 조회용 비정규화) |
 | deleted_at | DATETIME(6) | NULL | |
@@ -129,7 +129,9 @@ erDiagram
 | id | BIGINT | PK | |
 | post_id | BIGINT | NOT NULL, FK → post.id | |
 | image_key | VARCHAR(255) | NOT NULL | S3 객체 키 |
-| sort_order | INT | NOT NULL | 표시 순서 (0번이 대표 이미지) |
+| sort_order | INT | NOT NULL | 본문에 나온 순서 (0번이 대표 이미지) |
+
+- 본문(`post.content`) 속 사진 키의 색인이다. 저장·수정 때 본문에서 추출해 통째로 바꾸며, 목록 썸네일·사진 검증·S3 정리에 쓴다.
 
 ### post_comment — 게시물 댓글 (FR-010)
 

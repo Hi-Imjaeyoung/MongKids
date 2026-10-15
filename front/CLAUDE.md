@@ -17,6 +17,7 @@
 |---|---|
 | Language | JavaScript (JSX). TypeScript 미사용 |
 | Framework | React 19, react-router-dom 7 |
+| Editor | TipTap 3 (게시물 본문 HTML 편집기, 작성 화면만 지연 로딩), DOMPurify (본문 출력 전 정화) |
 | Build | Vite 8 (`@vitejs/plugin-react`) |
 | Lint | ESLint 10 (react-hooks, react-refresh) |
 | Style | 일반 CSS (컴포넌트별 파일) + `src/index.css` 디자인 토큰 |

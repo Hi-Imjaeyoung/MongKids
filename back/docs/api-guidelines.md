@@ -110,15 +110,19 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
 | POST | `/api/v1/posts/image-upload-urls` | 사진 업로드 URL 발급. 요청 `{files: [{contentType, size}]}` → `[{imageKey, uploadUrl}]` | 필요 |
-| POST | `/api/v1/posts` | 작성 `{category, title, content, imageKeys}` → 201 `{id}` | 필요 |
+| POST | `/api/v1/posts` | 작성 `{category, title, content}` → 201 `{id}`. `content`는 본문 HTML | 필요 |
 | GET | `/api/v1/posts?category=&page=&size=` | 최신순 목록 (`PageResponse<PostSummaryResponse>`). `category` 없으면 전체, 기본 `size` 12, 최대 100 | - |
-| GET | `/api/v1/posts/{postId}` | 상세 (`images: [{imageKey, url}]`, `authorId` 포함) | - |
-| PUT | `/api/v1/posts/{postId}` | 전체 수정. 사진은 `imageKeys` 순서대로 통째로 바뀐다 | 작성자 |
+| GET | `/api/v1/posts/{postId}` | 상세 (`content`는 사진 `src`가 채워진 HTML, `authorId` 포함) | - |
+| PUT | `/api/v1/posts/{postId}` | 전체 수정. 사진 목록은 새 본문에 나온 사진으로 통째로 바뀐다 | 작성자 |
 | DELETE | `/api/v1/posts/{postId}` | soft delete | 작성자 |
 
 - `category`: `GENERAL`(게시글), `NEWS`(소식), `EVENT`(행사 프로그램).
-- 사진 흐름: URL 발급 → 브라우저가 `uploadUrl`에 `PUT`(발급 때 보낸 `Content-Type`·크기 그대로) → 작성·수정 요청에 `imageKey` 전달. 0번이 대표 사진. 수정 시 기존 사진은 상세 응답의 `imageKey`를 다시 보낸다.
-- 제한: 최대 20장(`P002`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `posts/` 밖의 키, 중복 키는 `P003`.
+- 본문 HTML 허용 목록: `p br strong em u a ul ol li blockquote hr figure figcaption img`. 그 밖의 태그·속성(`script`, `style`, `on*` 등)은 제거한다.
+  - `a[href]`는 http/https만. 응답에 `target="_blank" rel="noopener noreferrer"`를 붙인다.
+  - 사진 묶음: `<figure class="post-photos">` 안에 `<img data-image-key="…">` 1~3장 + `<figcaption>`(선택, 200자). `img`는 사진 묶음 안에만 둘 수 있다.
+  - 본문 최대 100,000자, 글자나 사진이 하나 이상. 위반은 `P004`.
+- 사진 흐름: URL 발급 → 브라우저가 `uploadUrl`에 `PUT`(발급 때 보낸 `Content-Type`·크기 그대로) → 본문 HTML에 `data-image-key`로 넣어 작성·수정. 본문에 처음 나온 사진이 대표 사진. 수정 시 상세 응답 HTML을 그대로 편집해 보내면 된다(`src`는 서버가 지운다).
+- 사진 제한: 게시물당 최대 20장(`P002`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `posts/` 밖의 키, 중복 키는 `P003`.
 - 없거나 삭제된 게시물 `P001`(404), 작성자가 아니면 `A002`(403). 직원 권한 검사(FR-009)는 아직 없다.
 
 ## 8. 기타

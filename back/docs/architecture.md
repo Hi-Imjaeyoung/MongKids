@@ -125,8 +125,10 @@ HTTP Response
 [작성 화면] → POST /api/v1/posts/image-upload-urls (contentType, size)
   → PostService: 형식·크기·개수 검증, 키 생성(posts/{yyyy}/{MM}/{uuid}.{ext}) → FileStorage.createUploadUrl
   → 브라우저가 uploadUrl로 S3에 직접 PUT
-  → POST /api/v1/posts (imageKeys) → PostService: FileStorage.findSize로 업로드·크기 확인 후 저장
-응답: FileStorage.getUrl(key) = app.storage.public-base-url + "/" + key (CloudFront)
+  → 편집기가 본문 HTML에 <img data-image-key> 삽입 → POST /api/v1/posts (content)
+  → PostContentSanitizer.sanitize: jsoup 허용 목록 정화 + 구조 검사 + 사진 키 추출
+  → PostService: FileStorage.findSize로 업로드·크기 확인 후 저장 (post.content, post_image)
+응답: PostContentSanitizer.render → img에 src = FileStorage.getUrl(key) (app.storage.public-base-url + "/" + key), 링크에 target·rel
 ```
 
 | 항목 | 내용 |
@@ -135,5 +137,6 @@ HTTP Response
 | 구현 | `S3FileStorage` (AWS SDK v2 `S3Client`, `S3Presigner`). Presigned URL에 `Content-Type`·`Content-Length`를 서명해 다른 타입·크기의 업로드는 S3가 거부한다 |
 | 자격 증명 | SDK 기본 체인. 로컬은 `AWS_ACCESS_KEY_ID`·`AWS_SECRET_ACCESS_KEY`, 운영은 IAM 역할 |
 | 설정 | `app.storage.bucket`(`AWS_S3_BUCKET`), `region`(`AWS_REGION`, 기본 ap-northeast-2), `public-base-url`(`STORAGE_PUBLIC_BASE_URL`), `upload-url-duration`(10분) |
+| 본문 정화 | `domain/post/service/PostContentSanitizer` (jsoup). 허용 목록·구조 규칙은 [api-guidelines.md](api-guidelines.md#7-게시물-api-fr-008). 프론트는 출력 전에 DOMPurify로 한 번 더 거른다 |
 | 테스트 | S3에 접속하지 않는다. 통합 테스트는 `@MockitoBean FileStorage` |
 | 정리 | 업로드 후 저장하지 않았거나 수정·삭제로 빠진 객체는 지우지 않는다 (후속: S3 수명 주기 규칙 등) |
