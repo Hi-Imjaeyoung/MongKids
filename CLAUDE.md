@@ -28,7 +28,7 @@ MongKids/
 
 | 문서 | 범위 | 내용 |
 |---|---|---|
-| [docs/requirements.md](docs/requirements.md) | 공유 | 화면·기능 요구사항과 ID |
+| [docs/requirements.md](docs/requirements.md) | 공유 | 화면(프론트)·기능(백엔드)·비기능 요구사항과 ID |
 | [docs/progress.md](docs/progress.md) | 공유 | 영역별 현재 상태, 진행 로그, 다음 할 일 |
 | [docs/git-workflow.md](docs/git-workflow.md) | 공유 | 브랜치, 커밋 scope, PR 체크리스트 |
 | [docs/deploy-checklist.md](docs/deploy-checklist.md) | 공유 | 배포(S3 + CloudFront) 후 점검 항목 |
