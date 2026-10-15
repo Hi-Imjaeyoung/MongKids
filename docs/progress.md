@@ -32,7 +32,6 @@
 | 2026-10-14 | 공통 | 요구사항 미결 사항 결정 반영 (FR-002·007·008·010~013·016·019 변경, FR-020 폐기, FR-021~023 신규, SCR-006 "몽키즈 소식") |
 | 2026-10-14 | 백엔드 | 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`, 테이블 10개) |
 | 2026-10-14 | 백엔드 | 스키마 기반 Entity·`BaseTimeEntity`·`JpaConfig` 구현, 매핑 테스트(H2) 추가, 로컬 MariaDB에 테이블 10개 생성 |
-
 | 2026-10-14 | 백엔드 | 소셜 로그인 구현 (FR-018, #10): OAuth2 Client + JWT HttpOnly 쿠키, `GET /api/v1/members/me`, `POST /api/v1/auth/logout`, `global` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) |
 | 2026-10-14 | 프론트엔드 | 로그인 모달(SCR-013)·헤더 로그인 상태 구현 (FR-018, #10), `src/api/` 추가, Vite 프록시 설정 |
 | 2026-10-15 | 공통 | 카카오·네이버 소셜 로그인 로컬 확인 완료 (FR-018). redirect-uri는 `{baseUrl}` 유지, 각 콘솔에 `http://localhost:5173/login/oauth2/code/{kakao\|naver}` 등록 |
@@ -43,6 +42,7 @@
 | 2026-10-15 | 백엔드 | 게시물 API 구현 (FR-008): 사진 업로드 URL 발급(S3 Presigned PUT, 최대 20장·장당 10MB), 작성·목록·상세·수정·삭제. `global/storage`(AWS SDK v2), `PageResponse`, `spring-boot-starter-validation` 추가. 직원 권한(FR-009)은 미적용 |
 | 2026-10-15 | 프론트엔드 | react-router-dom 도입, 몽키즈 소식(SCR-006) 목록·상세·작성·수정 화면 구현 (FR-008). GNB '수업 현장' → '몽키즈 소식'. 실제 S3 업로드는 버킷이 없어 미확인 |
 | 2026-10-15 | 공통 | 게시물 본문을 HTML 편집기로 변경 (FR-008, 사용자 결정): 백엔드 jsoup 허용 목록 정화·사진 키 추출(P004 신설), 프론트 TipTap 편집기·사진 묶음 노드(1~3장 + 캡션)·DOMPurify 출력. 사진 갤러리·`imageKeys` 요청 필드 제거 |
+| 2026-10-15 | 공통 | PR #12(FR-008) 병합. 실제 S3 업로드는 미확인이라 `feature/posts` 브랜치를 남기고 다음 할 일에 확인 항목 추가 |
 | 2026-10-15 | 공통 | 게시물 작성 권한 구현 (FR-009, #14): 작성(사진 업로드 포함)은 STAFF·ADMIN, 수정·삭제는 직원인 작성자 본인 또는 ADMIN. 백엔드는 DB의 현재 역할로 검사, 프론트는 글쓰기·수정·삭제 버튼과 작성 화면 안내를 역할에 맞춤 |
 | 2026-10-15 | 공통 | 기관 상담 신청 구현 (SCR-009, FR-001·003·023, #17): 디자인 초안(데스크톱 모달·모바일·접수 완료), `POST /api/v1/institution-consultations`(비회원, 동의 필수, 요일·연령 선택지를 문자열로 합쳐 저장), 헤더·히어로 버튼으로 여는 모달. 보관 기간 상담 완료 후 3년으로 결정 |
 | 2026-10-15 | 공통 | 개인 상담 신청 구현 (SCR-010, FR-002·003·023, #19): 디자인 초안(데스크톱 1·2단계, 모바일 1단계), `POST /api/v1/personal-consultations`(비회원, 010 휴대전화만, 생년월일·개월 수 중 하나, 건강 메모 시 건강정보 별도 동의), 헤더·히어로 "1:1 방문체육 상담" 버튼으로 여는 2단계 모달. 번호 인증이 없어 전화번호는 `010` 고정 + 4자리 + 4자리 입력으로 결정 |
@@ -69,7 +69,11 @@
 - [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md))
 - [ ] 가입 정보 입력 (FR-019)
 - [x] 게시물 저장·조회·수정·삭제 (FR-008)
-- [ ] S3 버킷·CloudFront 이미지 경로 구성, 사진 업로드 로컬 확인 ([deploy-checklist.md](deploy-checklist.md) H)
+- [ ] 게시물 사진 S3 실제 업로드 확인 (FR-008, PR #12 병합 후 미확인). 확인이 끝날 때까지 `feature/posts` 브랜치 유지 ([deploy-checklist.md](deploy-checklist.md) H)
+  - [ ] S3 버킷 CORS(`PUT`, `http://localhost:5173`), CloudFront(OAC) 구성 → `.env`의 `STORAGE_PUBLIC_BASE_URL` 설정
+  - [ ] 로그인 후 `/news/write`에서 사진 묶음 업로드 → 저장 → 목록 대표 사진·상세 본문 사진 표시
+  - [ ] 수정(사진 교체·순서 변경)·삭제, 21장·10MB 초과·이미지가 아닌 파일 거부
+  - [ ] 확인이 끝나면 `feature/posts` 브랜치(로컬·원격) 삭제
 - [x] 게시물 작성 직원 권한 (FR-009, #14): 작성은 STAFF·ADMIN, 수정·삭제는 직원인 작성자 본인 또는 ADMIN (DB 역할 기준)
 - [ ] 직원 권한 부여·회수 (FR-022). 그 전까지 로컬은 `UPDATE member SET role = 'STAFF' WHERE id = ?`
 - [ ] 수정·삭제로 빠지거나 업로드 후 버려진 S3 사진 정리 (수명 주기 규칙 등)
