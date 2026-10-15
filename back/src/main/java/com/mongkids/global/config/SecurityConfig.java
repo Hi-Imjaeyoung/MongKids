@@ -57,6 +57,10 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/v1/members/me").authenticated()
+				// 게시물 쓰기 (FR-008). 직원 권한 검사(FR-009)는 아직 없다
+				.requestMatchers(HttpMethod.POST, "/api/v1/posts/**").authenticated()
+				.requestMatchers(HttpMethod.PUT, "/api/v1/posts/**").authenticated()
+				.requestMatchers(HttpMethod.DELETE, "/api/v1/posts/**").authenticated()
 				.anyRequest().permitAll())
 			.oauth2Login(oauth2 -> oauth2
 				.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
