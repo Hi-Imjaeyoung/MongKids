@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createInstitutionConsultation } from '../../api/consultations'
 import { ApiError } from '../../api/client'
 import Button from '../common/Button'
+import { ChipGroup, FieldError } from './ConsultationFormParts'
 import {
   childAgeGroups,
   consultationDone,
@@ -49,32 +50,6 @@ function canSubmit(form) {
     isValidPhone(form.phone) &&
     form.privacyAgreed
   )
-}
-
-function ChipGroup({ options, selected, onToggle }) {
-  return (
-    <div className="consult-modal__chips">
-      {options.map((option) => {
-        const pressed = selected.includes(option.value)
-        return (
-          <button
-            key={option.value}
-            type="button"
-            className={`consult-modal__chip ${pressed ? 'consult-modal__chip--on' : ''}`}
-            aria-pressed={pressed}
-            onClick={() => onToggle(option.value)}
-          >
-            {option.label}
-          </button>
-        )
-      })}
-    </div>
-  )
-}
-
-function FieldError({ message }) {
-  if (!message) return null
-  return <p className="consult-modal__field-error" role="alert">{message}</p>
 }
 
 // 기관 상담 신청 모달 (SCR-009, FR-001). 비회원도 신청할 수 있다 (FR-003)

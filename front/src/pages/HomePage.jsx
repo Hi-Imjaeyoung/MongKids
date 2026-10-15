@@ -4,10 +4,10 @@ import ServiceCards from '../components/home/ServiceCards'
 import WhyMongkids from '../components/home/WhyMongkids'
 import Reviews from '../components/home/Reviews'
 
-function HomePage({ onInstitutionConsultClick }) {
+function HomePage({ onInstitutionConsultClick, onPersonalConsultClick }) {
   return (
     <>
-      <Hero onInstitutionConsultClick={onInstitutionConsultClick} />
+      <Hero onInstitutionConsultClick={onInstitutionConsultClick} onPersonalConsultClick={onPersonalConsultClick} />
       <StatsBar />
       <ServiceCards />
       <WhyMongkids />

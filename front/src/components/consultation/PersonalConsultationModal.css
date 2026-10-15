@@ -1,0 +1,152 @@
+/* 개인 상담 모달(SCR-010). 공통 모양은 InstitutionConsultationModal.css의 consult-modal__* 를 쓰고 파란 강조와 단계만 더한다 */
+
+.consult-modal__dialog--personal .consult-modal__badge {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.consult-modal__dialog--personal .consult-modal__chip {
+  border-radius: var(--radius-md);
+  min-height: 52px;
+}
+
+.consult-modal__dialog--personal .consult-modal__chip--on {
+  border-color: var(--blue-text);
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.consult-modal__dialog--personal .consult-modal__agree input {
+  accent-color: var(--blue-text);
+}
+
+.consult-modal__dialog--personal .consult-modal__done-icon {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.consult-modal__dialog--personal .consult-modal__chips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.consult-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 24px;
+  padding: 0;
+  list-style: none;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.consult-steps__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consult-steps__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.consult-steps__item--reached .consult-steps__bar {
+  background: var(--blue);
+}
+
+.consult-steps__item--current {
+  color: var(--blue-text);
+  font-weight: 800;
+}
+
+.consult-modal__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.consult-phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.consult-phone__prefix {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  min-height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.consult-phone__dash {
+  color: var(--text-sub);
+}
+
+.consult-modal__input.consult-phone__part {
+  flex: 1;
+  min-width: 0;
+  padding: 0 8px;
+  text-align: center;
+}
+
+.consult-age__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consult-age__switch {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--blue-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.consult-modal__privacy--health {
+  background: var(--yellow-soft);
+}
+
+.consult-modal__actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
+}
+
+.consult-modal__prev {
+  min-height: 56px;
+  border: 1px solid var(--text-muted);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.consult-modal__prev:hover {
+  background: var(--bg-soft);
+}
+
+@media (max-width: 768px) {
+  .consult-modal__row {
+    grid-template-columns: 1fr;
+  }
+}
