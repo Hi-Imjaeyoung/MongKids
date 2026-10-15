@@ -74,7 +74,7 @@ erDiagram
 
 - INDEX (`status`, `created_at`) — 관리자 목록 필터
 - 비회원 신청(FR-003)이므로 `member` FK를 두지 않는다.
-- 보관 기간(FR-023)이 지나면 행을 삭제하는 배치가 필요하다 (`created_at` 기준).
+- 보관 기간(FR-023, 상담 완료 후 3년)이 지나면 행을 삭제하는 배치가 필요하다 (`created_at` 기준, 미구현).
 
 ### institution_consultation — 기관 상담 신청 (FR-001)
 
@@ -82,8 +82,8 @@ erDiagram
 |---|---|---|---|
 | id | BIGINT | PK, FK → consultation.id | |
 | institution_name | VARCHAR(100) | NOT NULL | 기관명 |
-| preferred_schedule | VARCHAR(255) | NOT NULL | 희망 수업 일정(요일·시간), 자유 입력 |
-| child_age_range | VARCHAR(50) | NOT NULL | 원아 연령 |
+| preferred_schedule | VARCHAR(255) | NOT NULL | 희망 수업 일정. 요일 선택지 + 시간대를 합친 문자열 (`월·수 오전 10시`) |
+| child_age_range | VARCHAR(50) | NOT NULL | 원아 연령. 연령 선택지 라벨을 합친 문자열 (`만 3세, 만 4세`) |
 | child_count | INT | NOT NULL | 원아 인원 |
 | note | TEXT | NULL | 특이사항 |
 
@@ -193,5 +193,5 @@ erDiagram
 
 ## 5. 확인 필요
 
-- 상담 신청 데이터 보관 기간(FR-023): 기간이 정해지면 삭제 배치 주기를 정한다.
+- 상담 신청 데이터 보관 기간(FR-023): 상담 완료 후 3년으로 결정(2026-10-15). 삭제 배치 주기는 미정.
 - 인증 방식(JWT·세션)이 정해지면 리프레시 토큰 저장 테이블이 추가될 수 있다.
