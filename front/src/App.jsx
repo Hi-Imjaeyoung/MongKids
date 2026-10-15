@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { fetchMyInfo, logout } from './api/auth'
 import LoginModal from './components/auth/LoginModal'
 import Header from './components/layout/Header'
@@ -13,6 +14,7 @@ function hasLoginError() {
 }
 
 function App() {
+  const { pathname } = useLocation()
   const [member, setMember] = useState(null)
   const [loginError, setLoginError] = useState(hasLoginError)
   const [loginOpen, setLoginOpen] = useState(hasLoginError)
@@ -30,6 +32,11 @@ function App() {
     url.searchParams.delete(LOGIN_ERROR_PARAM)
     window.history.replaceState(null, '', url)
   }, [])
+
+  // 화면이 바뀌면 맨 위에서 시작한다
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
   const openLogin = () => setLoginOpen(true)
   const closeLogin = useCallback(() => {
@@ -49,7 +56,10 @@ function App() {
     <>
       <Header member={member} onLoginClick={openLogin} onLogoutClick={handleLogout} />
       <main className="main">
-        <HomePage />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="*" element={<HomePage />} />
+        </Routes>
       </main>
       <FloatingMenu />
       {loginOpen && <LoginModal hasError={loginError} onClose={closeLogin} />}

@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import Button from '../common/Button'
 import { headerAuth } from '../../data/authContent'
 import { ctaButtons, navItems } from '../../data/homeContent'
 import './Header.css'
+
+const navLinkClassName = ({ isActive }) => `gnb__link ${isActive ? 'gnb__link--active' : ''}`
 
 // member: 로그인한 회원 정보 (비로그인이면 null)
 function Header({ member = null, onLoginClick, onLogoutClick }) {
@@ -11,18 +14,25 @@ function Header({ member = null, onLoginClick, onLogoutClick }) {
   return (
     <header className="header">
       <div className="header__inner container">
-        <a href="/" className="logo" aria-label="몽키즈 홈">
+        <Link to="/" className="logo" aria-label="몽키즈 홈">
           <span className="logo__mascot" aria-hidden="true">🐵</span>
           <span className="logo__text">몽키즈</span>
-        </a>
+        </Link>
 
         <nav className={`gnb ${menuOpen ? 'gnb--open' : ''}`} aria-label="주 메뉴">
           <ul className="gnb__list">
             {navItems.map((item) => (
               <li key={item.label}>
-                <a href={item.href} className="gnb__link" onClick={() => setMenuOpen(false)}>
-                  {item.label}
-                </a>
+                {/* to: 라우팅된 화면, href: 아직 화면이 없는 메뉴(앵커) */}
+                {item.to ? (
+                  <NavLink to={item.to} className={navLinkClassName} onClick={() => setMenuOpen(false)}>
+                    {item.label}
+                  </NavLink>
+                ) : (
+                  <a href={item.href} className="gnb__link" onClick={() => setMenuOpen(false)}>
+                    {item.label}
+                  </a>
+                )}
               </li>
             ))}
           </ul>
