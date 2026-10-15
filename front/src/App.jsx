@@ -2,6 +2,7 @@ import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { fetchMyInfo, logout } from './api/auth'
 import LoginModal from './components/auth/LoginModal'
+import InstitutionConsultationModal from './components/consultation/InstitutionConsultationModal'
 import Header from './components/layout/Header'
 import FloatingMenu from './components/layout/FloatingMenu'
 import HomePage from './pages/HomePage'
@@ -24,6 +25,7 @@ function App() {
   const [member, setMember] = useState(undefined)
   const [loginError, setLoginError] = useState(hasLoginError)
   const [loginOpen, setLoginOpen] = useState(hasLoginError)
+  const [consultOpen, setConsultOpen] = useState(false)
 
   useEffect(() => {
     fetchMyInfo()
@@ -50,6 +52,9 @@ function App() {
     setLoginError(false)
   }, [])
 
+  const openConsult = () => setConsultOpen(true)
+  const closeConsult = useCallback(() => setConsultOpen(false), [])
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -60,21 +65,27 @@ function App() {
 
   return (
     <>
-      <Header member={member} onLoginClick={openLogin} onLogoutClick={handleLogout} />
+      <Header
+        member={member}
+        onLoginClick={openLogin}
+        onLogoutClick={handleLogout}
+        onInstitutionConsultClick={openConsult}
+      />
       <main className="main">
         <Suspense fallback={null}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePage onInstitutionConsultClick={openConsult} />} />
             <Route path="/news" element={<NewsListPage member={member} />} />
             <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
             <Route path="/news/:postId" element={<NewsDetailPage member={member} />} />
             <Route path="/news/:postId/edit" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
-            <Route path="*" element={<HomePage />} />
+            <Route path="*" element={<HomePage onInstitutionConsultClick={openConsult} />} />
           </Routes>
         </Suspense>
       </main>
       <FloatingMenu />
       {loginOpen && <LoginModal hasError={loginError} onClose={closeLogin} />}
+      {consultOpen && <InstitutionConsultationModal onClose={closeConsult} />}
     </>
   )
 }
