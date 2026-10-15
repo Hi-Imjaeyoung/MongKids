@@ -71,7 +71,8 @@ export const newsEditor = {
   submitting: '저장 중…',
   loginRequired: '게시물은 로그인한 뒤 작성할 수 있어요.',
   login: '로그인',
-  forbidden: '작성자만 게시물을 수정할 수 있어요.',
+  staffOnly: '게시물은 직원만 작성할 수 있어요.',
+  forbidden: '작성자나 관리자만 게시물을 수정할 수 있어요.',
   loading: '불러오는 중이에요.',
   errors: {
     required: '제목과 본문을 입력해 주세요.',

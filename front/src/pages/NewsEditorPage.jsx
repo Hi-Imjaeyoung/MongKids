@@ -4,9 +4,11 @@ import { createPost, getPost, updatePost } from '../api/posts'
 import Button from '../components/common/Button'
 import NewsNotice from '../components/news/NewsNotice'
 import PostEditorForm from '../components/news/PostEditorForm'
+import { canManagePost, canWritePost } from '../components/news/postPermission'
 import { newsEditor } from '../data/newsContent'
 
-// 몽키즈 소식 작성·수정 (SCR-006, FR-008). member가 undefined면 로그인 상태 확인 중
+// 몽키즈 소식 작성·수정 (SCR-006, FR-008). 직원만 작성, 작성자·관리자만 수정 (FR-009).
+// member가 undefined면 로그인 상태 확인 중
 function NewsEditorPage({ member, onLoginClick }) {
   const { postId } = useParams()
   const navigate = useNavigate()
@@ -52,9 +54,11 @@ function NewsEditorPage({ member, onLoginClick }) {
         </Button>
       </NewsNotice>
     )
+  } else if (!canWritePost(member)) {
+    notice = <NewsNotice message={newsEditor.staffOnly} tone="error" standalone />
   } else if (current.error) {
     notice = <NewsNotice message={current.error} tone="error" standalone />
-  } else if (current.post && current.post.authorId !== member.id) {
+  } else if (current.post && !canManagePost(member, current.post)) {
     notice = <NewsNotice message={newsEditor.forbidden} tone="error" standalone />
   }
 

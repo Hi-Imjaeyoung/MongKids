@@ -4,6 +4,7 @@ import { getPosts } from '../api/posts'
 import NewsHero from '../components/news/NewsHero'
 import PostList from '../components/news/PostList'
 import { findCategory } from '../components/news/postFormat'
+import { canWritePost } from '../components/news/postPermission'
 
 const PAGE_SIZE = 12
 
@@ -65,7 +66,7 @@ function NewsListPage({ member }) {
         loadingMore={loadingMore}
         error={currentError}
         onLoadMore={loadMore}
-        canWrite={Boolean(member)}
+        canWrite={canWritePost(member)}
       />
     </>
   )
