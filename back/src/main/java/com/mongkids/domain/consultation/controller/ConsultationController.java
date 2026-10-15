@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mongkids.domain.consultation.dto.ConsultationCreateResponse;
 import com.mongkids.domain.consultation.dto.InstitutionConsultationRequest;
+import com.mongkids.domain.consultation.dto.PersonalConsultationRequest;
 import com.mongkids.domain.consultation.service.ConsultationService;
 import com.mongkids.global.common.ApiResponse;
 
@@ -26,5 +27,13 @@ public class ConsultationController {
 		@Valid @RequestBody InstitutionConsultationRequest request
 	) {
 		return ApiResponse.success(consultationService.createInstitutionConsultation(request));
+	}
+
+	@PostMapping("/api/v1/personal-consultations")
+	@ResponseStatus(HttpStatus.CREATED)
+	public ApiResponse<ConsultationCreateResponse> createPersonalConsultation(
+		@Valid @RequestBody PersonalConsultationRequest request
+	) {
+		return ApiResponse.success(consultationService.createPersonalConsultation(request));
 	}
 }
