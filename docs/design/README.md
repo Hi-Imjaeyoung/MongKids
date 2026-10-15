@@ -16,7 +16,7 @@
 
 | 화면 | PNG (확정본) | 편집 원본 | 상태 |
 |---|---|---|---|
-| SCR-001 홈 | [home.png](home.png) | - | 확정 |
+| SCR-001 홈 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 확정 (PNG는 아티팩트 "SCR-001 홈" 페이지에 보관) |
 | SCR-006 수업 현장 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 

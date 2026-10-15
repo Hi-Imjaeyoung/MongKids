@@ -38,6 +38,7 @@
 | 2026-10-15 | 공통 | 카카오·네이버 소셜 로그인 로컬 확인 완료 (FR-018). redirect-uri는 `{baseUrl}` 유지, 각 콘솔에 `http://localhost:5173/login/oauth2/code/{kakao\|naver}` 등록 |
 | 2026-10-15 | 공통 | 배포 후 점검 체크리스트 작성 ([deploy-checklist.md](deploy-checklist.md)) |
 | 2026-10-15 | 공통 | 요구사항 구조 변경: 화면(SCR)=프론트, 기능(FR)=백엔드. FR 설명을 서버 관점으로 재작성, `영역` 열 제거, FR-006 폐기(SCR-007로 이관) |
+| 2026-10-15 | 공통 | 홈 확정 시안(SCR-001) PNG를 아티팩트 "MongKids 화면 초안"의 `SCR-001 홈` 페이지로 이동, `docs/design/home.png` 삭제 |
 | 2026-10-15 | 백엔드 | 게시물 API 구현 (FR-008): 사진 업로드 URL 발급(S3 Presigned PUT, 최대 20장·장당 10MB), 작성·목록·상세·수정·삭제. `global/storage`(AWS SDK v2), `PageResponse`, `spring-boot-starter-validation` 추가. 직원 권한(FR-009)은 미적용 |
 | 2026-10-15 | 프론트엔드 | react-router-dom 도입, 몽키즈 소식(SCR-006) 목록·상세·작성·수정 화면 구현 (FR-008). GNB '수업 현장' → '몽키즈 소식'. 실제 S3 업로드는 버킷이 없어 미확인 |
 | 2026-10-15 | 공통 | 게시물 본문을 HTML 편집기로 변경 (FR-008, 사용자 결정): 백엔드 jsoup 허용 목록 정화·사진 키 추출(P004 신설), 프론트 TipTap 편집기·사진 묶음 노드(1~3장 + 캡션)·DOMPurify 출력. 사진 갤러리·`imageKeys` 요청 필드 제거 |
