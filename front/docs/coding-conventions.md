@@ -19,6 +19,8 @@
   | 분류 | 변수 |
   |---|---|
   | 브랜드 | `--yellow`, `--blue`, `--green` (+ `-soft`), `--cream` |
+  | 분류 칩 글자 | `--yellow-text`, `--blue-text`, `--green-text` (`-soft` 배경 위) |
+  | 상태 | `--danger` (오류 문구) |
   | 텍스트 | `--text`, `--text-sub`, `--text-muted` |
   | 배경·선 | `--bg`, `--bg-soft`, `--border` |
   | 형태 | `--radius-md`, `--radius-lg`, `--shadow-sm`, `--shadow-md` |

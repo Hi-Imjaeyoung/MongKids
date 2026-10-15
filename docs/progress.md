@@ -7,8 +7,8 @@
 | 영역 | 상태 |
 |---|---|
 | 공통 | 모노레포 구성 완료. MVP 요구사항 정리(SCR-001~014, FR-001~023, NFR-001~004). 미결은 SCR-002~003 범위만 남음 |
-| 백엔드 | 도메인 Entity 10개, `global` 공통 클래스, 소셜 로그인(FR-018, OAuth2 + JWT 쿠키)·내 정보 API 구현. 그 밖의 API 없음. 테스트는 H2 |
-| 프론트엔드 | Vite + React 프로젝트. 홈 화면(SCR-001) 시안을 정적 데이터로 구현. 로그인 모달(SCR-013)·헤더 로그인 상태 API 연동 |
+| 백엔드 | 도메인 Entity 10개, `global` 공통 클래스, 소셜 로그인(FR-018, OAuth2 + JWT 쿠키)·내 정보 API, 게시물 API(FR-008, S3 Presigned URL 업로드) 구현. 테스트는 H2 |
+| 프론트엔드 | Vite + React 프로젝트, react-router-dom 라우팅. 홈 화면(SCR-001) 시안을 정적 데이터로 구현. 로그인 모달(SCR-013)·헤더 로그인 상태, 몽키즈 소식(SCR-006) 목록·상세·작성·수정 API 연동 |
 
 ## 마일스톤
 
@@ -38,10 +38,13 @@
 | 2026-10-15 | 공통 | 카카오·네이버 소셜 로그인 로컬 확인 완료 (FR-018). redirect-uri는 `{baseUrl}` 유지, 각 콘솔에 `http://localhost:5173/login/oauth2/code/{kakao\|naver}` 등록 |
 | 2026-10-15 | 공통 | 배포 후 점검 체크리스트 작성 ([deploy-checklist.md](deploy-checklist.md)) |
 | 2026-10-15 | 공통 | 요구사항 구조 변경: 화면(SCR)=프론트, 기능(FR)=백엔드. FR 설명을 서버 관점으로 재작성, `영역` 열 제거, FR-006 폐기(SCR-007로 이관) |
+| 2026-10-15 | 백엔드 | 게시물 API 구현 (FR-008): 사진 업로드 URL 발급(S3 Presigned PUT, 최대 20장·장당 10MB), 작성·목록·상세·수정·삭제. `global/storage`(AWS SDK v2), `PageResponse`, `spring-boot-starter-validation` 추가. 직원 권한(FR-009)은 미적용 |
+| 2026-10-15 | 프론트엔드 | react-router-dom 도입, 몽키즈 소식(SCR-006) 목록·상세·작성·수정 화면 구현 (FR-008). GNB '수업 현장' → '몽키즈 소식'. 실제 S3 업로드는 버킷이 없어 미확인 |
 
 ## 이슈 / 블로커
 
 - 프론트엔드: 실제 사진·로고·아이콘 리소스가 없어 플레이스홀더와 이모지로 대체되어 있다.
+- 백엔드: S3 버킷·IAM 키가 없어 `.env`에 `AWS_S3_BUCKET`, `STORAGE_PUBLIC_BASE_URL` 등이 비어 있으면 기동이 실패한다. 사진 업로드 E2E는 버킷 생성 후 확인 필요.
 
 ## 다음 할 일
 
@@ -59,12 +62,18 @@
 - [x] 카카오·네이버 실제 키로 로그인 확인 (로컬)
 - [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md))
 - [ ] 가입 정보 입력 (FR-019)
+- [x] 게시물 저장·조회·수정·삭제 (FR-008)
+- [ ] S3 버킷·CloudFront 이미지 경로 구성, 사진 업로드 로컬 확인 ([deploy-checklist.md](deploy-checklist.md) H)
+- [ ] 게시물 작성 직원 권한 (FR-009): `SecurityConfig`의 게시물 쓰기 규칙을 `hasAnyRole("STAFF", "ADMIN")`으로
+- [ ] 수정·삭제로 빠지거나 업로드 후 버려진 S3 사진 정리 (수명 주기 규칙 등)
 - [x] 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`)
 - [x] 스키마 기반 Entity 구현, 로컬 MariaDB 테이블 생성 (`ddl-auto: update`)
 
 ### 프론트엔드
 - [ ] 실제 이미지·로고 리소스 반영
-- [ ] 라우팅 도입 및 하위 페이지 구성
+- [x] 라우팅 도입 (react-router-dom)
+- [x] 몽키즈 소식 화면 (SCR-006, FR-008)
+- [ ] 나머지 하위 페이지 구성
 - [x] `/api` 프록시 설정
 - [x] 로그인 모달 (SCR-013, FR-018)
 - [ ] 나머지 API 연동

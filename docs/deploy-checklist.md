@@ -18,7 +18,8 @@
   - 콜백의 `code`, `state` 쿼리 문자열도 전달되어야 한다.
 - [ ] 사용자 지정 오류 응답(403/404 → `index.html`)은 넣지 않는다
   - 이 설정은 배포 전체에 적용된다. 넣으면 API가 보낸 403/404(`M002`, `C002`) JSON이 HTML로 바뀐다.
-  - 라우팅을 도입해 SPA 폴백이 필요해지면 CloudFront Function 등으로 S3 경로에만 적용한다.
+  - 라우팅을 도입했으므로(`/news`, `/news/{id}` 등) SPA 폴백은 CloudFront Function 등으로 S3 기본 동작에만 적용한다 (확장자 없는 경로 → `/index.html`).
+- [ ] `/news/1`을 주소창에 직접 입력·새로고침해도 화면이 뜬다
 
 ## B. 백엔드 redirect_uri / 프로토콜
 
@@ -55,6 +56,7 @@
 - [ ] `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`
 - [ ] `JWT_SECRET` (로컬과 다른 값)
 - [ ] `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`
+- [ ] `AWS_S3_BUCKET`, `AWS_REGION`, `STORAGE_PUBLIC_BASE_URL` (자격 증명은 키 대신 서버 IAM 역할 권장)
 
 ## F. 정적 파일 캐시
 
@@ -71,3 +73,15 @@
 - [ ] 로그아웃 → 헤더가 비로그인 상태, `GET /api/v1/members/me`가 401 JSON
 - [ ] 동의 화면에서 취소 → `/?loginError=true`로 복귀
 - [ ] 첫 로그인 시 회원 생성, 같은 계정으로 다시 로그인하면 같은 회원 (DB 확인)
+
+## H. 게시물 사진 저장소 (FR-008)
+
+사진은 브라우저가 Presigned URL로 S3에 직접 올리고(`PUT`), 백엔드는 URL 발급과 `HeadObject`로 확인만 한다.
+
+- [ ] 사진용 S3 버킷 생성, 퍼블릭 액세스 차단 유지 (읽기는 CloudFront로만)
+- [ ] 버킷 CORS: `PUT`을 `https://{도메인}`과 `http://localhost:5173`에서 허용, 허용 헤더 `Content-Type`
+- [ ] 백엔드 IAM 권한: 버킷의 `posts/*`에 `s3:PutObject`(URL 서명용), `s3:GetObject`(`HeadObject`)
+- [ ] CloudFront에 사진 버킷 오리진(OAC) 추가, `STORAGE_PUBLIC_BASE_URL`을 그 주소로 설정
+- [ ] 수명 주기 규칙 검토: 업로드만 하고 저장하지 않았거나 수정·삭제로 빠진 사진이 남는다
+- [ ] 작성 화면에서 사진 여러 장 업로드 → 목록 대표 사진·상세 갤러리 표시 → 수정으로 사진 교체 → 삭제
+- [ ] 21장, 10MB 초과, 이미지가 아닌 파일은 거부된다

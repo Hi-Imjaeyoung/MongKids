@@ -8,17 +8,21 @@ front/
 ├─ public/                    정적 파일 (favicon 등, 경로 그대로 서빙)
 └─ src/
    ├─ main.jsx                React 마운트
-   ├─ App.jsx                 레이아웃(Header, FloatingMenu) + 페이지
+   ├─ App.jsx                 레이아웃(Header, FloatingMenu) + 라우트(react-router-dom), 로그인 상태
    ├─ index.css               전역 리셋, 디자인 토큰, 공통 클래스(.container, .section-heading)
    ├─ pages/                  화면 단위. 섹션 컴포넌트를 조립만 한다
-   │  └─ HomePage.jsx
+   │  ├─ HomePage.jsx         /
+   │  ├─ NewsListPage.jsx     /news (SCR-006, ?category=)
+   │  ├─ NewsDetailPage.jsx   /news/:postId
+   │  └─ NewsEditorPage.jsx   /news/write, /news/:postId/edit
    ├─ components/
    │  ├─ layout/              모든 화면에 공통으로 붙는 영역 (Header, FloatingMenu)
    │  ├─ home/                홈 화면 전용 섹션 (Hero, StatsBar, ServiceCards, WhyMongkids, Reviews)
    │  ├─ auth/                로그인·회원가입 모달 (LoginModal, SCR-013)
+   │  ├─ news/                몽키즈 소식 (목록·카드·상세·갤러리·작성 폼·사진 업로더, SCR-006)
    │  └─ common/              화면과 무관한 재사용 UI (Button, Highlight, ImagePlaceholder)
-   ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인)
-   └─ data/                   화면 콘텐츠 (homeContent.js, authContent.js)
+   ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인, posts.js 게시물)
+   └─ data/                   화면 콘텐츠 (homeContent.js, authContent.js, newsContent.js)
 ```
 
 - 새 화면이 생기면 `pages/{Name}Page.jsx`와 `components/{화면}/`을 추가한다.
@@ -33,11 +37,14 @@ pages → components/{화면} → components/common
 ```
 
 - `common` 컴포넌트는 `data`를 직접 import하지 않는다. 필요한 값은 props로 받는다.
-- `pages`는 섹션 순서만 정한다. 마크업·스타일을 직접 갖지 않는다.
+- `pages`는 섹션 순서와 API 호출·화면 상태만 맡는다. 마크업·스타일을 직접 갖지 않는다.
+- 라우팅은 `App.jsx`의 `<Routes>`에 둔다. GNB 항목은 `homeContent.js`의 `navItems`에서 `to`(라우트)나 `href`(아직 화면 없는 앵커)로 구분한다.
 
 ## 3. 데이터와 API 연동 방침
 
-- 홈 콘텐츠는 `src/data/homeContent.js`의 정적 데이터다. 로그인 상태(FR-018)만 API로 받는다.
+- 홈 콘텐츠는 `src/data/homeContent.js`의 정적 데이터다. 로그인 상태(FR-018)와 몽키즈 소식(FR-008)은 API로 받는다.
+- 로그인 상태 `member`는 `undefined`(확인 중) / `null`(비로그인) / 객체로 구분한다. 작성 화면은 확인이 끝난 뒤 로그인 여부를 판단한다.
+- 게시물 사진은 `uploadPostImages()`가 업로드 URL을 받아 S3에 직접 `PUT`한 뒤 객체 키를 돌려준다 (흐름은 [백엔드 아키텍처](../../back/docs/architecture.md#8-파일-저장소-fr-008)).
 - 로그인 상태는 `App.jsx`가 `fetchMyInfo()`로 조회해 `Header`에 넘긴다. 로그인 실패 시 백엔드가 `/?loginError=true`로 돌려보내면 모달을 열고 오류 문구를 보여 준다.
 - 데이터 구조는 백엔드 응답 형태를 염두에 두고 `id`를 가진 객체 배열로 유지한다.
 - API 연동 시:
