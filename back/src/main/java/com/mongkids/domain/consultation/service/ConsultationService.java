@@ -12,7 +12,9 @@ import org.springframework.util.StringUtils;
 import com.mongkids.domain.consultation.dto.ChildAgeGroup;
 import com.mongkids.domain.consultation.dto.ConsultationCreateResponse;
 import com.mongkids.domain.consultation.dto.InstitutionConsultationRequest;
+import com.mongkids.domain.consultation.dto.PersonalConsultationRequest;
 import com.mongkids.domain.consultation.entity.InstitutionConsultation;
+import com.mongkids.domain.consultation.entity.PersonalConsultation;
 import com.mongkids.domain.consultation.repository.ConsultationRepository;
 import com.mongkids.global.exception.BusinessException;
 import com.mongkids.global.exception.ErrorCode;
@@ -54,6 +56,42 @@ public class ConsultationService {
 		return new ConsultationCreateResponse(consultationRepository.save(consultation).getId());
 	}
 
+	/**
+	 * 개인 상담 신청을 저장한다 (FR-002). 인증 없이 호출된다 (FR-003).
+	 * 건강 메모가 있을 때만 건강정보 별도 동의를 확인하고 동의 시각을 남긴다 (FR-023).
+	 */
+	@Transactional
+	public ConsultationCreateResponse createPersonalConsultation(PersonalConsultationRequest request) {
+		// 생년월일과 개월 수 중 정확히 하나만 받는다
+		if ((request.childBirthDate() == null) == (request.childAgeMonths() == null)) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+		String healthNote = stripToNull(request.healthNote());
+		if (healthNote != null && !Boolean.TRUE.equals(request.healthAgreed())) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+
+		LocalDateTime now = LocalDateTime.now();
+		PersonalConsultation consultation = PersonalConsultation.builder()
+			.guardianName(request.guardianName().strip())
+			.phone(normalizePhone(request.phone()))
+			.childName(request.childName().strip())
+			.childGender(request.childGender())
+			.childBirthDate(request.childBirthDate())
+			.childAgeMonths(request.childAgeMonths())
+			.address(request.address().strip())
+			.attendsDaycare(request.attendsDaycare())
+			.temperament(stripToNull(request.temperament()))
+			.favoritePlay(stripToNull(request.favoritePlay()))
+			.favoriteCharacter(stripToNull(request.favoriteCharacter()))
+			.healthNote(healthNote)
+			.healthAgreedAt(healthNote != null ? now : null)
+			.motivation(stripToNull(request.motivation()))
+			.privacyAgreedAt(now)
+			.build();
+		return new ConsultationCreateResponse(consultationRepository.save(consultation).getId());
+	}
+
 	private String toSchedule(InstitutionConsultationRequest request) {
 		if (request.preferredDays().stream().anyMatch(day -> !DAY_LABELS.containsKey(day))) {
 			throw new BusinessException(ErrorCode.INVALID_INPUT);
@@ -76,5 +114,9 @@ public class ConsultationService {
 
 	private String normalizePhone(String phone) {
 		return phone.replaceAll("\\D", "");
+	}
+
+	private String stripToNull(String value) {
+		return StringUtils.hasText(value) ? value.strip() : null;
 	}
 }

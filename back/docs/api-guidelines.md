@@ -127,11 +127,14 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
   - 역할은 토큰이 아니라 DB의 현재 역할로 `PostService`가 검사한다. 비로그인은 401 `A001`, 권한 없음은 403 `A002`.
 - 없거나 삭제된 게시물 `P001`(404).
 
-## 8. 상담 신청 API (FR-001, FR-003, FR-023)
+## 8. 상담 신청 API (FR-001, FR-002, FR-003, FR-023)
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
 | POST | `/api/v1/institution-consultations` | 기관 상담 신청 → 201 `{id}` | - |
+| POST | `/api/v1/personal-consultations` | 개인 상담 신청 → 201 `{id}` | - |
+
+### 기관 상담 신청
 
 - 요청: `{institutionName, preferredDays, preferredTime, childAgeGroups, childCount, phone, note, privacyAgreed}`
   - `preferredDays`: `MONDAY`~`SATURDAY` 1개 이상 (`SUNDAY`는 `C001`). `preferredTime`: 자유 입력 100자.
@@ -140,6 +143,17 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
   - `note`: 선택, 1000자. `privacyAgreed`: 반드시 `true` (FR-023). 동의 시각을 `privacy_agreed_at`에 저장한다.
 - 저장 형식: 요일은 월~토 순서로 `·`로 잇고 시간대를 붙여 `preferred_schedule`(`"월·수 오전 10시"`), 연령은 라벨을 `, `로 이어 `child_age_range`(`"만 3세, 만 4세"`).
 - 검증 실패는 400 `C001` + `fieldErrors`.
+
+### 개인 상담 신청
+
+- 요청: `{guardianName, phone, childName, childGender, childBirthDate, childAgeMonths, address, attendsDaycare, temperament, favoritePlay, favoriteCharacter, healthNote, motivation, privacyAgreed, healthAgreed}`
+  - 필수: `guardianName`·`childName` 50자, `childGender`(`MALE`, `FEMALE`), `address` 255자, `attendsDaycare`(boolean), `privacyAgreed` 반드시 `true`.
+  - `phone`: 번호 인증이 없어 휴대전화(`^010-?\d{4}-?\d{4}$`)만 받는다. 숫자만 남겨 저장한다.
+  - `childBirthDate`(`YYYY-MM-DD`, 오늘 이전)와 `childAgeMonths`(0~120) 중 **정확히 하나**. 둘 다 있거나 둘 다 없으면 `C001`(`fieldErrors` 없음).
+  - 선택: `temperament`, `favoritePlay`, `favoriteCharacter`, `healthNote`, `motivation` 각 1000자. 공백뿐이면 null로 저장한다.
+  - `healthAgreed`: `healthNote`가 있으면 반드시 `true`, 아니면 `C001`(`fieldErrors` 없음). 생략하면 미동의.
+- 동의 시각: `privacy_agreed_at`은 항상, `health_agreed_at`은 `healthNote`가 있을 때만 저장한다 (FR-023).
+- Bean Validation 실패는 400 `C001` + `fieldErrors`.
 
 ## 9. 기타
 

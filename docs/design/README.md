@@ -19,6 +19,7 @@
 | SCR-001 홈 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 확정 (PNG는 아티팩트 "SCR-001 홈" 페이지에 보관) |
 | SCR-006 몽키즈 소식 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-009 기관 상담 신청 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
+| SCR-010 개인 상담 신청 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-015 게시물 작성·수정 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 
