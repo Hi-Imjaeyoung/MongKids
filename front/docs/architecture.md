@@ -44,6 +44,7 @@ pages → components/{화면} → components/common
 
 - 홈 콘텐츠는 `src/data/homeContent.js`의 정적 데이터다. 로그인 상태(FR-018)와 몽키즈 소식(FR-008)은 API로 받는다.
 - 로그인 상태 `member`는 `undefined`(확인 중) / `null`(비로그인) / 객체로 구분한다. 작성 화면은 확인이 끝난 뒤 로그인 여부를 판단한다.
+- 게시물 권한(FR-009)은 `components/news/postPermission.js`의 `canWritePost(member)`(STAFF·ADMIN), `canManagePost(member, post)`(직원인 작성자 본인 또는 ADMIN)로 판단한다. 화면 표시용이며 실제 검사는 서버가 한다.
 - 게시물 본문은 TipTap 편집기(`PostContentEditor`)가 만든 HTML이다. 허용 서식은 굵게·기울임·밑줄·링크·목록·인용·구분선이고, 사진은 커스텀 노드 `photoGroup`(`<figure class="post-photos">`, 1~3장 + 캡션)으로 넣는다.
   - 사진은 고르는 즉시 `uploadPostImages()`가 업로드 URL을 받아 S3에 직접 `PUT`하고, 노드에는 객체 키(`data-image-key`)만 남는다 (흐름은 [백엔드 아키텍처](../../back/docs/architecture.md#8-파일-저장소-fr-008)).
   - 상세 화면(`PostContent`)은 서버가 정화한 HTML을 DOMPurify로 한 번 더 거른 뒤 출력한다. 본문 스타일은 편집기와 같은 `PostBody.css`(`.post-body`)를 쓴다.
