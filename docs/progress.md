@@ -41,6 +41,7 @@
 | 2026-10-15 | 백엔드 | 게시물 API 구현 (FR-008): 사진 업로드 URL 발급(S3 Presigned PUT, 최대 20장·장당 10MB), 작성·목록·상세·수정·삭제. `global/storage`(AWS SDK v2), `PageResponse`, `spring-boot-starter-validation` 추가. 직원 권한(FR-009)은 미적용 |
 | 2026-10-15 | 프론트엔드 | react-router-dom 도입, 몽키즈 소식(SCR-006) 목록·상세·작성·수정 화면 구현 (FR-008). GNB '수업 현장' → '몽키즈 소식'. 실제 S3 업로드는 버킷이 없어 미확인 |
 | 2026-10-15 | 공통 | 게시물 본문을 HTML 편집기로 변경 (FR-008, 사용자 결정): 백엔드 jsoup 허용 목록 정화·사진 키 추출(P004 신설), 프론트 TipTap 편집기·사진 묶음 노드(1~3장 + 캡션)·DOMPurify 출력. 사진 갤러리·`imageKeys` 요청 필드 제거 |
+| 2026-10-15 | 공통 | PR #12(FR-008) 병합. 실제 S3 업로드는 미확인이라 `feature/posts` 브랜치를 남기고 다음 할 일에 확인 항목 추가 |
 
 ## 이슈 / 블로커
 
@@ -64,7 +65,11 @@
 - [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md))
 - [ ] 가입 정보 입력 (FR-019)
 - [x] 게시물 저장·조회·수정·삭제 (FR-008)
-- [ ] S3 버킷·CloudFront 이미지 경로 구성, 사진 업로드 로컬 확인 ([deploy-checklist.md](deploy-checklist.md) H)
+- [ ] 게시물 사진 S3 실제 업로드 확인 (FR-008, PR #12 병합 후 미확인). 확인이 끝날 때까지 `feature/posts` 브랜치 유지 ([deploy-checklist.md](deploy-checklist.md) H)
+  - [ ] S3 버킷 CORS(`PUT`, `http://localhost:5173`), CloudFront(OAC) 구성 → `.env`의 `STORAGE_PUBLIC_BASE_URL` 설정
+  - [ ] 로그인 후 `/news/write`에서 사진 묶음 업로드 → 저장 → 목록 대표 사진·상세 본문 사진 표시
+  - [ ] 수정(사진 교체·순서 변경)·삭제, 21장·10MB 초과·이미지가 아닌 파일 거부
+  - [ ] 확인이 끝나면 `feature/posts` 브랜치(로컬·원격) 삭제
 - [ ] 게시물 작성 직원 권한 (FR-009): `SecurityConfig`의 게시물 쓰기 규칙을 `hasAnyRole("STAFF", "ADMIN")`으로
 - [ ] 수정·삭제로 빠지거나 업로드 후 버려진 S3 사진 정리 (수명 주기 규칙 등)
 - [x] 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`)
