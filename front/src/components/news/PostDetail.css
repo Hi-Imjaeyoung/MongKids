@@ -8,7 +8,9 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
 }
 
 .post-detail__title {
@@ -23,15 +25,6 @@
   margin: 0;
   font-size: 15px;
   color: var(--text-sub);
-}
-
-.post-detail__content {
-  margin: 32px 0 0;
-  font-size: 17px;
-  line-height: 1.8;
-  white-space: pre-line;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
 }
 
 .post-detail__footer {
@@ -87,9 +80,5 @@
 
   .post-detail__title {
     font-size: 24px;
-  }
-
-  .post-detail__content {
-    font-size: 16px;
   }
 }

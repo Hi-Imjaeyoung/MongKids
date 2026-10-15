@@ -87,12 +87,6 @@
   box-shadow: 0 0 0 3px var(--blue-soft);
 }
 
-.post-editor__textarea {
-  min-height: 240px;
-  line-height: 1.7;
-  resize: vertical;
-}
-
 .post-editor__error {
   margin: 0 0 20px;
   font-size: 15px;

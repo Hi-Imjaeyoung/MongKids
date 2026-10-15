@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { fetchMyInfo, logout } from './api/auth'
 import LoginModal from './components/auth/LoginModal'
@@ -6,8 +6,10 @@ import Header from './components/layout/Header'
 import FloatingMenu from './components/layout/FloatingMenu'
 import HomePage from './pages/HomePage'
 import NewsDetailPage from './pages/NewsDetailPage'
-import NewsEditorPage from './pages/NewsEditorPage'
 import NewsListPage from './pages/NewsListPage'
+
+// 편집기(TipTap)가 커서 작성·수정 화면에 들어갈 때만 불러온다
+const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
 
 // 소셜 로그인 실패 시 백엔드가 붙여 보내는 쿼리 파라미터
 const LOGIN_ERROR_PARAM = 'loginError'
@@ -60,14 +62,16 @@ function App() {
     <>
       <Header member={member} onLoginClick={openLogin} onLogoutClick={handleLogout} />
       <main className="main">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/news" element={<NewsListPage member={member} />} />
-          <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
-          <Route path="/news/:postId" element={<NewsDetailPage member={member} />} />
-          <Route path="/news/:postId/edit" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
-          <Route path="*" element={<HomePage />} />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/news" element={<NewsListPage member={member} />} />
+            <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
+            <Route path="/news/:postId" element={<NewsDetailPage member={member} />} />
+            <Route path="/news/:postId/edit" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
+            <Route path="*" element={<HomePage />} />
+          </Routes>
+        </Suspense>
       </main>
       <FloatingMenu />
       {loginOpen && <LoginModal hasError={loginError} onClose={closeLogin} />}

@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createPost, getPost, updatePost, uploadPostImages } from '../api/posts'
+import { createPost, getPost, updatePost } from '../api/posts'
 import Button from '../components/common/Button'
 import NewsNotice from '../components/news/NewsNotice'
 import PostEditorForm from '../components/news/PostEditorForm'
 import { newsEditor } from '../data/newsContent'
-
-// 새로 고른 사진만 올리고, 기존 사진 키와 합쳐 표시 순서대로 돌려준다
-async function resolveImageKeys(images) {
-  const uploadedKeys = await uploadPostImages(images.filter((image) => image.file).map((image) => image.file))
-  let uploadIndex = 0
-  return images.map((image) => image.imageKey ?? uploadedKeys[uploadIndex++])
-}
 
 // 몽키즈 소식 작성·수정 (SCR-006, FR-008). member가 undefined면 로그인 상태 확인 중
 function NewsEditorPage({ member, onLoginClick }) {
@@ -34,8 +27,8 @@ function NewsEditorPage({ member, onLoginClick }) {
     }
   }, [postId])
 
-  const handleSubmit = async ({ category, title, content, images }) => {
-    const post = { category, title, content, imageKeys: await resolveImageKeys(images) }
+  // 사진은 편집기에서 고를 때 이미 올라가 있고, 본문 HTML에 키로 들어 있다
+  const handleSubmit = async (post) => {
     if (postId) {
       await updatePost(postId, post)
       navigate(`/news/${postId}`, { replace: true })

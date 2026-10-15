@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import CategoryChip from './CategoryChip'
-import PostGallery from './PostGallery'
+import PostContent from './PostContent'
 import { formatDate } from './postFormat'
 import { newsDetail } from '../../data/newsContent'
 import './PostDetail.css'
@@ -17,9 +17,7 @@ function PostDetail({ post, canEdit, deleting, onDelete }) {
         </p>
       </header>
 
-      <PostGallery images={post.images} />
-
-      <p className="post-detail__content">{post.content}</p>
+      <PostContent html={post.content} />
 
       <footer className="post-detail__footer">
         <Link to="/news" className="post-detail__button">

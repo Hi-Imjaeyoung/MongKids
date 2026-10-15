@@ -1,0 +1,135 @@
+.photo-group {
+  margin: 20px 0;
+  padding: 12px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--bg-soft);
+}
+
+.photo-group--selected {
+  border-color: var(--blue);
+}
+
+.photo-group__photos {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.photo-group__photo {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.photo-group__photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.photo-group__controls {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 6px;
+  background: linear-gradient(transparent, rgba(31, 36, 48, 0.55));
+}
+
+.photo-group__control {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.photo-group__control:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.photo-group__footer {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.photo-group__caption {
+  flex: 1 1 240px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.photo-group__caption:focus {
+  border-color: var(--blue);
+  outline: none;
+}
+
+.photo-group__button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--text-muted);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.photo-group__button:hover,
+.photo-group__file:focus-visible + .photo-group__button {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.photo-group__button--danger:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* 실제 파일 입력은 숨기고 label로 연다 (키보드 포커스는 유지) */
+.photo-group__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.photo-group__status {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+@media (max-width: 768px) {
+  .photo-group__photos {
+    grid-auto-flow: row;
+  }
+}
