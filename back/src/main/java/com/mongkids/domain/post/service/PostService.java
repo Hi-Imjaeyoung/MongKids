@@ -24,6 +24,7 @@ import com.mongkids.domain.post.dto.PostSummaryResponse;
 import com.mongkids.domain.post.entity.Post;
 import com.mongkids.domain.post.entity.PostCategory;
 import com.mongkids.domain.post.repository.PostRepository;
+import com.mongkids.domain.post.service.PostContentSanitizer.SanitizedContent;
 import com.mongkids.global.common.PageResponse;
 import com.mongkids.global.exception.BusinessException;
 import com.mongkids.global.exception.ErrorCode;
@@ -52,6 +53,7 @@ public class PostService {
 	private final PostRepository postRepository;
 	private final MemberService memberService;
 	private final FileStorage fileStorage;
+	private final PostContentSanitizer contentSanitizer;
 
 	/**
 	 * 사진을 S3에 직접 올릴 URL을 발급한다 (FR-008: 최대 20장, 장당 10MB).
@@ -74,15 +76,15 @@ public class PostService {
 	@Transactional
 	public PostCreateResponse createPost(Long memberId, PostSaveRequest request) {
 		Member member = memberService.getActiveMember(memberId);
-		validateImageKeys(request.imageKeys());
+		SanitizedContent content = sanitizeContent(request.content());
 
 		Post post = Post.builder()
 			.member(member)
 			.category(request.category())
 			.title(request.title())
-			.content(request.content())
+			.content(content.html())
 			.build();
-		request.imageKeys().forEach(post::addImage);
+		content.imageKeys().forEach(post::addImage);
 		return new PostCreateResponse(postRepository.save(post).getId());
 	}
 
@@ -99,20 +101,21 @@ public class PostService {
 	}
 
 	public PostDetailResponse getPost(Long postId) {
-		return PostDetailResponse.of(getActivePost(postId), fileStorage::getUrl);
+		Post post = getActivePost(postId);
+		return PostDetailResponse.of(post, contentSanitizer.render(post.getContent(), fileStorage::getUrl));
 	}
 
 	/**
-	 * 게시물을 수정한다. 사진은 요청 목록으로 통째로 바꾼다.
+	 * 게시물을 수정한다. 사진 목록은 새 본문에 나온 사진으로 통째로 바꾼다.
 	 */
 	@Transactional
 	public void updatePost(Long memberId, Long postId, PostSaveRequest request) {
 		Post post = getWritablePost(memberId, postId);
-		validateImageKeys(request.imageKeys());
+		SanitizedContent content = sanitizeContent(request.content());
 
-		post.update(request.category(), request.title(), request.content());
+		post.update(request.category(), request.title(), content.html());
 		post.clearImages();
-		request.imageKeys().forEach(post::addImage);
+		content.imageKeys().forEach(post::addImage);
 	}
 
 	@Transactional
@@ -137,6 +140,15 @@ public class PostService {
 		if (count > MAX_IMAGE_COUNT) {
 			throw new BusinessException(ErrorCode.POST_IMAGE_LIMIT_EXCEEDED);
 		}
+	}
+
+	/**
+	 * 본문을 정화하고 본문 속 사진이 실제 올라간 게시물 사진인지 확인한다.
+	 */
+	private SanitizedContent sanitizeContent(String html) {
+		SanitizedContent content = contentSanitizer.sanitize(html);
+		validateImageKeys(content.imageKeys());
+		return content;
 	}
 
 	/**

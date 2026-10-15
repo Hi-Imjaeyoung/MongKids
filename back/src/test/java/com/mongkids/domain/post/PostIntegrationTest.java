@@ -1,5 +1,6 @@
 package com.mongkids.domain.post;
 
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -36,7 +37,8 @@ import tools.jackson.databind.ObjectMapper;
 class PostIntegrationTest {
 
 	private static final String POST_BODY = """
-		{"category": "NEWS", "title": "가을 운동회", "content": "즐거운 하루", "imageKeys": ["posts/a.jpg", "posts/b.jpg"]}
+		{"category": "NEWS", "title": "가을 운동회",
+		 "content": "<p>즐거운 <strong>하루</strong></p><script>alert(1)</script><figure class=\\"post-photos\\"><img data-image-key=\\"posts/a.jpg\\"><img data-image-key=\\"posts/b.jpg\\"><figcaption>줄다리기</figcaption></figure>"}
 		""";
 
 	@Autowired
@@ -68,7 +70,7 @@ class PostIntegrationTest {
 		mockMvc.perform(post("/api/v1/posts").cookie(tokenCookie(registerMember("1")))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
-					{"category": "NEWS", "title": "", "content": "본문", "imageKeys": []}
+					{"category": "NEWS", "title": "", "content": "<p>본문</p>"}
 					"""))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.error.code").value("C001"))
@@ -105,8 +107,11 @@ class PostIntegrationTest {
 		mockMvc.perform(get("/api/v1/posts/{postId}", postId))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.title").value("가을 운동회"))
-			.andExpect(jsonPath("$.data.images[1].imageKey").value("posts/b.jpg"))
-			.andExpect(jsonPath("$.data.images[1].url").value("https://cdn.test/posts/b.jpg"));
+			.andExpect(jsonPath("$.data.content").value(
+				"<p>즐거운 <strong>하루</strong></p><figure class=\"post-photos\">"
+					+ "<img data-image-key=\"posts/a.jpg\" src=\"https://cdn.test/posts/a.jpg\" alt=\"\">"
+					+ "<img data-image-key=\"posts/b.jpg\" src=\"https://cdn.test/posts/b.jpg\" alt=\"\">"
+					+ "<figcaption>줄다리기</figcaption></figure>"));
 
 		// 작성자가 아닌 회원은 삭제할 수 없다
 		mockMvc.perform(delete("/api/v1/posts/{postId}", postId).cookie(tokenCookie(registerMember("2"))))
@@ -122,7 +127,7 @@ class PostIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("작성자가 게시물을 수정하면 사진이 바뀐다")
+	@DisplayName("작성자가 게시물을 수정하면 본문과 대표 사진이 바뀐다")
 	void updatePost() throws Exception {
 		// given
 		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
@@ -138,7 +143,8 @@ class PostIntegrationTest {
 		mockMvc.perform(put("/api/v1/posts/{postId}", postId).cookie(writer)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
-					{"category": "EVENT", "title": "수정한 제목", "content": "수정한 본문", "imageKeys": ["posts/b.jpg"]}
+					{"category": "EVENT", "title": "수정한 제목",
+					 "content": "<p>수정한 본문</p><figure class=\\"post-photos\\"><img data-image-key=\\"posts/b.jpg\\"></figure>"}
 					"""))
 			.andExpect(status().isOk());
 
@@ -146,8 +152,22 @@ class PostIntegrationTest {
 		mockMvc.perform(get("/api/v1/posts/{postId}", postId))
 			.andExpect(jsonPath("$.data.category").value("EVENT"))
 			.andExpect(jsonPath("$.data.title").value("수정한 제목"))
-			.andExpect(jsonPath("$.data.images.length()").value(1))
-			.andExpect(jsonPath("$.data.images[0].imageKey").value("posts/b.jpg"));
+			.andExpect(jsonPath("$.data.content").value(startsWith("<p>수정한 본문</p>")));
+
+		mockMvc.perform(get("/api/v1/posts").param("category", "EVENT"))
+			.andExpect(jsonPath("$.data.content[0].thumbnailUrl").value("https://cdn.test/posts/b.jpg"));
+	}
+
+	@Test
+	@DisplayName("본문 형식이 올바르지 않으면 P004를 응답한다")
+	void createPost_invalidContent_badRequest() throws Exception {
+		mockMvc.perform(post("/api/v1/posts").cookie(tokenCookie(registerMember("1")))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+					{"category": "NEWS", "title": "제목", "content": "<p>글<img data-image-key=\\"posts/a.jpg\\"></p>"}
+					"""))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.error.code").value("P004"));
 	}
 
 	private Cookie tokenCookie(LoginMemberResponse member) {

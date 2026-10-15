@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -48,6 +49,9 @@ class PostServiceTest {
 
 	@Mock
 	private FileStorage fileStorage;
+
+	@Spy
+	private PostContentSanitizer contentSanitizer = new PostContentSanitizer();
 
 	@InjectMocks
 	private PostService postService;
@@ -98,7 +102,7 @@ class PostServiceTest {
 	}
 
 	@Test
-	@DisplayName("게시물을 저장하면 사진이 요청 순서대로 붙는다")
+	@DisplayName("게시물을 저장하면 본문을 정화하고 본문 속 사진이 나온 순서대로 붙는다")
 	void createPost_savesImagesInOrder() {
 		// given
 		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID));
@@ -106,12 +110,14 @@ class PostServiceTest {
 		given(postRepository.save(any(Post.class))).willAnswer(invocation -> withId(invocation.getArgument(0)));
 
 		// when
-		postService.createPost(WRITER_ID, request(List.of("posts/a.jpg", "posts/b.jpg")));
+		postService.createPost(WRITER_ID,
+			request("<p onclick=\"x()\">글</p>" + photos("posts/a.jpg", "posts/b.jpg")));
 
 		// then
 		then(postRepository).should().save(argThat(post ->
 			post.getImages().stream().map(PostImage::getImageKey).toList().equals(List.of("posts/a.jpg", "posts/b.jpg"))
-				&& post.getImages().get(1).getSortOrder() == 1));
+				&& post.getImages().get(1).getSortOrder() == 1
+				&& !post.getContent().contains("onclick")));
 	}
 
 	@Test
@@ -124,7 +130,7 @@ class PostServiceTest {
 			.toList();
 
 		// when & then
-		assertThatThrownBy(() -> postService.createPost(WRITER_ID, request(imageKeys)))
+		assertThatThrownBy(() -> postService.createPost(WRITER_ID, request(photos(imageKeys.toArray(String[]::new)))))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.POST_IMAGE_LIMIT_EXCEEDED);
 		then(postRepository).should(never()).save(any());
@@ -145,7 +151,7 @@ class PostServiceTest {
 			List.of("reviews/a.jpg"),
 			List.of("posts/a.jpg", "posts/a.jpg"));
 		for (List<String> imageKeys : invalidKeys) {
-			assertThatThrownBy(() -> postService.createPost(WRITER_ID, request(imageKeys)))
+			assertThatThrownBy(() -> postService.createPost(WRITER_ID, request(photos(imageKeys.toArray(String[]::new)))))
 				.extracting("errorCode")
 				.isEqualTo(ErrorCode.INVALID_POST_IMAGE);
 		}
@@ -153,7 +159,7 @@ class PostServiceTest {
 	}
 
 	@Test
-	@DisplayName("게시물을 수정하면 사진 목록을 요청 목록으로 바꾼다")
+	@DisplayName("게시물을 수정하면 사진 목록을 새 본문의 사진으로 바꾼다")
 	void updatePost_replacesImages() {
 		// given
 		Post post = post(WRITER_ID, List.of("posts/a.jpg", "posts/b.jpg"));
@@ -161,7 +167,7 @@ class PostServiceTest {
 		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
 
 		// when
-		postService.updatePost(WRITER_ID, POST_ID, request(List.of("posts/c.jpg", "posts/a.jpg")));
+		postService.updatePost(WRITER_ID, POST_ID, request(photos("posts/c.jpg") + "<p>글</p>" + photos("posts/a.jpg")));
 
 		// then
 		assertThat(post.getTitle()).isEqualTo("제목");
@@ -177,13 +183,38 @@ class PostServiceTest {
 		given(postRepository.findByIdAndDeletedAtIsNull(POST_ID)).willReturn(Optional.of(post));
 
 		// when & then
-		assertThatThrownBy(() -> postService.updatePost(OTHER_MEMBER_ID, POST_ID, request(List.of())))
+		assertThatThrownBy(() -> postService.updatePost(OTHER_MEMBER_ID, POST_ID, request("<p>글</p>")))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.FORBIDDEN);
 		assertThatThrownBy(() -> postService.deletePost(OTHER_MEMBER_ID, POST_ID))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.FORBIDDEN);
 		assertThat(post.isDeleted()).isFalse();
+	}
+
+	@Test
+	@DisplayName("본문 형식이 올바르지 않으면 저장하지 않는다")
+	void createPost_invalidContent_throwsException() {
+		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID));
+
+		// when & then
+		assertThatThrownBy(() -> postService.createPost(WRITER_ID, request("<p></p>")))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.INVALID_POST_CONTENT);
+		then(postRepository).should(never()).save(any());
+	}
+
+	@Test
+	@DisplayName("상세 조회는 본문 사진에 URL을 채워 돌려준다")
+	void getPost_rendersImageUrls() {
+		// given
+		Post post = post(WRITER_ID, List.of("posts/a.jpg"));
+		given(postRepository.findByIdAndDeletedAtIsNull(POST_ID)).willReturn(Optional.of(post));
+		given(fileStorage.getUrl("posts/a.jpg")).willReturn("https://cdn.test/posts/a.jpg");
+
+		// when & then
+		assertThat(postService.getPost(POST_ID).content()).contains("src=\"https://cdn.test/posts/a.jpg\"");
 	}
 
 	@Test
@@ -212,8 +243,21 @@ class PostServiceTest {
 			.isEqualTo(ErrorCode.POST_NOT_FOUND);
 	}
 
-	private static PostSaveRequest request(List<String> imageKeys) {
-		return new PostSaveRequest(PostCategory.NEWS, "제목", "본문", imageKeys);
+	private static PostSaveRequest request(String content) {
+		return new PostSaveRequest(PostCategory.NEWS, "제목", content);
+	}
+
+	// 사진을 3장씩 묶은 본문 HTML
+	private static String photos(String... imageKeys) {
+		StringBuilder html = new StringBuilder();
+		for (int i = 0; i < imageKeys.length; i += PostContentSanitizer.MAX_PHOTOS_PER_GROUP) {
+			html.append("<figure class=\"post-photos\">");
+			for (int j = i; j < Math.min(i + PostContentSanitizer.MAX_PHOTOS_PER_GROUP, imageKeys.length); j++) {
+				html.append("<img data-image-key=\"").append(imageKeys[j]).append("\">");
+			}
+			html.append("</figure>");
+		}
+		return html.toString();
 	}
 
 	private static Member member(Long id) {
@@ -227,7 +271,7 @@ class PostServiceTest {
 			.member(member(writerId))
 			.category(PostCategory.GENERAL)
 			.title("원래 제목")
-			.content("원래 본문")
+			.content("<p>원래 본문</p>" + photos(imageKeys.toArray(String[]::new)))
 			.build();
 		imageKeys.forEach(post::addImage);
 		return withId(post);
