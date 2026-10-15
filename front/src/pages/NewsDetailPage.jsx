@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { deletePost, getPost } from '../api/posts'
 import NewsNotice from '../components/news/NewsNotice'
 import PostDetail from '../components/news/PostDetail'
+import { canManagePost } from '../components/news/postPermission'
 import { newsDetail } from '../data/newsContent'
 
 // 몽키즈 소식 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다
@@ -53,7 +54,7 @@ function NewsDetailPage({ member }) {
   return (
     <PostDetail
       post={current.post}
-      canEdit={member?.id === current.post.authorId}
+      canEdit={canManagePost(member, current.post)}
       deleting={deleting}
       onDelete={handleDelete}
     />
