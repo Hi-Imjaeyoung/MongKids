@@ -41,6 +41,7 @@
 | 2026-10-15 | 백엔드 | 게시물 API 구현 (FR-008): 사진 업로드 URL 발급(S3 Presigned PUT, 최대 20장·장당 10MB), 작성·목록·상세·수정·삭제. `global/storage`(AWS SDK v2), `PageResponse`, `spring-boot-starter-validation` 추가. 직원 권한(FR-009)은 미적용 |
 | 2026-10-15 | 프론트엔드 | react-router-dom 도입, 몽키즈 소식(SCR-006) 목록·상세·작성·수정 화면 구현 (FR-008). GNB '수업 현장' → '몽키즈 소식'. 실제 S3 업로드는 버킷이 없어 미확인 |
 | 2026-10-15 | 공통 | 게시물 본문을 HTML 편집기로 변경 (FR-008, 사용자 결정): 백엔드 jsoup 허용 목록 정화·사진 키 추출(P004 신설), 프론트 TipTap 편집기·사진 묶음 노드(1~3장 + 캡션)·DOMPurify 출력. 사진 갤러리·`imageKeys` 요청 필드 제거 |
+| 2026-10-15 | 공통 | 게시물 작성 권한 구현 (FR-009, #14): 작성(사진 업로드 포함)은 STAFF·ADMIN, 수정·삭제는 직원인 작성자 본인 또는 ADMIN. 백엔드는 DB의 현재 역할로 검사, 프론트는 글쓰기·수정·삭제 버튼과 작성 화면 안내를 역할에 맞춤 |
 
 ## 이슈 / 블로커
 
@@ -65,7 +66,8 @@
 - [ ] 가입 정보 입력 (FR-019)
 - [x] 게시물 저장·조회·수정·삭제 (FR-008)
 - [ ] S3 버킷·CloudFront 이미지 경로 구성, 사진 업로드 로컬 확인 ([deploy-checklist.md](deploy-checklist.md) H)
-- [ ] 게시물 작성 직원 권한 (FR-009): `SecurityConfig`의 게시물 쓰기 규칙을 `hasAnyRole("STAFF", "ADMIN")`으로
+- [x] 게시물 작성 직원 권한 (FR-009, #14): 작성은 STAFF·ADMIN, 수정·삭제는 직원인 작성자 본인 또는 ADMIN (DB 역할 기준)
+- [ ] 직원 권한 부여·회수 (FR-022). 그 전까지 로컬은 `UPDATE member SET role = 'STAFF' WHERE id = ?`
 - [ ] 수정·삭제로 빠지거나 업로드 후 버려진 S3 사진 정리 (수명 주기 규칙 등)
 - [x] 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`)
 - [x] 스키마 기반 Entity 구현, 로컬 MariaDB 테이블 생성 (`ddl-auto: update`)

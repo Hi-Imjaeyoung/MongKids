@@ -96,6 +96,7 @@
 - [x] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) 구현
 - [x] 소셜 로그인 실제 키로 카카오·네이버 로그인 확인 (로컬). `.env`에 `KAKAO_*`, `NAVER_*`, `JWT_SECRET` 없으면 기동 실패
 - [ ] S3 버킷 구성 후 사진 업로드 로컬 확인. `.env`에 `AWS_S3_BUCKET`, `STORAGE_PUBLIC_BASE_URL`(+ 로컬 IAM 키) 없으면 기동 실패
-- [ ] 게시물 쓰기 직원 권한(FR-009) 미적용: 지금은 로그인만 검사
+- [x] 게시물 쓰기 직원 권한(FR-009): `PostService`가 DB의 현재 역할로 검사
+- [ ] 직원 권한 부여·회수(FR-022) 전까지 로컬에서는 DB에서 직접 지정: `UPDATE member SET role = 'STAFF' WHERE id = ?` (`ADMIN`도 같은 방식)
 - [ ] 운영 배포 시 CloudFront 뒤에서 OAuth redirect_uri가 서비스 도메인으로 만들어지도록 Host·`X-Forwarded-*` 전달 설정 확인 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md)
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.

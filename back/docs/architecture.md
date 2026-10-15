@@ -112,7 +112,7 @@ HTTP Response
 | 세션 | `STATELESS`. OAuth2 인가 요청(state, PKCE)만 로그인 과정 동안 세션에 보관하고 성공 시 무효화한다 |
 | 로그아웃 | `POST /api/v1/auth/logout` → 쿠키 삭제. 이미 발급된 토큰은 만료 전까지 서버에서 무효화하지 않는다 |
 | 탈퇴 회원 | 소셜 로그인 실패 처리. 토큰이 남아 있어도 `/members/me`는 `M002`(403) |
-| 인가 규칙 | `SecurityConfig.authorizeHttpRequests`에 경로별로 추가한다 (현재 `/api/v1/members/me`, 게시물 `POST·PUT·DELETE`가 인증 필요) |
+| 인가 규칙 | `SecurityConfig.authorizeHttpRequests`에 경로별로 추가한다 (현재 `/api/v1/members/me`, 게시물 `POST·PUT·DELETE`가 인증 필요). 역할 검사는 토큰의 `role` 대신 Service에서 DB의 현재 역할로 한다 (게시물 FR-009: `PostService`, `MemberRole.canWritePost()`). 권한 회수가 다시 로그인하지 않아도 바로 반영된다 |
 
 설정·환경변수: `spring.security.oauth2.client.*`(application.yml), `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `JWT_SECRET` (`.env.example` 참고).
 각 개발자 콘솔에는 Redirect URI `{서비스 주소}/login/oauth2/code/kakao`, `.../naver`를 등록한다. 로컬은 Vite 프록시를 거치므로 `http://localhost:5173/login/oauth2/code/{kakao|naver}`.

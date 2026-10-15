@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mongkids.domain.member.dto.LoginMemberResponse;
 import com.mongkids.domain.member.dto.SocialLoginRequest;
 import com.mongkids.domain.member.entity.Provider;
+import com.mongkids.domain.member.repository.MemberRepository;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.global.security.JwtProvider;
 import com.mongkids.global.security.TokenCookieManager;
@@ -53,6 +54,9 @@ class PostIntegrationTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	@Autowired
+	private MemberRepository memberRepository;
+
 	@MockitoBean
 	private FileStorage fileStorage;
 
@@ -67,7 +71,7 @@ class PostIntegrationTest {
 	@Test
 	@DisplayName("필수값이 없으면 400과 fieldErrors를 응답한다")
 	void createPost_invalidInput_badRequest() throws Exception {
-		mockMvc.perform(post("/api/v1/posts").cookie(tokenCookie(registerMember("1")))
+		mockMvc.perform(post("/api/v1/posts").cookie(tokenCookie(registerStaff("1")))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{"category": "NEWS", "title": "", "content": "<p>본문</p>"}
@@ -83,7 +87,7 @@ class PostIntegrationTest {
 		// given
 		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
 		given(fileStorage.getUrl(anyString())).willAnswer(invocation -> "https://cdn.test/" + invocation.getArgument(0));
-		Cookie writer = tokenCookie(registerMember("1"));
+		Cookie writer = tokenCookie(registerStaff("1"));
 
 		// when
 		String body = mockMvc.perform(post("/api/v1/posts").cookie(writer)
@@ -113,8 +117,8 @@ class PostIntegrationTest {
 					+ "<img data-image-key=\"posts/b.jpg\" src=\"https://cdn.test/posts/b.jpg\" alt=\"\">"
 					+ "<figcaption>줄다리기</figcaption></figure>"));
 
-		// 작성자가 아닌 회원은 삭제할 수 없다
-		mockMvc.perform(delete("/api/v1/posts/{postId}", postId).cookie(tokenCookie(registerMember("2"))))
+		// 다른 직원은 삭제할 수 없다
+		mockMvc.perform(delete("/api/v1/posts/{postId}", postId).cookie(tokenCookie(registerStaff("2"))))
 			.andExpect(status().isForbidden())
 			.andExpect(jsonPath("$.error.code").value("A002"));
 
@@ -132,7 +136,7 @@ class PostIntegrationTest {
 		// given
 		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
 		given(fileStorage.getUrl(anyString())).willAnswer(invocation -> "https://cdn.test/" + invocation.getArgument(0));
-		Cookie writer = tokenCookie(registerMember("1"));
+		Cookie writer = tokenCookie(registerStaff("1"));
 		String body = mockMvc.perform(post("/api/v1/posts").cookie(writer)
 				.contentType(MediaType.APPLICATION_JSON).content(POST_BODY))
 			.andReturn().getResponse().getContentAsString();
@@ -161,7 +165,7 @@ class PostIntegrationTest {
 	@Test
 	@DisplayName("본문 형식이 올바르지 않으면 P004를 응답한다")
 	void createPost_invalidContent_badRequest() throws Exception {
-		mockMvc.perform(post("/api/v1/posts").cookie(tokenCookie(registerMember("1")))
+		mockMvc.perform(post("/api/v1/posts").cookie(tokenCookie(registerStaff("1")))
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{"category": "NEWS", "title": "제목", "content": "<p>글<img data-image-key=\\"posts/a.jpg\\"></p>"}
@@ -172,6 +176,31 @@ class PostIntegrationTest {
 
 	private Cookie tokenCookie(LoginMemberResponse member) {
 		return new Cookie(TokenCookieManager.COOKIE_NAME, jwtProvider.createToken(member.id(), member.role().name()));
+	}
+
+	@Test
+	@DisplayName("직원 권한이 없는 회원은 사진 업로드 URL을 받거나 게시물을 작성할 수 없다")
+	void createPost_notStaff_forbidden() throws Exception {
+		Cookie member = tokenCookie(registerMember("1"));
+
+		mockMvc.perform(post("/api/v1/posts/image-upload-urls").cookie(member)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+					{"files": [{"contentType": "image/png", "size": 1024}]}
+					"""))
+			.andExpect(status().isForbidden())
+			.andExpect(jsonPath("$.error.code").value("A002"));
+
+		mockMvc.perform(post("/api/v1/posts").cookie(member).contentType(MediaType.APPLICATION_JSON).content(POST_BODY))
+			.andExpect(status().isForbidden())
+			.andExpect(jsonPath("$.error.code").value("A002"));
+	}
+
+	// 직원 권한 부여(FR-022) API가 없어서 테스트에서는 회원 Entity로 직접 부여한다
+	private LoginMemberResponse registerStaff(String providerId) {
+		LoginMemberResponse member = registerMember(providerId);
+		memberRepository.findById(member.id()).orElseThrow().grantStaff();
+		return member;
 	}
 
 	private LoginMemberResponse registerMember(String providerId) {
