@@ -8,7 +8,7 @@ import './Header.css'
 const navLinkClassName = ({ isActive }) => `gnb__link ${isActive ? 'gnb__link--active' : ''}`
 
 // member: 로그인한 회원 정보 (비로그인이면 null)
-function Header({ member = null, onLoginClick, onLogoutClick }) {
+function Header({ member = null, onLoginClick, onLogoutClick, onInstitutionConsultClick, onPersonalConsultClick }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
@@ -37,8 +37,24 @@ function Header({ member = null, onLoginClick, onLogoutClick }) {
             ))}
           </ul>
           <div className="header__cta">
-            <Button variant="yellow">{ctaButtons.institution.label}</Button>
-            <Button variant="blue">{ctaButtons.private.label}</Button>
+            <Button
+              variant="yellow"
+              onClick={() => {
+                setMenuOpen(false)
+                onInstitutionConsultClick()
+              }}
+            >
+              {ctaButtons.institution.label}
+            </Button>
+            <Button
+              variant="blue"
+              onClick={() => {
+                setMenuOpen(false)
+                onPersonalConsultClick()
+              }}
+            >
+              {ctaButtons.private.label}
+            </Button>
           </div>
           <div className="header__auth">
             {member ? (

@@ -35,3 +35,11 @@
   background: var(--blue);
   color: #fff;
 }
+
+.btn:disabled {
+  background: var(--border);
+  color: var(--text-sub);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

@@ -4,7 +4,7 @@ import ImagePlaceholder from '../common/ImagePlaceholder'
 import { ctaButtons, hero } from '../../data/homeContent'
 import './Hero.css'
 
-function Hero() {
+function Hero({ onInstitutionConsultClick, onPersonalConsultClick }) {
   return (
     <section className="hero">
       <div className="hero__visual">
@@ -26,10 +26,10 @@ function Hero() {
             ))}
           </p>
           <div className="hero__actions">
-            <Button variant="yellow" size="lg" icon={ctaButtons.institution.icon}>
+            <Button variant="yellow" size="lg" icon={ctaButtons.institution.icon} onClick={onInstitutionConsultClick}>
               {ctaButtons.institution.label}
             </Button>
-            <Button variant="blue" size="lg" icon={ctaButtons.private.icon}>
+            <Button variant="blue" size="lg" icon={ctaButtons.private.icon} onClick={onPersonalConsultClick}>
               {ctaButtons.private.label}
             </Button>
           </div>

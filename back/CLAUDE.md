@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 백엔드 API 서버 (Spring Boot 기반 REST API)
-- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API, 게시물 API(FR-008: S3 Presigned URL 사진 업로드) 구현.
+- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API, 게시물 API(FR-008: S3 Presigned URL 사진 업로드), 기관·개인 상담 신청 API(FR-001, FR-002) 구현.
 - 요구사항 (프론트와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (프론트와 공유) → [../docs/progress.md](../docs/progress.md)
 
