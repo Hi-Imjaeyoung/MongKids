@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 웹 프론트엔드 (Vite + React SPA)
-- 현재 상태: 홈 화면(SCR-001) 시안을 정적 데이터로 구현. 소셜 로그인 모달(SCR-013, FR-018)과 로그인 상태만 API 연동. 라우팅 없음.
+- 현재 상태: 홈 화면(SCR-001) 시안을 정적 데이터로 구현. 소셜 로그인 모달(SCR-013, FR-018), 몽키즈 소식(SCR-006, FR-008) 목록·상세·작성·수정 API 연동. react-router-dom 라우팅.
 - 요구사항 (백엔드와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (백엔드와 공유) → [../docs/progress.md](../docs/progress.md)
 - 디자인 시안 → [../docs/design/](../docs/design/)
@@ -16,7 +16,8 @@
 | 구분 | 내용 |
 |---|---|
 | Language | JavaScript (JSX). TypeScript 미사용 |
-| Framework | React 19 |
+| Framework | React 19, react-router-dom 7 |
+| Editor | TipTap 3 (게시물 본문 HTML 편집기, 작성 화면만 지연 로딩), DOMPurify (본문 출력 전 정화) |
 | Build | Vite 8 (`@vitejs/plugin-react`) |
 | Lint | ESLint 10 (react-hooks, react-refresh) |
 | Style | 일반 CSS (컴포넌트별 파일) + `src/index.css` 디자인 토큰 |
@@ -34,7 +35,7 @@ npm run preview    # 빌드 결과 미리보기
 
 ## 아키텍처 요약 → [docs/architecture.md](docs/architecture.md)
 
-- `pages/`(화면 조립) → `components/{layout,home,auth,common}/`(UI) ← `data/`(콘텐츠)
+- `pages/`(화면 조립·API 호출) → `components/{layout,home,auth,news,common}/`(UI) ← `data/`(콘텐츠). 라우트는 `App.jsx`
 - API 호출은 `src/api/`(`client.js`의 `request`가 `ApiResponse`를 풀어 `data`만 반환). 인증은 HttpOnly 쿠키라 토큰을 JS에서 다루지 않는다.
 - 화면 문구·수치·목록은 컴포넌트에 하드코딩하지 않고 `src/data/`에 둔다. API 연동 시 이 데이터만 응답값으로 교체한다.
 
@@ -61,6 +62,7 @@ npm run preview    # 빌드 결과 미리보기
 ## 알려진 이슈 / TODO
 
 - [ ] 실제 사진·로고·아이콘 리소스 없음 → `ImagePlaceholder`, 이모지로 대체 중
-- [ ] 라우팅 미도입 (메뉴 링크는 `#` 앵커)
+- [x] 라우팅 도입. 화면이 없는 메뉴는 아직 `#` 앵커
+- [ ] 운영 배포 시 SPA 딥링크 폴백 필요 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md) A
 - [x] `vite.config.js`에 `/api`, `/oauth2`, `/login/oauth2` 프록시 설정 (`changeOrigin: false` 유지: OAuth redirect_uri가 프론트 주소로 만들어져야 함)
-- [ ] 로그인 외 API 미연동
+- [ ] 로그인·게시물 외 API 미연동

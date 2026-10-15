@@ -8,6 +8,14 @@
   --green: #74b944;
   --green-soft: #eef6e8;
 
+  /* -soft 배경 위 글자색 (분류 칩 등) */
+  --yellow-text: #6b5200;
+  --blue-text: #2a56ad;
+  --green-text: #3d6b1f;
+
+  /* 오류 문구 */
+  --danger: #c62828;
+
   /* 소셜 로그인 브랜드 컬러 */
   --kakao: #fee500;
   --kakao-text: #191919;

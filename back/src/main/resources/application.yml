@@ -49,3 +49,8 @@ app:
     cookie-secure: false
     login-success-url: /
     login-failure-url: /?loginError=true
+  storage:
+    bucket: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION:ap-northeast-2}
+    public-base-url: ${STORAGE_PUBLIC_BASE_URL}
+    upload-url-duration: 10m

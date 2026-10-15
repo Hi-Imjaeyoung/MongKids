@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 백엔드 API 서버 (Spring Boot 기반 REST API)
-- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API 구현. 그 밖의 도메인 API 없음.
+- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API, 게시물 API(FR-008: S3 Presigned URL 사진 업로드) 구현.
 - 요구사항 (프론트와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (프론트와 공유) → [../docs/progress.md](../docs/progress.md)
 
@@ -21,6 +21,9 @@
 | Data | `spring-boot-starter-data-jpa` (Hibernate), `spring-boot-starter-jdbc` |
 | DB | MariaDB (`mariadb-java-client`) |
 | Security | `spring-boot-starter-security`, `spring-boot-starter-oauth2-client` (카카오·네이버), JWT `jjwt` 0.12 |
+| Validation | `spring-boot-starter-validation` (Bean Validation) |
+| Storage | AWS SDK for Java v2 `s3` (BOM 2.55.x) — 파일 저장소 → [docs/architecture.md](docs/architecture.md#8-파일-저장소-fr-008) |
+| HTML | jsoup — 게시물 본문 HTML 정화 (`PostContentSanitizer`) |
 | 기타 | Actuator, Lombok |
 | Test | JUnit 5, 각 starter의 `*-test` 모듈, H2 (테스트 DB) |
 
@@ -40,6 +43,7 @@
 ## 아키텍처 요약 → [docs/architecture.md](docs/architecture.md)
 
 - **도메인형 패키지 구조**: `domain/{기능}/{controller,service,repository,dto,entity}` + `global/{config,exception,common,security}`
+- 파일: S3 Presigned URL로 클라이언트가 직접 업로드, DB에는 객체 키만 (`global/storage/FileStorage`)
 - 인증: 소셜 로그인 → JWT HttpOnly 쿠키. Controller는 `@AuthenticationPrincipal Long memberId`로 회원 ID를 받는다 → [docs/architecture.md](docs/architecture.md#7-인증-fr-018)
 - 의존 방향: `Controller → Service → Repository` (역방향·건너뛰기 금지)
 - Controller는 Entity를 직접 받거나 반환하지 않는다. 항상 DTO를 사용한다.
@@ -90,6 +94,8 @@
 
 - [x] DataSource 설정 검증: `local` profile은 로컬 MariaDB(`mongkids`)로 기동 확인, 테스트는 `test` profile의 H2로 통과. `prod` profile은 미검증. → [docs/database.md](docs/database.md)
 - [x] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) 구현
-- [ ] 소셜 로그인 실제 키로 카카오·네이버 로그인 확인 필요 (`.env`에 `KAKAO_*`, `NAVER_*`, `JWT_SECRET` 없으면 기동 실패)
-- [ ] 운영 배포 시 CloudFront 뒤에서 OAuth redirect_uri가 서비스 도메인으로 만들어지도록 Host·`X-Forwarded-*` 전달 설정 확인
+- [x] 소셜 로그인 실제 키로 카카오·네이버 로그인 확인 (로컬). `.env`에 `KAKAO_*`, `NAVER_*`, `JWT_SECRET` 없으면 기동 실패
+- [ ] S3 버킷 구성 후 사진 업로드 로컬 확인. `.env`에 `AWS_S3_BUCKET`, `STORAGE_PUBLIC_BASE_URL`(+ 로컬 IAM 키) 없으면 기동 실패
+- [ ] 게시물 쓰기 직원 권한(FR-009) 미적용: 지금은 로그인만 검사
+- [ ] 운영 배포 시 CloudFront 뒤에서 OAuth redirect_uri가 서비스 도메인으로 만들어지도록 Host·`X-Forwarded-*` 전달 설정 확인 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md)
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.

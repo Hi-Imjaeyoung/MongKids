@@ -21,7 +21,13 @@ public enum ErrorCode {
 
 	// 회원
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
-	MEMBER_WITHDRAWN(HttpStatus.FORBIDDEN, "M002", "탈퇴한 회원입니다.");
+	MEMBER_WITHDRAWN(HttpStatus.FORBIDDEN, "M002", "탈퇴한 회원입니다."),
+
+	// 게시물
+	POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "게시물을 찾을 수 없습니다."),
+	POST_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "P002", "사진은 최대 20장까지 올릴 수 있습니다."),
+	INVALID_POST_IMAGE(HttpStatus.BAD_REQUEST, "P003", "올바르지 않은 사진입니다."),
+	INVALID_POST_CONTENT(HttpStatus.BAD_REQUEST, "P004", "본문 형식이 올바르지 않습니다.");
 
 	private final HttpStatus status;
 	private final String code;

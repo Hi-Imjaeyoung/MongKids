@@ -1,0 +1,141 @@
+.post-editor {
+  max-width: 880px;
+  padding-top: 56px;
+}
+
+.post-editor__heading {
+  margin: 0 0 32px;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.post-editor__field {
+  margin: 0 0 28px;
+  padding: 0;
+  border: 0;
+}
+
+.post-editor__label {
+  display: block;
+  margin-bottom: 10px;
+  padding: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.post-editor__hint {
+  margin: -4px 0 12px;
+  font-size: 14px;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.post-editor__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.post-editor__category {
+  position: relative;
+  cursor: pointer;
+}
+
+.post-editor__category input {
+  position: absolute;
+  opacity: 0;
+}
+
+.post-editor__category span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--text-muted);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.post-editor__category input:checked + span {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+}
+
+.post-editor__category input:focus-visible + span {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.post-editor__input {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.post-editor__input:focus {
+  border-color: var(--blue);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+.post-editor__error {
+  margin: 0 0 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.post-editor__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.post-editor__cancel {
+  min-height: 52px;
+  padding: 0 24px;
+  border: 1px solid var(--text-muted);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.post-editor__actions .btn:disabled,
+.post-editor__cancel:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .post-editor {
+    padding-top: 32px;
+  }
+
+  .post-editor__heading {
+    font-size: 24px;
+  }
+
+  .post-editor__actions {
+    justify-content: stretch;
+  }
+
+  .post-editor__actions > * {
+    flex: 1;
+  }
+}

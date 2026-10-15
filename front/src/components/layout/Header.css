@@ -58,8 +58,13 @@
   transition: color 0.15s;
 }
 
-.gnb__link:hover {
+.gnb__link:hover,
+.gnb__link--active {
   color: var(--blue);
+}
+
+.gnb__link--active {
+  font-weight: 800;
 }
 
 .header__cta {

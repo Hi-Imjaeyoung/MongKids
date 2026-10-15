@@ -24,6 +24,7 @@ com.mongkids
    ├─ exception       BusinessException, ErrorCode, GlobalExceptionHandler
    ├─ common          ApiResponse, BaseTimeEntity, 페이징 DTO
    ├─ security        JWT 발급·검증, 토큰 쿠키, 인증 필터, 401·403 응답
+   ├─ storage         파일 저장소 (FileStorage, S3 구현)
    └─ util            (정말 범용인 것만)
 ```
 
@@ -78,6 +79,8 @@ HTTP Response
 | `JpaConfig` | `global/config` | `@EnableJpaAuditing` |
 | `SecurityConfig` | `global/config` | 시큐리티 필터 체인 (아래 7절) |
 | `JwtProvider`, `TokenCookieManager`, `JwtAuthenticationFilter`, `SecurityResponseWriter`, `AuthProperties` | `global/security` | JWT·쿠키 인증 (아래 7절) |
+| `PageResponse<T>` | `global/common` | 페이지 응답 ([api-guidelines.md](api-guidelines.md)) |
+| `FileStorage`, `S3FileStorage`, `StorageProperties`, `StorageConfig` | `global/storage`, `global/config` | 파일 저장소 (아래 8절) |
 
 ## 6. 설정 파일
 
@@ -109,7 +112,31 @@ HTTP Response
 | 세션 | `STATELESS`. OAuth2 인가 요청(state, PKCE)만 로그인 과정 동안 세션에 보관하고 성공 시 무효화한다 |
 | 로그아웃 | `POST /api/v1/auth/logout` → 쿠키 삭제. 이미 발급된 토큰은 만료 전까지 서버에서 무효화하지 않는다 |
 | 탈퇴 회원 | 소셜 로그인 실패 처리. 토큰이 남아 있어도 `/members/me`는 `M002`(403) |
-| 인가 규칙 | `SecurityConfig.authorizeHttpRequests`에 경로별로 추가한다 (현재 `/api/v1/members/me`만 인증 필요) |
+| 인가 규칙 | `SecurityConfig.authorizeHttpRequests`에 경로별로 추가한다 (현재 `/api/v1/members/me`, 게시물 `POST·PUT·DELETE`가 인증 필요) |
 
 설정·환경변수: `spring.security.oauth2.client.*`(application.yml), `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `JWT_SECRET` (`.env.example` 참고).
 각 개발자 콘솔에는 Redirect URI `{서비스 주소}/login/oauth2/code/kakao`, `.../naver`를 등록한다. 로컬은 Vite 프록시를 거치므로 `http://localhost:5173/login/oauth2/code/{kakao|naver}`.
+
+## 8. 파일 저장소 (FR-008)
+
+사진은 S3에 저장하고 DB에는 객체 키만 둔다 ([schema.md](schema.md)). 업로드는 서버를 거치지 않는다.
+
+```
+[작성 화면] → POST /api/v1/posts/image-upload-urls (contentType, size)
+  → PostService: 형식·크기·개수 검증, 키 생성(posts/{yyyy}/{MM}/{uuid}.{ext}) → FileStorage.createUploadUrl
+  → 브라우저가 uploadUrl로 S3에 직접 PUT
+  → 편집기가 본문 HTML에 <img data-image-key> 삽입 → POST /api/v1/posts (content)
+  → PostContentSanitizer.sanitize: jsoup 허용 목록 정화 + 구조 검사 + 사진 키 추출
+  → PostService: FileStorage.findSize로 업로드·크기 확인 후 저장 (post.content, post_image)
+응답: PostContentSanitizer.render → img에 src = FileStorage.getUrl(key) (app.storage.public-base-url + "/" + key), 링크에 target·rel
+```
+
+| 항목 | 내용 |
+|---|---|
+| 인터페이스 | `global/storage/FileStorage`. 도메인 규칙(키 prefix, 허용 형식, 개수)은 각 도메인 Service에 둔다 |
+| 구현 | `S3FileStorage` (AWS SDK v2 `S3Client`, `S3Presigner`). Presigned URL에 `Content-Type`·`Content-Length`를 서명해 다른 타입·크기의 업로드는 S3가 거부한다 |
+| 자격 증명 | SDK 기본 체인. 로컬은 `AWS_ACCESS_KEY_ID`·`AWS_SECRET_ACCESS_KEY`, 운영은 IAM 역할 |
+| 설정 | `app.storage.bucket`(`AWS_S3_BUCKET`), `region`(`AWS_REGION`, 기본 ap-northeast-2), `public-base-url`(`STORAGE_PUBLIC_BASE_URL`), `upload-url-duration`(10분) |
+| 본문 정화 | `domain/post/service/PostContentSanitizer` (jsoup). 허용 목록·구조 규칙은 [api-guidelines.md](api-guidelines.md#7-게시물-api-fr-008). 프론트는 출력 전에 DOMPurify로 한 번 더 거른다 |
+| 테스트 | S3에 접속하지 않는다. 통합 테스트는 `@MockitoBean FileStorage` |
+| 정리 | 업로드 후 저장하지 않았거나 수정·삭제로 빠진 객체는 지우지 않는다 (후속: S3 수명 주기 규칙 등) |

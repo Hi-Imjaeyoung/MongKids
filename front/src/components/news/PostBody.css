@@ -1,0 +1,97 @@
+/* 게시물 본문 HTML 공용 스타일 (상세 화면 PostContent, 편집기 PostContentEditor) */
+.post-body {
+  font-size: 17px;
+  line-height: 1.8;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.post-body > :first-child {
+  margin-top: 0;
+}
+
+.post-body p {
+  margin: 0 0 12px;
+}
+
+.post-body a {
+  color: var(--blue);
+  text-decoration: underline;
+}
+
+.post-body ul,
+.post-body ol {
+  margin: 0 0 12px;
+  padding-left: 24px;
+}
+
+.post-body ul {
+  list-style: disc;
+}
+
+.post-body ol {
+  list-style: decimal;
+}
+
+.post-body li p {
+  margin: 0;
+}
+
+.post-body blockquote {
+  margin: 16px 0;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  color: var(--text-sub);
+}
+
+.post-body blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.post-body hr {
+  margin: 28px 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+
+/* 사진 묶음: 1~3장을 같은 폭으로 가로로, 캡션은 아래 한 줄. 모바일은 세로로 */
+.post-body .post-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.post-body .post-photos img {
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+}
+
+.post-body .post-photos img:only-of-type {
+  aspect-ratio: auto;
+  max-height: 640px;
+  object-fit: contain;
+}
+
+.post-body .post-photos figcaption {
+  flex-basis: 100%;
+  font-size: 14px;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .post-body {
+    font-size: 16px;
+  }
+
+  .post-body .post-photos img {
+    flex-basis: 100%;
+  }
+}

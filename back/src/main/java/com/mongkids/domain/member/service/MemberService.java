@@ -34,11 +34,18 @@ public class MemberService {
 	}
 
 	public MemberResponse getMember(Long memberId) {
+		return MemberResponse.from(getActiveMember(memberId));
+	}
+
+	/**
+	 * 탈퇴하지 않은 회원 Entity. 다른 도메인이 연관관계를 맺을 때 쓴다.
+	 */
+	public Member getActiveMember(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 		if (member.isWithdrawn()) {
 			throw new BusinessException(ErrorCode.MEMBER_WITHDRAWN);
 		}
-		return MemberResponse.from(member);
+		return member;
 	}
 }

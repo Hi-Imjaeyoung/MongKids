@@ -20,3 +20,7 @@ spring:
 app:
   auth:
     jwt-secret: test-jwt-secret-key-must-be-at-least-32-bytes
+  storage:
+    bucket: test-bucket
+    region: ap-northeast-2
+    public-base-url: https://cdn.test

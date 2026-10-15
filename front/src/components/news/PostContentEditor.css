@@ -1,0 +1,108 @@
+.post-content-editor {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.post-content-editor:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+.post-content-editor--disabled {
+  opacity: 0.7;
+}
+
+.post-content-editor__toolbar {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--bg-soft);
+}
+
+.post-content-editor__tool {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.post-content-editor__tool--italic {
+  font-style: italic;
+}
+
+.post-content-editor__tool--underline {
+  text-decoration: underline;
+}
+
+.post-content-editor__tool:hover {
+  background: var(--bg);
+}
+
+.post-content-editor__tool--active,
+.post-content-editor__tool--active:hover {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.post-content-editor__photo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  margin-left: auto;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.post-content-editor__file:focus-visible + .post-content-editor__photo {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* 실제 파일 입력은 숨기고 label로 연다 (키보드 포커스는 유지) */
+.post-content-editor__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.post-content-editor__body {
+  min-height: 320px;
+  padding: 16px 20px;
+  outline: none;
+}
+
+.post-content-editor__status {
+  margin: 0;
+  padding: 8px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+@media (max-width: 768px) {
+  .post-content-editor__body {
+    padding: 14px 16px;
+  }
+}
