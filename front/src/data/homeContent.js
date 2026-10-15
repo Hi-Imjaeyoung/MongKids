@@ -5,7 +5,7 @@ export const navItems = [
   { label: '프로그램', href: '#programs' },
   { label: '행사 프로그램', href: '#events' },
   { label: '1:1 방문체육', href: '#private' },
-  { label: '수업 현장', href: '#gallery' },
+  { label: '몽키즈 소식', to: '/news' },
   { label: '강사 채용', href: '#recruit' },
   { label: '고객센터', href: '#support' },
 ]

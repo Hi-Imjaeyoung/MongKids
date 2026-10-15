@@ -5,6 +5,9 @@ import LoginModal from './components/auth/LoginModal'
 import Header from './components/layout/Header'
 import FloatingMenu from './components/layout/FloatingMenu'
 import HomePage from './pages/HomePage'
+import NewsDetailPage from './pages/NewsDetailPage'
+import NewsEditorPage from './pages/NewsEditorPage'
+import NewsListPage from './pages/NewsListPage'
 
 // 소셜 로그인 실패 시 백엔드가 붙여 보내는 쿼리 파라미터
 const LOGIN_ERROR_PARAM = 'loginError'
@@ -15,7 +18,8 @@ function hasLoginError() {
 
 function App() {
   const { pathname } = useLocation()
-  const [member, setMember] = useState(null)
+  // undefined: 로그인 상태 확인 중, null: 비로그인
+  const [member, setMember] = useState(undefined)
   const [loginError, setLoginError] = useState(hasLoginError)
   const [loginOpen, setLoginOpen] = useState(hasLoginError)
 
@@ -58,6 +62,10 @@ function App() {
       <main className="main">
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/news" element={<NewsListPage member={member} />} />
+          <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
+          <Route path="/news/:postId" element={<NewsDetailPage member={member} />} />
+          <Route path="/news/:postId/edit" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </main>

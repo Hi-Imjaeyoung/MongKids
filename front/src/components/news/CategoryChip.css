@@ -1,0 +1,22 @@
+.category-chip {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.category-chip--yellow {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.category-chip--blue {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.category-chip--green {
+  background: var(--green-soft);
+  color: var(--green-text);
+}
