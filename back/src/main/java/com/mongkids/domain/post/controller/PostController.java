@@ -40,9 +40,10 @@ public class PostController {
 
 	@PostMapping("/image-upload-urls")
 	public ApiResponse<List<PostImageUploadUrlResponse>> createImageUploadUrls(
+		@AuthenticationPrincipal Long memberId,
 		@Valid @RequestBody PostImageUploadUrlRequest request
 	) {
-		return ApiResponse.success(postService.createImageUploadUrls(request));
+		return ApiResponse.success(postService.createImageUploadUrls(memberId, request));
 	}
 
 	@PostMapping

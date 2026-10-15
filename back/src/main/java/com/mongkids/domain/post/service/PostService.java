@@ -56,9 +56,10 @@ public class PostService {
 	private final PostContentSanitizer contentSanitizer;
 
 	/**
-	 * 사진을 S3에 직접 올릴 URL을 발급한다 (FR-008: 최대 20장, 장당 10MB).
+	 * 사진을 S3에 직접 올릴 URL을 발급한다 (FR-008: 최대 20장, 장당 10MB). 게시물을 쓸 수 있는 직원만 (FR-009).
 	 */
-	public List<PostImageUploadUrlResponse> createImageUploadUrls(PostImageUploadUrlRequest request) {
+	public List<PostImageUploadUrlResponse> createImageUploadUrls(Long memberId, PostImageUploadUrlRequest request) {
+		getPostWriter(memberId);
 		validateImageCount(request.files().size());
 		return request.files().stream()
 			.map(file -> {
@@ -75,7 +76,7 @@ public class PostService {
 
 	@Transactional
 	public PostCreateResponse createPost(Long memberId, PostSaveRequest request) {
-		Member member = memberService.getActiveMember(memberId);
+		Member member = getPostWriter(memberId);
 		SanitizedContent content = sanitizeContent(request.content());
 
 		Post post = Post.builder()
@@ -128,9 +129,25 @@ public class PostService {
 			.orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 	}
 
+	/**
+	 * 게시물을 쓸 수 있는 직원(STAFF·ADMIN)인지 DB의 현재 역할로 확인한다 (FR-009).
+	 * 토큰의 역할을 쓰지 않으므로 권한을 회수하면 다시 로그인하지 않아도 바로 막힌다.
+	 */
+	private Member getPostWriter(Long memberId) {
+		Member member = memberService.getActiveMember(memberId);
+		if (!member.getRole().canWritePost()) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+		return member;
+	}
+
+	/**
+	 * 수정·삭제할 수 있는 게시물: 직원 권한이 있는 작성자 본인이거나 관리자.
+	 */
 	private Post getWritablePost(Long memberId, Long postId) {
+		Member member = getPostWriter(memberId);
 		Post post = getActivePost(postId);
-		if (!post.getMember().getId().equals(memberId)) {
+		if (!post.getMember().getId().equals(memberId) && !member.getRole().isAdmin()) {
 			throw new BusinessException(ErrorCode.FORBIDDEN);
 		}
 		return post;

@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.mongkids.domain.member.entity.Member;
+import com.mongkids.domain.member.entity.MemberRole;
 import com.mongkids.domain.member.entity.Provider;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.domain.post.dto.PostImageUploadUrlRequest;
@@ -39,6 +40,7 @@ class PostServiceTest {
 
 	private static final Long WRITER_ID = 1L;
 	private static final Long OTHER_MEMBER_ID = 2L;
+	private static final Long ADMIN_ID = 3L;
 	private static final Long POST_ID = 10L;
 
 	@Mock
@@ -60,11 +62,12 @@ class PostServiceTest {
 	@DisplayName("사진 업로드 URL은 posts/ 아래 확장자가 붙은 키로 발급한다")
 	void createImageUploadUrls_issuesKeys() {
 		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		given(fileStorage.createUploadUrl(anyString(), eq("image/png"), eq(1024L)))
 			.willReturn(new PresignedUpload("https://s3.test/upload", Instant.now()));
 
 		// when
-		List<PostImageUploadUrlResponse> responses = postService.createImageUploadUrls(
+		List<PostImageUploadUrlResponse> responses = postService.createImageUploadUrls(WRITER_ID,
 			new PostImageUploadUrlRequest(List.of(new ImageFile("image/png", 1024L))));
 
 		// then
@@ -78,10 +81,11 @@ class PostServiceTest {
 	@DisplayName("사진이 20장을 넘으면 업로드 URL을 발급하지 않는다")
 	void createImageUploadUrls_overLimit_throwsException() {
 		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		List<ImageFile> files = Collections.nCopies(PostService.MAX_IMAGE_COUNT + 1, new ImageFile("image/jpeg", 1L));
 
 		// when & then
-		assertThatThrownBy(() -> postService.createImageUploadUrls(new PostImageUploadUrlRequest(files)))
+		assertThatThrownBy(() -> postService.createImageUploadUrls(WRITER_ID, new PostImageUploadUrlRequest(files)))
 			.isInstanceOf(BusinessException.class)
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.POST_IMAGE_LIMIT_EXCEEDED);
@@ -90,12 +94,14 @@ class PostServiceTest {
 	@Test
 	@DisplayName("10MB를 넘거나 이미지가 아닌 파일은 업로드 URL을 발급하지 않는다")
 	void createImageUploadUrls_invalidFile_throwsException() {
-		assertThatThrownBy(() -> postService.createImageUploadUrls(new PostImageUploadUrlRequest(
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
+
+		assertThatThrownBy(() -> postService.createImageUploadUrls(WRITER_ID, new PostImageUploadUrlRequest(
 			List.of(new ImageFile("image/jpeg", PostService.MAX_IMAGE_SIZE + 1)))))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.INVALID_POST_IMAGE);
 
-		assertThatThrownBy(() -> postService.createImageUploadUrls(new PostImageUploadUrlRequest(
+		assertThatThrownBy(() -> postService.createImageUploadUrls(WRITER_ID, new PostImageUploadUrlRequest(
 			List.of(new ImageFile("application/pdf", 1024L)))))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.INVALID_POST_IMAGE);
@@ -105,7 +111,7 @@ class PostServiceTest {
 	@DisplayName("게시물을 저장하면 본문을 정화하고 본문 속 사진이 나온 순서대로 붙는다")
 	void createPost_savesImagesInOrder() {
 		// given
-		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID));
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
 		given(postRepository.save(any(Post.class))).willAnswer(invocation -> withId(invocation.getArgument(0)));
 
@@ -124,7 +130,7 @@ class PostServiceTest {
 	@DisplayName("게시물 사진이 20장을 넘으면 저장하지 않는다")
 	void createPost_overImageLimit_throwsException() {
 		// given
-		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID));
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		List<String> imageKeys = IntStream.rangeClosed(0, PostService.MAX_IMAGE_COUNT)
 			.mapToObj(i -> "posts/" + i + ".jpg")
 			.toList();
@@ -140,7 +146,7 @@ class PostServiceTest {
 	@DisplayName("업로드되지 않았거나 10MB를 넘거나 게시물 경로가 아니거나 중복된 사진 키는 거부한다")
 	void createPost_invalidImageKey_throwsException() {
 		// given
-		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID));
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		given(fileStorage.findSize("posts/missing.jpg")).willReturn(Optional.empty());
 		given(fileStorage.findSize("posts/large.jpg")).willReturn(Optional.of(PostService.MAX_IMAGE_SIZE + 1));
 
@@ -162,6 +168,7 @@ class PostServiceTest {
 	@DisplayName("게시물을 수정하면 사진 목록을 새 본문의 사진으로 바꾼다")
 	void updatePost_replacesImages() {
 		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		Post post = post(WRITER_ID, List.of("posts/a.jpg", "posts/b.jpg"));
 		given(postRepository.findByIdAndDeletedAtIsNull(POST_ID)).willReturn(Optional.of(post));
 		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
@@ -176,9 +183,10 @@ class PostServiceTest {
 	}
 
 	@Test
-	@DisplayName("작성자가 아니면 게시물을 수정·삭제할 수 없다")
+	@DisplayName("다른 직원의 게시물은 수정·삭제할 수 없다")
 	void updateOrDelete_notWriter_forbidden() {
 		// given
+		given(memberService.getActiveMember(OTHER_MEMBER_ID)).willReturn(member(OTHER_MEMBER_ID, MemberRole.STAFF));
 		Post post = post(WRITER_ID, List.of());
 		given(postRepository.findByIdAndDeletedAtIsNull(POST_ID)).willReturn(Optional.of(post));
 
@@ -196,7 +204,7 @@ class PostServiceTest {
 	@DisplayName("본문 형식이 올바르지 않으면 저장하지 않는다")
 	void createPost_invalidContent_throwsException() {
 		// given
-		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID));
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 
 		// when & then
 		assertThatThrownBy(() -> postService.createPost(WRITER_ID, request("<p></p>")))
@@ -221,6 +229,7 @@ class PostServiceTest {
 	@DisplayName("작성자가 삭제하면 soft delete 된다")
 	void deletePost_byWriter_softDeletes() {
 		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		Post post = post(WRITER_ID, List.of());
 		given(postRepository.findByIdAndDeletedAtIsNull(POST_ID)).willReturn(Optional.of(post));
 
@@ -229,6 +238,57 @@ class PostServiceTest {
 
 		// then
 		assertThat(post.isDeleted()).isTrue();
+	}
+
+	@Test
+	@DisplayName("직원 권한이 없는 회원은 사진 업로드 URL을 받거나 게시물을 작성할 수 없다")
+	void createPost_notStaff_forbidden() {
+		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.MEMBER));
+
+		// when & then
+		assertThatThrownBy(() -> postService.createImageUploadUrls(WRITER_ID,
+			new PostImageUploadUrlRequest(List.of(new ImageFile("image/png", 1024L)))))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.FORBIDDEN);
+		assertThatThrownBy(() -> postService.createPost(WRITER_ID, request("<p>글</p>")))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.FORBIDDEN);
+		then(fileStorage).should(never()).createUploadUrl(anyString(), anyString(), anyLong());
+		then(postRepository).should(never()).save(any());
+	}
+
+	@Test
+	@DisplayName("관리자는 다른 직원의 게시물도 수정·삭제할 수 있다")
+	void updateOrDelete_byAdmin_allowed() {
+		// given
+		given(memberService.getActiveMember(ADMIN_ID)).willReturn(member(ADMIN_ID, MemberRole.ADMIN));
+		Post post = post(WRITER_ID, List.of());
+		given(postRepository.findByIdAndDeletedAtIsNull(POST_ID)).willReturn(Optional.of(post));
+
+		// when
+		postService.updatePost(ADMIN_ID, POST_ID, request("<p>관리자가 고친 글</p>"));
+		postService.deletePost(ADMIN_ID, POST_ID);
+
+		// then
+		assertThat(post.getContent()).isEqualTo("<p>관리자가 고친 글</p>");
+		assertThat(post.isDeleted()).isTrue();
+	}
+
+	@Test
+	@DisplayName("직원 권한이 회수되면 자기 게시물도 수정·삭제할 수 없다")
+	void updateOrDelete_revokedWriter_forbidden() {
+		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.MEMBER));
+
+		// when & then
+		assertThatThrownBy(() -> postService.updatePost(WRITER_ID, POST_ID, request("<p>글</p>")))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.FORBIDDEN);
+		assertThatThrownBy(() -> postService.deletePost(WRITER_ID, POST_ID))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.FORBIDDEN);
+		then(postRepository).should(never()).findByIdAndDeletedAtIsNull(any());
 	}
 
 	@Test
@@ -260,15 +320,16 @@ class PostServiceTest {
 		return html.toString();
 	}
 
-	private static Member member(Long id) {
+	private static Member member(Long id, MemberRole role) {
 		Member member = Member.builder().provider(Provider.KAKAO).providerId("p" + id).name("몽키").build();
 		ReflectionTestUtils.setField(member, "id", id);
+		ReflectionTestUtils.setField(member, "role", role);
 		return member;
 	}
 
 	private static Post post(Long writerId, List<String> imageKeys) {
 		Post post = Post.builder()
-			.member(member(writerId))
+			.member(member(writerId, MemberRole.STAFF))
 			.category(PostCategory.GENERAL)
 			.title("원래 제목")
 			.content("<p>원래 본문</p>" + photos(imageKeys.toArray(String[]::new)))
