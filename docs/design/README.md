@@ -16,8 +16,9 @@
 
 | 화면 | PNG (확정본) | 편집 원본 | 상태 |
 |---|---|---|---|
-| SCR-001 홈 | [home.png](home.png) | - | 확정 |
-| SCR-006 수업 현장 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
+| SCR-001 홈 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 확정 (PNG는 아티팩트 "SCR-001 홈" 페이지에 보관) |
+| SCR-006 몽키즈 소식 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
+| SCR-015 게시물 작성·수정 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 
-- 초안은 아티팩트 하나("MongKids 화면 초안")에 모으고, 화면마다 페이지(`SCR-006 수업 현장` 등)를 나눈다.
+- 초안은 아티팩트 하나("MongKids 화면 초안")에 모으고, 화면마다 페이지(`SCR-006 몽키즈 소식` 등)를 나눈다.
