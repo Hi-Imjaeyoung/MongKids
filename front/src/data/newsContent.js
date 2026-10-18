@@ -1,7 +1,7 @@
-// 몽키즈 소식(SCR-006) 화면 문구
+// 수업 현장(SCR-006) 화면 문구
 
 export const newsHero = {
-  eyebrow: '몽키즈 소식',
+  eyebrow: '수업 현장',
   title: '아이들이 신나게 뛰노는 현장',
   highlight: '신나게 뛰노는',
   description: '몽키즈의 수업과 행사 현장, 새로운 소식을 사진과 함께 만나보세요.',
@@ -12,7 +12,7 @@ export const newsCategories = [
   { id: 'ALL', label: '전체' },
   { id: 'GENERAL', label: '게시글', tone: 'yellow' },
   { id: 'NEWS', label: '소식', tone: 'blue' },
-  { id: 'EVENT', label: '행사 프로그램', tone: 'green' },
+  { id: 'EVENT', label: '현장 사진', tone: 'green' },
 ]
 
 export const newsList = {

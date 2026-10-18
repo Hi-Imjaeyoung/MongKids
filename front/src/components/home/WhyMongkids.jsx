@@ -1,16 +1,12 @@
 import Highlight from '../common/Highlight'
-import { reasons } from '../../data/homeContent'
+import SectionHeading from '../common/SectionHeading'
+import { reasons, sectionHeadings } from '../../data/homeContent'
 import './WhyMongkids.css'
 
 function WhyMongkids() {
   return (
     <section className="why container" id="about">
-      <header className="section-heading">
-        <p className="section-heading__eyebrow">
-          WHY <span>MONGKIDS?</span>
-        </p>
-        <h2 className="section-heading__title">몽키즈가 특별한 이유</h2>
-      </header>
+      <SectionHeading {...sectionHeadings.why} />
 
       <ul className="why__list">
         {reasons.map((reason) => (

@@ -1,0 +1,102 @@
+.process {
+  margin-top: 80px;
+}
+
+.process__list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.process__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px 16px 24px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+/* 단계 사이 화살표 */
+.process__item:not(:last-child)::after {
+  content: '›';
+  position: absolute;
+  top: 50%;
+  right: -16px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.process__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  font-size: 28px;
+}
+
+.process__icon--yellow { background: var(--yellow-soft); }
+.process__icon--blue { background: var(--blue-soft); }
+.process__icon--green { background: var(--green-soft); }
+
+.process__step {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--blue);
+}
+
+.process__title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.process__description {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.process__note {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .process__list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .process__item:not(:last-child)::after {
+    display: none;
+  }
+
+  .process__item {
+    padding: 20px 12px;
+  }
+}

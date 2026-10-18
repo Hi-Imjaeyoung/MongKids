@@ -6,7 +6,7 @@ import PostDetail from '../components/news/PostDetail'
 import { canManagePost } from '../components/news/postPermission'
 import { newsDetail } from '../data/newsContent'
 
-// 몽키즈 소식 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다
+// 수업 현장 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다
 function NewsDetailPage({ member }) {
   const { postId } = useParams()
   const navigate = useNavigate()

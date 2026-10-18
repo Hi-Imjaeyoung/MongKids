@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import logoImage from '../../assets/logo.png'
 import Button from '../common/Button'
 import { headerAuth } from '../../data/authContent'
 import { ctaButtons, navItems } from '../../data/homeContent'
@@ -15,8 +16,7 @@ function Header({ member = null, onLoginClick, onLogoutClick, onInstitutionConsu
     <header className="header">
       <div className="header__inner container">
         <Link to="/" className="logo" aria-label="몽키즈 홈">
-          <span className="logo__mascot" aria-hidden="true">🐵</span>
-          <span className="logo__text">몽키즈</span>
+          <img className="logo__image" src={logoImage} alt="몽키즈유아체육" />
         </Link>
 
         <nav className={`gnb ${menuOpen ? 'gnb--open' : ''}`} aria-label="주 메뉴">
@@ -36,49 +36,50 @@ function Header({ member = null, onLoginClick, onLogoutClick, onInstitutionConsu
               </li>
             ))}
           </ul>
-          <div className="header__cta">
-            <Button
-              variant="yellow"
-              onClick={() => {
-                setMenuOpen(false)
-                onInstitutionConsultClick()
-              }}
-            >
-              {ctaButtons.institution.label}
-            </Button>
-            <Button
-              variant="blue"
-              onClick={() => {
-                setMenuOpen(false)
-                onPersonalConsultClick()
-              }}
-            >
-              {ctaButtons.private.label}
-            </Button>
-          </div>
-          <div className="header__auth">
-            {member ? (
-              <>
-                <span className="header__member">
-                  {member.name}
-                  {headerAuth.memberSuffix}
-                </span>
-                <button type="button" className="header__auth-button" onClick={onLogoutClick}>
-                  {headerAuth.logout}
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                className="header__auth-button"
+          <div className="header__actions">
+            <div className="header__auth">
+              {member ? (
+                <>
+                  <span className="header__member">
+                    <span className="header__member-name">{member.name}</span>
+                    {headerAuth.memberSuffix}
+                  </span>
+                  <button type="button" className="header__auth-button" onClick={onLogoutClick}>
+                    {headerAuth.logout}
+                  </button>
+                </>
+              ) : (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    onLoginClick()
+                  }}
+                >
+                  {headerAuth.login}
+                </Button>
+              )}
+            </div>
+            <div className="header__cta">
+              <Button
+                variant="yellow"
                 onClick={() => {
                   setMenuOpen(false)
-                  onLoginClick()
+                  onInstitutionConsultClick()
                 }}
               >
-                {headerAuth.login}
-              </button>
-            )}
+                {ctaButtons.institution.label}
+              </Button>
+              <Button
+                variant="blue"
+                onClick={() => {
+                  setMenuOpen(false)
+                  onPersonalConsultClick()
+                }}
+              >
+                {ctaButtons.private.label}
+              </Button>
+            </div>
           </div>
         </nav>
 

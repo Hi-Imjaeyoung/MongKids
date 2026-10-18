@@ -61,6 +61,13 @@
   gap: 12px;
 }
 
+.hero__area {
+  margin: 20px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
 .hero__deco {
   position: absolute;
   pointer-events: none;

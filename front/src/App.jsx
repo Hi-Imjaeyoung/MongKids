@@ -5,7 +5,9 @@ import LoginModal from './components/auth/LoginModal'
 import InstitutionConsultationModal from './components/consultation/InstitutionConsultationModal'
 import PersonalConsultationModal from './components/consultation/PersonalConsultationModal'
 import Header from './components/layout/Header'
+import Footer from './components/layout/Footer'
 import FloatingMenu from './components/layout/FloatingMenu'
+import MobileCtaBar from './components/layout/MobileCtaBar'
 import HomePage from './pages/HomePage'
 import NewsDetailPage from './pages/NewsDetailPage'
 import NewsListPage from './pages/NewsListPage'
@@ -91,7 +93,9 @@ function App() {
           </Routes>
         </Suspense>
       </main>
+      <Footer />
       <FloatingMenu />
+      <MobileCtaBar onInstitutionConsultClick={openConsult} onPersonalConsultClick={openPersonalConsult} />
       {loginOpen && <LoginModal hasError={loginError} onClose={closeLogin} />}
       {consultOpen && <InstitutionConsultationModal onClose={closeConsult} />}
       {personalConsultOpen && <PersonalConsultationModal onClose={closePersonalConsult} />}

@@ -33,6 +33,7 @@ function Hero({ onInstitutionConsultClick, onPersonalConsultClick }) {
               {ctaButtons.private.label}
             </Button>
           </div>
+          <p className="hero__area">📍 {hero.area}</p>
         </div>
       </div>
 
