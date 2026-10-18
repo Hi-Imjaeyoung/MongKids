@@ -112,7 +112,7 @@ erDiagram
 |---|---|---|---|
 | id | BIGINT | PK | |
 | member_id | BIGINT | NOT NULL, FK → member.id | 작성 직원 |
-| category | VARCHAR(20) | NOT NULL | SCR-006 탭: `GENERAL`(게시글), `NEWS`(소식), `EVENT`(행사 프로그램) |
+| category | VARCHAR(20) | NOT NULL | SCR-006 탭: `GENERAL`(게시글), `NEWS`(소식), `EVENT`(현장 사진) |
 | title | VARCHAR(100) | NOT NULL | 제목 |
 | content | TEXT | NOT NULL | 본문 HTML. 서버가 허용 목록으로 정화해 저장하고, 사진은 `src` 없이 `<img data-image-key>`로만 둔다 (응답 때 URL을 채움) |
 | like_count | INT | NOT NULL, 기본 0 | 공감 수 (목록 조회용 비정규화) |
