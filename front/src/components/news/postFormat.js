@@ -1,8 +1,9 @@
-// 게시물 표시용 변환 함수 (수업 현장 컴포넌트 공용)
+// 게시물 표시용 변환 함수 (수업 현장·몽키즈 연구소 컴포넌트 공용)
 import { newsCategories } from '../../data/newsContent'
 
-export function findCategory(categoryId) {
-  return newsCategories.find((category) => category.id === categoryId) ?? newsCategories[0]
+// categories: 분류 목록 (첫 항목이 '전체'). 없는 id면 첫 항목을 돌려준다
+export function findCategory(categoryId, categories = newsCategories) {
+  return categories.find((category) => category.id === categoryId) ?? categories[0]
 }
 
 // '2026-10-15T14:30:00' → '2026.10.15'

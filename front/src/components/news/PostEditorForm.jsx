@@ -4,10 +4,15 @@ import PostContentEditor from './PostContentEditor'
 import { newsCategories, newsEditor } from '../../data/newsContent'
 import './PostEditorForm.css'
 
-const writableCategories = newsCategories.filter((category) => category.id !== 'ALL')
+// categories: 분류 목록 (첫 항목 '전체'는 고를 수 없다)
+function writableOf(categories) {
+  return categories.filter((category) => category.id !== 'ALL')
+}
 
-// post: 수정할 게시물 (작성이면 null). onSubmit({ category, title, content })는 Promise를 돌려준다
-function PostEditorForm({ post = null, onSubmit, onCancel }) {
+// post: 수정할 게시물 (작성이면 null). onSubmit({ category, title, content })는 Promise를 돌려준다.
+// categories: 분류 목록 (기본은 수업 현장). notice: 분류 아래 작성자 안내 (몽키즈 연구소)
+function PostEditorForm({ post = null, onSubmit, onCancel, categories = newsCategories, notice }) {
+  const writableCategories = writableOf(categories)
   const [category, setCategory] = useState(post?.category ?? writableCategories[0].id)
   const [title, setTitle] = useState(post?.title ?? '')
   const [content, setContent] = useState({ html: post?.content ?? '', hasContent: Boolean(post) })
@@ -58,6 +63,7 @@ function PostEditorForm({ post = null, onSubmit, onCancel }) {
             </label>
           ))}
         </div>
+        {notice && <p className="post-editor__notice">{notice}</p>}
       </fieldset>
 
       <div className="post-editor__field">

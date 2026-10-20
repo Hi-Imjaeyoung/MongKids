@@ -9,11 +9,16 @@ import Footer from './components/layout/Footer'
 import FloatingMenu from './components/layout/FloatingMenu'
 import MobileCtaBar from './components/layout/MobileCtaBar'
 import HomePage from './pages/HomePage'
+import LabListPage from './pages/LabListPage'
 import NewsDetailPage from './pages/NewsDetailPage'
 import NewsListPage from './pages/NewsListPage'
+import { labBoard } from './pages/boards'
 
 // 편집기(TipTap)가 커서 작성·수정 화면에 들어갈 때만 불러온다
 const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
+
+// 모바일 하단 고정 상담 바를 두지 않는 화면 (SCR-024 몽키즈 연구소 목록)
+const NO_MOBILE_CTA_PATHS = ['/lab']
 
 // 소셜 로그인 실패 시 백엔드가 붙여 보내는 쿼리 파라미터
 const LOGIN_ERROR_PARAM = 'loginError'
@@ -49,6 +54,12 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [pathname])
+
+  // 하단 상담 바가 없는 화면은 바 높이만큼 비워 둔 여백(--mobile-cta-height)도 없앤다
+  const showMobileCta = !NO_MOBILE_CTA_PATHS.includes(pathname)
+  useEffect(() => {
+    document.documentElement.classList.toggle('no-mobile-cta', !showMobileCta)
+  }, [showMobileCta])
 
   const openLogin = () => setLoginOpen(true)
   const closeLogin = useCallback(() => {
@@ -89,13 +100,25 @@ function App() {
             <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
             <Route path="/news/:postId" element={<NewsDetailPage member={member} />} />
             <Route path="/news/:postId/edit" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
+            <Route path="/lab" element={<LabListPage member={member} />} />
+            <Route
+              path="/lab/write"
+              element={<NewsEditorPage member={member} onLoginClick={openLogin} board={labBoard} />}
+            />
+            <Route path="/lab/:postId" element={<NewsDetailPage member={member} board={labBoard} />} />
+            <Route
+              path="/lab/:postId/edit"
+              element={<NewsEditorPage member={member} onLoginClick={openLogin} board={labBoard} />}
+            />
             <Route path="*" element={homePage} />
           </Routes>
         </Suspense>
       </main>
       <Footer />
       <FloatingMenu />
-      <MobileCtaBar onInstitutionConsultClick={openConsult} onPersonalConsultClick={openPersonalConsult} />
+      {showMobileCta && (
+        <MobileCtaBar onInstitutionConsultClick={openConsult} onPersonalConsultClick={openPersonalConsult} />
+      )}
       {loginOpen && <LoginModal hasError={loginError} onClose={closeLogin} />}
       {consultOpen && <InstitutionConsultationModal onClose={closeConsult} />}
       {personalConsultOpen && <PersonalConsultationModal onClose={closePersonalConsult} />}

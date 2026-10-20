@@ -1,0 +1,129 @@
+.lab-hero {
+  background: var(--cream);
+}
+
+.lab-hero__inner {
+  padding-top: 64px;
+  padding-bottom: 72px;
+  word-break: keep-all;
+}
+
+.lab-hero__eyebrow {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--blue-text);
+}
+
+.lab-hero__title {
+  margin: 12px 0 0;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+}
+
+.lab-hero__description {
+  margin: 16px 0 0;
+  font-size: 18px;
+  color: var(--text-sub);
+}
+
+.lab-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 640px;
+  margin-top: 32px;
+  padding: 6px 6px 6px 20px;
+  border: 2px solid var(--blue);
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.lab-search__icon {
+  flex-shrink: 0;
+  color: var(--text-sub);
+}
+
+.lab-search__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.lab-search__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+
+.lab-search__input::placeholder {
+  color: var(--text-sub);
+}
+
+.lab-search__button {
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lab-search__button:hover {
+  background: var(--blue-text);
+}
+
+.lab-search:focus-within {
+  box-shadow: 0 0 0 4px var(--blue-soft);
+}
+
+@media (max-width: 768px) {
+  .lab-hero__inner {
+    padding-top: 36px;
+    padding-bottom: 32px;
+  }
+
+  .lab-hero__eyebrow {
+    font-size: 13px;
+  }
+
+  .lab-hero__title {
+    margin-top: 10px;
+    font-size: 28px;
+    line-height: 1.35;
+  }
+
+  .lab-hero__description {
+    margin-top: 12px;
+    font-size: 15px;
+  }
+
+  .lab-search {
+    gap: 6px;
+    margin-top: 24px;
+    padding: 4px 4px 4px 16px;
+  }
+
+  .lab-search__button {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 14px;
+  }
+}

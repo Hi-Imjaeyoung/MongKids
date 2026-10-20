@@ -147,4 +147,9 @@ button {
   :root {
     --mobile-cta-height: 68px;
   }
+
+  /* 하단 상담 바가 없는 화면 (App.jsx) */
+  :root.no-mobile-cta {
+    --mobile-cta-height: 0px;
+  }
 }
