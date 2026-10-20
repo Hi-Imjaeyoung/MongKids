@@ -3,7 +3,7 @@
 export const navItems = [
   { label: '몽키즈 소개', href: '#about' },
   { label: '체육/행사프로그램', href: '#programs' },
-  { label: '몽키즈 연구소', href: '#lab' },
+  { label: '몽키즈 연구소', to: '/lab' },
   { label: '강사 채용', href: '#recruit' },
   { label: '수업 현장', to: '/news' },
   { label: '자주 묻는 질문', href: '#faq' },

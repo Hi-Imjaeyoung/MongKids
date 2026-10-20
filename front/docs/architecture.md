@@ -13,18 +13,21 @@ front/
    ├─ pages/                  화면 단위. 섹션 컴포넌트를 조립만 한다
    │  ├─ HomePage.jsx         /
    │  ├─ NewsListPage.jsx     /news (SCR-006, ?category=)
-   │  ├─ NewsDetailPage.jsx   /news/:postId
-   │  └─ NewsEditorPage.jsx   /news/write, /news/:postId/edit
+   │  ├─ NewsDetailPage.jsx   /news/:postId, /lab/:postId (board 설정으로 재사용)
+   │  ├─ NewsEditorPage.jsx   /news/write, /news/:postId/edit, /lab/write, /lab/:postId/edit
+   │  ├─ LabListPage.jsx      /lab (SCR-024, ?category=&keyword=&page=)
+   │  └─ boards.js            상세·작성 화면이 쓰는 게시판 설정 (newsBoard, labBoard: 목록 주소·분류·API·안내 문구)
    ├─ components/
    │  ├─ layout/              모든 화면에 공통으로 붙는 영역 (Header, Footer, FloatingMenu, MobileCtaBar: 640px 이하 하단 고정 상담 바)
    │  ├─ home/                홈 화면 전용 섹션 (Hero, StatsBar, ServiceCards, WhyMongkids, ClassGallery, Reviews, ProcessSteps, SpecialPrograms, FaqPreview, ContactCta)
    │  ├─ auth/                로그인·회원가입 모달 (LoginModal, SCR-013)
-   │  ├─ news/                수업 현장 (목록·카드·상세·본문 출력·작성 폼·HTML 편집기·사진 묶음 노드, SCR-006)
+   │  ├─ news/                수업 현장 (목록·카드·상세·본문 출력·작성 폼·HTML 편집기·사진 묶음 노드, SCR-006). 상세·작성 폼·분류 탭·칩은 categories prop으로 연구소도 쓴다
+   │  ├─ lab/                 몽키즈 연구소 목록 (LabHero 검색, LabList, LabCard, Pagination, SCR-024)
    │  ├─ consultation/        상담 신청 모달 (InstitutionConsultationModal SCR-009, PersonalConsultationModal SCR-010, 공용 ConsultationFormParts)
    │  └─ common/              화면과 무관한 재사용 UI (Button: yellow·blue·ghost, to면 링크 / SectionHeading, Highlight, ImagePlaceholder)
    ├─ assets/                 번들에 포함되는 이미지 (logo.png: 원본 로고에서 여백을 잘라낸 버전)
-   ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인, posts.js 게시물, consultations.js 상담 신청)
-   └─ data/                   화면 콘텐츠 (homeContent.js, authContent.js, newsContent.js, consultationContent.js)
+   ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인, posts.js 게시물, labPosts.js 연구소 글, consultations.js 상담 신청)
+   └─ data/                   화면 콘텐츠 (homeContent.js, authContent.js, newsContent.js, labContent.js, consultationContent.js)
 ```
 
 - 새 화면이 생기면 `pages/{Name}Page.jsx`와 `components/{화면}/`을 추가한다.
@@ -54,6 +57,9 @@ pages → components/{화면} → components/common
   - 사진은 고르는 즉시 `uploadPostImages()`가 업로드 URL을 받아 S3에 직접 `PUT`하고, 노드에는 객체 키(`data-image-key`)만 남는다 (흐름은 [백엔드 아키텍처](../../back/docs/architecture.md#8-파일-저장소-fr-008)).
   - 상세 화면(`PostContent`)은 서버가 정화한 HTML을 DOMPurify로 한 번 더 거른 뒤 출력한다. 본문 스타일은 편집기와 같은 `PostBody.css`(`.post-body`)를 쓴다.
   - 작성·수정 화면은 편집기 번들이 커서 `React.lazy`로 불러온다.
+- 몽키즈 연구소(SCR-024)는 수업 현장과 API만 다르다. 상세·작성·수정 페이지는 `board` prop(`pages/boards.js`의 `labBoard`)으로 목록 주소(`/lab`), 분류(`labCategories`), API(`api/labPosts.js`), 본문 아래 참고용 안내·작성자 안내를 바꿔 쓴다. 사진 업로드는 게시물과 같은 `uploadPostImages()`.
+  - 목록은 분류·검색어·페이지를 주소에 둔다(`?category=&keyword=&page=`, 기본값은 뺌). 한 페이지 9개(3열 × 3줄), 768px 이하는 썸네일 + 제목 목록.
+  - 모바일 하단 상담 바를 두지 않는 화면은 `App.jsx`의 `NO_MOBILE_CTA_PATHS`에 둔다. 바를 숨기면서 `<html>`에 `no-mobile-cta`를 붙여 바 높이 여백(`--mobile-cta-height`)도 0으로 만든다.
 - 로그인 상태는 `App.jsx`가 `fetchMyInfo()`로 조회해 `Header`에 넘긴다. 로그인 실패 시 백엔드가 `/?loginError=true`로 돌려보내면 모달을 열고 오류 문구를 보여 준다.
 - 데이터 구조는 백엔드 응답 형태를 염두에 두고 `id`를 가진 객체 배열로 유지한다.
 - API 연동 시:

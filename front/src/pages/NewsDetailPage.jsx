@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { deletePost, getPost } from '../api/posts'
 import NewsNotice from '../components/news/NewsNotice'
 import PostDetail from '../components/news/PostDetail'
 import { canManagePost } from '../components/news/postPermission'
 import { newsDetail } from '../data/newsContent'
+import { newsBoard } from './boards'
 
-// 수업 현장 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다
-function NewsDetailPage({ member }) {
+// 게시물 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다.
+// board: 수업 현장(newsBoard) 또는 몽키즈 연구소(labBoard, SCR-024에서 재사용)
+function NewsDetailPage({ member, board = newsBoard }) {
+  const { getPost, deletePost, basePath } = board
   const { postId } = useParams()
   const navigate = useNavigate()
   const [result, setResult] = useState(null)
@@ -25,7 +27,7 @@ function NewsDetailPage({ member }) {
     return () => {
       ignore = true
     }
-  }, [postId])
+  }, [postId, getPost])
 
   const current = result?.key === postId ? result : null
 
@@ -34,7 +36,7 @@ function NewsDetailPage({ member }) {
     setDeleting(true)
     try {
       await deletePost(postId)
-      navigate('/news', { replace: true })
+      navigate(basePath, { replace: true })
     } catch (error) {
       window.alert(error.message)
       setDeleting(false)
@@ -47,7 +49,7 @@ function NewsDetailPage({ member }) {
   if (current.error) {
     return (
       <NewsNotice message={current.error} tone="error" standalone>
-        <Link to="/news">{newsDetail.backToList}</Link>
+        <Link to={basePath}>{newsDetail.backToList}</Link>
       </NewsNotice>
     )
   }
@@ -57,6 +59,9 @@ function NewsDetailPage({ member }) {
       canEdit={canManagePost(member, current.post)}
       deleting={deleting}
       onDelete={handleDelete}
+      basePath={basePath}
+      categories={board.categories}
+      notice={board.detailNotice}
     />
   )
 }

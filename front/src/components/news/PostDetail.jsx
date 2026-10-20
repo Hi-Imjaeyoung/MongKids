@@ -5,12 +5,13 @@ import { formatDate } from './postFormat'
 import { newsDetail } from '../../data/newsContent'
 import './PostDetail.css'
 
-// post: 상세 API 응답 (PostDetailResponse). canEdit이면 수정·삭제 버튼을 보여 준다
-function PostDetail({ post, canEdit, deleting, onDelete }) {
+// post: 상세 API 응답 (PostDetailResponse·LabPostDetailResponse). canEdit이면 수정·삭제 버튼을 보여 준다.
+// basePath: 목록 주소 (수업 현장 /news, 연구소 /lab). categories: 분류 목록. notice: 본문 아래 안내 문구
+function PostDetail({ post, canEdit, deleting, onDelete, basePath = '/news', categories, notice }) {
   return (
     <article className="post-detail container">
       <header className="post-detail__header">
-        <CategoryChip category={post.category} />
+        <CategoryChip category={post.category} categories={categories} />
         <h1 className="post-detail__title">{post.title}</h1>
         <p className="post-detail__meta">
           {post.authorName} · {formatDate(post.createdAt)}
@@ -19,13 +20,15 @@ function PostDetail({ post, canEdit, deleting, onDelete }) {
 
       <PostContent html={post.content} />
 
+      {notice && <p className="post-detail__notice">{notice}</p>}
+
       <footer className="post-detail__footer">
-        <Link to="/news" className="post-detail__button">
+        <Link to={basePath} className="post-detail__button">
           {newsDetail.backToList}
         </Link>
         {canEdit && (
           <div className="post-detail__actions">
-            <Link to={`/news/${post.id}/edit`} className="post-detail__button">
+            <Link to={`${basePath}/${post.id}/edit`} className="post-detail__button">
               {newsDetail.edit}
             </Link>
             <button

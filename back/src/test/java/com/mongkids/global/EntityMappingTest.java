@@ -23,6 +23,9 @@ import com.mongkids.domain.consultation.entity.PersonalConsultation;
 import com.mongkids.domain.member.entity.Member;
 import com.mongkids.domain.member.entity.MemberRole;
 import com.mongkids.domain.member.entity.Provider;
+import com.mongkids.domain.post.entity.LabCategory;
+import com.mongkids.domain.post.entity.LabPost;
+import com.mongkids.domain.post.entity.LabPostLike;
 import com.mongkids.domain.post.entity.Post;
 import com.mongkids.domain.post.entity.PostCategory;
 import com.mongkids.domain.post.entity.PostLike;
@@ -120,6 +123,35 @@ class EntityMappingTest {
 		Post found = em.find(Post.class, post.getId());
 
 		// then
+		assertThat(found.getImages()).extracting("imageKey").containsExactly("posts/1/a.jpg", "posts/1/b.jpg");
+		assertThat(found.getImages()).extracting("sortOrder").containsExactly(0, 1);
+		assertThat(found.getLikeCount()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("연구소 글은 별도 테이블에 사진과 함께 순서대로 저장되고 공감은 회원당 하나다")
+	void saveLabPostWithImagesAndLike() {
+		// given
+		Member staff = em.persist(createMember("kakao-3"));
+		LabPost labPost = LabPost.builder()
+			.member(staff)
+			.category(LabCategory.GROWTH)
+			.title("제목")
+			.content("본문")
+			.build();
+		labPost.addImage("posts/1/a.jpg");
+		labPost.addImage("posts/1/b.jpg");
+		em.persist(labPost);
+		em.persist(LabPostLike.builder().labPost(labPost).member(staff).build());
+		labPost.increaseLikeCount();
+		em.flush();
+		em.clear();
+
+		// when
+		LabPost found = em.find(LabPost.class, labPost.getId());
+
+		// then
+		assertThat(found.getCategory()).isEqualTo(LabCategory.GROWTH);
 		assertThat(found.getImages()).extracting("imageKey").containsExactly("posts/1/a.jpg", "posts/1/b.jpg");
 		assertThat(found.getImages()).extracting("sortOrder").containsExactly(0, 1);
 		assertThat(found.getLikeCount()).isEqualTo(1);

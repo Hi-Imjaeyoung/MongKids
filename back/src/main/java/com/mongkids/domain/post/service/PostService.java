@@ -1,7 +1,6 @@
 package com.mongkids.domain.post.service;
 
 import java.time.YearMonth;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mongkids.domain.member.entity.Member;
-import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.domain.post.dto.PostCreateResponse;
 import com.mongkids.domain.post.dto.PostDetailResponse;
 import com.mongkids.domain.post.dto.PostImageUploadUrlRequest;
@@ -38,33 +36,31 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostService {
 
-	static final int MAX_IMAGE_COUNT = 20;
-	static final long MAX_IMAGE_SIZE = 10L * 1024 * 1024;
 	static final int MAX_PAGE_SIZE = 100;
+	static final Sort LATEST = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
 
-	private static final String IMAGE_KEY_PREFIX = "posts/";
 	private static final Map<String, String> IMAGE_EXTENSIONS = Map.of(
 		"image/jpeg", "jpg",
 		"image/png", "png",
 		"image/webp", "webp"
 	);
-	private static final Sort LATEST = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
 
 	private final PostRepository postRepository;
-	private final MemberService memberService;
+	private final ArticleWriteSupport writeSupport;
 	private final FileStorage fileStorage;
 	private final PostContentSanitizer contentSanitizer;
 
 	/**
-	 * 사진을 S3에 직접 올릴 URL을 발급한다 (FR-008: 최대 20장, 장당 10MB). 게시물을 쓸 수 있는 직원만 (FR-009).
+	 * 사진을 S3에 직접 올릴 URL을 발급한다 (FR-008: 최대 20장, 장당 10MB). 글을 쓸 수 있는 직원만 (FR-009).
+	 * 몽키즈 연구소 글도 이 URL로 사진을 올린다.
 	 */
 	public List<PostImageUploadUrlResponse> createImageUploadUrls(Long memberId, PostImageUploadUrlRequest request) {
-		getPostWriter(memberId);
-		validateImageCount(request.files().size());
+		writeSupport.getWriter(memberId);
+		writeSupport.validateImageCount(request.files().size());
 		return request.files().stream()
 			.map(file -> {
 				String extension = IMAGE_EXTENSIONS.get(file.contentType());
-				if (extension == null || file.size() <= 0 || file.size() > MAX_IMAGE_SIZE) {
+				if (extension == null || file.size() <= 0 || file.size() > ArticleWriteSupport.MAX_IMAGE_SIZE) {
 					throw new BusinessException(ErrorCode.INVALID_POST_IMAGE);
 				}
 				String imageKey = newImageKey(extension);
@@ -76,8 +72,8 @@ public class PostService {
 
 	@Transactional
 	public PostCreateResponse createPost(Long memberId, PostSaveRequest request) {
-		Member member = getPostWriter(memberId);
-		SanitizedContent content = sanitizeContent(request.content());
+		Member member = writeSupport.getWriter(memberId);
+		SanitizedContent content = writeSupport.sanitizeContent(request.content());
 
 		Post post = Post.builder()
 			.member(member)
@@ -93,8 +89,7 @@ public class PostService {
 	 * 최신순 목록. 분류가 없으면 전체 탭이다.
 	 */
 	public PageResponse<PostSummaryResponse> getPosts(PostCategory category, Pageable pageable) {
-		Pageable latest = PageRequest.of(pageable.getPageNumber(), Math.min(pageable.getPageSize(), MAX_PAGE_SIZE),
-			LATEST);
+		Pageable latest = latest(pageable);
 		Page<Post> posts = category == null
 			? postRepository.findByDeletedAtIsNull(latest)
 			: postRepository.findByCategoryAndDeletedAtIsNull(category, latest);
@@ -112,7 +107,7 @@ public class PostService {
 	@Transactional
 	public void updatePost(Long memberId, Long postId, PostSaveRequest request) {
 		Post post = getWritablePost(memberId, postId);
-		SanitizedContent content = sanitizeContent(request.content());
+		SanitizedContent content = writeSupport.sanitizeContent(request.content());
 
 		post.update(request.category(), request.title(), content.html());
 		post.clearImages();
@@ -124,73 +119,32 @@ public class PostService {
 		getWritablePost(memberId, postId).delete();
 	}
 
+	/**
+	 * 요청한 페이지를 최신순으로, 크기는 최대 100으로 맞춘다.
+	 */
+	static Pageable latest(Pageable pageable) {
+		return PageRequest.of(pageable.getPageNumber(), Math.min(pageable.getPageSize(), MAX_PAGE_SIZE), LATEST);
+	}
+
 	private Post getActivePost(Long postId) {
 		return postRepository.findByIdAndDeletedAtIsNull(postId)
 			.orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 	}
 
 	/**
-	 * 게시물을 쓸 수 있는 직원(STAFF·ADMIN)인지 DB의 현재 역할로 확인한다 (FR-009).
-	 * 토큰의 역할을 쓰지 않으므로 권한을 회수하면 다시 로그인하지 않아도 바로 막힌다.
-	 */
-	private Member getPostWriter(Long memberId) {
-		Member member = memberService.getActiveMember(memberId);
-		if (!member.getRole().canWritePost()) {
-			throw new BusinessException(ErrorCode.FORBIDDEN);
-		}
-		return member;
-	}
-
-	/**
 	 * 수정·삭제할 수 있는 게시물: 직원 권한이 있는 작성자 본인이거나 관리자.
+	 * 권한을 먼저 확인해 직원이 아니면 게시물을 조회하지 않는다.
 	 */
 	private Post getWritablePost(Long memberId, Long postId) {
-		Member member = getPostWriter(memberId);
+		Member member = writeSupport.getWriter(memberId);
 		Post post = getActivePost(postId);
-		if (!post.getMember().getId().equals(memberId) && !member.getRole().isAdmin()) {
-			throw new BusinessException(ErrorCode.FORBIDDEN);
-		}
+		writeSupport.checkWritable(member, post);
 		return post;
-	}
-
-	private void validateImageCount(int count) {
-		if (count > MAX_IMAGE_COUNT) {
-			throw new BusinessException(ErrorCode.POST_IMAGE_LIMIT_EXCEEDED);
-		}
-	}
-
-	/**
-	 * 본문을 정화하고 본문 속 사진이 실제 올라간 게시물 사진인지 확인한다.
-	 */
-	private SanitizedContent sanitizeContent(String html) {
-		SanitizedContent content = contentSanitizer.sanitize(html);
-		validateImageKeys(content.imageKeys());
-		return content;
-	}
-
-	/**
-	 * 업로드 URL로 실제 올라간 게시물 사진인지 확인한다.
-	 */
-	private void validateImageKeys(List<String> imageKeys) {
-		validateImageCount(imageKeys.size());
-		if (new HashSet<>(imageKeys).size() != imageKeys.size()) {
-			throw new BusinessException(ErrorCode.INVALID_POST_IMAGE);
-		}
-		for (String imageKey : imageKeys) {
-			if (!imageKey.startsWith(IMAGE_KEY_PREFIX)) {
-				throw new BusinessException(ErrorCode.INVALID_POST_IMAGE);
-			}
-			long size = fileStorage.findSize(imageKey)
-				.orElseThrow(() -> new BusinessException(ErrorCode.INVALID_POST_IMAGE));
-			if (size > MAX_IMAGE_SIZE) {
-				throw new BusinessException(ErrorCode.INVALID_POST_IMAGE);
-			}
-		}
 	}
 
 	private static String newImageKey(String extension) {
 		YearMonth now = YearMonth.now();
-		return "%s%d/%02d/%s.%s".formatted(IMAGE_KEY_PREFIX, now.getYear(), now.getMonthValue(), UUID.randomUUID(),
-			extension);
+		return "%s%d/%02d/%s.%s".formatted(ArticleWriteSupport.IMAGE_KEY_PREFIX, now.getYear(), now.getMonthValue(),
+			UUID.randomUUID(), extension);
 	}
 }

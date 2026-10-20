@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createPost, getPost, updatePost } from '../api/posts'
 import Button from '../components/common/Button'
 import NewsNotice from '../components/news/NewsNotice'
 import PostEditorForm from '../components/news/PostEditorForm'
 import { canManagePost, canWritePost } from '../components/news/postPermission'
 import { newsEditor } from '../data/newsContent'
+import { newsBoard } from './boards'
 
-// 수업 현장 작성·수정 (SCR-006, FR-008). 직원만 작성, 작성자·관리자만 수정 (FR-009).
-// member가 undefined면 로그인 상태 확인 중
-function NewsEditorPage({ member, onLoginClick }) {
+// 게시물 작성·수정 (SCR-015, FR-008). 직원만 작성, 작성자·관리자만 수정 (FR-009).
+// member가 undefined면 로그인 상태 확인 중. board: 수업 현장(newsBoard) 또는 몽키즈 연구소(labBoard)
+function NewsEditorPage({ member, onLoginClick, board = newsBoard }) {
+  const { getPost, createPost, updatePost, basePath } = board
   const { postId } = useParams()
   const navigate = useNavigate()
   const [result, setResult] = useState(null)
@@ -27,20 +28,20 @@ function NewsEditorPage({ member, onLoginClick }) {
     return () => {
       ignore = true
     }
-  }, [postId])
+  }, [postId, getPost])
 
   // 사진은 편집기에서 고를 때 이미 올라가 있고, 본문 HTML에 키로 들어 있다
   const handleSubmit = async (post) => {
     if (postId) {
       await updatePost(postId, post)
-      navigate(`/news/${postId}`, { replace: true })
+      navigate(`${basePath}/${postId}`, { replace: true })
     } else {
       const { id } = await createPost(post)
-      navigate(`/news/${id}`, { replace: true })
+      navigate(`${basePath}/${id}`, { replace: true })
     }
   }
 
-  const handleCancel = () => navigate(postId ? `/news/${postId}` : '/news')
+  const handleCancel = () => navigate(postId ? `${basePath}/${postId}` : basePath)
 
   const current = postId ? (result?.key === postId ? result : null) : { post: null }
   let notice = null
@@ -64,7 +65,14 @@ function NewsEditorPage({ member, onLoginClick }) {
 
   if (notice) return notice
   return (
-    <PostEditorForm key={postId ?? 'new'} post={current.post} onSubmit={handleSubmit} onCancel={handleCancel} />
+    <PostEditorForm
+      key={postId ?? 'new'}
+      post={current.post}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+      categories={board.categories}
+      notice={board.editorNotice}
+    />
   )
 }
 

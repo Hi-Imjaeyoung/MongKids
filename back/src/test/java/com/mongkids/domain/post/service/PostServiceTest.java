@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -55,8 +55,13 @@ class PostServiceTest {
 	@Spy
 	private PostContentSanitizer contentSanitizer = new PostContentSanitizer();
 
-	@InjectMocks
 	private PostService postService;
+
+	@BeforeEach
+	void setUp() {
+		ArticleWriteSupport writeSupport = new ArticleWriteSupport(memberService, fileStorage, contentSanitizer);
+		postService = new PostService(postRepository, writeSupport, fileStorage, contentSanitizer);
+	}
 
 	@Test
 	@DisplayName("사진 업로드 URL은 posts/ 아래 확장자가 붙은 키로 발급한다")
@@ -82,7 +87,7 @@ class PostServiceTest {
 	void createImageUploadUrls_overLimit_throwsException() {
 		// given
 		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
-		List<ImageFile> files = Collections.nCopies(PostService.MAX_IMAGE_COUNT + 1, new ImageFile("image/jpeg", 1L));
+		List<ImageFile> files = Collections.nCopies(ArticleWriteSupport.MAX_IMAGE_COUNT + 1, new ImageFile("image/jpeg", 1L));
 
 		// when & then
 		assertThatThrownBy(() -> postService.createImageUploadUrls(WRITER_ID, new PostImageUploadUrlRequest(files)))
@@ -97,7 +102,7 @@ class PostServiceTest {
 		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 
 		assertThatThrownBy(() -> postService.createImageUploadUrls(WRITER_ID, new PostImageUploadUrlRequest(
-			List.of(new ImageFile("image/jpeg", PostService.MAX_IMAGE_SIZE + 1)))))
+			List.of(new ImageFile("image/jpeg", ArticleWriteSupport.MAX_IMAGE_SIZE + 1)))))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.INVALID_POST_IMAGE);
 
@@ -131,7 +136,7 @@ class PostServiceTest {
 	void createPost_overImageLimit_throwsException() {
 		// given
 		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
-		List<String> imageKeys = IntStream.rangeClosed(0, PostService.MAX_IMAGE_COUNT)
+		List<String> imageKeys = IntStream.rangeClosed(0, ArticleWriteSupport.MAX_IMAGE_COUNT)
 			.mapToObj(i -> "posts/" + i + ".jpg")
 			.toList();
 
@@ -148,7 +153,7 @@ class PostServiceTest {
 		// given
 		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
 		given(fileStorage.findSize("posts/missing.jpg")).willReturn(Optional.empty());
-		given(fileStorage.findSize("posts/large.jpg")).willReturn(Optional.of(PostService.MAX_IMAGE_SIZE + 1));
+		given(fileStorage.findSize("posts/large.jpg")).willReturn(Optional.of(ArticleWriteSupport.MAX_IMAGE_SIZE + 1));
 
 		// when & then
 		List<List<String>> invalidKeys = List.of(

@@ -1,0 +1,85 @@
+.lab-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.lab-card__thumb {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--bg-soft);
+}
+
+.lab-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.25s ease;
+}
+
+.lab-card:hover .lab-card__image {
+  transform: scale(1.04);
+}
+
+.lab-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.lab-card__title {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 18px;
+  word-break: keep-all;
+}
+
+.lab-card:hover .lab-card__title {
+  color: var(--blue);
+}
+
+.lab-card__date {
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+/* 모바일: 썸네일 + 제목 목록 */
+@media (max-width: 768px) {
+  .lab-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lab-card__thumb {
+    flex-shrink: 0;
+    width: 112px;
+    border-radius: var(--radius-md);
+  }
+
+  .lab-card__thumb .image-placeholder__label {
+    display: none;
+  }
+
+  .lab-card__body {
+    gap: 4px;
+  }
+
+  .lab-card__title {
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .lab-card__date {
+    font-size: 13px;
+  }
+}
