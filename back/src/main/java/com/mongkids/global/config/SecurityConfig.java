@@ -61,6 +61,10 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST, "/api/v1/posts/**").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/v1/posts/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/v1/posts/**").authenticated()
+				// 몽키즈 연구소 글 쓰기. 권한 규칙은 게시물과 같다
+				.requestMatchers(HttpMethod.POST, "/api/v1/lab-posts/**").authenticated()
+				.requestMatchers(HttpMethod.PUT, "/api/v1/lab-posts/**").authenticated()
+				.requestMatchers(HttpMethod.DELETE, "/api/v1/lab-posts/**").authenticated()
 				.anyRequest().permitAll())
 			.oauth2Login(oauth2 -> oauth2
 				.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
