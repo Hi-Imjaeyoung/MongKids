@@ -2,6 +2,7 @@ package com.mongkids.domain.post.dto;
 
 import java.time.LocalDateTime;
 
+import com.mongkids.domain.post.entity.Article;
 import com.mongkids.domain.post.entity.Post;
 import com.mongkids.domain.post.entity.PostCategory;
 
@@ -38,7 +39,7 @@ public record PostDetailResponse(
 		);
 	}
 
-	static String authorName(Post post) {
-		return post.getMember().isWithdrawn() ? WITHDRAWN_AUTHOR_NAME : post.getMember().getName();
+	static String authorName(Article article) {
+		return article.getMember().isWithdrawn() ? WITHDRAWN_AUTHOR_NAME : article.getMember().getName();
 	}
 }
