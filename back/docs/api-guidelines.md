@@ -134,7 +134,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
 | POST | `/api/v1/lab-posts` | 작성 `{category, title, content}` → 201 `{id}` | 직원 |
-| GET | `/api/v1/lab-posts?category=&page=&size=` | 최신순 목록 (`PageResponse<LabPostSummaryResponse>`). `category` 없으면 전체, 기본 `size` 12, 최대 100 | - |
+| GET | `/api/v1/lab-posts?category=&keyword=&page=&size=` | 최신순 목록 (`PageResponse<LabPostSummaryResponse>`). `category` 없으면 전체, `keyword`는 제목 부분 일치(앞뒤 공백 무시, 본문은 검색 안 함, FR-024), 기본 `size` 12, 최대 100 | - |
 | GET | `/api/v1/lab-posts/{labPostId}` | 상세 (`content`는 사진 `src`가 채워진 HTML, `authorId` 포함) | - |
 | PUT | `/api/v1/lab-posts/{labPostId}` | 전체 수정. 사진 목록은 새 본문에 나온 사진으로 통째로 바뀐다 | 작성자·관리자 |
 | DELETE | `/api/v1/lab-posts/{labPostId}` | soft delete | 작성자·관리자 |
