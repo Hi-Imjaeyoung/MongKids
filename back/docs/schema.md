@@ -26,6 +26,10 @@ erDiagram
 	post ||--o{ post_image : 포함
 	post ||--o{ post_comment : 포함
 	post ||--o{ post_like : 받음
+	member ||--o{ lab_post : "작성(직원)"
+	member ||--o{ lab_post_like : 공감
+	lab_post ||--o{ lab_post_image : 포함
+	lab_post ||--o{ lab_post_like : 받음
 	review ||--o{ review_image : 포함
 	consultation ||--o| institution_consultation : "type=INSTITUTION"
 	consultation ||--o| personal_consultation : "type=PERSONAL"
@@ -35,7 +39,7 @@ erDiagram
 |---|---|---|
 | member | `member` | FR-018, FR-019, FR-022 |
 | consultation | `consultation`, `institution_consultation`, `personal_consultation` | FR-001~004, FR-023 |
-| post | `post`, `post_image`, `post_comment`, `post_like` | FR-008~012 |
+| post | `post`, `post_image`, `post_comment`, `post_like` (수업 현장), `lab_post`, `lab_post_image`, `lab_post_like` (몽키즈 연구소) | FR-008~012 |
 | review | `review`, `review_image` | FR-012~017, FR-021 |
 
 ## 3. 테이블 정의
@@ -154,6 +158,30 @@ erDiagram
 | member_id | BIGINT | NOT NULL, FK → member.id | |
 
 - UNIQUE (`post_id`, `member_id`) — 회원당 1회. 취소 시 행 삭제.
+
+### lab_post — 몽키즈 연구소 글 (FR-008, SCR-024)
+
+`post`와 같은 공통 컬럼(`member_id`, `title`, `content`, `like_count`, `deleted_at`, 생성·수정 시각)을 쓰고 `comment_count`는 없다 (연구소 글은 댓글 없음). Entity는 공통 부모 `Article`(`@MappedSuperclass`)을 상속한다.
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| member_id | BIGINT | NOT NULL, FK → member.id | 작성 직원 |
+| category | VARCHAR(20) | NOT NULL | SCR-024 탭: `PARENT_QA`(부모님 궁금증), `GROWTH`(움직임과 성장), `EQUIPMENT`(교구 이야기) |
+| title | VARCHAR(100) | NOT NULL | 제목 |
+| content | TEXT | NOT NULL | 본문 HTML. 형식은 `post.content`와 같다 |
+| like_count | INT | NOT NULL, 기본 0 | 공감 수 (목록 조회용 비정규화) |
+| deleted_at | DATETIME(6) | NULL | |
+
+- INDEX (`category`, `created_at`) — 탭별 최신순 목록
+
+### lab_post_image — 연구소 글 사진 (FR-008)
+
+`post_image`와 같은 구조이고 FK만 `lab_post_id` → lab_post.id다. Entity는 공통 부모 `ArticleImage`를 상속한다. 사진 키는 `posts/` 아래를 같이 쓴다.
+
+### lab_post_like — 연구소 글 공감 (FR-011)
+
+`post_like`와 같은 구조이고 FK만 `lab_post_id` → lab_post.id다. UNIQUE (`lab_post_id`, `member_id`).
 
 ### review — 수업 후기 (FR-013~017, FR-021)
 

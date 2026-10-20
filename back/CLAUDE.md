@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 백엔드 API 서버 (Spring Boot 기반 REST API)
-- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API, 게시물 API(FR-008: S3 Presigned URL 사진 업로드), 기관·개인 상담 신청 API(FR-001, FR-002) 구현.
+- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API, 게시물 API(FR-008: S3 Presigned URL 사진 업로드)와 몽키즈 연구소 글 API(`lab_post`, 공통 부모 `Article`), 기관·개인 상담 신청 API(FR-001, FR-002) 구현.
 - 요구사항 (프론트와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (프론트와 공유) → [../docs/progress.md](../docs/progress.md)
 
@@ -96,7 +96,7 @@
 - [x] `global/` 공통 클래스(`ApiResponse`, `ErrorCode`, `BusinessException`, `GlobalExceptionHandler`) 구현
 - [x] 소셜 로그인 실제 키로 카카오·네이버 로그인 확인 (로컬). `.env`에 `KAKAO_*`, `NAVER_*`, `JWT_SECRET` 없으면 기동 실패
 - [ ] S3 버킷 구성 후 사진 업로드 로컬 확인. `.env`에 `AWS_S3_BUCKET`, `STORAGE_PUBLIC_BASE_URL`(+ 로컬 IAM 키) 없으면 기동 실패
-- [x] 게시물 쓰기 직원 권한(FR-009): `PostService`가 DB의 현재 역할로 검사
+- [x] 게시물 쓰기 직원 권한(FR-009): `ArticleWriteSupport`가 DB의 현재 역할로 검사 (게시물·연구소 글 공통)
 - [ ] 직원 권한 부여·회수(FR-022) 전까지 로컬에서는 DB에서 직접 지정: `UPDATE member SET role = 'STAFF' WHERE id = ?` (`ADMIN`도 같은 방식)
 - [ ] 운영 배포 시 CloudFront 뒤에서 OAuth redirect_uri가 서비스 도메인으로 만들어지도록 Host·`X-Forwarded-*` 전달 설정 확인 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md)
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.

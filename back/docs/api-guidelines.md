@@ -109,7 +109,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
-| POST | `/api/v1/posts/image-upload-urls` | 사진 업로드 URL 발급. 요청 `{files: [{contentType, size}]}` → `[{imageKey, uploadUrl}]` | 직원 |
+| POST | `/api/v1/posts/image-upload-urls` | 사진 업로드 URL 발급. 요청 `{files: [{contentType, size}]}` → `[{imageKey, uploadUrl}]`. 연구소 글(§7-1)도 같이 쓴다 | 직원 |
 | POST | `/api/v1/posts` | 작성 `{category, title, content}` → 201 `{id}`. `content`는 본문 HTML | 직원 |
 | GET | `/api/v1/posts?category=&page=&size=` | 최신순 목록 (`PageResponse<PostSummaryResponse>`). `category` 없으면 전체, 기본 `size` 12, 최대 100 | - |
 | GET | `/api/v1/posts/{postId}` | 상세 (`content`는 사진 `src`가 채워진 HTML, `authorId` 포함) | - |
@@ -124,8 +124,25 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 사진 흐름: URL 발급 → 브라우저가 `uploadUrl`에 `PUT`(발급 때 보낸 `Content-Type`·크기 그대로) → 본문 HTML에 `data-image-key`로 넣어 작성·수정. 본문에 처음 나온 사진이 대표 사진. 수정 시 상세 응답 HTML을 그대로 편집해 보내면 된다(`src`는 서버가 지운다).
 - 사진 제한: 게시물당 최대 20장(`P002`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `posts/` 밖의 키, 중복 키는 `P003`.
 - 권한 (FR-009): **직원** = `STAFF`·`ADMIN`. **작성자·관리자** = 직원인 작성자 본인 또는 `ADMIN`. 직원 권한이 회수된 작성자는 자기 글도 수정·삭제할 수 없다.
-  - 역할은 토큰이 아니라 DB의 현재 역할로 `PostService`가 검사한다. 비로그인은 401 `A001`, 권한 없음은 403 `A002`.
+  - 역할은 토큰이 아니라 DB의 현재 역할로 `ArticleWriteSupport`가 검사한다 (연구소 글도 같음). 비로그인은 401 `A001`, 권한 없음은 403 `A002`.
 - 없거나 삭제된 게시물 `P001`(404).
+
+### 7-1. 몽키즈 연구소 글 API (FR-008, SCR-024)
+
+수업 현장 게시물과 테이블(`lab_post`)·경로를 분리했다. 본문 형식·사진 흐름·사진 제한·권한(FR-009)은 §7과 같다.
+
+| 메서드 | URL | 설명 | 인증 |
+|---|---|---|---|
+| POST | `/api/v1/lab-posts` | 작성 `{category, title, content}` → 201 `{id}` | 직원 |
+| GET | `/api/v1/lab-posts?category=&page=&size=` | 최신순 목록 (`PageResponse<LabPostSummaryResponse>`). `category` 없으면 전체, 기본 `size` 12, 최대 100 | - |
+| GET | `/api/v1/lab-posts/{labPostId}` | 상세 (`content`는 사진 `src`가 채워진 HTML, `authorId` 포함) | - |
+| PUT | `/api/v1/lab-posts/{labPostId}` | 전체 수정. 사진 목록은 새 본문에 나온 사진으로 통째로 바뀐다 | 작성자·관리자 |
+| DELETE | `/api/v1/lab-posts/{labPostId}` | soft delete | 작성자·관리자 |
+
+- `category`: `PARENT_QA`(부모님 궁금증), `GROWTH`(움직임과 성장), `EQUIPMENT`(교구 이야기). 수업 현장 분류는 받지 않는다(400).
+- 응답에 `likeCount`는 있고 `commentCount`는 없다 (연구소 글은 댓글 없음).
+- 사진은 `/api/v1/posts/image-upload-urls`로 받은 `posts/` 키를 쓴다.
+- 없거나 삭제된 연구소 글 `P005`(404).
 
 ## 8. 상담 신청 API (FR-001, FR-002, FR-003, FR-023)
 
