@@ -15,46 +15,40 @@
   height: var(--header-height);
 }
 
-/* 로고: 실제 로고 이미지가 준비되면 교체 */
+/* 로고: 원숭이·바나나 원본 로고 (여백을 잘라낸 버전) */
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 16px 6px 8px;
-  background: var(--yellow);
-  border: 3px solid var(--text);
-  border-radius: 999px 999px 999px 24px;
-  transform: rotate(-8deg);
   flex-shrink: 0;
+  transition: transform 0.15s ease;
 }
 
-.logo__mascot {
-  font-size: 26px;
-  line-height: 1;
+.logo:hover {
+  transform: rotate(-3deg);
 }
 
-.logo__text {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--blue);
-  letter-spacing: -0.5px;
+.logo__image {
+  display: block;
+  height: 56px;
+  width: auto;
 }
 
 .gnb {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 .gnb__list {
   display: flex;
-  gap: 32px;
+  gap: 24px;
 }
 
 .gnb__link {
   font-size: 15px;
   font-weight: 600;
   color: var(--text);
+  white-space: nowrap;
   transition: color 0.15s;
 }
 
@@ -67,6 +61,13 @@
   font-weight: 800;
 }
 
+/* 시안 순서: 로그인(또는 회원 이름·로그아웃) → 상담 버튼 2개 */
+.header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .header__cta {
   display: flex;
   gap: 8px;
@@ -75,7 +76,7 @@
 .header__auth {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   font-size: 14px;
   white-space: nowrap;
 }
@@ -84,13 +85,18 @@
   font-weight: 700;
 }
 
+.header__member-name {
+  color: var(--blue);
+}
+
 .header__auth-button {
-  padding: 8px 4px;
+  padding: 8px 10px;
   border: 0;
   background: transparent;
   color: var(--text-sub);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  text-decoration: underline;
   cursor: pointer;
 }
 
@@ -165,11 +171,23 @@
     border-bottom: 1px solid var(--border);
   }
 
+  .header__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
   .header__cta {
     flex-direction: column;
   }
 
   .header__auth {
     justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .logo__image {
+    height: 48px;
   }
 }

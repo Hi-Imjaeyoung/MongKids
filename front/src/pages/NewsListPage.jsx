@@ -8,7 +8,7 @@ import { canWritePost } from '../components/news/postPermission'
 
 const PAGE_SIZE = 12
 
-// 몽키즈 소식 목록 (SCR-006). 분류 탭은 주소(?category=)에 남겨 새로고침·공유해도 유지한다
+// 수업 현장 목록 (SCR-006). 분류 탭은 주소(?category=)에 남겨 새로고침·공유해도 유지한다
 function NewsListPage({ member }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const category = findCategory(searchParams.get('category')).id

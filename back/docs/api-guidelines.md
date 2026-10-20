@@ -116,7 +116,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | PUT | `/api/v1/posts/{postId}` | 전체 수정. 사진 목록은 새 본문에 나온 사진으로 통째로 바뀐다 | 작성자·관리자 |
 | DELETE | `/api/v1/posts/{postId}` | soft delete | 작성자·관리자 |
 
-- `category`: `GENERAL`(게시글), `NEWS`(소식), `EVENT`(행사 프로그램).
+- `category`: `GENERAL`(게시글), `NEWS`(소식), `EVENT`(현장 사진).
 - 본문 HTML 허용 목록: `p br strong em u a ul ol li blockquote hr figure figcaption img`. 그 밖의 태그·속성(`script`, `style`, `on*` 등)은 제거한다.
   - `a[href]`는 http/https만. 응답에 `target="_blank" rel="noopener noreferrer"`를 붙인다.
   - 사진 묶음: `<figure class="post-photos">` 안에 `<img data-image-key="…">` 1~3장 + `<figcaption>`(선택, 200자). `img`는 사진 묶음 안에만 둘 수 있다.

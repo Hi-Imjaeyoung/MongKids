@@ -8,7 +8,7 @@ front/
 ├─ public/                    정적 파일 (favicon 등, 경로 그대로 서빙)
 └─ src/
    ├─ main.jsx                React 마운트
-   ├─ App.jsx                 레이아웃(Header, FloatingMenu) + 라우트(react-router-dom), 로그인 상태, 모달(로그인·기관 상담) 열림 상태
+   ├─ App.jsx                 레이아웃(Header, Footer, FloatingMenu, MobileCtaBar) + 라우트(react-router-dom), 로그인 상태, 모달(로그인·기관 상담) 열림 상태
    ├─ index.css               전역 리셋, 디자인 토큰, 공통 클래스(.container, .section-heading)
    ├─ pages/                  화면 단위. 섹션 컴포넌트를 조립만 한다
    │  ├─ HomePage.jsx         /
@@ -16,12 +16,13 @@ front/
    │  ├─ NewsDetailPage.jsx   /news/:postId
    │  └─ NewsEditorPage.jsx   /news/write, /news/:postId/edit
    ├─ components/
-   │  ├─ layout/              모든 화면에 공통으로 붙는 영역 (Header, FloatingMenu)
-   │  ├─ home/                홈 화면 전용 섹션 (Hero, StatsBar, ServiceCards, WhyMongkids, Reviews)
+   │  ├─ layout/              모든 화면에 공통으로 붙는 영역 (Header, Footer, FloatingMenu, MobileCtaBar: 640px 이하 하단 고정 상담 바)
+   │  ├─ home/                홈 화면 전용 섹션 (Hero, StatsBar, ServiceCards, WhyMongkids, ClassGallery, Reviews, ProcessSteps, SpecialPrograms, FaqPreview, ContactCta)
    │  ├─ auth/                로그인·회원가입 모달 (LoginModal, SCR-013)
-   │  ├─ news/                몽키즈 소식 (목록·카드·상세·본문 출력·작성 폼·HTML 편집기·사진 묶음 노드, SCR-006)
+   │  ├─ news/                수업 현장 (목록·카드·상세·본문 출력·작성 폼·HTML 편집기·사진 묶음 노드, SCR-006)
    │  ├─ consultation/        상담 신청 모달 (InstitutionConsultationModal SCR-009, PersonalConsultationModal SCR-010, 공용 ConsultationFormParts)
-   │  └─ common/              화면과 무관한 재사용 UI (Button, Highlight, ImagePlaceholder)
+   │  └─ common/              화면과 무관한 재사용 UI (Button: yellow·blue·ghost, to면 링크 / SectionHeading, Highlight, ImagePlaceholder)
+   ├─ assets/                 번들에 포함되는 이미지 (logo.png: 원본 로고에서 여백을 잘라낸 버전)
    ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인, posts.js 게시물, consultations.js 상담 신청)
    └─ data/                   화면 콘텐츠 (homeContent.js, authContent.js, newsContent.js, consultationContent.js)
 ```
@@ -43,7 +44,7 @@ pages → components/{화면} → components/common
 
 ## 3. 데이터와 API 연동 방침
 
-- 홈 콘텐츠는 `src/data/homeContent.js`의 정적 데이터다. 로그인 상태(FR-018)와 몽키즈 소식(FR-008)은 API로 받는다.
+- 홈 콘텐츠는 `src/data/homeContent.js`의 정적 데이터다. 로그인 상태(FR-018)와 수업 현장(FR-008)은 API로 받는다.
 - 기관 상담 신청(FR-001)은 로그인 없이 `createInstitutionConsultation()`으로 보낸다. 모달은 `App.jsx`가 열고, 헤더·히어로의 "기관 프로그램 문의" 버튼이 `onInstitutionConsultClick`으로 연다. 요일·연령 선택지의 `value`는 백엔드 enum 이름과 같다(`consultationContent.js`).
 - 개인 상담 신청(FR-002)은 `createPersonalConsultation()`으로 보낸다. 헤더·히어로의 "1:1 방문체육 상담" 버튼이 `onPersonalConsultClick`으로 `PersonalConsultationModal`을 연다. 2단계(기본 정보 → 아이 이야기·동의)이며, 전화번호는 `010` 고정 + 4자리 두 칸을 합쳐 보낸다. 서버 필드 오류가 1단계 항목이면 1단계로 돌아간다. 모양은 `InstitutionConsultationModal.css`의 `consult-modal__*`를 같이 쓰고 `PersonalConsultationModal.css`는 파란 강조·단계 표시만 더한다.
 - 두 모달이 같이 쓰는 칩 묶음(`ChipGroup`, 배열이면 여러 개·값이면 하나 선택)과 필드 오류(`FieldError`)는 `ConsultationFormParts.jsx`에 둔다.

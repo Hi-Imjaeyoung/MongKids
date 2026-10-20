@@ -1,0 +1,55 @@
+.contact-cta {
+  margin-top: 80px;
+}
+
+.contact-cta__panel {
+  position: relative;
+  overflow: hidden;
+  padding: 48px 24px;
+  background: linear-gradient(120deg, var(--yellow-soft), var(--cream) 55%, var(--blue-soft));
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.contact-cta__mascot {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.contact-cta__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  word-break: keep-all;
+}
+
+.contact-cta__description {
+  margin: 8px 0 24px;
+  font-size: 16px;
+  color: var(--text-sub);
+}
+
+.contact-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .contact-cta__panel {
+    padding: 36px 16px;
+  }
+
+  .contact-cta__title {
+    font-size: 22px;
+  }
+
+  .contact-cta__actions .btn {
+    flex: 1 1 100%;
+  }
+}

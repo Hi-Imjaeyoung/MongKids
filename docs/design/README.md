@@ -16,11 +16,17 @@
 
 | 화면 | PNG (확정본) | 편집 원본 | 상태 |
 |---|---|---|---|
-| SCR-001 홈 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 확정 (PNG는 아티팩트 "SCR-001 홈" 페이지에 보관) |
-| SCR-006 몽키즈 소식 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
+| SCR-001 홈 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 기획 v4 반영해 수정 (2026-10-18, 데스크톱). 확정 PNG 다시 내보내기 필요 |
+| SCR-002 ABOUT 몽키즈 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 승인 (2026-10-20, 데스크톱·모바일). 빈칸 문구 채운 뒤 확정 PNG 내보내기 필요 |
+| SCR-003 체육/행사 프로그램 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (2026-10-20, 기획 v4 기준, 데스크톱·모바일). 확정 필요 |
+| SCR-016~020 프로그램 상세 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (2026-10-20, 기획 v4 기준, 데스크톱 5종 + 모바일은 SCR-016 대표). 확정 필요 |
+| SCR-012 수업 후기 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 승인 (2026-10-20, 목록·작성, 데스크톱·모바일). 확정 PNG 내보내기 필요 |
+| SCR-022 자주 묻는 질문 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 승인 (2026-10-20, 데스크톱·모바일, 탭·펼치기 동작, 분류별 질문은 기획 v4 문구). 확정 PNG 내보내기 필요 |
+| SCR-024 몽키즈 연구소 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요, 데스크톱·모바일, 검색창 포함) |
+| SCR-006 수업 현장 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-009 기관 상담 신청 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-010 개인 상담 신청 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-015 게시물 작성·수정 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 
-- 초안은 아티팩트 하나("MongKids 화면 초안")에 모으고, 화면마다 페이지(`SCR-006 몽키즈 소식` 등)를 나눈다.
+- 초안은 아티팩트 하나("MongKids 화면 초안")에 모으고, 화면마다 페이지(`SCR-006 수업 현장` 등)를 나눈다.

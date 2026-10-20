@@ -28,6 +28,7 @@
   --bg: #fff;
   --bg-soft: #f4f7fc;
   --border: #e8e9ee;
+  --border-strong: #cdd5df;
 
   --radius-md: 14px;
   --radius-lg: 20px;
@@ -36,6 +37,8 @@
 
   --header-height: 80px;
   --container: 1200px;
+  /* 모바일 하단 고정 상담 바 높이 (640px 이하에서만 사용) */
+  --mobile-cta-height: 0px;
 
   font-family:
     'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
@@ -81,7 +84,15 @@ button {
   padding: 0 20px;
 }
 
+/* 내용이 짧은 화면에서도 푸터가 바닥에 붙도록 한다 */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .main {
+  flex: 1;
   padding-bottom: 96px;
 }
 
@@ -108,6 +119,20 @@ button {
   font-weight: 600;
 }
 
+.section-heading__description {
+  margin: 8px 0 0;
+  font-size: 15px;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+/* 섹션 하단 보조 CTA 줄 */
+.section-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
 @media (max-width: 768px) {
   :root {
     --header-height: 64px;
@@ -115,5 +140,11 @@ button {
 
   .container {
     padding: 0 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --mobile-cta-height: 68px;
   }
 }

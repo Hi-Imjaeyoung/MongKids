@@ -1,0 +1,25 @@
+.mobile-cta {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .mobile-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    height: var(--mobile-cta-height);
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 -6px 24px rgba(31, 36, 48, 0.08);
+  }
+
+  .mobile-cta .btn:hover {
+    transform: none;
+  }
+}

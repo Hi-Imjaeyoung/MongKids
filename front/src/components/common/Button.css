@@ -36,6 +36,18 @@
   color: #fff;
 }
 
+/* 보조 CTA (더 보기 등) */
+.btn--ghost {
+  background: #fff;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--border-strong);
+}
+
+.btn--ghost:hover {
+  box-shadow: inset 0 0 0 1px var(--blue), var(--shadow-sm);
+  color: var(--blue);
+}
+
 .btn:disabled {
   background: var(--border);
   color: var(--text-sub);

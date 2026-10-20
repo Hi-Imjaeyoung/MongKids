@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 웹 프론트엔드 (Vite + React SPA)
-- 현재 상태: 홈 화면(SCR-001) 시안을 정적 데이터로 구현. 소셜 로그인 모달(SCR-013, FR-018), 몽키즈 소식(SCR-006, FR-008) 목록·상세·작성·수정 API 연동, 기관 상담 신청 모달(SCR-009, FR-001), 개인 상담 신청 2단계 모달(SCR-010, FR-002). react-router-dom 라우팅.
+- 현재 상태: 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현 (공통 푸터·모바일 하단 상담 바 포함). 소셜 로그인 모달(SCR-013, FR-018), 수업 현장(SCR-006, FR-008) 목록·상세·작성·수정 API 연동, 기관 상담 신청 모달(SCR-009, FR-001), 개인 상담 신청 2단계 모달(SCR-010, FR-002). react-router-dom 라우팅.
 - 요구사항 (백엔드와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (백엔드와 공유) → [../docs/progress.md](../docs/progress.md)
 - 디자인 시안 → [../docs/design/](../docs/design/)
@@ -61,7 +61,7 @@ npm run preview    # 빌드 결과 미리보기
 
 ## 알려진 이슈 / TODO
 
-- [ ] 실제 사진·로고·아이콘 리소스 없음 → `ImagePlaceholder`, 이모지로 대체 중
+- [ ] 실제 사진·아이콘 리소스 없음 → `ImagePlaceholder`, 이모지로 대체 중 (로고는 `src/assets/logo.png` 적용)
 - [x] 라우팅 도입. 화면이 없는 메뉴는 아직 `#` 앵커
 - [ ] 운영 배포 시 SPA 딥링크 폴백 필요 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md) A
 - [x] `vite.config.js`에 `/api`, `/oauth2`, `/login/oauth2` 프록시 설정 (`changeOrigin: false` 유지: OAuth redirect_uri가 프론트 주소로 만들어져야 함)

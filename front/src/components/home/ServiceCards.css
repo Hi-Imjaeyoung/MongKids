@@ -1,13 +1,17 @@
 .services {
+  margin-top: 64px;
+}
+
+.services__list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-top: 40px;
 }
 
 .service-card {
   --card-bg: var(--yellow-soft);
   --card-accent: var(--yellow);
+  --card-text: var(--yellow-text);
 
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -26,17 +30,30 @@
 .service-card--blue {
   --card-bg: var(--blue-soft);
   --card-accent: var(--blue);
+  --card-text: var(--blue-text);
 }
 
 .service-card--green {
   --card-bg: var(--green-soft);
   --card-accent: var(--green);
+  --card-text: var(--green-text);
 }
 
 .service-card__body {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   padding: 24px 0 24px 22px;
+}
+
+.service-card__tag {
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--card-text);
 }
 
 .service-card__title {
@@ -44,6 +61,7 @@
   font-size: 22px;
   font-weight: 800;
   color: var(--text);
+  word-break: keep-all;
 }
 
 .service-card__description {
@@ -88,7 +106,7 @@
 }
 
 @media (max-width: 1024px) {
-  .services {
+  .services__list {
     grid-template-columns: 1fr;
   }
 }
