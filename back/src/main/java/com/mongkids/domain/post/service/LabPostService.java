@@ -50,13 +50,21 @@ public class LabPostService {
 	}
 
 	/**
-	 * 최신순 목록. 분류가 없으면 전체 탭이다.
+	 * 최신순 목록. 분류가 없으면 전체 탭이다. 검색어가 있으면 제목 부분 일치로 거른다 (FR-024, 본문은 검색하지 않음).
 	 */
-	public PageResponse<LabPostSummaryResponse> getLabPosts(LabCategory category, Pageable pageable) {
+	public PageResponse<LabPostSummaryResponse> getLabPosts(LabCategory category, String keyword, Pageable pageable) {
 		Pageable latest = PostService.latest(pageable);
-		Page<LabPost> labPosts = category == null
-			? labPostRepository.findByDeletedAtIsNull(latest)
-			: labPostRepository.findByCategoryAndDeletedAtIsNull(category, latest);
+		String trimmed = keyword == null ? "" : keyword.strip();
+		Page<LabPost> labPosts;
+		if (trimmed.isEmpty()) {
+			labPosts = category == null
+				? labPostRepository.findByDeletedAtIsNull(latest)
+				: labPostRepository.findByCategoryAndDeletedAtIsNull(category, latest);
+		} else {
+			labPosts = category == null
+				? labPostRepository.findByTitleContainingAndDeletedAtIsNull(trimmed, latest)
+				: labPostRepository.findByCategoryAndTitleContainingAndDeletedAtIsNull(category, trimmed, latest);
+		}
 		return PageResponse.from(labPosts, labPost -> LabPostSummaryResponse.of(labPost, fileStorage::getUrl));
 	}
 

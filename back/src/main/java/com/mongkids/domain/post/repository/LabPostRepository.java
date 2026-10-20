@@ -19,5 +19,12 @@ public interface LabPostRepository extends JpaRepository<LabPost, Long> {
 	Page<LabPost> findByCategoryAndDeletedAtIsNull(LabCategory category, Pageable pageable);
 
 	@EntityGraph(attributePaths = "member")
+	Page<LabPost> findByTitleContainingAndDeletedAtIsNull(String keyword, Pageable pageable);
+
+	@EntityGraph(attributePaths = "member")
+	Page<LabPost> findByCategoryAndTitleContainingAndDeletedAtIsNull(LabCategory category, String keyword,
+		Pageable pageable);
+
+	@EntityGraph(attributePaths = "member")
 	Optional<LabPost> findByIdAndDeletedAtIsNull(Long id);
 }

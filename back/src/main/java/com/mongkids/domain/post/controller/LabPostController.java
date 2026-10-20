@@ -49,9 +49,10 @@ public class LabPostController {
 	@GetMapping
 	public ApiResponse<PageResponse<LabPostSummaryResponse>> getLabPosts(
 		@RequestParam(required = false) LabCategory category,
+		@RequestParam(required = false) String keyword,
 		@PageableDefault(size = 12) Pageable pageable
 	) {
-		return ApiResponse.success(labPostService.getLabPosts(category, pageable));
+		return ApiResponse.success(labPostService.getLabPosts(category, keyword, pageable));
 	}
 
 	@GetMapping("/{labPostId}")

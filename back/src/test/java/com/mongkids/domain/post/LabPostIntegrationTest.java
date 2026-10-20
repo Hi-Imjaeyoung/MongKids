@@ -114,6 +114,12 @@ class LabPostIntegrationTest {
 		mockMvc.perform(get("/api/v1/lab-posts").param("category", "PARENT_QA"))
 			.andExpect(jsonPath("$.data.totalElements").value(0));
 
+		mockMvc.perform(get("/api/v1/lab-posts").param("keyword", " 균형 "))
+			.andExpect(jsonPath("$.data.totalElements").value(1));
+
+		mockMvc.perform(get("/api/v1/lab-posts").param("keyword", "한 발"))
+			.andExpect(jsonPath("$.data.totalElements").value(0));
+
 		mockMvc.perform(get("/api/v1/posts"))
 			.andExpect(jsonPath("$.data.totalElements").value(0));
 

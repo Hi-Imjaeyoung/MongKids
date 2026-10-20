@@ -80,6 +80,26 @@ class LabPostRepositoryTest {
 	}
 
 	@Test
+	@DisplayName("검색어는 제목 부분 일치로 거르고 분류와 함께 적용한다")
+	void findByTitleContaining_filtersTitle() {
+		// given
+		LabPost balance = persistLabPost(LabCategory.GROWTH, "균형 감각 기르기");
+		LabPost board = persistLabPost(LabCategory.EQUIPMENT, "밸런스 보드와 균형 놀이");
+		persistLabPost(LabCategory.GROWTH, "편식하는 아이");
+		em.flush();
+		em.clear();
+
+		// when
+		Page<LabPost> all = labPostRepository.findByTitleContainingAndDeletedAtIsNull("균형", LATEST);
+		Page<LabPost> growth =
+			labPostRepository.findByCategoryAndTitleContainingAndDeletedAtIsNull(LabCategory.GROWTH, "균형", LATEST);
+
+		// then
+		assertThat(all.getContent()).extracting(LabPost::getId).containsExactly(board.getId(), balance.getId());
+		assertThat(growth.getContent()).extracting(LabPost::getId).containsExactly(balance.getId());
+	}
+
+	@Test
 	@DisplayName("삭제된 연구소 글은 단건 조회되지 않는다")
 	void findByIdAndDeletedAtIsNull_deleted_empty() {
 		// given
