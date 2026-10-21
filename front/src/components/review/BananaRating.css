@@ -1,0 +1,65 @@
+.banana-rating {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.banana {
+  width: 22px;
+  height: 22px;
+  fill: #eef0f4;
+  stroke: #c4c8d0;
+  stroke-width: 1.4;
+}
+
+.banana--filled {
+  fill: var(--yellow);
+  stroke: #9a7400;
+}
+
+.banana-rating--sm .banana {
+  width: 20px;
+  height: 20px;
+}
+
+.banana-rating--input {
+  gap: 4px;
+}
+
+.banana-rating__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.banana-rating__button:hover {
+  background: var(--yellow-soft);
+}
+
+.banana-rating__button .banana {
+  width: 40px;
+  height: 40px;
+  stroke-width: 1.2;
+}
+
+.banana-rating__button .banana:not(.banana--filled) {
+  stroke: #a9b0bc;
+}
+
+@media (max-width: 768px) {
+  .banana-rating__button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .banana-rating__button .banana {
+    width: 36px;
+    height: 36px;
+  }
+}

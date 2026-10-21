@@ -16,14 +16,15 @@ import NewsDetailPage from './pages/NewsDetailPage'
 import NewsListPage from './pages/NewsListPage'
 import ProgramDetailPage from './pages/ProgramDetailPage'
 import ProgramsPage from './pages/ProgramsPage'
+import ReviewsPage from './pages/ReviewsPage'
 import { labBoard } from './pages/boards'
 
 // 편집기(TipTap)가 커서 작성·수정 화면에 들어갈 때만 불러온다
 const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
 
 // 모바일 하단 고정 상담 바를 두지 않는 화면
-// SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문
-const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq']
+// SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문, SCR-012 수업 후기
+const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews']
 // SCR-016~020 프로그램 상세 (/programs/:programId)
 const NO_MOBILE_CTA_PREFIXES = ['/programs/']
 
@@ -131,6 +132,7 @@ function App() {
               path="/lab/:postId/edit"
               element={<NewsEditorPage member={member} onLoginClick={openLogin} board={labBoard} />}
             />
+            <Route path="/reviews" element={<ReviewsPage member={member} onLoginClick={openLogin} />} />
             <Route path="*" element={homePage} />
           </Routes>
         </Suspense>

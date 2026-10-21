@@ -4,12 +4,19 @@
 
 .reviews__panel {
   display: grid;
-  grid-template-columns: 200px 1fr auto;
+  grid-template-columns: 200px minmax(0, 1fr) auto;
   align-items: center;
   gap: 24px;
   padding: 24px 32px;
   background: var(--bg-soft);
   border-radius: var(--radius-lg);
+}
+
+.reviews__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .reviews__title {
@@ -28,46 +35,155 @@
 .reviews__bubble {
   position: absolute;
   top: -8px;
-  right: 0;
+  right: -36px;
   font-size: 30px;
 }
 
-.reviews__list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+.reviews__all {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-text);
+}
+
+.reviews__all:hover {
+  text-decoration: underline;
+}
+
+.reviews__loading {
+  margin: 0;
+  padding: 40px 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+/* 카드 2개가 한 화면. 손으로 넘기거나 화살표로 2개씩 넘긴다 (자동 전환 없음, NFR-003) */
+.reviews__track {
+  --reviews-gap: 16px;
+  display: flex;
+  gap: var(--reviews-gap);
+  padding: 4px;
+  margin: -4px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.reviews__track::-webkit-scrollbar {
+  display: none;
+}
+
+.reviews__slide {
+  flex: 0 0 calc((100% - var(--reviews-gap)) / 2);
+  min-width: 0;
+  scroll-snap-align: start;
 }
 
 .review-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 10px;
-  padding: 20px 16px;
+  height: 100%;
+  padding: 20px;
   background: #fff;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
-  text-align: center;
+  transition: box-shadow 0.15s ease;
 }
 
-.review-card__stars {
-  font-size: 18px;
-  letter-spacing: 2px;
-  color: #ffc21a;
+.review-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.review-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.review-card__type {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.review-card__type--green {
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
+.review-card__type--blue {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.review-card__main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .review-card__content {
+  flex: 1;
   margin: 0;
-  font-size: 13px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  font-size: 14px;
   line-height: 1.7;
   color: var(--text);
   word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.review-card__photo {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: var(--blue-soft);
 }
 
 .review-card__author {
   margin: 0;
   font-size: 12px;
   color: var(--text-muted);
+}
+
+.reviews__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reviews__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.reviews__arrow:hover:not(:disabled) {
+  transform: scale(1.08);
+}
+
+.reviews__arrow:disabled {
+  background: var(--border-strong);
+  cursor: default;
 }
 
 .reviews__panel--empty {
@@ -95,37 +211,20 @@
   color: var(--text-muted);
 }
 
-.reviews__next {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 50%;
-  background: var(--blue);
-  color: #fff;
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.reviews__next:hover {
-  transform: scale(1.08);
+.reviews__more {
+  margin-top: 16px;
 }
 
 @media (max-width: 1024px) {
   .reviews__panel {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .reviews__panel--empty {
-    grid-template-columns: 1fr;
-  }
-
-  .reviews__title {
-    grid-column: 1 / -1;
+  .reviews__intro {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .reviews__title-line {
@@ -135,6 +234,11 @@
   .reviews__bubble {
     position: static;
     margin-left: 8px;
+  }
+
+  .reviews__controls {
+    flex-direction: row;
+    justify-content: center;
   }
 }
 
@@ -146,13 +250,11 @@
   .reviews__title {
     font-size: 22px;
   }
+}
 
-  .reviews__list {
-    grid-template-columns: 1fr;
-  }
-
-  /* 모바일에서는 한 장씩 넘겨 본다 */
-  .review-card:not(:first-child) {
-    display: none;
+/* 좁은 화면은 한 장씩 넘긴다 */
+@media (max-width: 640px) {
+  .reviews__slide {
+    flex-basis: 100%;
   }
 }

@@ -182,13 +182,16 @@ export const reasons = [
   },
 ]
 
-// 실제 이용 후기만 싣는다. 후기 API(SCR-012) 연동 전까지는 비워 두고 빈 상태를 보여 준다.
-export const reviews = []
-
+// 후기 내용은 수업 후기 API(SCR-012)에서 최신순으로 불러온다
 export const reviewsCopy = {
   titleLines: ['이용자들의', '솔직한 이야기'],
+  loading: '후기를 불러오는 중',
   empty: '아직 공개된 후기가 없습니다.',
-  emptySub: '실제 이용 고객의 동의와 확인을 거쳐 등록합니다.',
+  emptySub: '몽키즈 수업을 받아 보셨다면 첫 후기를 남겨 주세요.',
+  prev: '이전 후기',
+  next: '다음 후기',
+  // 수업 후기 화면(SCR-012)으로 이동
+  more: { label: '수업 후기 보러 가기', shortLabel: '전체 후기 보기', to: '/reviews' },
 }
 
 export const footer = {
