@@ -29,7 +29,12 @@ public enum ErrorCode {
 	INVALID_POST_IMAGE(HttpStatus.BAD_REQUEST, "P003", "올바르지 않은 사진입니다."),
 	INVALID_POST_CONTENT(HttpStatus.BAD_REQUEST, "P004", "본문 형식이 올바르지 않습니다."),
 	LAB_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P005", "연구소 글을 찾을 수 없습니다."),
-	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "P006", "댓글을 찾을 수 없습니다.");
+	COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "P006", "댓글을 찾을 수 없습니다."),
+
+	// 후기
+	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "후기를 찾을 수 없습니다."),
+	REVIEW_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "R002", "후기 사진은 최대 5장까지 올릴 수 있습니다."),
+	INVALID_REVIEW_IMAGE(HttpStatus.BAD_REQUEST, "R003", "올바르지 않은 사진입니다.");
 
 	private final HttpStatus status;
 	private final String code;
