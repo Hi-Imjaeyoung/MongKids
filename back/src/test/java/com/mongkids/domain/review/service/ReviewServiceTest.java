@@ -83,7 +83,9 @@ class ReviewServiceTest {
 		assertThat(response.satisfaction()).isEqualTo(5);
 		assertThat(response.authorId()).isEqualTo(AUTHOR_ID);
 		assertThat(response.authorName()).isEqualTo("홍**");
-		assertThat(response.imageUrls()).containsExactly("https://cdn/" + IMAGE_KEY, "https://cdn/" + secondKey);
+		assertThat(response.images()).containsExactly(
+			new ReviewResponse.Image(IMAGE_KEY, "https://cdn/" + IMAGE_KEY),
+			new ReviewResponse.Image(secondKey, "https://cdn/" + secondKey));
 		assertThat(response.reply()).isNull();
 	}
 
@@ -99,7 +101,7 @@ class ReviewServiceTest {
 			new ReviewSaveRequest(ReviewType.CLASS, 4, "좋았어요", null));
 
 		// then
-		assertThat(response.imageUrls()).isEmpty();
+		assertThat(response.images()).isEmpty();
 		then(fileStorage).should(never()).findSize(any());
 	}
 

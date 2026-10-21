@@ -19,13 +19,22 @@ public record ReviewResponse(
 	String content,
 	Long authorId,
 	String authorName,
-	List<String> imageUrls,
+	List<Image> images,
 	Reply reply,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
 
 	private static final String WITHDRAWN_AUTHOR_NAME = "탈퇴 회원";
+
+	/**
+	 * 후기 사진. 수정할 때 남길 사진은 {@code imageKey}를 그대로 다시 보낸다. 첫 사진이 대표 사진이다.
+	 */
+	public record Image(
+		String imageKey,
+		String url
+	) {
+	}
 
 	/**
 	 * 관리자 답글 (FR-017). 답글이 없으면 null.
@@ -47,7 +56,10 @@ public record ReviewResponse(
 			review.getContent(),
 			review.getMember().getId(),
 			authorName(review.getMember()),
-			review.getImages().stream().map(ReviewImage::getImageKey).map(imageUrlResolver).toList(),
+			review.getImages().stream()
+				.map(ReviewImage::getImageKey)
+				.map(imageKey -> new Image(imageKey, imageUrlResolver.apply(imageKey)))
+				.toList(),
 			reply,
 			review.getCreatedAt(),
 			review.getUpdatedAt()

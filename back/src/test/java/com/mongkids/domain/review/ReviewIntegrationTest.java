@@ -119,7 +119,8 @@ class ReviewIntegrationTest {
 				.contentType(MediaType.APPLICATION_JSON).content(REVIEW_BODY))
 			.andExpect(status().isCreated())
 			.andExpect(jsonPath("$.data.authorName").value("홍**"))
-			.andExpect(jsonPath("$.data.imageUrls[0]").value("https://cdn.test/reviews/2026/10/a.jpg"))
+			.andExpect(jsonPath("$.data.images[0].imageKey").value("reviews/2026/10/a.jpg"))
+			.andExpect(jsonPath("$.data.images[0].url").value("https://cdn.test/reviews/2026/10/a.jpg"))
 			.andExpect(jsonPath("$.data.reply").doesNotExist())
 			.andReturn().getResponse().getContentAsString();
 		long reviewId = objectMapper.readTree(body).path("data").path("id").asLong();
@@ -145,7 +146,7 @@ class ReviewIntegrationTest {
 					"""))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.type").value("CLASS"))
-			.andExpect(jsonPath("$.data.imageUrls").isEmpty());
+			.andExpect(jsonPath("$.data.images").isEmpty());
 
 		mockMvc.perform(delete("/api/v1/reviews/{reviewId}", reviewId).cookie(author))
 			.andExpect(status().isOk());
