@@ -10,3 +10,13 @@ export function canWritePost(member) {
 export function canManagePost(member, post) {
   return canWritePost(member) && (member.id === post.authorId || member.role === 'ADMIN')
 }
+
+// 로그인한 회원 본인이 쓴 댓글인지 (FR-010)
+export function isMyComment(member, comment) {
+  return Boolean(member) && member.id === comment.authorId
+}
+
+// 댓글을 지울 수 있는지 (FR-010): 작성자 본인이거나 관리자. 댓글 작성은 로그인한 회원 누구나
+export function canDeleteComment(member, comment) {
+  return isMyComment(member, comment) || member?.role === 'ADMIN'
+}

@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import NewsNotice from '../components/news/NewsNotice'
+import PostComments from '../components/news/PostComments'
 import PostDetail from '../components/news/PostDetail'
 import { canManagePost } from '../components/news/postPermission'
 import { newsDetail } from '../data/newsContent'
 import { newsBoard } from './boards'
+import usePostComments from './usePostComments'
 
 // 게시물 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다.
-// board: 수업 현장(newsBoard) 또는 몽키즈 연구소(labBoard, SCR-024에서 재사용)
-function NewsDetailPage({ member, board = newsBoard }) {
+// board: 수업 현장(newsBoard) 또는 몽키즈 연구소(labBoard, SCR-024에서 재사용). 댓글은 board.hasComments일 때만
+function NewsDetailPage({ member, onLoginClick, board = newsBoard }) {
   const { getPost, deletePost, basePath } = board
   const { postId } = useParams()
   const navigate = useNavigate()
   const [result, setResult] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const comments = usePostComments(postId, Boolean(board.hasComments))
 
   useEffect(() => {
     let ignore = false
@@ -62,7 +65,22 @@ function NewsDetailPage({ member, board = newsBoard }) {
       basePath={basePath}
       categories={board.categories}
       notice={board.detailNotice}
-    />
+    >
+      {board.hasComments && (
+        <PostComments
+          member={member}
+          comments={comments.comments}
+          total={comments.total}
+          hasNext={comments.hasNext}
+          loadingMore={comments.loadingMore}
+          error={comments.error}
+          onLoadMore={comments.loadMore}
+          onAdd={comments.addComment}
+          onRemove={comments.removeComment}
+          onLoginClick={onLoginClick}
+        />
+      )}
+    </PostDetail>
   )
 }
 

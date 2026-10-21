@@ -144,6 +144,22 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 사진은 `/api/v1/posts/image-upload-urls`로 받은 `posts/` 키를 쓴다.
 - 없거나 삭제된 연구소 글 `P005`(404).
 
+### 7-2. 게시물 댓글 API (FR-010)
+
+수업 현장 게시물에만 있다 (연구소 글은 댓글 없음).
+
+| 메서드 | URL | 설명 | 인증 |
+|---|---|---|---|
+| POST | `/api/v1/posts/{postId}/comments` | 작성 `{content}` → 201 `PostCommentResponse` | 회원 |
+| GET | `/api/v1/posts/{postId}/comments?page=&size=` | 오래된 순 목록 (`PageResponse<PostCommentResponse>`). 기본 `size` 20, 최대 100 | - |
+| DELETE | `/api/v1/posts/{postId}/comments/{commentId}` | soft delete | 작성자·관리자 |
+
+- `PostCommentResponse`: `{id, content, authorId, authorName, createdAt}`. 탈퇴한 작성자는 `authorName`이 "탈퇴 회원".
+- `content`: 일반 텍스트, 공백만은 안 됨, 1,000자 이내(400 `C001`).
+- **회원** = 로그인한 회원 누구나 (직원 권한 불필요, 별도 확인 절차 없음). **작성자·관리자** = 댓글 작성자 본인 또는 `ADMIN` (직원이어도 남의 댓글은 403 `A002`).
+- 작성·삭제 시 `post.comment_count`를 DB에서 바로 더하고 뺀다 (동시 작성 시 값 유실 방지).
+- 없거나 삭제된 게시물 `P001`, 없거나 삭제된 댓글 `P006`(404).
+
 ## 8. 상담 신청 API (FR-001, FR-002, FR-003, FR-023)
 
 | 메서드 | URL | 설명 | 인증 |

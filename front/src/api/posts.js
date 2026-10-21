@@ -57,3 +57,17 @@ export async function uploadPostImages(files) {
   )
   return uploads.map(({ imageKey }) => imageKey)
 }
+
+// 댓글(FR-010). 목록은 오래된 순
+export function getPostComments(postId, { page = 0, size = 20 } = {}) {
+  const params = new URLSearchParams({ page, size })
+  return request(`/api/v1/posts/${postId}/comments?${params}`)
+}
+
+export function createPostComment(postId, content) {
+  return request(`/api/v1/posts/${postId}/comments`, { method: 'POST', ...jsonBody({ content }) })
+}
+
+export function deletePostComment(postId, commentId) {
+  return request(`/api/v1/posts/${postId}/comments/${commentId}`, { method: 'DELETE' })
+}
