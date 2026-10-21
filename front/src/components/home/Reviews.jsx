@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { reviews, reviewsCopy } from '../../data/homeContent'
+import Button from '../common/Button'
 import './Reviews.css'
 
 const VISIBLE_COUNT = 3
@@ -48,6 +49,9 @@ function Reviews() {
           <div className="reviews__empty">
             <p className="reviews__empty-title">{reviewsCopy.empty}</p>
             <p className="reviews__empty-sub">{reviewsCopy.emptySub}</p>
+            <Button variant="ghost" to={reviewsCopy.more.to} className="reviews__more">
+              {reviewsCopy.more.label}
+            </Button>
           </div>
         )}
       </div>

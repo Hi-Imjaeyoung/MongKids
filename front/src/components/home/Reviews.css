@@ -95,6 +95,10 @@
   color: var(--text-muted);
 }
 
+.reviews__more {
+  margin-top: 16px;
+}
+
 .reviews__next {
   display: inline-flex;
   align-items: center;

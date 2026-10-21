@@ -189,6 +189,8 @@ export const reviewsCopy = {
   titleLines: ['이용자들의', '솔직한 이야기'],
   empty: '아직 공개된 후기가 없습니다.',
   emptySub: '실제 이용 고객의 동의와 확인을 거쳐 등록합니다.',
+  // 수업 후기 화면(SCR-012)으로 이동
+  more: { label: '수업 후기 보러 가기', to: '/reviews' },
 }
 
 export const footer = {
