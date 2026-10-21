@@ -35,6 +35,12 @@ export const newsDetail = {
   photoAlt: (index, total) => `현장 사진 ${index}/${total}`,
 }
 
+// 게시물 공감 (FR-011). 수업 현장·몽키즈 연구소 상세에서 함께 쓴다
+export const newsLike = {
+  label: '공감',
+  loginRequired: '로그인하면 공감할 수 있어요.',
+}
+
 // 게시물 댓글 (FR-010). 수업 현장 게시물에만 있다
 export const newsComments = {
   title: '댓글',

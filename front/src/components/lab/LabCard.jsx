@@ -3,9 +3,11 @@ import ImagePlaceholder from '../common/ImagePlaceholder'
 import CategoryChip from '../news/CategoryChip'
 import { formatDate } from '../news/postFormat'
 import { labCategories, labList } from '../../data/labContent'
+import { newsLike } from '../../data/newsContent'
 import './LabCard.css'
 
-// labPost: 목록 API 응답 항목 (LabPostSummaryResponse). 모바일에서는 썸네일 + 제목 한 줄 목록이 된다
+// labPost: 목록 API 응답 항목 (LabPostSummaryResponse). 본문 우측 상단에 공감 수(FR-011)를 보여 준다.
+// 모바일에서는 썸네일 + 제목 한 줄 목록이 된다
 function LabCard({ labPost }) {
   return (
     <Link to={`/lab/${labPost.id}`} className="lab-card">
@@ -17,7 +19,12 @@ function LabCard({ labPost }) {
         )}
       </div>
       <div className="lab-card__body">
-        <CategoryChip category={labPost.category} categories={labCategories} />
+        <div className="lab-card__top">
+          <CategoryChip category={labPost.category} categories={labCategories} />
+          <span className="lab-card__like">
+            <span aria-hidden="true">♥</span> {newsLike.label} {labPost.likeCount}
+          </span>
+        </div>
         <strong className="lab-card__title">{labPost.title}</strong>
         <span className="lab-card__date">{formatDate(labPost.createdAt)}</span>
       </div>

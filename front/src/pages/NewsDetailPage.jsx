@@ -3,13 +3,15 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import NewsNotice from '../components/news/NewsNotice'
 import PostComments from '../components/news/PostComments'
 import PostDetail from '../components/news/PostDetail'
+import PostLikeButton from '../components/news/PostLikeButton'
 import { canManagePost } from '../components/news/postPermission'
 import { newsDetail } from '../data/newsContent'
 import { newsBoard } from './boards'
 import usePostComments from './usePostComments'
+import usePostLike from './usePostLike'
 
 // 게시물 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다.
-// board: 수업 현장(newsBoard) 또는 몽키즈 연구소(labBoard, SCR-024에서 재사용). 댓글은 board.hasComments일 때만
+// board: 수업 현장(newsBoard) 또는 몽키즈 연구소(labBoard, SCR-024에서 재사용). 공감은 둘 다, 댓글은 board.hasComments일 때만
 function NewsDetailPage({ member, onLoginClick, board = newsBoard }) {
   const { getPost, deletePost, basePath } = board
   const { postId } = useParams()
@@ -33,6 +35,7 @@ function NewsDetailPage({ member, onLoginClick, board = newsBoard }) {
   }, [postId, getPost])
 
   const current = result?.key === postId ? result : null
+  const like = usePostLike(postId, member?.id, board, current?.post?.likeCount ?? 0)
 
   const handleDelete = async () => {
     if (!window.confirm(newsDetail.deleteConfirm)) return
@@ -66,6 +69,14 @@ function NewsDetailPage({ member, onLoginClick, board = newsBoard }) {
       categories={board.categories}
       notice={board.detailNotice}
     >
+      <PostLikeButton
+        member={member}
+        liked={like.liked}
+        likeCount={like.likeCount}
+        disabled={!like.ready || like.pending}
+        onToggle={like.toggle}
+        onLoginClick={onLoginClick}
+      />
       {board.hasComments && (
         <PostComments
           member={member}

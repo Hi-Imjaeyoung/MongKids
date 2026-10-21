@@ -160,6 +160,21 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 작성·삭제 시 `post.comment_count`를 DB에서 바로 더하고 뺀다 (동시 작성 시 값 유실 방지).
 - 없거나 삭제된 게시물 `P001`, 없거나 삭제된 댓글 `P006`(404).
 
+### 7-3. 공감 API (FR-011)
+
+수업 현장 게시물과 연구소 글 모두 받는다. 응답은 모두 `LikeResponse` `{liked, likeCount}`.
+
+| 메서드 | URL | 설명 | 인증 |
+|---|---|---|---|
+| GET | `/api/v1/posts/{postId}/likes` | 공감 상태. 비로그인은 `liked: false` | - |
+| POST | `/api/v1/posts/{postId}/likes` | 공감 (이미 공감했으면 변화 없음) | 회원 |
+| DELETE | `/api/v1/posts/{postId}/likes` | 공감 취소 (공감하지 않았으면 변화 없음) | 회원 |
+| GET·POST·DELETE | `/api/v1/lab-posts/{labPostId}/likes` | 연구소 글. 위와 같음 | 위와 같음 |
+
+- **회원** = 로그인한 회원 누구나 (직원 권한 불필요, 별도 확인 절차 없음). 회원당 글마다 1회 (`post_like`·`lab_post_like` UNIQUE).
+- 공감·취소는 글 행을 `PESSIMISTIC_WRITE`로 잠그고 처리해 같은 회원이 동시에 눌러도 한 번만 반영되고 `like_count`가 어긋나지 않는다.
+- 없거나 삭제된 게시물 `P001`, 연구소 글 `P005`(404).
+
 ## 8. 상담 신청 API (FR-001, FR-002, FR-003, FR-023)
 
 | 메서드 | URL | 설명 | 인증 |

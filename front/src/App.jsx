@@ -105,7 +105,10 @@ function App() {
               path="/lab/write"
               element={<NewsEditorPage member={member} onLoginClick={openLogin} board={labBoard} />}
             />
-            <Route path="/lab/:postId" element={<NewsDetailPage member={member} board={labBoard} />} />
+            <Route
+              path="/lab/:postId"
+              element={<NewsDetailPage member={member} onLoginClick={openLogin} board={labBoard} />}
+            />
             <Route
               path="/lab/:postId/edit"
               element={<NewsEditorPage member={member} onLoginClick={openLogin} board={labBoard} />}

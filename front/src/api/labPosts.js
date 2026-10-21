@@ -29,3 +29,16 @@ export function updateLabPost(labPostId, labPost) {
 export function deleteLabPost(labPostId) {
   return request(`/api/v1/lab-posts/${labPostId}`, { method: 'DELETE' })
 }
+
+// 공감(FR-011). 모두 { liked, likeCount }를 돌려준다. 비로그인 조회는 liked가 false
+export function getLabPostLike(labPostId) {
+  return request(`/api/v1/lab-posts/${labPostId}/likes`)
+}
+
+export function likeLabPost(labPostId) {
+  return request(`/api/v1/lab-posts/${labPostId}/likes`, { method: 'POST' })
+}
+
+export function unlikeLabPost(labPostId) {
+  return request(`/api/v1/lab-posts/${labPostId}/likes`, { method: 'DELETE' })
+}
