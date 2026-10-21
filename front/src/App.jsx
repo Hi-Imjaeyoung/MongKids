@@ -8,17 +8,30 @@ import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import FloatingMenu from './components/layout/FloatingMenu'
 import MobileCtaBar from './components/layout/MobileCtaBar'
+import AboutPage from './pages/AboutPage'
+import FaqPage from './pages/FaqPage'
 import HomePage from './pages/HomePage'
 import LabListPage from './pages/LabListPage'
 import NewsDetailPage from './pages/NewsDetailPage'
 import NewsListPage from './pages/NewsListPage'
+import ProgramDetailPage from './pages/ProgramDetailPage'
+import ProgramsPage from './pages/ProgramsPage'
 import { labBoard } from './pages/boards'
 
 // 편집기(TipTap)가 커서 작성·수정 화면에 들어갈 때만 불러온다
 const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
 
-// 모바일 하단 고정 상담 바를 두지 않는 화면 (SCR-024 몽키즈 연구소 목록)
-const NO_MOBILE_CTA_PATHS = ['/lab']
+// 모바일 하단 고정 상담 바를 두지 않는 화면
+// SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문
+const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq']
+// SCR-016~020 프로그램 상세 (/programs/:programId)
+const NO_MOBILE_CTA_PREFIXES = ['/programs/']
+
+function hasMobileCta(pathname) {
+  return (
+    !NO_MOBILE_CTA_PATHS.includes(pathname) && !NO_MOBILE_CTA_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  )
+}
 
 // 소셜 로그인 실패 시 백엔드가 붙여 보내는 쿼리 파라미터
 const LOGIN_ERROR_PARAM = 'loginError'
@@ -28,7 +41,7 @@ function hasLoginError() {
 }
 
 function App() {
-  const { pathname } = useLocation()
+  const { pathname, hash } = useLocation()
   // undefined: 로그인 상태 확인 중, null: 비로그인
   const [member, setMember] = useState(undefined)
   const [loginError, setLoginError] = useState(hasLoginError)
@@ -50,13 +63,15 @@ function App() {
     window.history.replaceState(null, '', url)
   }, [])
 
-  // 화면이 바뀌면 맨 위에서 시작한다
+  // 화면이 바뀌면 맨 위에서 시작한다. 주소에 #앵커가 있으면 그 섹션으로 이동한다 (예: /programs#special)
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
+    const target = hash && document.getElementById(decodeURIComponent(hash.slice(1)))
+    if (target) target.scrollIntoView()
+    else window.scrollTo(0, 0)
+  }, [pathname, hash])
 
   // 하단 상담 바가 없는 화면은 바 높이만큼 비워 둔 여백(--mobile-cta-height)도 없앤다
-  const showMobileCta = !NO_MOBILE_CTA_PATHS.includes(pathname)
+  const showMobileCta = hasMobileCta(pathname)
   useEffect(() => {
     document.documentElement.classList.toggle('no-mobile-cta', !showMobileCta)
   }, [showMobileCta])
@@ -71,9 +86,8 @@ function App() {
   const closeConsult = useCallback(() => setConsultOpen(false), [])
   const openPersonalConsult = () => setPersonalConsultOpen(true)
   const closePersonalConsult = useCallback(() => setPersonalConsultOpen(false), [])
-  const homePage = (
-    <HomePage onInstitutionConsultClick={openConsult} onPersonalConsultClick={openPersonalConsult} />
-  )
+  const consultHandlers = { onInstitutionConsultClick: openConsult, onPersonalConsultClick: openPersonalConsult }
+  const homePage = <HomePage {...consultHandlers} />
 
   const handleLogout = async () => {
     try {
@@ -96,6 +110,10 @@ function App() {
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={homePage} />
+            <Route path="/about" element={<AboutPage {...consultHandlers} />} />
+            <Route path="/programs" element={<ProgramsPage {...consultHandlers} />} />
+            <Route path="/programs/:programId" element={<ProgramDetailPage {...consultHandlers} />} />
+            <Route path="/faq" element={<FaqPage {...consultHandlers} />} />
             <Route path="/news" element={<NewsListPage member={member} />} />
             <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
             <Route path="/news/:postId" element={<NewsDetailPage member={member} onLoginClick={openLogin} />} />

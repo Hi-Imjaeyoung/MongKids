@@ -8,10 +8,14 @@ front/
 ├─ public/                    정적 파일 (favicon 등, 경로 그대로 서빙)
 └─ src/
    ├─ main.jsx                React 마운트
-   ├─ App.jsx                 레이아웃(Header, Footer, FloatingMenu, MobileCtaBar) + 라우트(react-router-dom), 로그인 상태, 모달(로그인·기관 상담) 열림 상태
+   ├─ App.jsx                 레이아웃(Header, Footer, FloatingMenu, MobileCtaBar) + 라우트(react-router-dom), 로그인 상태, 모달(로그인·기관 상담) 열림 상태, 화면 이동 시 맨 위 또는 #앵커로 스크롤
    ├─ index.css               전역 리셋, 디자인 토큰, 공통 클래스(.container, .section-heading)
    ├─ pages/                  화면 단위. 섹션 컴포넌트를 조립만 한다
    │  ├─ HomePage.jsx         /
+   │  ├─ AboutPage.jsx        /about (SCR-002)
+   │  ├─ ProgramsPage.jsx     /programs (SCR-003, #special)
+   │  ├─ ProgramDetailPage.jsx /programs/:programId (SCR-016~020, 없는 id는 /programs)
+   │  ├─ FaqPage.jsx          /faq (SCR-022)
    │  ├─ NewsListPage.jsx     /news (SCR-006, ?category=)
    │  ├─ NewsDetailPage.jsx   /news/:postId, /lab/:postId (board 설정으로 재사용)
    │  ├─ NewsEditorPage.jsx   /news/write, /news/:postId/edit, /lab/write, /lab/:postId/edit
@@ -20,14 +24,17 @@ front/
    ├─ components/
    │  ├─ layout/              모든 화면에 공통으로 붙는 영역 (Header, Footer, FloatingMenu, MobileCtaBar: 640px 이하 하단 고정 상담 바)
    │  ├─ home/                홈 화면 전용 섹션 (Hero, StatsBar, ServiceCards, WhyMongkids, ClassGallery, Reviews, ProcessSteps, SpecialPrograms, FaqPreview, ContactCta)
+   │  ├─ about/               ABOUT 몽키즈 (AboutHero, AboutStandards, AboutPrinciple, AboutWhy, TeacherList, SCR-002)
+   │  ├─ program/             체육/행사 프로그램 전체 안내·상세 (ProgramsHero, ProgramGroup, ProgramCard, ProgramIcon, ProgramProcess, StepList / ProgramBreadcrumb, ProgramHero, ProgramGuide, ProgramFaq, OtherPrograms, SCR-003·016~020)
+   │  ├─ faq/                 자주 묻는 질문 (FaqList, FaqTabs, SCR-022)
    │  ├─ auth/                로그인·회원가입 모달 (LoginModal, SCR-013)
    │  ├─ news/                수업 현장 (목록·카드·상세·본문 출력·작성 폼·HTML 편집기·사진 묶음 노드, SCR-006). 상세·작성 폼·분류 탭·칩은 categories prop으로 연구소도 쓴다
    │  ├─ lab/                 몽키즈 연구소 목록 (LabHero 검색, LabList, LabCard, Pagination, SCR-024)
    │  ├─ consultation/        상담 신청 모달 (InstitutionConsultationModal SCR-009, PersonalConsultationModal SCR-010, 공용 ConsultationFormParts)
-   │  └─ common/              화면과 무관한 재사용 UI (Button: yellow·blue·ghost, to면 링크 / SectionHeading, Highlight, ImagePlaceholder)
+   │  └─ common/              화면과 무관한 재사용 UI (Button: yellow·blue·ghost, to면 링크 / SectionHeading: align left·center, Highlight, ImagePlaceholder, PageHero: 하위 화면 크림 소개 영역, ConsultCta: 하단 상담 띠, FaqAccordion: 여러 개 펼침 질문 목록, ChevronIcon)
    ├─ assets/                 번들에 포함되는 이미지 (logo.png: 원본 로고에서 여백을 잘라낸 버전)
    ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인, posts.js 게시물, labPosts.js 연구소 글, consultations.js 상담 신청)
-   └─ data/                   화면 콘텐츠 (homeContent.js, authContent.js, newsContent.js, labContent.js, consultationContent.js)
+   └─ data/                   화면 콘텐츠 (homeContent.js, aboutContent.js, programContent.js, faqContent.js, authContent.js, newsContent.js, labContent.js, consultationContent.js)
 ```
 
 - 새 화면이 생기면 `pages/{Name}Page.jsx`와 `components/{화면}/`을 추가한다.

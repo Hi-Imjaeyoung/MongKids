@@ -1,0 +1,27 @@
+.program-breadcrumb {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+.program-breadcrumb__root {
+  text-decoration: underline;
+}
+
+.program-breadcrumb__root:hover {
+  color: var(--blue-text);
+}
+
+.program-breadcrumb__current {
+  font-weight: 700;
+  color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .program-breadcrumb {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-size: 13px;
+  }
+}

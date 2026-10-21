@@ -1,0 +1,48 @@
+.faq-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.faq-tabs__tab {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--text-muted);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.faq-tabs__tab:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.faq-tabs__tab--active,
+.faq-tabs__tab--active:hover {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* 모바일은 줄바꿈 없이 가로로 넘긴다. 화면 끝까지 넘기도록 좌우 여백을 탭 영역 안으로 옮긴다 */
+@media (max-width: 768px) {
+  .faq-tabs {
+    flex-wrap: nowrap;
+    margin: 0 -16px;
+    padding: 0 16px 4px;
+    overflow-x: auto;
+  }
+
+  .faq-tabs__tab {
+    padding: 0 16px;
+    font-size: 14px;
+  }
+}

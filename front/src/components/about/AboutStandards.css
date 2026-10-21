@@ -1,0 +1,135 @@
+/* 히어로 아래쪽에 겹쳐 올라오는 흰 패널 */
+.about-standards {
+  position: relative;
+  margin-top: -64px;
+}
+
+.about-standards__panel {
+  padding: 40px;
+  border-radius: 28px;
+  background: var(--bg);
+  box-shadow: 0 16px 48px rgba(31, 36, 48, 0.08);
+}
+
+.about-standards__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.about-standard {
+  --card-bg: var(--yellow-soft);
+  --card-text: var(--yellow-text);
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  background: var(--card-bg);
+  word-break: keep-all;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-standard:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.about-standard--blue {
+  --card-bg: var(--blue-soft);
+  --card-text: var(--blue-text);
+}
+
+.about-standard--green {
+  --card-bg: var(--green-soft);
+  --card-text: var(--green-text);
+}
+
+.about-standard__number {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--card-text);
+}
+
+.about-standard__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.about-standard__name {
+  margin-top: 8px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.about-standard__summary {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--text-sub);
+}
+
+.about-standard__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* 모바일 전용 화살표 (데스크톱은 "자세히 보기" 옆) */
+.about-standard__arrow {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .about-standards {
+    margin-top: -56px;
+  }
+
+  .about-standards__panel {
+    padding: 24px 20px;
+    border-radius: 22px;
+    box-shadow: 0 12px 36px rgba(31, 36, 48, 0.08);
+  }
+
+  .about-standards__list {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* 모바일: 번호 · 이름 · 화살표 한 줄 */
+  .about-standard {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    min-height: 64px;
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+
+  .about-standard__number {
+    font-size: 13px;
+  }
+
+  .about-standard__body {
+    flex: 1;
+  }
+
+  .about-standard__name {
+    margin-top: 0;
+    font-size: 16px;
+  }
+
+  .about-standard__summary,
+  .about-standard__more {
+    display: none;
+  }
+
+  .about-standard__arrow {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+}

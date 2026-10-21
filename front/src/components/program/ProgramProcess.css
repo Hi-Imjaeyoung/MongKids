@@ -1,0 +1,36 @@
+.program-process {
+  margin-top: 72px;
+}
+
+.program-process--cream {
+  margin-top: 80px;
+  background: var(--cream);
+}
+
+.program-process--cream .program-process__inner {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+.program-process__note {
+  margin: 14px 0 0;
+  font-size: 14px;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+  .program-process {
+    margin-top: 48px;
+  }
+
+  .program-process--cream .program-process__inner {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .program-process__note {
+    margin-top: 12px;
+    font-size: 13px;
+  }
+}

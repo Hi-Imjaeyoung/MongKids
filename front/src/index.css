@@ -126,6 +126,20 @@ button {
   word-break: keep-all;
 }
 
+.section-heading--left {
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.section-heading--left .section-heading__title {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.section-heading--left .section-heading__description {
+  font-size: 16px;
+}
+
 /* 섹션 하단 보조 CTA 줄 */
 .section-actions {
   display: flex;
@@ -140,6 +154,22 @@ button {
 
   .container {
     padding: 0 16px;
+  }
+
+  .section-heading--left .section-heading__eyebrow {
+    font-size: 16px;
+  }
+
+  .section-heading--left {
+    margin-bottom: 18px;
+  }
+
+  .section-heading--left .section-heading__title {
+    font-size: 21px;
+  }
+
+  .section-heading--left .section-heading__description {
+    font-size: 14px;
   }
 }
 

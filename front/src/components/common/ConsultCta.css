@@ -1,0 +1,113 @@
+.consult-cta {
+  margin-top: 72px;
+}
+
+.consult-cta__panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 48px;
+  border-radius: 28px;
+  word-break: keep-all;
+}
+
+.consult-cta--dark .consult-cta__panel {
+  background: var(--blue-text);
+  color: #fff;
+}
+
+.consult-cta--light {
+  max-width: 880px;
+}
+
+.consult-cta--light .consult-cta__panel {
+  padding: 40px;
+  border-radius: 24px;
+  background: var(--blue-soft);
+}
+
+.consult-cta__title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.consult-cta--light .consult-cta__title {
+  font-size: 22px;
+}
+
+/* 데스크톱은 줄마다 나눈다 */
+.consult-cta__title-line {
+  display: block;
+}
+
+.consult-cta__description {
+  margin: 8px 0 0;
+  font-size: 16px;
+  color: #dfe8fa;
+}
+
+.consult-cta--light .consult-cta__description {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--text-sub);
+}
+
+.consult-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.consult-cta--dark .consult-cta__personal {
+  background: #fff;
+  color: var(--blue-text);
+}
+
+@media (max-width: 768px) {
+  .consult-cta {
+    margin-top: 48px;
+  }
+
+  .consult-cta__panel,
+  .consult-cta--light .consult-cta__panel {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 28px 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .consult-cta__title {
+    font-size: 20px;
+  }
+
+  .consult-cta--light .consult-cta__title {
+    font-size: 19px;
+  }
+
+  .consult-cta__title-line {
+    display: inline;
+  }
+
+  .consult-cta__description,
+  .consult-cta--light .consult-cta__description {
+    margin-top: 6px;
+    font-size: 14px;
+  }
+
+  .consult-cta__actions {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: -6px;
+  }
+
+  .consult-cta__actions .btn {
+    min-height: 52px;
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+  }
+}
