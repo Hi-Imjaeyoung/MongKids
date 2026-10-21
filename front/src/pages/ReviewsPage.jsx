@@ -61,6 +61,7 @@ function ReviewsPage({ member, onLoginClick }) {
         onWrite={() => setForm({ review: null })}
         onEdit={(review) => setForm({ review })}
         onDelete={handleDelete}
+        onReplySaved={list.replaceReview}
         onLoginClick={onLoginClick}
       />
       {form && <ReviewFormModal review={form.review} onSaved={handleSaved} onClose={() => setForm(null)} />}

@@ -22,6 +22,7 @@ function ReviewList({
   onWrite,
   onEdit,
   onDelete,
+  onReplySaved,
   onLoginClick,
 }) {
   const sentinelRef = useRef(null)
@@ -83,8 +84,10 @@ function ReviewList({
               key={review.id}
               review={review}
               mine={member?.id === review.authorId}
+              canReply={member?.role === 'ADMIN'}
               onEdit={onEdit}
               onDelete={onDelete}
+              onReplySaved={onReplySaved}
             />
           ))}
         </div>

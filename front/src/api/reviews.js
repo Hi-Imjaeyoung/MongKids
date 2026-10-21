@@ -1,4 +1,4 @@
-// 수업 후기(FR-013~016, FR-025) API
+// 수업 후기(FR-013~017, FR-025) API
 import { request } from './client'
 
 // 백엔드 검증과 같은 사진 제한 (FR-015)
@@ -30,6 +30,11 @@ export function updateReview(reviewId, review) {
 
 export function deleteReview(reviewId) {
   return request(`/api/v1/reviews/${reviewId}`, { method: 'DELETE' })
+}
+
+// 관리자 답글 저장·수정 (FR-017). 답글이 반영된 후기(ReviewResponse)를 돌려준다
+export function saveReviewReply(reviewId, content) {
+  return request(`/api/v1/reviews/${reviewId}/reply`, { method: 'PUT', ...jsonBody({ content }) })
 }
 
 // 사진을 S3에 직접 올리고 순서대로 객체 키를 돌려준다.

@@ -2,10 +2,12 @@ import { reviewList, reviewTypes } from '../../data/reviewContent'
 import { formatDate } from '../news/postFormat'
 import BananaRating from './BananaRating'
 import ReviewPhotos from './ReviewPhotos'
+import ReviewReply from './ReviewReply'
 import './ReviewCard.css'
 
 // 후기 카드 (SCR-012): 사진 영역과 본문을 나눈다. 내 후기에는 "내 후기" 표시와 수정·삭제 (FR-025)
-function ReviewCard({ review, mine, onEdit, onDelete }) {
+// canReply: 관리자면 카드 안에서 답글을 쓰고 고친다 (FR-017)
+function ReviewCard({ review, mine, canReply, onEdit, onDelete, onReplySaved }) {
   const type = reviewTypes.find((item) => item.id === review.type)
 
   return (
@@ -35,18 +37,7 @@ function ReviewCard({ review, mine, onEdit, onDelete }) {
             </div>
           )}
         </div>
-        {review.reply && (
-          <div className="review-card-item__reply">
-            <p className="review-card-item__reply-title">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 14 4 9l5-5" />
-                <path d="M4 9h10a6 6 0 0 1 6 6v5" />
-              </svg>
-              {reviewList.replyTitle}
-            </p>
-            <p className="review-card-item__reply-content">{review.reply.content}</p>
-          </div>
-        )}
+        <ReviewReply review={review} canReply={canReply} onSaved={onReplySaved} />
       </div>
     </article>
   )

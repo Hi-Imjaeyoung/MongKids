@@ -29,6 +29,19 @@ export const reviewList = {
   ratingLabel: (rating) => `만족도 5점 중 ${rating}점`,
 }
 
+// 관리자 답글 입력 (FR-017). 관리자에게만 보인다
+export const reviewReply = {
+  write: '답글 쓰기',
+  writeTitle: '몽키즈 답글 쓰기',
+  editTitle: '몽키즈 답글 수정',
+  edit: '답글 수정',
+  placeholder: '후기를 남겨 주신 분께 답글을 적어 주세요.',
+  maxLength: 1000,
+  cancel: '취소',
+  save: '답글 저장',
+  saving: '저장하는 중…',
+}
+
 // 비로그인은 최근 후기 4개까지만 본다 (FR-012)
 export const reviewGate = {
   title: '로그인하면 모든 후기를 볼 수 있어요',

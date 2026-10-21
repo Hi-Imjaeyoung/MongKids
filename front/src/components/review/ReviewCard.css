@@ -98,40 +98,6 @@
   color: var(--danger);
 }
 
-.review-card-item__reply {
-  padding: 16px 18px;
-  border: 1px solid #f1e3b5;
-  border-radius: var(--radius-md);
-  background: var(--cream);
-}
-
-.review-card-item__reply-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--yellow-text);
-}
-
-.review-card-item__reply-title svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.review-card-item__reply-content {
-  margin: 6px 0 0;
-  font-size: 15px;
-  line-height: 1.7;
-  white-space: pre-line;
-}
-
 @media (max-width: 768px) {
   .review-card-item {
     border-radius: var(--radius-lg);
@@ -166,14 +132,5 @@
   .review-card-item__delete {
     padding: 0 10px;
     font-size: 13px;
-  }
-
-  .review-card-item__reply {
-    padding: 14px;
-    border-radius: 12px;
-  }
-
-  .review-card-item__reply-content {
-    font-size: 14px;
   }
 }
