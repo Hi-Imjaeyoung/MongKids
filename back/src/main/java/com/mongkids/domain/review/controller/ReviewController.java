@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlRequest;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlResponse;
+import com.mongkids.domain.review.dto.ReviewReplyRequest;
 import com.mongkids.domain.review.dto.ReviewResponse;
 import com.mongkids.domain.review.dto.ReviewSaveRequest;
 import com.mongkids.domain.review.entity.ReviewType;
@@ -70,6 +71,16 @@ public class ReviewController {
 		@Valid @RequestBody ReviewSaveRequest request
 	) {
 		return ApiResponse.success(reviewService.updateReview(memberId, reviewId, request));
+	}
+
+	// 관리자 답글 저장·수정 (FR-017)
+	@PutMapping("/{reviewId}/reply")
+	public ApiResponse<ReviewResponse> saveReply(
+		@AuthenticationPrincipal Long memberId,
+		@PathVariable Long reviewId,
+		@Valid @RequestBody ReviewReplyRequest request
+	) {
+		return ApiResponse.success(reviewService.saveReply(memberId, reviewId, request));
 	}
 
 	@DeleteMapping("/{reviewId}")

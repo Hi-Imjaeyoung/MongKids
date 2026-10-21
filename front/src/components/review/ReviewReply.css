@@ -1,0 +1,177 @@
+.review-reply {
+  padding: 16px 18px;
+  border: 1px solid #f1e3b5;
+  border-radius: var(--radius-md);
+  background: var(--cream);
+}
+
+.review-reply__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.review-reply__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--yellow-text);
+}
+
+.review-reply__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.review-reply__content {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.review-reply__edit {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: var(--yellow-text);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* 관리자에게만 보이는 답글 쓰기 버튼 */
+.review-reply__write {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px dashed #d9c27a;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--yellow-text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-reply__write:hover {
+  border-style: solid;
+}
+
+.review-reply--editing {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.review-reply__textarea {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--text-muted);
+  border-radius: 12px;
+  background: var(--bg);
+  resize: vertical;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.review-reply__textarea:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+}
+
+.review-reply__form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.review-reply__count {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.review-reply__buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.review-reply__cancel,
+.review-reply__save {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-reply__cancel {
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.review-reply__save {
+  border: 0;
+  background: var(--blue);
+  color: #fff;
+}
+
+.review-reply__save:disabled {
+  background: #d5dae3;
+  color: var(--text-sub);
+  cursor: not-allowed;
+}
+
+.review-reply__error {
+  margin: 0;
+  font-size: 14px;
+  color: var(--danger);
+}
+
+@media (max-width: 768px) {
+  .review-reply {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .review-reply__title {
+    font-size: 13px;
+  }
+
+  .review-reply__icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .review-reply__content {
+    font-size: 14px;
+  }
+
+  .review-reply__buttons {
+    flex: 1;
+    justify-content: flex-end;
+  }
+}

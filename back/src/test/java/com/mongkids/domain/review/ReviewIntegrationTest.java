@@ -15,11 +15,13 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mongkids.domain.member.dto.LoginMemberResponse;
 import com.mongkids.domain.member.dto.SocialLoginRequest;
+import com.mongkids.domain.member.entity.MemberRole;
 import com.mongkids.domain.member.entity.Provider;
 import com.mongkids.domain.member.repository.MemberRepository;
 import com.mongkids.domain.member.service.MemberService;
@@ -42,6 +44,10 @@ class ReviewIntegrationTest {
 	private static final String REVIEW_BODY = """
 		{"type": "FREE_TRIAL", "satisfaction": 5, "content": "아이가 정말 즐거워했어요",
 		 "imageKeys": ["reviews/2026/10/a.jpg"]}
+		""";
+
+	private static final String REPLY_BODY = """
+		{"content": "소중한 후기 감사합니다"}
 		""";
 
 	@Autowired
@@ -179,6 +185,43 @@ class ReviewIntegrationTest {
 			.andExpect(jsonPath("$.data.content.length()").value(4))
 			.andExpect(jsonPath("$.data.totalElements").value(6))
 			.andExpect(jsonPath("$.data.hasNext").value(true));
+	}
+
+	@Test
+	@DisplayName("관리자만 답글을 달 수 있고, 답글은 목록 응답에 함께 나온다")
+	void saveReply() throws Exception {
+		// given
+		LoginMemberResponse writer = registerMember("writer", "몽키");
+		long reviewId = saveReview(writer, "좋았어요").getId();
+		LoginMemberResponse admin = registerMember("admin", "대표");
+		ReflectionTestUtils.setField(memberRepository.findById(admin.id()).orElseThrow(), "role", MemberRole.ADMIN);
+
+		// when & then
+		mockMvc.perform(put("/api/v1/reviews/{reviewId}/reply", reviewId).cookie(tokenCookie(writer))
+				.contentType(MediaType.APPLICATION_JSON).content(REPLY_BODY))
+			.andExpect(status().isForbidden())
+			.andExpect(jsonPath("$.error.code").value("A002"));
+
+		mockMvc.perform(put("/api/v1/reviews/{reviewId}/reply", reviewId).cookie(tokenCookie(admin))
+				.contentType(MediaType.APPLICATION_JSON).content("""
+					{"content": " "}
+					"""))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.error.fieldErrors[0].field").value("content"));
+
+		mockMvc.perform(put("/api/v1/reviews/{reviewId}/reply", reviewId).cookie(tokenCookie(admin))
+				.contentType(MediaType.APPLICATION_JSON).content(REPLY_BODY))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.reply.content").value("소중한 후기 감사합니다"));
+
+		mockMvc.perform(get("/api/v1/reviews"))
+			.andExpect(jsonPath("$.data.content[0].reply.content").value("소중한 후기 감사합니다"))
+			.andExpect(jsonPath("$.data.content[0].reply.repliedAt").exists());
+
+		mockMvc.perform(put("/api/v1/reviews/{reviewId}/reply", 9999L).cookie(tokenCookie(admin))
+				.contentType(MediaType.APPLICATION_JSON).content(REPLY_BODY))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.error.code").value("R001"));
 	}
 
 	private Review saveReview(LoginMemberResponse writer, String content) {

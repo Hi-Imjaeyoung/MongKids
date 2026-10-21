@@ -203,7 +203,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 동의 시각: `privacy_agreed_at`은 항상, `health_agreed_at`은 `healthNote`가 있을 때만 저장한다 (FR-023).
 - Bean Validation 실패는 400 `C001` + `fieldErrors`.
 
-## 9. 후기 API (FR-012~016, FR-025)
+## 9. 후기 API (FR-012~017, FR-025)
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
@@ -212,15 +212,17 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | GET | `/api/v1/reviews?type=&page=&size=` | 최신순 목록 (`PageResponse<ReviewResponse>`). `type` 없으면 전체, 기본 `size` 10, 최대 100. 비로그인은 아래 제한 | - |
 | PUT | `/api/v1/reviews/{reviewId}` | 전체 수정 → `ReviewResponse`. 사진 목록은 요청의 `imageKeys`로 통째로 바뀐다 | 작성자 |
 | DELETE | `/api/v1/reviews/{reviewId}` | soft delete | 작성자 |
+| PUT | `/api/v1/reviews/{reviewId}/reply` | 관리자 답글 저장 `{content}` → `ReviewResponse`. 이미 있으면 고친다(`repliedAt` 갱신) | 관리자 |
 
 - `type`: `FREE_TRIAL`(무료체험 후기), `CLASS`(수업 후기). `satisfaction`: 1~5 정수(FR-016). `content`: 일반 텍스트, 공백만은 안 됨, 1,000자 이내. 위반은 400 `C001` + `fieldErrors`.
 - `ReviewResponse`: `{id, type, satisfaction, content, authorId, authorName, images: [{imageKey, url}], reply: {content, repliedAt} | null, createdAt, updatedAt}`.
   - `authorName`은 첫 글자만 남기고 가린다(FR-014): 홍길동 → `홍**`, 김철 → `김*`, 한 글자 → `*`. 탈퇴한 작성자는 "탈퇴 회원".
-  - `reply`는 관리자 답글(FR-017). 답글 저장 API는 #32.
+  - `reply`는 관리자 답글(FR-017). 후기당 하나, 없으면 `null`.
 - 사진(FR-015): 흐름은 §7과 같다(URL 발급 → `PUT` → 저장 요청에 `imageKeys`). 후기당 최대 5장(`R002`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `reviews/` 밖의 키, 중복 키는 `R003`. 보낸 순서대로 저장하고 첫 사진이 대표 사진. 수정할 때 남길 사진은 응답의 `imageKey`를 다시 보낸다.
 - 비로그인 목록(FR-012): `page`·`size`와 상관없이 최신 4개만 주고 `hasNext=false`. `totalElements`는 실제 건수라 화면은 이 값이 4보다 크면 로그인 안내를 띄운다.
 - 숨김(FR-021)·삭제한 후기는 목록에 나오지 않는다.
-- **회원** = 로그인한 회원 누구나 (별도 확인 절차 없음, 저장 즉시 공개). **작성자** = 후기 작성자 본인만. 관리자도 남의 후기는 403 `A002`(FR-025, 관리자는 숨김으로 처리).
+- **회원** = 로그인한 회원 누구나 (별도 확인 절차 없음, 저장 즉시 공개). **작성자** = 후기 작성자 본인만. 관리자도 남의 후기는 403 `A002`(FR-025, 관리자는 숨김으로 처리). **관리자** = DB의 현재 역할이 `ADMIN` (직원 `STAFF`도 403 `A002`).
+- 답글 `content`: 일반 텍스트, 공백만은 안 됨, 1,000자 이내(400 `C001`).
 - 없거나 삭제된 후기 `R001`(404).
 
 ## 10. 기타
