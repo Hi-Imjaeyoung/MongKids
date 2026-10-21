@@ -35,6 +35,27 @@ export const newsDetail = {
   photoAlt: (index, total) => `현장 사진 ${index}/${total}`,
 }
 
+// 게시물 댓글 (FR-010). 수업 현장 게시물에만 있다
+export const newsComments = {
+  title: '댓글',
+  placeholder: '따뜻한 댓글을 남겨 주세요 (1,000자 이내)',
+  maxLength: 1000,
+  submit: '등록',
+  submitting: '등록 중…',
+  delete: '삭제',
+  deleteConfirm: '이 댓글을 삭제할까요?',
+  mineBadge: '내가 쓴 댓글',
+  loadMore: '댓글 더 보기',
+  empty: '아직 댓글이 없어요. 첫 댓글을 남겨 주세요.',
+  loading: '댓글을 불러오는 중이에요.',
+  loginRequired: '로그인하면 댓글을 남길 수 있어요.',
+  login: '로그인',
+  errors: {
+    required: '댓글 내용을 입력해 주세요.',
+    submit: '댓글을 등록하지 못했어요. 잠시 후 다시 시도해 주세요.',
+  },
+}
+
 export const newsEditor = {
   createTitle: '게시물 작성',
   editTitle: '게시물 수정',

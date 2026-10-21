@@ -1,0 +1,167 @@
+.post-comments {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.post-comments__title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.post-comments__total {
+  color: var(--blue);
+}
+
+.post-comments__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-comments__input {
+  width: 100%;
+  min-height: 96px;
+  padding: 14px 16px;
+  border: 1px solid var(--text-muted);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.post-comments__input:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+}
+
+.post-comments__input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.post-comments__form-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.post-comments__count {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.post-comments__error {
+  margin: 0;
+  font-size: 14px;
+  color: var(--danger);
+}
+
+.post-comments__login {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  word-break: keep-all;
+}
+
+.post-comments__login p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-sub);
+}
+
+.post-comments__message {
+  margin: 24px 0 0;
+  font-size: 15px;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.post-comments__message--error {
+  color: var(--danger);
+}
+
+.post-comments__list {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-comments__item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.post-comments__item:first-child {
+  border-top: 1px solid var(--border);
+}
+
+/* 로그인한 회원 본인이 쓴 댓글 */
+.post-comments__item--mine {
+  padding-right: 12px;
+  padding-left: 12px;
+  background: var(--bg-soft);
+}
+
+.post-comments__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.post-comments__badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue-text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.post-comments__date {
+  color: var(--text-muted);
+}
+
+.post-comments__delete {
+  margin-left: auto;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  background: none;
+  color: var(--text-sub);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.post-comments__delete:hover {
+  color: var(--danger);
+}
+
+.post-comments__delete:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.post-comments__content {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.post-comments__more {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

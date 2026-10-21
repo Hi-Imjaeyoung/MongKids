@@ -7,6 +7,8 @@ import { newsCategories } from '../data/newsContent'
 export const newsBoard = {
   basePath: '/news',
   categories: newsCategories,
+  // 댓글(FR-010)은 수업 현장 게시물에만 있다
+  hasComments: true,
   getPost,
   createPost,
   updatePost,

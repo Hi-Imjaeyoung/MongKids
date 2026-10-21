@@ -98,7 +98,7 @@ function App() {
             <Route path="/" element={homePage} />
             <Route path="/news" element={<NewsListPage member={member} />} />
             <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
-            <Route path="/news/:postId" element={<NewsDetailPage member={member} />} />
+            <Route path="/news/:postId" element={<NewsDetailPage member={member} onLoginClick={openLogin} />} />
             <Route path="/news/:postId/edit" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
             <Route path="/lab" element={<LabListPage member={member} />} />
             <Route
