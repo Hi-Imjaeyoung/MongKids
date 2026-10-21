@@ -71,3 +71,16 @@ export function createPostComment(postId, content) {
 export function deletePostComment(postId, commentId) {
   return request(`/api/v1/posts/${postId}/comments/${commentId}`, { method: 'DELETE' })
 }
+
+// 공감(FR-011). 모두 { liked, likeCount }를 돌려준다. 비로그인 조회는 liked가 false
+export function getPostLike(postId) {
+  return request(`/api/v1/posts/${postId}/likes`)
+}
+
+export function likePost(postId) {
+  return request(`/api/v1/posts/${postId}/likes`, { method: 'POST' })
+}
+
+export function unlikePost(postId) {
+  return request(`/api/v1/posts/${postId}/likes`, { method: 'DELETE' })
+}

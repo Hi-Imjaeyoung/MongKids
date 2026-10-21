@@ -44,7 +44,27 @@
   color: var(--blue);
 }
 
+.post-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
 .post-card__meta {
   font-size: 14px;
   color: var(--text-sub);
+}
+
+.post-card__like {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.post-card__like > span {
+  color: var(--danger);
 }

@@ -45,9 +45,29 @@
   color: var(--blue);
 }
 
+.lab-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
 .lab-card__date {
   font-size: 14px;
   color: var(--text-sub);
+}
+
+.lab-card__like {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-card__like > span {
+  color: var(--danger);
 }
 
 /* 모바일: 썸네일 + 제목 목록 */
@@ -79,7 +99,8 @@
     line-height: 1.4;
   }
 
-  .lab-card__date {
+  .lab-card__date,
+  .lab-card__like {
     font-size: 13px;
   }
 }
