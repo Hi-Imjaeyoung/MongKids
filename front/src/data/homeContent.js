@@ -1,17 +1,26 @@
 // 홈 화면 정적 콘텐츠. 추후 API 연동 시 이 데이터를 응답값으로 대체한다.
 
+import { faqsByIds } from './faqContent'
+import { programPath } from './programContent'
+
 export const navItems = [
-  { label: '몽키즈 소개', href: '#about' },
-  { label: '체육/행사프로그램', href: '#programs' },
+  { label: '몽키즈 소개', to: '/about' },
+  { label: '체육/행사프로그램', to: '/programs' },
   { label: '몽키즈 연구소', to: '/lab' },
   { label: '강사 채용', href: '#recruit' },
   { label: '수업 현장', to: '/news' },
-  { label: '자주 묻는 질문', href: '#faq' },
+  { label: '자주 묻는 질문', to: '/faq' },
 ]
 
 export const ctaButtons = {
   institution: { label: '기관 프로그램 문의', icon: '🏫' },
   private: { label: '1:1 방문체육 상담', icon: '💬' },
+}
+
+// 하위 화면 하단 상담 CTA(common/ConsultCta) 버튼 문구
+export const consultLabels = {
+  institution: ctaButtons.institution.label,
+  personal: ctaButtons.private.label,
 }
 
 export const hero = {
@@ -66,7 +75,7 @@ export const services = [
     title: '어린이집·유치원',
     description: '같은 교구도 연령과 활동 수준에 맞춰 다르게 구성하는 정기 방문체육',
     imageLabel: '기관 수업 사진',
-    href: '#programs',
+    to: programPath('school'),
   },
   {
     id: 'homeclass',
@@ -75,7 +84,7 @@ export const services = [
     title: '1:1 가정 방문체육',
     description: '아이의 연령과 흥미에 맞춰 강사가 가정으로 찾아가는 개별 체육수업',
     imageLabel: '1:1 수업 사진',
-    href: '#private',
+    to: programPath('home'),
   },
   {
     id: 'taekwondo',
@@ -84,7 +93,7 @@ export const services = [
     title: '태권도장 유아체육',
     description: '태권도 기술 수업이 아닌, 도장 공간에서 진행하는 일반 유아체육',
     imageLabel: '태권도장 수업 사진',
-    href: '#programs',
+    to: programPath('taekwondo'),
   },
 ]
 
@@ -95,7 +104,7 @@ export const specialPrograms = [
     tag: '운영 중',
     title: '운동회·체육대회',
     description: '기관과 단체의 규모·연령·장소에 맞춰 운동회와 체육대회를 진행합니다.',
-    href: '#events',
+    to: programPath('sportsday'),
   },
   {
     id: 'public',
@@ -103,7 +112,7 @@ export const specialPrograms = [
     tag: '운영 중',
     title: '복지센터·공공기관',
     description: '기관의 목적과 참여 연령에 맞춘 1회성·단기 체육 프로그램을 운영합니다.',
-    href: '#events',
+    to: programPath('public'),
   },
 ]
 
@@ -127,24 +136,8 @@ export const processSteps = {
   note: '실제 절차는 프로그램과 기관 계약 조건에 따라 달라질 수 있습니다.',
 }
 
-export const faqPreview = [
-  {
-    question: '어느 지역에서 수업하나요?',
-    answer: '현재 용인·수원·경기광주를 중심으로 활동합니다. 세부 방문 가능 여부는 위치와 일정에 따라 상담으로 안내합니다.',
-  },
-  {
-    question: '수업 대상 연령은 어떻게 되나요?',
-    answer: '프로그램별 대상 연령과 난이도가 다릅니다. 아이의 연령과 수업 형태를 확인한 뒤 안내합니다.',
-  },
-  {
-    question: '수업은 어떻게 신청하나요?',
-    answer: '상담 신청 → 운영 조건 및 일정 협의 → 수업 확정 → 진행 순서로 안내합니다. 세부 절차는 계약 유형에 따라 달라질 수 있습니다.',
-  },
-  {
-    question: '운동회와 1회성 수업도 가능한가요?',
-    answer: '네. 운동회·체육대회와 복지센터·공공기관의 1회성·단기 프로그램을 진행합니다.',
-  },
-]
+// 자주 묻는 질문(SCR-022)과 같은 문구에서 4개만 보여 준다
+export const faqPreview = faqsByIds(['region', 'age', 'apply', 'event-oneoff'])
 
 export const contactCta = {
   title: '몽키즈와 함께하는 즐거운 체육시간',

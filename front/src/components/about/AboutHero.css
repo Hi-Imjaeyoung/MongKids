@@ -1,0 +1,91 @@
+.about-hero {
+  background: var(--cream);
+}
+
+/* 아래쪽 여백은 수업 원칙 패널(AboutStandards)이 겹쳐 올라올 자리 */
+.about-hero__inner {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 48px;
+  padding-top: 72px;
+  padding-bottom: 120px;
+  word-break: keep-all;
+}
+
+.about-hero__eyebrow {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: var(--blue-text);
+}
+
+.about-hero__title {
+  margin: 16px 0 0;
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -1.5px;
+}
+
+.about-hero__description {
+  margin: 24px 0 0;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--text-sub);
+}
+
+.about-hero__line {
+  display: block;
+}
+
+.about-hero__area {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 28px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.about-hero__area svg {
+  color: var(--blue);
+}
+
+.about-hero__photo {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+@media (max-width: 768px) {
+  .about-hero__inner {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 40px;
+    padding-bottom: 88px;
+  }
+
+  .about-hero__title {
+    margin-top: 12px;
+    font-size: 32px;
+    line-height: 1.3;
+    letter-spacing: -1px;
+  }
+
+  .about-hero__description {
+    margin-top: 16px;
+    font-size: 16px;
+  }
+
+  .about-hero__area {
+    margin-top: 20px;
+    font-size: 13px;
+  }
+
+  .about-hero__photo {
+    border-radius: var(--radius-lg);
+  }
+}

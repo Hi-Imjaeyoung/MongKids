@@ -1,0 +1,105 @@
+.teacher-list {
+  margin-top: 96px;
+}
+
+.teacher-list__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0 16px;
+}
+
+.teacher-list__recruit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-text);
+}
+
+.teacher-list__recruit:hover {
+  text-decoration: underline;
+}
+
+.teacher-list__items {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.teacher-card__photo {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+.teacher-card__name {
+  margin: 18px 0 0;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.teacher-card__meta {
+  margin: 2px 0 0;
+  font-size: 15px;
+  color: var(--text-sub);
+}
+
+.teacher-card__name + .teacher-card__meta {
+  margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+  .teacher-list {
+    margin-top: 64px;
+  }
+
+  /* 모바일: 채용 링크를 제목 아래로 */
+  .teacher-list__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .teacher-list__header .section-heading {
+    margin-bottom: 4px;
+  }
+
+  .teacher-list__recruit {
+    margin-bottom: 12px;
+  }
+
+  .teacher-list__items {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* 모바일: 작은 사진 옆에 정보 */
+  .teacher-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .teacher-card__photo {
+    flex-shrink: 0;
+    width: 112px;
+    border-radius: 16px;
+  }
+
+  .teacher-card__name {
+    margin-top: 0;
+    font-size: 17px;
+  }
+
+  .teacher-card__meta {
+    font-size: 14px;
+  }
+
+  .teacher-card__name + .teacher-card__meta {
+    margin-top: 4px;
+  }
+}

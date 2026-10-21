@@ -1,0 +1,173 @@
+.program-card {
+  --art-bg: var(--yellow-soft);
+  --art-fg: var(--yellow-text);
+
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.program-card--blue {
+  --art-bg: var(--blue-soft);
+  --art-fg: var(--blue-text);
+}
+
+.program-card--green {
+  --art-bg: var(--green-soft);
+  --art-fg: var(--green-text);
+}
+
+.program-card__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  border-radius: 18px;
+  background: var(--art-bg);
+  color: var(--art-fg);
+}
+
+.program-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 18px;
+  word-break: keep-all;
+}
+
+.program-card__tag {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.program-card__title {
+  margin: 10px 0 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.program-card__summary {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: var(--text-sub);
+}
+
+.program-card__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--blue-text);
+}
+
+/* 모바일 전용 오른쪽 화살표 */
+.program-card__chevron {
+  display: none;
+  flex-shrink: 0;
+  color: var(--blue-text);
+}
+
+/* 가로형 (운동회·특별 프로그램) */
+.program-card--special {
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  border-color: #f1e3b5;
+}
+
+.program-card--special .program-card__art {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+}
+
+.program-card--special .program-card__art svg {
+  width: 52px;
+  height: 52px;
+}
+
+.program-card--special .program-card__body {
+  margin-top: 0;
+}
+
+.program-card--special .program-card__more {
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .program-card,
+  .program-card--special {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .program-card__art,
+  .program-card--special .program-card__art {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-md);
+  }
+
+  .program-card__art svg,
+  .program-card--special .program-card__art svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .program-card__body {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+  }
+
+  .program-card__tag {
+    padding: 2px 8px;
+    font-size: 12px;
+  }
+
+  /* 특별 프로그램 카드는 모바일에서 태그 없이 이름부터 보여 준다 (시안) */
+  .program-card--special .program-card__tag {
+    display: none;
+  }
+
+  .program-card__title {
+    margin-top: 6px;
+    font-size: 17px;
+  }
+
+  .program-card--special .program-card__title {
+    margin-top: 0;
+  }
+
+  .program-card__summary {
+    margin-top: 2px;
+    font-size: 14px;
+  }
+
+  .program-card__more {
+    display: none;
+  }
+
+  .program-card__chevron {
+    display: inline-flex;
+  }
+}

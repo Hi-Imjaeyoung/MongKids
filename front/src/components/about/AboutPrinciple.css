@@ -1,0 +1,289 @@
+/*
+ * 데스크톱: 사진 | 글(제목 · 세부 항목). 커리큘럼(--panel)은 글 | 예시 패널로 좌우를 바꾼다.
+ * 모바일: 제목 → 사진 → 세부 항목. 커리큘럼은 제목 → 연령 구분 → 예시 패널.
+ */
+.about-principle {
+  --accent: var(--yellow-text);
+  --accent-soft: var(--yellow-soft);
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    'media head'
+    'media extra';
+  column-gap: 56px;
+  margin-top: 112px;
+  scroll-margin-top: var(--header-height);
+  word-break: keep-all;
+}
+
+.about-principle--blue {
+  --accent: var(--blue-text);
+  --accent-soft: var(--blue-soft);
+}
+
+.about-principle--green {
+  --accent: var(--green-text);
+  --accent-soft: var(--green-soft);
+}
+
+.about-principle--panel {
+  grid-template-areas:
+    'head media'
+    'extra media';
+}
+
+.about-principle__head {
+  grid-area: head;
+  align-self: end;
+}
+
+.about-principle__media {
+  grid-area: media;
+  align-self: center;
+}
+
+.about-principle__extra {
+  grid-area: extra;
+  align-self: start;
+}
+
+.about-principle__label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.about-principle__title {
+  margin: 10px 0 0;
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.5px;
+}
+
+.about-principle__summary {
+  margin: 16px 0 0;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text-sub);
+}
+
+.about-principle__photo {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 24px;
+}
+
+/* 강사 교육: 체크 목록 */
+.about-principle__checks {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.about-principle__check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.about-principle__check svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+/* 커리큘럼: 연령 구분 칩 + 월별 예시 패널 */
+.about-principle__ages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.about-principle__age {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.about-principle__curriculum {
+  padding: 32px;
+  border-radius: 24px;
+  background: var(--accent-soft);
+}
+
+.about-principle__curriculum-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.about-principle__months {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.about-principle__month {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  font-size: 15px;
+}
+
+.about-principle__month strong {
+  color: var(--accent);
+}
+
+.about-principle__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.about-principle__link:hover {
+  text-decoration: underline;
+}
+
+/* 새로운 활동 경험: 테마 · 교구 예시 */
+.about-principle__examples {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 24px 0 0;
+}
+
+.about-principle__example {
+  padding: 20px;
+  border: 1px solid #d6e6cb;
+  border-radius: 16px;
+}
+
+.about-principle__example dt {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.about-principle__example dd {
+  margin: 6px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .about-principle {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'head'
+      'media'
+      'extra';
+    margin-top: 64px;
+  }
+
+  .about-principle--panel {
+    grid-template-areas:
+      'head'
+      'extra'
+      'media';
+  }
+
+  .about-principle__label {
+    font-size: 13px;
+  }
+
+  .about-principle__title {
+    margin-top: 8px;
+    font-size: 24px;
+    line-height: 1.4;
+    letter-spacing: 0;
+  }
+
+  .about-principle__summary {
+    margin-top: 12px;
+    font-size: 15px;
+  }
+
+  .about-principle__photo {
+    margin-top: 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .about-principle__checks {
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 15px;
+  }
+
+  .about-principle__ages {
+    margin-top: 16px;
+  }
+
+  .about-principle__age {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .about-principle__curriculum {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .about-principle__curriculum-title {
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+
+  .about-principle__months {
+    gap: 8px;
+  }
+
+  .about-principle__month {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+  }
+
+  .about-principle__link {
+    margin-top: 12px;
+  }
+
+  .about-principle__examples {
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .about-principle__example {
+    padding: 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .about-principle__example dt {
+    font-size: 12px;
+  }
+
+  .about-principle__example dd {
+    margin-top: 4px;
+    font-size: 15px;
+  }
+}

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import ImagePlaceholder from '../common/ImagePlaceholder'
 import SectionHeading from '../common/SectionHeading'
 import { sectionHeadings, services } from '../../data/homeContent'
@@ -14,10 +15,10 @@ function ServiceCards() {
               <span className="service-card__tag">{service.tag}</span>
               <h3 className="service-card__title">{service.title}</h3>
               <p className="service-card__description">{service.description}</p>
-              <a href={service.href} className="service-card__more">
+              <Link to={service.to} className="service-card__more">
                 <span className="service-card__arrow" aria-hidden="true">›</span>
                 자세히 보기
-              </a>
+              </Link>
             </div>
             <div className="service-card__image">
               <ImagePlaceholder label={service.imageLabel} />
