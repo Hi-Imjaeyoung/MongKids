@@ -17,6 +17,7 @@ import com.mongkids.domain.member.entity.Member;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlRequest;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlResponse;
+import com.mongkids.domain.review.dto.ReviewReplyRequest;
 import com.mongkids.domain.review.dto.ReviewResponse;
 import com.mongkids.domain.review.dto.ReviewSaveRequest;
 import com.mongkids.domain.review.entity.Review;
@@ -31,7 +32,7 @@ import com.mongkids.global.storage.PresignedUpload;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 수업 후기 (FR-013~016, FR-025). 로그인한 회원이면 누구나 쓸 수 있고, 저장하면 바로 공개된다.
+ * 수업 후기 (FR-013~017, FR-025). 로그인한 회원이면 누구나 쓸 수 있고, 저장하면 바로 공개된다.
  */
 @Service
 @Transactional(readOnly = true)
@@ -126,6 +127,23 @@ public class ReviewService {
 	@Transactional
 	public void deleteReview(Long memberId, Long reviewId) {
 		getOwnReview(memberId, reviewId).delete();
+	}
+
+	/**
+	 * 관리자 답글을 저장한다 (FR-017). 이미 답글이 있으면 고친다.
+	 * 관리자 권한은 토큰이 아니라 DB의 현재 역할로 확인한다.
+	 */
+	@Transactional
+	public ReviewResponse saveReply(Long memberId, Long reviewId, ReviewReplyRequest request) {
+		Member member = memberService.getActiveMember(memberId);
+		if (!member.getRole().isAdmin()) {
+			throw new BusinessException(ErrorCode.FORBIDDEN);
+		}
+		Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+
+		review.reply(request.content());
+		return toResponse(review);
 	}
 
 	private Page<Review> findVisible(ReviewType type, Pageable pageable) {

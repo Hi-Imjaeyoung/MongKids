@@ -27,6 +27,7 @@ import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlRequest;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlRequest.ImageFile;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlResponse;
+import com.mongkids.domain.review.dto.ReviewReplyRequest;
 import com.mongkids.domain.review.dto.ReviewResponse;
 import com.mongkids.domain.review.dto.ReviewSaveRequest;
 import com.mongkids.domain.review.entity.Review;
@@ -262,6 +263,51 @@ class ReviewServiceTest {
 		// then
 		assertThat(review.isDeleted()).isTrue();
 		assertThatThrownBy(() -> reviewService.deleteReview(AUTHOR_ID, 999L))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.REVIEW_NOT_FOUND);
+	}
+
+	@Test
+	@DisplayName("관리자는 남의 후기에 답글을 달 수 있고, 다시 저장하면 답글이 바뀐다")
+	void saveReply_byAdmin() {
+		// given
+		Review review = review(AUTHOR_ID);
+		given(memberService.getActiveMember(ADMIN_ID)).willReturn(member(ADMIN_ID, MemberRole.ADMIN));
+		given(reviewRepository.findByIdAndDeletedAtIsNull(REVIEW_ID)).willReturn(Optional.of(review));
+
+		// when
+		reviewService.saveReply(ADMIN_ID, REVIEW_ID, new ReviewReplyRequest("감사합니다"));
+		ReviewResponse response = reviewService.saveReply(ADMIN_ID, REVIEW_ID,
+			new ReviewReplyRequest("다음 수업도 기대해 주세요"));
+
+		// then
+		assertThat(response.reply().content()).isEqualTo("다음 수업도 기대해 주세요");
+		assertThat(response.reply().repliedAt()).isNotNull();
+		assertThat(review.getReplyContent()).isEqualTo("다음 수업도 기대해 주세요");
+	}
+
+	@Test
+	@DisplayName("관리자가 아니면 직원이어도 답글을 달 수 없고, 후기는 조회하지 않는다")
+	void saveReply_byNonAdmin_forbidden() {
+		// given
+		given(memberService.getActiveMember(OTHER_MEMBER_ID)).willReturn(member(OTHER_MEMBER_ID, MemberRole.STAFF));
+
+		// when & then
+		assertThatThrownBy(() -> reviewService.saveReply(OTHER_MEMBER_ID, REVIEW_ID, new ReviewReplyRequest("답글")))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.FORBIDDEN);
+		then(reviewRepository).should(never()).findByIdAndDeletedAtIsNull(any());
+	}
+
+	@Test
+	@DisplayName("없거나 지운 후기에는 답글을 달 수 없다")
+	void saveReply_notFound() {
+		// given
+		given(memberService.getActiveMember(ADMIN_ID)).willReturn(member(ADMIN_ID, MemberRole.ADMIN));
+		given(reviewRepository.findByIdAndDeletedAtIsNull(999L)).willReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> reviewService.saveReply(ADMIN_ID, 999L, new ReviewReplyRequest("답글")))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.REVIEW_NOT_FOUND);
 	}

@@ -66,7 +66,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST, "/api/v1/lab-posts/**").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/v1/lab-posts/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/v1/lab-posts/**").authenticated()
-				// 후기 쓰기 (FR-013, FR-025). 로그인한 회원 누구나 쓸 수 있고, 수정·삭제는 ReviewService가 작성자 본인인지 검사한다
+				// 후기 쓰기 (FR-013, FR-017, FR-025). 작성은 로그인한 회원 누구나, 수정·삭제는 작성자 본인, 답글은 관리자인지 ReviewService가 검사한다
 				.requestMatchers(HttpMethod.POST, "/api/v1/reviews/**").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/v1/reviews/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/v1/reviews/**").authenticated()
