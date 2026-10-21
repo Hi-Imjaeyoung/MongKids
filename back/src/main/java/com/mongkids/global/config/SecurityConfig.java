@@ -58,6 +58,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/v1/members/me").authenticated()
 				// 게시물 쓰기 (FR-008). 직원 권한(FR-009)은 PostService가 DB의 현재 역할로 검사한다
+				// 댓글 쓰기·삭제(FR-010)도 여기에 걸린다. 댓글은 로그인한 회원 누구나 쓸 수 있다
 				.requestMatchers(HttpMethod.POST, "/api/v1/posts/**").authenticated()
 				.requestMatchers(HttpMethod.PUT, "/api/v1/posts/**").authenticated()
 				.requestMatchers(HttpMethod.DELETE, "/api/v1/posts/**").authenticated()
