@@ -27,14 +27,16 @@
 | 오리진 보호 | CloudFront가 붙이는 `X-Origin-Verify` 헤더가 없으면 Caddy가 403. 값은 Parameter Store `ORIGIN_VERIFY` |
 | 접속 | SSH 없음(22 닫힘). SSM Session Manager로만 접속 |
 | 보안 그룹 | `mongkiz-back-sg`(80/443 전체), `mongkiz-db-sg`(3306은 `mongkiz-back-sg`에서만) |
-| DB | RDS `mongkiz-prod` (MariaDB 11.8.9, db.t4g.micro, 단일 AZ, gp3 20GB, 비공개, 암호화, 삭제 방지, 백업 1일), 파라미터 그룹 `mongkiz-mariadb118`(utf8mb4). TLS 필수(`require_secure_transport=ON`)라서 `DB_URL`에 `sslMode=verify-full` + RDS CA 번들(`/opt/mongkiz/rds-global-bundle.pem`) |
+| DB | RDS `mongkiz-prod` (MariaDB 11.8.9, db.t4g.micro, 단일 AZ, gp3 20GB, 비공개, 암호화, 삭제 방지, 백업 7일), 파라미터 그룹 `mongkiz-mariadb118`(utf8mb4). TLS 필수(`require_secure_transport=ON`)라서 `DB_URL`에 `sslMode=verify-full` + RDS CA 번들(`/opt/mongkiz/rds-global-bundle.pem`) |
 | 사진 버킷 | S3 `mongkiz-photos-prod` (퍼블릭 차단, CORS `PUT`) |
 | 사진 CloudFront | 배포 `E21JTPP1GUA4UD` (`d3vc95fih5p9fq.cloudfront.net`, OAC). 기존 배포에 경로를 붙이지 않는다: 키 접두사 `reviews/`가 프론트 경로 `/reviews`와 겹친다 |
 | 배포 jar | S3 `mongkiz-back-artifacts/releases/{sha}.jar` (30일 뒤 만료) |
 | 환경 변수 | Parameter Store `/mongkiz/prod/*`. 서비스가 시작할 때마다 `load-env.sh`가 `/run/mongkiz/back.env`로 옮긴다 |
 | IAM | 인스턴스 역할 `mongkiz-back-ec2`, GitHub OIDC 역할 `mongkiz-github-back-deploy` |
 
-> 계정이 AWS 무료 플랜이라 RDS 백업 보관을 1일로 만들었다. 공개 전에 유료 플랜으로 바꾸고 7일로 늘린다 (무료 플랜은 크레딧·기간이 끝나면 계정이 닫힌다).
+> 처음에는 계정이 AWS 무료 플랜이라 RDS 백업 보관을 1일로 만들었다. 2026-10-22 유료 플랜으로 바꾼 뒤 7일로 늘렸다.
+>
+> 운영 DB에 로컬 DB 프로그램으로 접속해야 하면 개인 계정 `jaeyoung`(비밀번호는 Parameter Store `/mongkiz/db-users/jaeyoung`, TLS 필수)을 쓴다. 평소에는 RDS가 비공개다. 잠깐 열 때는 `mongkiz-db-sg`에 내 IP `/32` 규칙을 추가하고 `--publicly-accessible`을 켠다. 작업이 끝나면 둘 다 바로 되돌린다.
 
 프론트 배포는 `main`에 `front/**` 변경이 반영되면 GitHub Actions(`.github/workflows/front.yml`)가 아래와 같은 순서로 실행한다. 직접 배포해야 할 때(`front/`에서 `npm run build` 후):
 

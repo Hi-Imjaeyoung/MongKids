@@ -81,7 +81,6 @@
 
 - 프론트엔드: 로고는 원본 이미지로 교체했지만 실제 사진·아이콘 리소스가 없어 플레이스홀더와 이모지로 대체되어 있다.
 - 백엔드: 로컬 `.env`에 `AWS_S3_BUCKET`, `STORAGE_PUBLIC_BASE_URL` 등이 비어 있으면 기동이 실패한다. 운영 사진 버킷은 생성됐고 사진 업로드 E2E는 CloudFront 경로 연결 후 확인 필요.
-- 공통: AWS 계정이 무료 플랜이다. 크레딧·기간이 끝나면 계정이 닫히므로 공개(2026-11-11) 전에 유료 플랜으로 바꾼다.
 
 ## 다음 할 일
 
@@ -94,7 +93,8 @@
 - [x] GitHub Actions 프론트 자동 배포·백엔드 CI (2026-10-22, [git-workflow.md](git-workflow.md) 4)
 - [x] GitHub Actions 백엔드 배포 단계 (2026-10-22, 병합 후 첫 실행 확인 필요)
 - [x] 사진용 S3 버킷·CORS·CloudFront(OAC) (2026-10-22, [deploy-checklist.md](deploy-checklist.md) H)
-- [ ] AWS 유료 플랜 전환 후 RDS 백업 보관 1일 → 7일
+- [x] AWS 유료 플랜 전환 후 RDS 백업 보관 1일 → 7일 (2026-10-22)
+- [ ] AWS Activate Founders 크레딧 신청 (회사 도메인 이메일 필요)
 - [ ] 운영 스키마 마이그레이션 방식 결정 (Flyway 도입 검토, [back/docs/database.md](../back/docs/database.md#ddl-auto-정책))
 - [x] 요구사항(사용자 역할, 기능 목록) 정리
 - [x] SCR-002 구성 확정 (디자인 초안 승인, 2026-10-20)
