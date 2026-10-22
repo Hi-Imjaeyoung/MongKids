@@ -1,14 +1,13 @@
-import Button from '../common/Button'
 import Highlight from '../common/Highlight'
-import ImagePlaceholder from '../common/ImagePlaceholder'
-import { ctaButtons, hero } from '../../data/homeContent'
+import heroImage from '../../assets/hero-main.png'
+import { hero } from '../../data/homeContent'
 import './Hero.css'
 
-function Hero({ onInstitutionConsultClick, onPersonalConsultClick }) {
+function Hero() {
   return (
     <section className="hero">
       <div className="hero__visual">
-        <ImagePlaceholder label="메인 비주얼 (수업 사진)" />
+        <img className="hero__image" src={heroImage} alt={hero.visualAlt} />
       </div>
 
       <div className="hero__inner container">
@@ -25,15 +24,11 @@ function Hero({ onInstitutionConsultClick, onPersonalConsultClick }) {
               <span key={line}>{line}</span>
             ))}
           </p>
-          <div className="hero__actions">
-            <Button variant="yellow" size="lg" icon={ctaButtons.institution.icon} onClick={onInstitutionConsultClick}>
-              {ctaButtons.institution.label}
-            </Button>
-            <Button variant="blue" size="lg" icon={ctaButtons.private.icon} onClick={onPersonalConsultClick}>
-              {ctaButtons.private.label}
-            </Button>
-          </div>
-          <p className="hero__area">📍 {hero.area}</p>
+          <p className="hero__area">
+            {hero.area.map((line, index) => (
+              <span key={line}>{index === 0 ? `📍 ${line}` : line}</span>
+            ))}
+          </p>
         </div>
       </div>
 

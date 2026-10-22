@@ -1,6 +1,6 @@
 import Hero from '../components/home/Hero'
 import StatsBar from '../components/home/StatsBar'
-import ServiceCards from '../components/home/ServiceCards'
+// import ServiceCards from '../components/home/ServiceCards'
 import WhyMongkids from '../components/home/WhyMongkids'
 import ClassGallery from '../components/home/ClassGallery'
 import Reviews from '../components/home/Reviews'
@@ -12,9 +12,10 @@ import ContactCta from '../components/home/ContactCta'
 function HomePage({ onInstitutionConsultClick, onPersonalConsultClick }) {
   return (
     <>
-      <Hero onInstitutionConsultClick={onInstitutionConsultClick} onPersonalConsultClick={onPersonalConsultClick} />
+      <Hero />
       <StatsBar />
-      <ServiceCards />
+      {/* SCR-001 프로그램 섹션(services) 숨김: 삭제 전 QA 중 */}
+      {/* <ServiceCards /> */}
       <WhyMongkids />
       <ClassGallery />
       <Reviews />

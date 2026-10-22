@@ -3,7 +3,7 @@ import PageHero from '../common/PageHero'
 import { ctaButtons } from '../../data/homeContent'
 import { programDetail } from '../../data/programContent'
 
-// 프로그램 상세 소개: 상담 버튼 + "자주 묻는 질문"(아래 FAQ 섹션으로 이동)
+// 프로그램 상세 소개: 상담 버튼
 // 1:1 가정 방문체육만 개인 상담(SCR-010), 나머지는 기관 문의(SCR-009)
 function ProgramHero({ program, onInstitutionConsultClick, onPersonalConsultClick }) {
   return (
@@ -23,9 +23,6 @@ function ProgramHero({ program, onInstitutionConsultClick, onPersonalConsultClic
           {ctaButtons.institution.label}
         </Button>
       )}
-      <a href={`#${programDetail.faqAnchor}`} className="btn btn--ghost btn--lg">
-        {programDetail.faqButton}
-      </a>
     </PageHero>
   )
 }
