@@ -1,0 +1,69 @@
+# 프론트엔드 CI/CD
+# - PR(→ main): lint, build
+# - main 반영: lint, build 후 S3 업로드와 CloudFront 무효화 (docs/deploy-checklist.md F)
+# AWS 인증은 OIDC로 역할을 받는다. 역할은 main 브랜치에서만 쓸 수 있다.
+name: front
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'front/**'
+      - '.github/workflows/front.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'front/**'
+      - '.github/workflows/front.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  S3_BUCKET: mongkiz-front-prod
+  CLOUDFRONT_DISTRIBUTION_ID: E1AWEJNTIYBX5U
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    # 배포가 겹치지 않도록 main은 앞 실행을 기다리고, PR은 새 커밋이 오면 앞 실행을 취소한다
+    concurrency:
+      group: front-${{ github.ref }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: front
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: front/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+      - name: AWS 자격 증명 (OIDC)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_FRONT_DEPLOY_ROLE_ARN }}
+          aws-region: ap-northeast-2
+
+      - name: S3 업로드
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          aws s3 sync dist/ "s3://$S3_BUCKET" --delete --exclude index.html \
+            --cache-control "public,max-age=31536000,immutable"
+          aws s3 cp dist/index.html "s3://$S3_BUCKET/index.html" --cache-control "no-cache"
+
+      - name: CloudFront 무효화
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/index.html"
