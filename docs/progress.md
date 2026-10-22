@@ -6,7 +6,7 @@
 
 | 영역 | 상태 |
 |---|---|
-| 공통 | 모노레포 구성 완료. MVP 요구사항 정리(SCR-001~014, FR-001~023, NFR-001~004). SCR-002·003·012·016~020·022·024 디자인 초안, SCR-004·005·021은 병합해 결번. 프론트 정적 배포(S3 + CloudFront, `https://mongkiz.com`, NFR-004), 백엔드 미배포 |
+| 공통 | 모노레포 구성 완료. MVP 요구사항 정리(SCR-001~014, FR-001~023, NFR-001~004). SCR-002·003·012·016~020·022·024 디자인 초안, SCR-004·005·021은 병합해 결번. 프론트 정적 배포(S3 + CloudFront, `https://mongkiz.com`, NFR-004), 백엔드 배포(EC2 + Caddy, RDS, CloudFront `/api`·OAuth 경로 연결, 2026-10-22) |
 | 백엔드 | 도메인 Entity 10개, `global` 공통 클래스, 소셜 로그인(FR-018, OAuth2 + JWT 쿠키)·내 정보 API, 게시물 API(FR-008, S3 Presigned URL 업로드)·댓글 API(FR-010)·몽키즈 연구소 글 API(`/api/v1/lab-posts`, 제목 검색), 기관·개인 상담 신청 API(FR-001, FR-002), 후기 API(FR-013~016, FR-025, `/api/v1/reviews`) 구현. 테스트는 H2 |
 | 프론트엔드 | Vite + React 프로젝트, react-router-dom 라우팅. 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현, 실제 로고·공통 푸터·모바일 하단 상담 바. 로그인 모달(SCR-013)·헤더 로그인 상태, 수업 현장(SCR-006) 목록·상세·작성·수정·댓글 API 연동, 기관 상담 신청 모달(SCR-009), 개인 상담 신청 2단계 모달(SCR-010). ABOUT 몽키즈(SCR-002), 체육/행사 프로그램 전체 안내·상세(SCR-003, SCR-016~020), 자주 묻는 질문(SCR-022) 정적 화면. 수업 후기(SCR-012) 목록·작성·수정·삭제 API 연동 |
 
@@ -75,20 +75,27 @@
 | 2026-10-22 | 공통 | 프론트 정적 배포·도메인 연결 (NFR-004): 도메인 `mongkiz.com` 네임서버를 Route 53으로 이전, ACM 인증서(`us-east-1`, `www` 포함), S3 `mongkiz-front-prod`(OAC), CloudFront `E1AWEJNTIYBX5U`, Function `mongkiz-spa-router`(SPA 폴백, `www` → 루트 301), A/AAAA 별칭. 로컬 빌드 수동 업로드. 점검 통과: HTTPS, http→https, `www` 이동, `/news/1` 직접 접속, 없는 파일 403, 캐시 헤더. 리소스·재배포 명령은 [deploy-checklist.md](deploy-checklist.md). `/api` 기능은 백엔드 미배포로 동작 안 함 |
 | 2026-10-22 | 공통 | GitHub Actions CI/CD 추가 (사용자 결정: 브랜치가 아닌 경로 필터로 영역 분리): `front.yml`(PR은 lint·build, `main` 반영 시 S3 업로드·`/index.html` 무효화, OIDC 역할 `mongkiz-github-front-deploy`), `back.yml`(PR·`main` 모두 `gradlew build`, 배포는 서버 결정 후) |
 | 2026-10-22 | 프론트엔드 | 홈·헤더·프로그램 상세 화면 문구·구성 수정 (사용자 결정): SCR-001 히어로 문구("유아체육은? / 몽키즈 유아체육!", 노란 반투명 밑줄)·한 줄 설명·운영 지역 변경, 히어로 상담 버튼 삭제, 메인 비주얼에 참고 시안 사진 적용(저해상도, 원본 교체 필요), 프로그램 섹션 숨김(삭제 전 QA). 헤더 GNB에서 강사 채용 삭제, 주메뉴 화면 정중앙 정렬. 플로팅 메뉴 견적 신청 → 인스타그램 바로가기. SCR-016~020 관련 FAQ 섹션·"자주 묻는 질문" 버튼 삭제 |
+| 2026-10-22 | 공통 | 백엔드 운영 배포 (NFR-004, 사용자 결정: EC2 1대 + Caddy, RDS MariaDB, 사진 S3 함께 구성). EC2 `mongkiz-back`(t4g.small, SSM 접속만), Caddy가 `origin.mongkiz.com` HTTPS(Let's Encrypt)·`X-Origin-Verify` 검사·`X-Forwarded-*` 고정, RDS `mongkiz-prod`(MariaDB 11.8, TLS 필수라 `sslMode=verify-full`), 환경 변수는 Parameter Store `/mongkiz/prod/*`. 첫 기동만 `ddl-auto=update`로 테이블 13개 생성 후 `validate`로 재기동 확인. 사진 버킷 `mongkiz-photos-prod`·전용 CloudFront `E21JTPP1GUA4UD`. `back.yml`에 `main` 반영 시 jar S3 업로드 → SSM `deploy.sh`(헬스 체크 실패 시 롤백) 추가, OIDC 역할 `mongkiz-github-back-deploy`. 계정이 무료 플랜이라 RDS 백업 1일 (사용자 결정, 공개 전 유료 전환). 기존 CloudFront에 백엔드 오리진·동작 3개 추가 후 점검: OAuth 302의 `redirect_uri`가 `https://mongkiz.com/...`(카카오·네이버), `/api/v1/members/me` 401 JSON, `/api/v1/reviews` 200, `/news/1` 200, 오리진 직접 접근 403, 8080 외부 차단. 브라우저 로그인 점검은 개발자 콘솔 등록 후 |
 
 ## 이슈 / 블로커
 
 - 프론트엔드: 로고는 원본 이미지로 교체했지만 실제 사진·아이콘 리소스가 없어 플레이스홀더와 이모지로 대체되어 있다.
-- 백엔드: S3 버킷·IAM 키가 없어 `.env`에 `AWS_S3_BUCKET`, `STORAGE_PUBLIC_BASE_URL` 등이 비어 있으면 기동이 실패한다. 사진 업로드 E2E는 버킷 생성 후 확인 필요.
+- 백엔드: 로컬 `.env`에 `AWS_S3_BUCKET`, `STORAGE_PUBLIC_BASE_URL` 등이 비어 있으면 기동이 실패한다. 운영 사진 버킷은 생성됐고 사진 업로드 E2E는 CloudFront 경로 연결 후 확인 필요.
+- 공통: AWS 계정이 무료 플랜이다. 크레딧·기간이 끝나면 계정이 닫히므로 공개(2026-11-11) 전에 유료 플랜으로 바꾼다.
 
 ## 다음 할 일
 
 ### 공통
 - [x] 프론트 정적 배포·도메인 연결 (NFR-004, 2026-10-22, `https://mongkiz.com`)
-- [ ] 백엔드 배포 후 CloudFront에 `/api/*`, `/oauth2/*`, `/login/oauth2/*` 동작 추가 ([deploy-checklist.md](deploy-checklist.md) A~E)
+- [x] 백엔드 서버 배포 (2026-10-22, EC2 + Caddy, RDS, [deploy-checklist.md](deploy-checklist.md) 운영 리소스)
+- [x] CloudFront `E1AWEJNTIYBX5U`에 `/api/*`, `/oauth2/*`, `/login/oauth2/*` 동작 추가 (2026-10-22, [deploy-checklist.md](deploy-checklist.md) A)
+- [x] 카카오·네이버 개발자 콘솔에 운영 Redirect URI 등록, 운영 키를 사업자 계정 앱으로 교체 (2026-10-22, 사용자, [deploy-checklist.md](deploy-checklist.md) D)
+- [ ] 운영 `KAKAO_*`, `NAVER_*` 파라미터를 SecureString으로 다시 만들기 (지금은 String)
 - [x] GitHub Actions 프론트 자동 배포·백엔드 CI (2026-10-22, [git-workflow.md](git-workflow.md) 4)
-- [ ] GitHub Actions 백엔드 배포 단계 (운영 서버 결정 후)
-- [ ] 사진용 S3 버킷·CORS·CloudFront 오리진(OAC) ([deploy-checklist.md](deploy-checklist.md) H)
+- [x] GitHub Actions 백엔드 배포 단계 (2026-10-22, 병합 후 첫 실행 확인 필요)
+- [x] 사진용 S3 버킷·CORS·CloudFront(OAC) (2026-10-22, [deploy-checklist.md](deploy-checklist.md) H)
+- [ ] AWS 유료 플랜 전환 후 RDS 백업 보관 1일 → 7일
+- [ ] 운영 스키마 마이그레이션 방식 결정 (Flyway 도입 검토, [back/docs/database.md](../back/docs/database.md#ddl-auto-정책))
 - [x] 요구사항(사용자 역할, 기능 목록) 정리
 - [x] SCR-002 구성 확정 (디자인 초안 승인, 2026-10-20)
 - [x] SCR-003 범위·구성 확정 (2026-10-20, 기획 v4 기준 디자인 초안)
@@ -107,11 +114,11 @@
 - [x] `global/` 공통 클래스 구현
 - [x] 소셜 로그인 (FR-018)
 - [x] 카카오·네이버 실제 키로 로그인 확인 (로컬)
-- [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md))
+- [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md) G): 카카오 완료(2026-10-22, 사용자), 네이버 남음
 - [ ] 가입 정보 입력 (FR-019)
 - [x] 게시물 저장·조회·수정·삭제 (FR-008)
 - [ ] 게시물 사진 S3 실제 업로드 확인 (FR-008, PR #12 병합 후 미확인). 확인이 끝날 때까지 `feature/posts` 브랜치 유지 ([deploy-checklist.md](deploy-checklist.md) H)
-  - [ ] S3 버킷 CORS(`PUT`, `http://localhost:5173`), CloudFront(OAC) 구성 → `.env`의 `STORAGE_PUBLIC_BASE_URL` 설정
+  - [x] 운영 S3 버킷 CORS(`PUT`, `https://mongkiz.com`, `http://localhost:5173`), CloudFront(OAC) 구성 (2026-10-22). 로컬 `.env`는 개발 버킷 기준으로 따로 설정
   - [ ] 로그인 후 `/news/write`에서 사진 묶음 업로드 → 저장 → 목록 대표 사진·상세 본문 사진 표시
   - [ ] 몽키즈 연구소 `/lab/write`도 같은 업로드 URL(`posts/` 키)로 사진 업로드 → 저장 → `/lab` 카드 대표 이미지·상세 본문 사진 표시, 수정 시 `lab_post_image` 교체 (FR-008, #22)
   - [ ] 수정(사진 교체·순서 변경)·삭제, 21장·10MB 초과·이미지가 아닌 파일 거부

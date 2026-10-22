@@ -18,6 +18,24 @@
 | CloudFront Function | `mongkiz-spa-router` (기본 동작 Viewer Request): `www.mongkiz.com` → `https://mongkiz.com` 301, 확장자 없는 경로 → `/index.html` |
 | DNS | `mongkiz.com`, `www.mongkiz.com` A/AAAA 별칭 → CloudFront |
 
+2026-10-22 백엔드 배포 기준 (EC2 1대 + Caddy, RDS). 리전은 모두 `ap-northeast-2`.
+
+| 구분 | 값 |
+|---|---|
+| 서버 | EC2 `i-01a62a936805035e1` (`mongkiz-back`, t4g.small, AL2023 arm64, gp3 20GB), Elastic IP `13.125.26.176` |
+| 오리진 도메인 | `origin.mongkiz.com` A → EIP. Caddy가 Let's Encrypt 인증서로 443을 받고 `127.0.0.1:8080`(Spring Boot)으로 넘긴다 ([back/deploy/Caddyfile](../back/deploy/Caddyfile)) |
+| 오리진 보호 | CloudFront가 붙이는 `X-Origin-Verify` 헤더가 없으면 Caddy가 403. 값은 Parameter Store `ORIGIN_VERIFY` |
+| 접속 | SSH 없음(22 닫힘). SSM Session Manager로만 접속 |
+| 보안 그룹 | `mongkiz-back-sg`(80/443 전체), `mongkiz-db-sg`(3306은 `mongkiz-back-sg`에서만) |
+| DB | RDS `mongkiz-prod` (MariaDB 11.8.9, db.t4g.micro, 단일 AZ, gp3 20GB, 비공개, 암호화, 삭제 방지, 백업 1일), 파라미터 그룹 `mongkiz-mariadb118`(utf8mb4). TLS 필수(`require_secure_transport=ON`)라서 `DB_URL`에 `sslMode=verify-full` + RDS CA 번들(`/opt/mongkiz/rds-global-bundle.pem`) |
+| 사진 버킷 | S3 `mongkiz-photos-prod` (퍼블릭 차단, CORS `PUT`) |
+| 사진 CloudFront | 배포 `E21JTPP1GUA4UD` (`d3vc95fih5p9fq.cloudfront.net`, OAC). 기존 배포에 경로를 붙이지 않는다: 키 접두사 `reviews/`가 프론트 경로 `/reviews`와 겹친다 |
+| 배포 jar | S3 `mongkiz-back-artifacts/releases/{sha}.jar` (30일 뒤 만료) |
+| 환경 변수 | Parameter Store `/mongkiz/prod/*`. 서비스가 시작할 때마다 `load-env.sh`가 `/run/mongkiz/back.env`로 옮긴다 |
+| IAM | 인스턴스 역할 `mongkiz-back-ec2`, GitHub OIDC 역할 `mongkiz-github-back-deploy` |
+
+> 계정이 AWS 무료 플랜이라 RDS 백업 보관을 1일로 만들었다. 공개 전에 유료 플랜으로 바꾸고 7일로 늘린다 (무료 플랜은 크레딧·기간이 끝나면 계정이 닫힌다).
+
 프론트 배포는 `main`에 `front/**` 변경이 반영되면 GitHub Actions(`.github/workflows/front.yml`)가 아래와 같은 순서로 실행한다. 직접 배포해야 할 때(`front/`에서 `npm run build` 후):
 
 ```bash
@@ -26,15 +44,28 @@ aws s3 cp dist/index.html s3://mongkiz-front-prod/index.html --cache-control "no
 aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/index.html"
 ```
 
+백엔드 배포는 `main`에 `back/**` 변경이 반영되면 GitHub Actions(`.github/workflows/back.yml`)가 jar를 S3에 올리고, SSM으로 서버의 `/opt/mongkiz/deploy.sh {sha}`를 실행한다. `deploy.sh`는 jar 교체 → 재시작 → `/actuator/health` 확인 순서로 진행하고, 실패하면 직전 jar로 되돌린다. 직접 배포해야 할 때(`back/`에서 `./gradlew build` 후):
+
+```bash
+aws s3 cp build/libs/mongkids-0.0.1-SNAPSHOT.jar s3://mongkiz-back-artifacts/releases/{sha}.jar
+aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunShellScript \
+  --parameters 'commands=["/opt/mongkiz/deploy.sh {sha}"]'
+# 롤백: 이전 sha로 같은 명령 (서버 /opt/mongkiz/releases/에 최근 5개 보관)
+# 로그: SSM 세션에서 journalctl -u mongkiz-back -f
+```
+
+- 운영 DB는 `ddl-auto: validate`다. Entity에 컬럼·테이블을 추가하면 배포 **전에** RDS에 `ALTER`/`CREATE`를 먼저 적용해야 기동한다 ([back/docs/database.md](../back/docs/database.md#ddl-auto-정책)).
+- 서버 설정 원본은 [back/deploy/](../back/deploy/)에 있다. 바꾸면 서버의 `/etc/caddy/Caddyfile`, `/etc/systemd/system/*.service`, `/opt/mongkiz/*.sh`에 직접 반영해야 한다 (자동 배포는 jar만 바꾼다).
+
 ## A. CloudFront 경로 구성 (같은 출처 유지)
 
 프론트 `src/api/client.js`는 상대 경로와 `credentials: 'same-origin'`으로 요청한다. 인증 쿠키도 같은 도메인에서 주고받아야 한다.
 
 - [x] 기본 동작(`*`) → S3 오리진 (프론트 `dist/`)
-- [ ] `/api/*`, `/oauth2/*`, `/login/oauth2/*` → 백엔드 오리진
-- [ ] 백엔드 동작의 허용 메서드: GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE (로그아웃이 `POST`)
-- [ ] 백엔드 동작의 캐시 정책: `CachingDisabled`
-- [ ] 백엔드 동작의 오리진 요청 정책: 쿠키·쿼리 문자열·헤더(Host 포함) 전체 전달 (`AllViewer` 계열)
+- [x] `/api/*`, `/oauth2/*`, `/login/oauth2/*` → 백엔드 오리진 `mongkiz-back-origin`(`origin.mongkiz.com`, HTTPS only, 커스텀 헤더 `X-Origin-Verify`) (2026-10-22)
+- [x] 백엔드 동작의 허용 메서드: GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE (로그아웃이 `POST`)
+- [x] 백엔드 동작의 캐시 정책: `CachingDisabled`
+- [x] 백엔드 동작의 오리진 요청 정책: 쿠키·쿼리 문자열·헤더 전체 전달. Host는 빼고 넘긴다(`AllViewerExceptHostHeader`). 서비스 도메인은 Caddy가 `X-Forwarded-Host`로 넘긴다 (B 참고)
   - 로그인 중 OAuth2 인가 요청(state)은 세션 쿠키(`JSESSIONID`)에 보관된다. 쿠키가 전달되지 않으면 `authorization_request_not_found`로 로그인이 실패한다.
   - 콜백의 `code`, `state` 쿼리 문자열도 전달되어야 한다.
 - [x] 사용자 지정 오류 응답(403/404 → `index.html`)은 넣지 않는다
@@ -47,12 +78,11 @@ aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/in
 
 `redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"`의 `{baseUrl}`은 요청의 Host와 프로토콜로 만들어진다.
 
-- [ ] `{baseUrl}`이 `https://{도메인}`으로 만들어지는지 확인
+- [x] `{baseUrl}`이 `https://{도메인}`으로 만들어지는지 확인 (2026-10-22, 카카오·네이버 모두 `redirect_uri=https://mongkiz.com/login/oauth2/code/{kakao|naver}`, `JSESSIONID`는 `Secure; HttpOnly; SameSite=Lax`)
   - 확인 방법: `https://{도메인}/oauth2/authorization/kakao` 응답(302) Location의 `redirect_uri` 값
-- [ ] prod에 `server.forward-headers-strategy: framework` 설정 (`X-Forwarded-*` 반영)
-- [ ] CloudFront → 백엔드 구간이 HTTP라서 `redirect_uri`가 `http://`로 나오는 경우 둘 중 하나로 해결
-  - ALB(HTTPS 리스너)를 거치게 해서 `X-Forwarded-Proto: https` 전달
-  - `application-prod.yml`에서 redirect-uri를 `https://{도메인}/login/oauth2/code/{registrationId}`로 고정
+- [x] prod에 `server.forward-headers-strategy: framework` 설정 (`X-Forwarded-*` 반영)
+- [x] 적용한 방식: CloudFront는 Host를 넘기지 않고(`AllViewerExceptHostHeader`, 오리진 인증서가 `origin.mongkiz.com`이라서), Caddy가 `X-Forwarded-Proto: https`, `X-Forwarded-Host: mongkiz.com`, `X-Forwarded-Port: 443`을 덮어써서 넘긴다. 앱은 `127.0.0.1`에만 열려 있어 이 헤더를 위조할 수 있는 경로가 없다.
+  - 안 될 때 대안: `application-prod.yml`에서 redirect-uri를 `https://{도메인}/login/oauth2/code/{registrationId}`로 고정
 - [ ] 로그인 성공/실패 후 `https://{도메인}/`로 돌아오는지 확인
   - `login-success-url: /`, `login-failure-url: /?loginError=true`는 상대 경로라서 콜백이 들어온 도메인 기준으로 이동한다. 콜백이 백엔드 도메인으로 바로 가면 백엔드 `/`에 핸들러가 없어 `C002`가 난다(로컬에서 겪은 문제와 같은 원인).
 
@@ -63,22 +93,26 @@ aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/in
 
 ## D. 개발자 콘솔
 
-- [ ] 카카오: 플랫폼 > Web 사이트 도메인에 `https://{도메인}` 등록
-- [ ] 카카오: Redirect URI `https://{도메인}/login/oauth2/code/kakao` 등록
+운영은 사업자 계정의 카카오·네이버 앱 키를 쓴다 (2026-10-22 교체, Parameter Store `KAKAO_*`, `NAVER_*`). 로컬 `.env`의 키와 다를 수 있다.
+
+- [x] 카카오: 플랫폼 > Web 사이트 도메인에 `https://{도메인}` 등록 (2026-10-22, 사용자)
+- [x] 카카오: Redirect URI `https://{도메인}/login/oauth2/code/kakao` 등록 (2026-10-22, 사용자)
 - [ ] 카카오: 동의항목 `profile_nickname` 설정 확인
-- [ ] 네이버: 서비스 URL `https://{도메인}`, Callback URL `https://{도메인}/login/oauth2/code/naver` 등록
+- [x] 네이버: 서비스 URL `https://{도메인}`, Callback URL `https://{도메인}/login/oauth2/code/naver` 등록 (2026-10-22, 사용자)
 - [ ] 네이버: 앱이 "개발 중"이면 등록된 테스트 계정만 로그인된다. 공개 전에 검수를 요청한다.
 - [ ] 로컬 개발용 URI(`http://localhost:5173/login/oauth2/code/{kakao|naver}`)는 그대로 둔다
 
 ## E. 운영 환경 변수
 
-저장소에 커밋하지 않는다. 배포 환경(GitHub Actions secrets, 서버 환경변수 등)에만 둔다.
+저장소에 커밋하지 않는다. Parameter Store `/mongkiz/prod/{이름}`에만 둔다 (비밀값은 SecureString).
 
-- [ ] `SPRING_PROFILES_ACTIVE=prod`
-- [ ] `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`
-- [ ] `JWT_SECRET` (로컬과 다른 값)
-- [ ] `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`
-- [ ] `AWS_S3_BUCKET`, `AWS_REGION`, `STORAGE_PUBLIC_BASE_URL` (자격 증명은 키 대신 서버 IAM 역할 권장)
+- [x] `SPRING_PROFILES_ACTIVE=prod`
+- [x] `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` (사용자가 직접 입력)
+- [x] `JWT_SECRET` (로컬과 다른 값, 생성 후 바로 저장)
+- [x] `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`
+- [x] `AWS_S3_BUCKET`, `AWS_REGION`, `STORAGE_PUBLIC_BASE_URL` (자격 증명은 인스턴스 역할)
+- [x] `ORIGIN_VERIFY` (CloudFront 오리진 커스텀 헤더와 같은 값)
+- 운영 DB 스키마를 처음 만들 때만 `SPRING_JPA_HIBERNATE_DDL_AUTO=update`를 넣고 기동한 뒤 지웠다 (2026-10-22)
 
 ## F. 정적 파일 캐시
 
@@ -90,6 +124,8 @@ aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/in
 
 카카오·네이버 각각 확인한다.
 
+> 2026-10-22 카카오 점검 완료(사용자, 운영 DB에 카카오 회원 1명). 네이버는 운영 DB에 회원이 없어 아직 점검 전이다.
+
 - [ ] 로그인 모달 → 소셜 로그인 → `https://{도메인}/`로 복귀 → 헤더가 로그인 상태
 - [ ] 새로고침 후에도 로그인 유지
 - [ ] 로그아웃 → 헤더가 비로그인 상태, `GET /api/v1/members/me`가 401 JSON
@@ -100,11 +136,12 @@ aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/in
 
 사진은 브라우저가 Presigned URL로 S3에 직접 올리고(`PUT`), 백엔드는 URL 발급과 `HeadObject`로 확인만 한다.
 
-- [ ] 사진용 S3 버킷 생성, 퍼블릭 액세스 차단 유지 (읽기는 CloudFront로만)
-- [ ] 버킷 CORS: `PUT`을 `https://{도메인}`과 `http://localhost:5173`에서 허용, 허용 헤더 `Content-Type`
-- [ ] 백엔드 IAM 권한: 버킷의 `posts/*`에 `s3:PutObject`(URL 서명용), `s3:GetObject`(`HeadObject`)
-- [ ] CloudFront에 사진 버킷 오리진(OAC) 추가, `STORAGE_PUBLIC_BASE_URL`을 그 주소로 설정
+- [x] 사진용 S3 버킷 생성, 퍼블릭 액세스 차단 유지 (읽기는 CloudFront로만) — `mongkiz-photos-prod`
+- [x] 버킷 CORS: `PUT`을 `https://{도메인}`과 `http://localhost:5173`에서 허용, 허용 헤더 `Content-Type`
+- [x] 백엔드 IAM 권한: 버킷의 `posts/*`, `reviews/*`에 `s3:PutObject`(URL 서명용), `s3:GetObject`(`HeadObject`)
+- [x] 사진 전용 CloudFront(OAC) `E21JTPP1GUA4UD`, `STORAGE_PUBLIC_BASE_URL=https://d3vc95fih5p9fq.cloudfront.net`
 - [ ] 수명 주기 규칙 검토: 업로드만 하고 저장하지 않았거나 수정·삭제로 빠진 사진이 남는다
 - [ ] 작성 화면에서 사진 여러 장 업로드 → 목록 대표 사진·상세 갤러리 표시 → 수정으로 사진 교체 → 삭제
 - [ ] 몽키즈 연구소(`/lab/write`)도 같은 흐름 확인. 업로드 URL과 `posts/*` 키를 수업 현장과 함께 쓴다 (`lab_post_image`)
 - [ ] 21장, 10MB 초과, 이미지가 아닌 파일은 거부된다
+- [ ] 후기(`/reviews`) 사진도 같은 흐름 확인 (`reviews/*` 키, 최대 5장)

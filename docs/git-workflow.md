@@ -74,12 +74,13 @@ docs: 요구사항에 문의 기능 추가
 | 워크플로 | 실행 조건 | PR (→ `main`) | `main` 반영 |
 |---|---|---|---|
 | `.github/workflows/front.yml` | `front/**` 변경 | `npm ci` → lint → build | 같은 검증 후 S3 업로드·CloudFront `/index.html` 무효화 |
-| `.github/workflows/back.yml` | `back/**` 변경 | `gradlew build` (H2 테스트) | 같음. 배포는 운영 서버가 정해지면 추가 |
+| `.github/workflows/back.yml` | `back/**` 변경 | `gradlew build` (H2 테스트) | 같은 검증 후 jar S3 업로드 → SSM으로 EC2 `deploy.sh` 실행 (헬스 체크 실패 시 직전 jar로 롤백, 워크플로도 실패) |
 
 - 두 워크플로 모두 Actions 탭에서 수동 실행(`workflow_dispatch`)할 수 있다.
-- AWS 인증은 OIDC 역할(`mongkiz-github-front-deploy`)로 받는다. 액세스 키를 Secrets에 넣지 않는다.
-  - 역할 ARN은 저장소 변수 `AWS_FRONT_DEPLOY_ROLE_ARN`에 둔다.
-  - 역할은 이 저장소의 `main` 브랜치에서만 쓸 수 있고, 프론트 버킷 쓰기·삭제와 배포 무효화만 허용한다.
+- AWS 인증은 OIDC 역할로 받는다. 액세스 키를 Secrets에 넣지 않는다.
+  - 역할 ARN은 저장소 변수 `AWS_FRONT_DEPLOY_ROLE_ARN`(`mongkiz-github-front-deploy`), `AWS_BACK_DEPLOY_ROLE_ARN`(`mongkiz-github-back-deploy`)에 둔다.
+  - 역할은 이 저장소의 `main` 브랜치에서만 쓸 수 있다. 프론트는 프론트 버킷 쓰기·삭제와 배포 무효화, 백엔드는 jar 업로드와 운영 인스턴스 하나에 대한 `AWS-RunShellScript` 실행·결과 조회만 허용한다.
+- 운영 DB는 `ddl-auto: validate`라서 Entity 스키마를 바꾼 PR은 병합 전에 RDS에 DDL을 먼저 적용한다 ([deploy-checklist.md](deploy-checklist.md)).
 - PR의 CI가 실패하면 병합하지 않는다.
 
 ## 5. 커밋하면 안 되는 것
