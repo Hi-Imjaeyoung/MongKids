@@ -3,23 +3,45 @@
 정적 웹 호스팅(S3 + CloudFront, NFR-004)으로 배포한 뒤 확인할 항목이다. 프론트(S3)와 백엔드(API)가 한 도메인 뒤에서 함께 동작해야 하는 부분을 다룬다.
 로컬에서는 Vite 프록시(`front/vite.config.js`)가 같은 출처와 Host 전달을 맡았고, 운영에서는 이 일을 CloudFront와 백엔드 설정이 대신한다.
 
-`{도메인}`은 서비스 도메인(예: `mongkids.co.kr`)으로 바꿔 읽는다.
+`{도메인}`은 서비스 도메인 `mongkiz.com`으로 바꿔 읽는다.
+
+## 운영 리소스
+
+2026-10-22 프론트 정적 배포 기준. 비밀값(액세스 키 등)은 여기에 적지 않는다.
+
+| 구분 | 값 |
+|---|---|
+| 도메인 | `mongkiz.com` (외부 등록업체, 네임서버는 Route 53 호스팅 영역) |
+| 인증서 | ACM `us-east-1`, `mongkiz.com` + `www.mongkiz.com`, DNS 검증 |
+| 프론트 버킷 | S3 `mongkiz-front-prod` (`ap-northeast-2`, 퍼블릭 차단, OAC로 CloudFront만 읽기) |
+| CloudFront | 배포 `E1AWEJNTIYBX5U` (`d14t42trjr34p1.cloudfront.net`), 기본 루트 객체 `index.html` |
+| CloudFront Function | `mongkiz-spa-router` (기본 동작 Viewer Request): `www.mongkiz.com` → `https://mongkiz.com` 301, 확장자 없는 경로 → `/index.html` |
+| DNS | `mongkiz.com`, `www.mongkiz.com` A/AAAA 별칭 → CloudFront |
+
+프론트 수동 배포 (`front/`에서 `npm run build` 후):
+
+```bash
+aws s3 sync dist/ s3://mongkiz-front-prod --delete --exclude index.html --cache-control "public,max-age=31536000,immutable"
+aws s3 cp dist/index.html s3://mongkiz-front-prod/index.html --cache-control "no-cache"
+aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/index.html"
+```
 
 ## A. CloudFront 경로 구성 (같은 출처 유지)
 
 프론트 `src/api/client.js`는 상대 경로와 `credentials: 'same-origin'`으로 요청한다. 인증 쿠키도 같은 도메인에서 주고받아야 한다.
 
-- [ ] 기본 동작(`*`) → S3 오리진 (프론트 `dist/`)
+- [x] 기본 동작(`*`) → S3 오리진 (프론트 `dist/`)
 - [ ] `/api/*`, `/oauth2/*`, `/login/oauth2/*` → 백엔드 오리진
 - [ ] 백엔드 동작의 허용 메서드: GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE (로그아웃이 `POST`)
 - [ ] 백엔드 동작의 캐시 정책: `CachingDisabled`
 - [ ] 백엔드 동작의 오리진 요청 정책: 쿠키·쿼리 문자열·헤더(Host 포함) 전체 전달 (`AllViewer` 계열)
   - 로그인 중 OAuth2 인가 요청(state)은 세션 쿠키(`JSESSIONID`)에 보관된다. 쿠키가 전달되지 않으면 `authorization_request_not_found`로 로그인이 실패한다.
   - 콜백의 `code`, `state` 쿼리 문자열도 전달되어야 한다.
-- [ ] 사용자 지정 오류 응답(403/404 → `index.html`)은 넣지 않는다
+- [x] 사용자 지정 오류 응답(403/404 → `index.html`)은 넣지 않는다
   - 이 설정은 배포 전체에 적용된다. 넣으면 API가 보낸 403/404(`M002`, `C002`) JSON이 HTML로 바뀐다.
-  - 라우팅을 도입했으므로(`/news`, `/news/{id}` 등) SPA 폴백은 CloudFront Function 등으로 S3 기본 동작에만 적용한다 (확장자 없는 경로 → `/index.html`).
-- [ ] `/news/1`을 주소창에 직접 입력·새로고침해도 화면이 뜬다
+  - 라우팅을 도입했으므로(`/news`, `/news/{id}` 등) SPA 폴백은 CloudFront Function 등으로 S3 기본 동작에만 적용한다 (확장자 없는 경로 → `/index.html`). → `mongkiz-spa-router`로 적용
+  - 백엔드 경로 동작을 추가할 때 이 Function을 연결하지 않는다 (`/api/...`도 확장자가 없어 `index.html`로 바뀐다).
+- [x] `/news/1`을 주소창에 직접 입력·새로고침해도 화면이 뜬다 (2026-10-22, 없는 정적 파일은 403 유지)
 
 ## B. 백엔드 redirect_uri / 프로토콜
 
@@ -60,9 +82,9 @@
 
 ## F. 정적 파일 캐시
 
-- [ ] `index.html`은 `Cache-Control: no-cache`
-- [ ] 해시가 붙은 `assets/*`는 장기 캐시 (`max-age=31536000, immutable`)
-- [ ] 배포 후 `/index.html` 무효화(invalidation)
+- [x] `index.html`은 `Cache-Control: no-cache`
+- [x] 해시가 붙은 `assets/*`는 장기 캐시 (`max-age=31536000, immutable`)
+- [ ] 배포 후 `/index.html` 무효화(invalidation) (첫 배포는 캐시가 없어 생략, 재배포부터 매번)
 
 ## G. 기능 점검 시나리오 (FR-018)
 

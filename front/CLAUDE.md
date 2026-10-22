@@ -63,6 +63,6 @@ npm run preview    # 빌드 결과 미리보기
 
 - [ ] 실제 사진·아이콘 리소스 없음 → `ImagePlaceholder`, 이모지로 대체 중 (로고는 `src/assets/logo.png` 적용)
 - [x] 라우팅 도입. 화면이 없는 메뉴는 아직 `#` 앵커
-- [ ] 운영 배포 시 SPA 딥링크 폴백 필요 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md) A
+- [x] 운영 배포 시 SPA 딥링크 폴백: CloudFront Function `mongkiz-spa-router`로 적용 (2026-10-22) → [../docs/deploy-checklist.md](../docs/deploy-checklist.md) A
 - [x] `vite.config.js`에 `/api`, `/oauth2`, `/login/oauth2` 프록시 설정 (`changeOrigin: false` 유지: OAuth redirect_uri가 프론트 주소로 만들어져야 함)
 - [ ] 로그인·게시물·상담 신청 외 API 미연동
