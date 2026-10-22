@@ -17,6 +17,15 @@
   border-left: 4px dashed var(--yellow);
 }
 
+.hero__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 아이 얼굴이 잘리지 않도록 왼쪽 위를 기준으로 맞춘다 */
+  object-position: 25% 20%;
+}
+
 .hero__inner {
   position: relative;
   z-index: 1;
@@ -43,7 +52,9 @@
 
 .hero__highlight {
   font-style: normal;
-  color: var(--blue);
+  color: var(--text);
+  /* 글자 아래쪽에 노란 반투명 형광펜 밑줄 */
+  background: linear-gradient(transparent 58%, color-mix(in srgb, var(--yellow) 60%, transparent) 58%, color-mix(in srgb, var(--yellow) 60%, transparent) 92%, transparent 92%);
 }
 
 .hero__description {
@@ -55,14 +66,10 @@
   color: var(--text);
 }
 
-.hero__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
 .hero__area {
-  margin: 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-sub);
@@ -141,10 +148,6 @@
   .hero__description {
     font-size: 16px;
     margin-bottom: 28px;
-  }
-
-  .hero__actions .btn {
-    flex: 1 1 100%;
   }
 
   .hero__deco--star,

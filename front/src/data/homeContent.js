@@ -7,10 +7,12 @@ export const navItems = [
   { label: '몽키즈 소개', to: '/about' },
   { label: '체육/행사프로그램', to: '/programs' },
   { label: '몽키즈 연구소', to: '/lab' },
-  { label: '강사 채용', href: '#recruit' },
   { label: '수업 현장', to: '/news' },
   { label: '자주 묻는 질문', to: '/faq' },
 ]
+
+// 플로팅 메뉴·푸터 링크가 함께 쓰는 공식 인스타그램
+export const instagram = { label: '@m0ngkids_', href: 'https://www.instagram.com/m0ngkids_/' }
 
 export const ctaButtons = {
   institution: { label: '기관 프로그램 문의', icon: '🏫' },
@@ -24,10 +26,11 @@ export const consultLabels = {
 }
 
 export const hero = {
-  titleLines: ['놀이는 신나게!', '성장은 알차게!'],
-  highlight: '신나게!',
-  description: ['어린이집·유치원부터 우리 집, 태권도장까지.', '아이들의 연령에 맞춰 찾아가는 즐거운 유아체육.'],
-  area: '용인 · 수원 · 경기광주 중심 운영',
+  titleLines: ['유아체육은?', '몽키즈 유아체육!'],
+  highlight: '몽키즈 유아체육!',
+  description: ['몽키즈와 함께 성장하는 아이들!'],
+  visualAlt: '체육관에서 장애물을 넘으며 웃는 아이와 응원하는 강사',
+  area: ['용인 · 수원 · 동탄 · 오산 · 평택 · 광주', '그 외 경기 남부지역'],
 }
 
 // 섹션 공통 제목. eyebrow 중 accent 부분만 파란색으로 강조한다.
@@ -198,7 +201,7 @@ export const footer = {
   brand: '몽키즈유아체육',
   slogan: '놀이는 신나게! 성장은 알차게!',
   area: '용인 · 수원 · 경기광주 중심 운영 / 정확한 수업 가능 여부는 상담으로 안내합니다.',
-  instagram: { label: '@m0ngkids_', href: 'https://www.instagram.com/m0ngkids_/' },
+  instagram,
   pending: '연락처 · 사업자 정보 · 개인정보처리방침은 정식 오픈 전에 등록합니다.',
 }
 
@@ -210,5 +213,5 @@ export const mobileCta = {
 export const floatingActions = [
   { id: 'kakao', icon: '💬', label: '카카오톡\n상담하기', theme: 'yellow' },
   { id: 'phone', icon: '📞', label: '전화 문의', theme: 'blue' },
-  { id: 'estimate', icon: '📋', label: '견적 신청', theme: 'green' },
+  { id: 'instagram', label: '인스타그램', theme: 'green', href: instagram.href },
 ]

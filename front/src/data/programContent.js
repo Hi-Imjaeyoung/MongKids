@@ -141,9 +141,6 @@ export const programCardMore = '자세히 보기'
 export const programDetail = {
   breadcrumbRoot: '체육/행사프로그램',
   eyebrow: 'MONGKIDS PROGRAM',
-  faqButton: '자주 묻는 질문',
-  // 소개 영역의 "자주 묻는 질문" 버튼이 이동할 섹션 id
-  faqAnchor: 'program-faq',
   guide: { eyebrow: 'PROGRAM GUIDE', accent: 'GUIDE', title: '프로그램 안내' },
   photoPending: '실제 사진 등록 예정',
   process: {
@@ -157,6 +154,5 @@ export const programDetail = {
       { title: '진행', description: '수업 또는 행사' },
     ],
   },
-  faq: { eyebrow: 'FAQ', accent: 'FAQ', title: '이 프로그램 관련 질문', more: 'FAQ 전체 보기' },
   others: '다른 프로그램 보기',
 }

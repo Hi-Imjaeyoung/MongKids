@@ -1,7 +1,6 @@
 import { Navigate, useParams } from 'react-router-dom'
 import OtherPrograms from '../components/program/OtherPrograms'
 import ProgramBreadcrumb from '../components/program/ProgramBreadcrumb'
-import ProgramFaq from '../components/program/ProgramFaq'
 import ProgramGuide from '../components/program/ProgramGuide'
 import ProgramHero from '../components/program/ProgramHero'
 import ProgramProcess from '../components/program/ProgramProcess'
@@ -29,7 +28,6 @@ function ProgramDetailPage({ onInstitutionConsultClick, onPersonalConsultClick }
         tone="cream"
         titleId="program-process-title"
       />
-      <ProgramFaq programId={program.id} />
       <OtherPrograms currentId={program.id} />
     </>
   )

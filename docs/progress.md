@@ -74,6 +74,7 @@
 | 2026-10-21 | 프론트엔드 | 정적 화면 구현 (디자인 초안 기준): ABOUT 몽키즈 `/about`(SCR-002, 빈칸 문구는 `aboutContent.js`에 대괄호로 둠), 프로그램 전체 안내 `/programs`(SCR-003, `#special` 앵커), 프로그램 상세 `/programs/:programId`(SCR-016~020 공통 템플릿, 1:1 가정 방문만 개인 상담 버튼, 없는 id는 `/programs`), 자주 묻는 질문 `/faq`(SCR-022, 분류 탭·여러 개 펼침 아코디언). FAQ 문구는 `faqContent.js` 하나로 모아 홈 미리보기·프로그램 상세와 공유. GNB·홈 프로그램 카드 링크 연결, 주소의 `#앵커`로 스크롤. 하단 고정 상담 바는 SCR-003·016~020·022에서 뺌 (SCR-016~020은 사용자 결정) |
 | 2026-10-22 | 공통 | 프론트 정적 배포·도메인 연결 (NFR-004): 도메인 `mongkiz.com` 네임서버를 Route 53으로 이전, ACM 인증서(`us-east-1`, `www` 포함), S3 `mongkiz-front-prod`(OAC), CloudFront `E1AWEJNTIYBX5U`, Function `mongkiz-spa-router`(SPA 폴백, `www` → 루트 301), A/AAAA 별칭. 로컬 빌드 수동 업로드. 점검 통과: HTTPS, http→https, `www` 이동, `/news/1` 직접 접속, 없는 파일 403, 캐시 헤더. 리소스·재배포 명령은 [deploy-checklist.md](deploy-checklist.md). `/api` 기능은 백엔드 미배포로 동작 안 함 |
 | 2026-10-22 | 공통 | GitHub Actions CI/CD 추가 (사용자 결정: 브랜치가 아닌 경로 필터로 영역 분리): `front.yml`(PR은 lint·build, `main` 반영 시 S3 업로드·`/index.html` 무효화, OIDC 역할 `mongkiz-github-front-deploy`), `back.yml`(PR·`main` 모두 `gradlew build`, 배포는 서버 결정 후) |
+| 2026-10-22 | 프론트엔드 | 홈·헤더·프로그램 상세 화면 문구·구성 수정 (사용자 결정): SCR-001 히어로 문구("유아체육은? / 몽키즈 유아체육!", 노란 반투명 밑줄)·한 줄 설명·운영 지역 변경, 히어로 상담 버튼 삭제, 메인 비주얼에 참고 시안 사진 적용(저해상도, 원본 교체 필요), 프로그램 섹션 숨김(삭제 전 QA). 헤더 GNB에서 강사 채용 삭제, 주메뉴 화면 정중앙 정렬. 플로팅 메뉴 견적 신청 → 인스타그램 바로가기. SCR-016~020 관련 FAQ 섹션·"자주 묻는 질문" 버튼 삭제 |
 
 ## 이슈 / 블로커
 
