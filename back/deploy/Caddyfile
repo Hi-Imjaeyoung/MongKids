@@ -1,0 +1,16 @@
+# 운영 EC2의 /etc/caddy/Caddyfile
+# CloudFront(mongkiz.com)의 /api/*, /oauth2/*, /login/oauth2/* 동작이 이 오리진으로 온다.
+# ORIGIN_VERIFY는 /run/mongkiz/caddy.env(load-env.sh가 생성)에서 읽는다.
+
+origin.mongkiz.com {
+	# CloudFront가 붙이는 비밀 헤더가 없으면 막는다 (오리진 직접 접근 차단)
+	@unverified not header X-Origin-Verify {$ORIGIN_VERIFY}
+	respond @unverified 403
+
+	reverse_proxy 127.0.0.1:8080 {
+		# 클라이언트가 보낸 값은 버리고 서비스 도메인 기준으로 고정한다 (OAuth2 redirect_uri)
+		header_up X-Forwarded-Proto https
+		header_up X-Forwarded-Host mongkiz.com
+		header_up X-Forwarded-Port 443
+	}
+}

@@ -1,0 +1,19 @@
+# 운영 EC2의 /etc/systemd/system/mongkiz-back.service
+[Unit]
+Description=mongkiz backend (Spring Boot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=mongkiz
+WorkingDirectory=/opt/mongkiz
+# 시작할 때마다 Parameter Store 값을 다시 읽는다 (+: root로 실행)
+ExecStartPre=+/opt/mongkiz/load-env.sh
+EnvironmentFile=-/run/mongkiz/back.env
+ExecStart=/usr/bin/java -Xms256m -Xmx768m -Duser.timezone=Asia/Seoul -jar /opt/mongkiz/app.jar
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

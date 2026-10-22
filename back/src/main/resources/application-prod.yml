@@ -1,3 +1,16 @@
+server:
+  # 앞단 Caddy(back/deploy/Caddyfile)만 접속한다
+  address: 127.0.0.1
+  # Caddy가 고정해 넘기는 X-Forwarded-*(https, mongkiz.com)로 OAuth2 redirect_uri의 {baseUrl}을 만든다
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      # OAuth2 인가 요청 보관용 세션(JSESSIONID)
+      cookie:
+        secure: true
+        http-only: true
+        same-site: lax
+
 spring:
   datasource:
     url: ${DB_URL}
