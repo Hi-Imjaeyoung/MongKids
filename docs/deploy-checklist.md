@@ -18,7 +18,7 @@
 | CloudFront Function | `mongkiz-spa-router` (기본 동작 Viewer Request): `www.mongkiz.com` → `https://mongkiz.com` 301, 확장자 없는 경로 → `/index.html` |
 | DNS | `mongkiz.com`, `www.mongkiz.com` A/AAAA 별칭 → CloudFront |
 
-프론트 수동 배포 (`front/`에서 `npm run build` 후):
+프론트 배포는 `main`에 `front/**` 변경이 반영되면 GitHub Actions(`.github/workflows/front.yml`)가 아래와 같은 순서로 실행한다. 직접 배포해야 할 때(`front/`에서 `npm run build` 후):
 
 ```bash
 aws s3 sync dist/ s3://mongkiz-front-prod --delete --exclude index.html --cache-control "public,max-age=31536000,immutable"

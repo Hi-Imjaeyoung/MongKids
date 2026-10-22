@@ -73,6 +73,7 @@
 | 2026-10-21 | 공통 | 수업 후기 로컬 QA 완료 (사용자, #31): `/reviews` 목록·무한 스크롤·작성·수정·삭제·비로그인 안내, 홈 후기 섹션 넘겨 보기. 사진 S3 업로드는 미확인 |
 | 2026-10-21 | 프론트엔드 | 정적 화면 구현 (디자인 초안 기준): ABOUT 몽키즈 `/about`(SCR-002, 빈칸 문구는 `aboutContent.js`에 대괄호로 둠), 프로그램 전체 안내 `/programs`(SCR-003, `#special` 앵커), 프로그램 상세 `/programs/:programId`(SCR-016~020 공통 템플릿, 1:1 가정 방문만 개인 상담 버튼, 없는 id는 `/programs`), 자주 묻는 질문 `/faq`(SCR-022, 분류 탭·여러 개 펼침 아코디언). FAQ 문구는 `faqContent.js` 하나로 모아 홈 미리보기·프로그램 상세와 공유. GNB·홈 프로그램 카드 링크 연결, 주소의 `#앵커`로 스크롤. 하단 고정 상담 바는 SCR-003·016~020·022에서 뺌 (SCR-016~020은 사용자 결정) |
 | 2026-10-22 | 공통 | 프론트 정적 배포·도메인 연결 (NFR-004): 도메인 `mongkiz.com` 네임서버를 Route 53으로 이전, ACM 인증서(`us-east-1`, `www` 포함), S3 `mongkiz-front-prod`(OAC), CloudFront `E1AWEJNTIYBX5U`, Function `mongkiz-spa-router`(SPA 폴백, `www` → 루트 301), A/AAAA 별칭. 로컬 빌드 수동 업로드. 점검 통과: HTTPS, http→https, `www` 이동, `/news/1` 직접 접속, 없는 파일 403, 캐시 헤더. 리소스·재배포 명령은 [deploy-checklist.md](deploy-checklist.md). `/api` 기능은 백엔드 미배포로 동작 안 함 |
+| 2026-10-22 | 공통 | GitHub Actions CI/CD 추가 (사용자 결정: 브랜치가 아닌 경로 필터로 영역 분리): `front.yml`(PR은 lint·build, `main` 반영 시 S3 업로드·`/index.html` 무효화, OIDC 역할 `mongkiz-github-front-deploy`), `back.yml`(PR·`main` 모두 `gradlew build`, 배포는 서버 결정 후) |
 
 ## 이슈 / 블로커
 
@@ -84,7 +85,8 @@
 ### 공통
 - [x] 프론트 정적 배포·도메인 연결 (NFR-004, 2026-10-22, `https://mongkiz.com`)
 - [ ] 백엔드 배포 후 CloudFront에 `/api/*`, `/oauth2/*`, `/login/oauth2/*` 동작 추가 ([deploy-checklist.md](deploy-checklist.md) A~E)
-- [ ] GitHub Actions 자동 배포: OIDC IAM 역할, `main` 병합 시 빌드 → S3 sync → `/index.html` 무효화
+- [x] GitHub Actions 프론트 자동 배포·백엔드 CI (2026-10-22, [git-workflow.md](git-workflow.md) 4)
+- [ ] GitHub Actions 백엔드 배포 단계 (운영 서버 결정 후)
 - [ ] 사진용 S3 버킷·CORS·CloudFront 오리진(OAC) ([deploy-checklist.md](deploy-checklist.md) H)
 - [x] 요구사항(사용자 역할, 기능 목록) 정리
 - [x] SCR-002 구성 확정 (디자인 초안 승인, 2026-10-20)

@@ -67,7 +67,22 @@ docs: 요구사항에 문의 기능 추가
   - [ ] 요구사항·진행 상황 변경 시 [requirements.md](requirements.md), [progress.md](progress.md) 갱신
   - [ ] 회의록(`docs/meetings/`)을 추가했다면 `/extract-requirements`로 요구사항에 반영
 
-## 4. 커밋하면 안 되는 것
+## 4. CI/CD (GitHub Actions)
+
+영역별로 워크플로를 나누고 경로 필터로 바뀐 영역만 실행한다. 문서만 바뀌면 아무것도 실행되지 않는다.
+
+| 워크플로 | 실행 조건 | PR (→ `main`) | `main` 반영 |
+|---|---|---|---|
+| `.github/workflows/front.yml` | `front/**` 변경 | `npm ci` → lint → build | 같은 검증 후 S3 업로드·CloudFront `/index.html` 무효화 |
+| `.github/workflows/back.yml` | `back/**` 변경 | `gradlew build` (H2 테스트) | 같음. 배포는 운영 서버가 정해지면 추가 |
+
+- 두 워크플로 모두 Actions 탭에서 수동 실행(`workflow_dispatch`)할 수 있다.
+- AWS 인증은 OIDC 역할(`mongkiz-github-front-deploy`)로 받는다. 액세스 키를 Secrets에 넣지 않는다.
+  - 역할 ARN은 저장소 변수 `AWS_FRONT_DEPLOY_ROLE_ARN`에 둔다.
+  - 역할은 이 저장소의 `main` 브랜치에서만 쓸 수 있고, 프론트 버킷 쓰기·삭제와 배포 무효화만 허용한다.
+- PR의 CI가 실패하면 병합하지 않는다.
+
+## 5. 커밋하면 안 되는 것
 
 - `application-local.yml`, `.env` 등 비밀값 파일
 - 빌드 산출물·의존성: `back/build/`, `back/.gradle/`, `front/node_modules/`, `front/dist/`
