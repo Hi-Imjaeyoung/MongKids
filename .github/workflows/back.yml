@@ -1,6 +1,7 @@
-# 백엔드 CI
-# - PR(→ main), main 반영: ./gradlew build (테스트는 H2, test profile)
-# 배포 단계는 운영 서버가 정해지면 추가한다.
+# 백엔드 CI/CD
+# - PR(→ main): ./gradlew build (테스트는 H2, test profile)
+# - main 반영: build 후 jar를 S3에 올리고 SSM으로 EC2에서 back/deploy/deploy.sh 실행 (docs/deploy-checklist.md)
+# AWS 인증은 OIDC로 역할을 받는다. 역할은 main 브랜치에서만 쓸 수 있다.
 name: back
 
 on:
@@ -19,12 +20,20 @@ on:
 permissions:
   contents: read
 
+env:
+  ARTIFACT_BUCKET: mongkiz-back-artifacts
+  EC2_INSTANCE_ID: i-01a62a936805035e1
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    # 배포가 겹치지 않도록 main은 앞 실행을 기다리고, PR은 새 커밋이 오면 앞 실행을 취소한다
     concurrency:
       group: back-${{ github.ref }}
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         working-directory: back
@@ -40,3 +49,33 @@ jobs:
 
       # gradlew에 실행 권한이 없어 bash로 실행한다
       - run: bash gradlew build
+
+      - name: AWS 자격 증명 (OIDC)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_BACK_DEPLOY_ROLE_ARN }}
+          aws-region: ap-northeast-2
+
+      - name: jar 업로드
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          JAR=$(ls build/libs/*.jar | grep -v -- '-plain\.jar$')
+          aws s3 cp "$JAR" "s3://$ARTIFACT_BUCKET/releases/$GITHUB_SHA.jar" --no-progress
+
+      - name: 서버 반영 (SSM)
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          CMD_ID=$(aws ssm send-command --instance-ids "$EC2_INSTANCE_ID" --document-name AWS-RunShellScript \
+            --comment "deploy $GITHUB_SHA" --timeout-seconds 600 \
+            --parameters "commands=[\"/opt/mongkiz/deploy.sh $GITHUB_SHA\"]" \
+            --query Command.CommandId --output text)
+          # 실행 기록이 생기기 전에 조회하면 InvocationDoesNotExist가 난다
+          sleep 5
+          # 실패해도 결과를 출력하고 나서 종료 코드를 정한다
+          aws ssm wait command-executed --command-id "$CMD_ID" --instance-id "$EC2_INSTANCE_ID" || true
+          aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$EC2_INSTANCE_ID" \
+            --query '[StandardOutputContent,StandardErrorContent]' --output text
+          STATUS=$(aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$EC2_INSTANCE_ID" --query Status --output text)
+          echo "status: $STATUS"
+          test "$STATUS" = Success

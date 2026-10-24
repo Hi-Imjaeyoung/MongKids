@@ -48,7 +48,7 @@ logging:
     org.hibernate.SQL: debug
 ```
 
-`application-prod.yml` (커밋 O, 값은 환경변수)
+`application-prod.yml` (커밋 O, 값은 환경변수 — 운영은 Parameter Store `/mongkiz/prod/*`)
 ```yaml
 spring:
   datasource:
@@ -59,6 +59,9 @@ spring:
     hibernate:
       ddl-auto: validate
 ```
+
+- 운영 DB는 RDS MariaDB 11.8 (`mongkiz-prod`, utf8mb4). TLS 연결만 받으므로 `DB_URL`에 `?sslMode=verify-full&serverSslCert=/opt/mongkiz/rds-global-bundle.pem`을 붙인다.
+- RDS는 퍼블릭 접근이 꺼져 있다. 직접 조회는 SSM 세션으로 EC2에 들어가 `mariadb --ssl --ssl-ca=/opt/mongkiz/rds-global-bundle.pem --ssl-verify-server-cert -h <엔드포인트> -u mongkiz -p mongkids`로 한다.
 
 ### `.env`
 
@@ -80,6 +83,9 @@ DB_PASSWORD=
 | dev / prod | `validate` 또는 `none` — 스키마 변경은 마이그레이션 스크립트로 |
 
 > 운영 스키마 관리가 필요해지면 Flyway 도입을 검토한다 (의존성 추가는 사용자 확인 후).
+
+- 운영 초기 스키마(2026-10-22): 빈 DB라 `validate`로는 기동하지 못해서, 첫 기동만 환경 변수 `SPRING_JPA_HIBERNATE_DDL_AUTO=update`로 테이블 13개를 만들고 지운 뒤 `validate`로 재기동을 확인했다.
+- 그 뒤로는 Entity를 바꾸면 배포 **전에** 같은 변경의 DDL을 운영 DB에 적용해야 한다. 적용하지 않으면 `validate`가 실패해 `deploy.sh`가 직전 jar로 되돌린다. 이 수작업이 잦아지면 Flyway를 도입한다.
 
 ## 3. 네이밍
 
