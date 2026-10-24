@@ -35,8 +35,34 @@
 | IAM | 인스턴스 역할 `mongkiz-back-ec2`, GitHub OIDC 역할 `mongkiz-github-back-deploy` |
 
 > 처음에는 계정이 AWS 무료 플랜이라 RDS 백업 보관을 1일로 만들었다. 2026-10-22 유료 플랜으로 바꾼 뒤 7일로 늘렸다.
->
-> 운영 DB에 로컬 DB 프로그램으로 접속해야 하면 개인 계정 `jaeyoung`(비밀번호는 Parameter Store `/mongkiz/db-users/jaeyoung`, TLS 필수)을 쓴다. 평소에는 RDS가 비공개다. 잠깐 열 때는 `mongkiz-db-sg`에 내 IP `/32` 규칙을 추가하고 `--publicly-accessible`을 켠다. 작업이 끝나면 둘 다 바로 되돌린다.
+
+### 운영 DB 조회
+
+RDS는 비공개로 둔다. 로컬 DB 프로그램(DBeaver, HeidiSQL 등)으로 조회할 때는 SSM 포트 포워딩 터널을 쓴다. EC2를 거쳐 내 PC의 `127.0.0.1:13306`을 RDS 3306에 잇는 방식이라, 보안 그룹이나 퍼블릭 설정을 바꾸지 않고 IP가 바뀌어도 그대로 쓸 수 있다.
+
+1. 준비(1회): AWS CLI v2와 [Session Manager 플러그인](https://docs.aws.amazon.com/systems-manager/latest/userguide/install-plugin-windows.html)을 설치한다. IAM 사용자에게 `ssm:StartSession` 권한이 있어야 한다.
+2. 터널 열기: 터미널을 새로 열고 아래 명령을 실행한 뒤 창을 둔다. `Waiting for connections...`가 나오면 준비된 것이다.
+   ```bash
+   aws ssm start-session --target i-01a62a936805035e1 \
+     --document-name AWS-StartPortForwardingSessionToRemoteHost \
+     --parameters "host=mongkiz-prod.cta02ii4kjp5.ap-northeast-2.rds.amazonaws.com,portNumber=3306,localPortNumber=13306"
+   ```
+3. DB 프로그램 연결 설정
+
+   | 항목 | 값 |
+   |---|---|
+   | 호스트 / 포트 | `127.0.0.1` / `13306` |
+   | 사용자 / DB | `jaeyoung` / `mongkids` |
+   | 비밀번호 | Parameter Store `/mongkiz/db-users/jaeyoung` (SecureString) |
+   | SSL | 켜기. 인증서(호스트명) 검증은 끈다. 접속 주소가 `127.0.0.1`이라 인증서의 호스트명과 다르다. 연결은 그대로 암호화된다 |
+
+4. 다 쓰면 터널 창에서 `Ctrl+C`로 닫는다.
+
+- `jaeyoung`은 `mongkids` 전체 권한 계정이다. 테이블·컬럼을 바꾸면 다음 배포에서 `validate`가 실패하므로 스키마 변경은 배포 절차에 맞춰 적용한다. 상담 신청 등 개인정보(FR-023)가 든 조회 결과는 파일로 내보내거나 공유하지 않는다.
+- 설치 없이 쿼리 몇 개만 볼 때는 EC2 Session Manager 세션에서 `mariadb` 클라이언트를 쓴다 ([back/docs/database.md](../back/docs/database.md)).
+- 터널을 쓸 수 없을 때만 RDS를 잠깐 퍼블릭으로 연다. `mongkiz-db-sg`에 내 IP `/32` 규칙을 추가하고 `--publicly-accessible`을 켠 뒤, 작업이 끝나면 둘 다 바로 되돌린다.
+
+### 재배포
 
 프론트 배포는 `main`에 `front/**` 변경이 반영되면 GitHub Actions(`.github/workflows/front.yml`)가 아래와 같은 순서로 실행한다. 직접 배포해야 할 때(`front/`에서 `npm run build` 후):
 
