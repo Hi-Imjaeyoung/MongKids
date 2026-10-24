@@ -82,6 +82,7 @@
 | 2026-10-24 | 프론트엔드 | 운영 사이트에서 사진 설명 입력이 끊기는 현상 재보고: 2026-10-22 캡션 수정 커밋이 로컬 브랜치에만 있고 `main`에 병합되지 않았던 것이 원인. `main` 기준으로 다시 적용해 배포 (#40). 운영에서 한글 입력 정상 확인 (사용자) |
 | 2026-10-24 | 공통 | SCR-014 관리자 화면 디자인 초안("MongKids 화면 초안"에 페이지 추가)과 결정 반영 (사용자 결정, #43): 상담 처리 상태 3단계(신규 → 연락 완료 → 상담 완료) 도입, 완료 시각이 FR-023 보관 기간 기준(FR-026 신설). 관리자 후기 목록도 작성자 마스킹, 숨김은 확인 없이 즉시·다시 공개 가능, 직원 권한 회수 시 게시물 유지, 헤더 이름 옆 "관리자" 링크로 진입. FR-004·021·022·023, SCR-014 갱신 |
 | 2026-10-24 | 공통 | 관리자 화면 구현 (SCR-014, FR-004·021·022·026, #43): `/api/v1/admin/consultations`(목록·상세·처리 상태, `consultation.completed_at` 추가), `/api/v1/admin/reviews`(숨김 포함 목록·숨김/다시 공개), `/api/v1/admin/members`(이름·전화번호 검색·직원 지정/해제, 관리자 역할 변경 불가 `M003`). 권한은 `MemberService.validateAdmin`이 DB 역할로 검사. 프론트 `/admin?tab=` 세 메뉴, ADMIN이 아니면 안내만, 헤더 이름 옆 "관리자" 링크. 운영 배포 전 `completed_at` DDL 선적용 필요 |
+| 2026-10-24 | 공통 | 관리자 화면 운영 배포 (SCR-014, #44): 병합 전 운영 RDS에 `consultation.completed_at` 컬럼 추가(사용자), squash 병합 후 GitHub Actions `back`·`front` 배포 성공(`validate` 기동 정상). 운영 점검: 비로그인 `/api/v1/admin/{consultations,reviews,members}` 401 `A001`, `/api/v1/reviews` 200, `/admin` 200. 관리자 계정 화면 확인은 사용자 |
 
 ## 이슈 / 블로커
 
@@ -132,7 +133,7 @@
   - [ ] 확인이 끝나면 `feature/posts` 브랜치(로컬·원격) 삭제
 - [x] 게시물 작성 직원 권한 (FR-009, #14): 작성은 STAFF·ADMIN, 수정·삭제는 직원인 작성자 본인 또는 ADMIN (DB 역할 기준)
 - [x] 직원 권한 부여·회수 (FR-022, #43): 관리자 화면에서 지정·해제. 관리자(ADMIN) 지정은 여전히 DB에서 `UPDATE member SET role = 'ADMIN' WHERE id = ?`
-- [ ] 운영 DB에 `ALTER TABLE consultation ADD COLUMN completed_at DATETIME(6) NULL;` 적용 (#43 배포 **전**, 사용자 승인 후)
+- [x] 운영 DB에 `ALTER TABLE consultation ADD COLUMN completed_at DATETIME(6) NULL;` 적용 (2026-10-24, 사용자, #44 병합 전)
 - [x] 연구소 글 사진을 `lab/` 경로로 분리 (FR-008, 사용자 결정 2026-10-24): 전용 업로드 URL, 접두사 검사, 프론트 업로드 호출
   - [ ] 운영 IAM에 `lab/*` 권한 추가 ([deploy-checklist.md](deploy-checklist.md) H)
   - [ ] 분리 전 `posts/`에 올라간 연구소 사진을 옮길지 정하기. 지금은 그 글을 수정할 때만 유지 허용 ([ADR-002](adr/ADR-002-s3-orphan-photo-cleanup.md))
