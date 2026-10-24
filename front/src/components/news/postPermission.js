@@ -11,6 +11,11 @@ export function canManagePost(member, post) {
   return canWritePost(member) && (member.id === post.authorId || member.role === 'ADMIN')
 }
 
+// 관리자 화면(SCR-014)에 들어갈 수 있는지. 서버도 관리자 API마다 DB의 현재 역할로 다시 검사한다
+export function isAdmin(member) {
+  return member?.role === 'ADMIN'
+}
+
 // 로그인한 회원 본인이 쓴 댓글인지 (FR-010)
 export function isMyComment(member, comment) {
   return Boolean(member) && member.id === comment.authorId

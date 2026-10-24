@@ -91,6 +91,21 @@
   color: var(--blue);
 }
 
+/* 관리자 화면 진입 (SCR-014, ADMIN만) */
+.header__admin-link {
+  margin-left: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.header__admin-link:hover {
+  background: var(--blue);
+}
+
 .header__auth-button {
   padding: 8px 10px;
   border: 0;

@@ -1,0 +1,92 @@
+.member-table {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.member-table__inner {
+  min-width: 680px;
+}
+
+.member-table__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 130px 80px 96px 80px 120px;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.member-table__row:last-child {
+  border-bottom: 0;
+}
+
+.member-table__row--head {
+  min-height: 0;
+  padding-block: 12px;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.member-table__name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-table__sub {
+  color: var(--text-sub);
+}
+
+.member-table__provider {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.member-table__provider--kakao {
+  background: var(--kakao);
+  color: var(--kakao-text);
+}
+
+/* 네이버 초록 위 흰 글자는 대비가 낮아 진한 글자를 쓴다 */
+.member-table__provider--naver {
+  background: var(--naver);
+  color: var(--kakao-text);
+}
+
+.member-table__action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.member-table__button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--blue);
+  border-radius: 10px;
+  background: var(--blue);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.member-table__button--revoke {
+  border-color: var(--danger);
+  background: var(--bg);
+  color: var(--danger);
+}
+
+.member-table__button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
