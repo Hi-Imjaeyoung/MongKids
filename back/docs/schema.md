@@ -177,7 +177,7 @@ erDiagram
 
 ### lab_post_image — 연구소 글 사진 (FR-008)
 
-`post_image`와 같은 구조이고 FK만 `lab_post_id` → lab_post.id다. Entity는 공통 부모 `ArticleImage`를 상속한다. 사진 키는 `posts/` 아래를 같이 쓴다.
+`post_image`와 같은 구조이고 FK만 `lab_post_id` → lab_post.id다. Entity는 공통 부모 `ArticleImage`를 상속한다. 사진 키는 `lab/` 아래에 둔다. 2026-10-24 이전에 올린 연구소 사진은 `posts/` 키일 수 있다.
 
 ### lab_post_like — 연구소 글 공감 (FR-011)
 

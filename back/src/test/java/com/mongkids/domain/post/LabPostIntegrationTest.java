@@ -4,6 +4,7 @@ import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,7 @@ import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.global.security.JwtProvider;
 import com.mongkids.global.security.TokenCookieManager;
 import com.mongkids.global.storage.FileStorage;
+import com.mongkids.global.storage.PresignedUpload;
 
 import jakarta.servlet.http.Cookie;
 import tools.jackson.databind.ObjectMapper;
@@ -37,7 +39,7 @@ class LabPostIntegrationTest {
 
 	private static final String LAB_POST_BODY = """
 		{"category": "GROWTH", "title": "균형 감각 기르기",
-		 "content": "<p>한 발 서기 <em>놀이</em></p><figure class=\\"post-photos\\"><img data-image-key=\\"posts/a.jpg\\"></figure>"}
+		 "content": "<p>한 발 서기 <em>놀이</em></p><figure class=\\"post-photos\\"><img data-image-key=\\"lab/a.jpg\\"></figure>"}
 		""";
 
 	@Autowired
@@ -106,7 +108,7 @@ class LabPostIntegrationTest {
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.content[0].id").value(labPostId))
 			.andExpect(jsonPath("$.data.content[0].category").value("GROWTH"))
-			.andExpect(jsonPath("$.data.content[0].thumbnailUrl").value("https://cdn.test/posts/a.jpg"))
+			.andExpect(jsonPath("$.data.content[0].thumbnailUrl").value("https://cdn.test/lab/a.jpg"))
 			.andExpect(jsonPath("$.data.content[0].likeCount").value(0))
 			.andExpect(jsonPath("$.data.content[0].commentCount").doesNotExist())
 			.andExpect(jsonPath("$.data.totalElements").value(1));
@@ -128,7 +130,7 @@ class LabPostIntegrationTest {
 			.andExpect(jsonPath("$.data.title").value("균형 감각 기르기"))
 			.andExpect(jsonPath("$.data.content").value(
 				"<p>한 발 서기 <em>놀이</em></p><figure class=\"post-photos\">"
-					+ "<img data-image-key=\"posts/a.jpg\" src=\"https://cdn.test/posts/a.jpg\" alt=\"\"></figure>"));
+					+ "<img data-image-key=\"lab/a.jpg\" src=\"https://cdn.test/lab/a.jpg\" alt=\"\"></figure>"));
 
 		// 다른 직원은 삭제할 수 없다
 		mockMvc.perform(delete("/api/v1/lab-posts/{labPostId}", labPostId).cookie(tokenCookie(registerStaff("2"))))
@@ -167,6 +169,30 @@ class LabPostIntegrationTest {
 			.andExpect(jsonPath("$.data.category").value("EQUIPMENT"))
 			.andExpect(jsonPath("$.data.title").value("밸런스 보드 이야기"))
 			.andExpect(jsonPath("$.data.content").value("<p>수정한 본문</p>"));
+	}
+
+	@Test
+	@DisplayName("연구소 사진 업로드 URL은 lab/ 키로 발급하고, 수업 현장 경로(posts/) 사진으로는 글을 쓸 수 없다")
+	void labImages_useLabPrefix() throws Exception {
+		// given
+		given(fileStorage.createUploadUrl(anyString(), anyString(), anyLong()))
+			.willReturn(new PresignedUpload("https://s3.test/upload", Instant.now()));
+		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
+		Cookie writer = tokenCookie(registerStaff("1"));
+
+		// when & then
+		mockMvc.perform(post("/api/v1/lab-posts/image-upload-urls").cookie(writer)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+					{"files": [{"contentType": "image/png", "size": 1024}]}
+					"""))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data[0].imageKey").value(org.hamcrest.Matchers.startsWith("lab/")));
+
+		mockMvc.perform(post("/api/v1/lab-posts").cookie(writer)
+				.contentType(MediaType.APPLICATION_JSON).content(LAB_POST_BODY.replace("lab/a.jpg", "posts/a.jpg")))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.error.code").value("P003"));
 	}
 
 	private Cookie tokenCookie(LoginMemberResponse member) {

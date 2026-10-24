@@ -160,6 +160,7 @@ class PostServiceTest {
 			List.of("posts/missing.jpg"),
 			List.of("posts/large.jpg"),
 			List.of("reviews/a.jpg"),
+			List.of("lab/a.jpg"),
 			List.of("posts/a.jpg", "posts/a.jpg"));
 		for (List<String> imageKeys : invalidKeys) {
 			assertThatThrownBy(() -> postService.createPost(WRITER_ID, request(photos(imageKeys.toArray(String[]::new)))))

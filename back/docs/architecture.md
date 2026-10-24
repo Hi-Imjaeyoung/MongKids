@@ -122,18 +122,19 @@ HTTP Response
 사진은 S3에 저장하고 DB에는 객체 키만 둔다 ([schema.md](schema.md)). 업로드는 서버를 거치지 않는다.
 
 ```
-[작성 화면] → POST /api/v1/posts/image-upload-urls (contentType, size)
-  → PostService: 형식·크기·개수 검증, 키 생성(posts/{yyyy}/{MM}/{uuid}.{ext}) → FileStorage.createUploadUrl
+[작성 화면] → POST /api/v1/posts/image-upload-urls 또는 /api/v1/lab-posts/image-upload-urls (contentType, size)
+  → ArticleWriteSupport: 형식·크기·개수 검증, 묶음별 키 생성(posts/ 또는 lab/{yyyy}/{MM}/{uuid}.{ext}) → FileStorage.createUploadUrl
   → 브라우저가 uploadUrl로 S3에 직접 PUT
   → 편집기가 본문 HTML에 <img data-image-key> 삽입 → POST /api/v1/posts (content)
   → PostContentSanitizer.sanitize: jsoup 허용 목록 정화 + 구조 검사 + 사진 키 추출
-  → PostService·LabPostService(ArticleWriteSupport): FileStorage.findSize로 업로드·크기 확인 후 저장 (post·lab_post 본문, post_image·lab_post_image)
+  → PostService·LabPostService(ArticleWriteSupport): 묶음 경로 확인, FileStorage.findSize로 업로드·크기 확인 후 저장 (post·lab_post 본문, post_image·lab_post_image)
 응답: PostContentSanitizer.render → img에 src = FileStorage.getUrl(key) (app.storage.public-base-url + "/" + key), 링크에 target·rel
 ```
 
 | 항목 | 내용 |
 |---|---|
 | 인터페이스 | `global/storage/FileStorage`. 도메인 규칙(키 prefix, 허용 형식, 개수)은 각 도메인 Service에 둔다 |
+| 키 경로 | 사진 테이블마다 하나: `posts/` → `post_image`, `lab/` → `lab_post_image`, `reviews/` → `review_image`. 연구소 글은 2026-10-24에 `posts/`에서 분리했다 (ADR-002). 분리 전 연구소 사진은 `posts/`에 남아 있을 수 있다 |
 | 구현 | `S3FileStorage` (AWS SDK v2 `S3Client`, `S3Presigner`). Presigned URL에 `Content-Type`·`Content-Length`를 서명해 다른 타입·크기의 업로드는 S3가 거부한다 |
 | 자격 증명 | SDK 기본 체인. 로컬은 `AWS_ACCESS_KEY_ID`·`AWS_SECRET_ACCESS_KEY`, 운영은 IAM 역할 |
 | 설정 | `app.storage.bucket`(`AWS_S3_BUCKET`), `region`(`AWS_REGION`, 기본 ap-northeast-2), `public-base-url`(`STORAGE_PUBLIC_BASE_URL`), `upload-url-duration`(10분) |

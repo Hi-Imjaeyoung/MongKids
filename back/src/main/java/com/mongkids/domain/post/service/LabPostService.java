@@ -1,5 +1,7 @@
 package com.mongkids.domain.post.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,8 @@ import com.mongkids.domain.post.dto.LabPostDetailResponse;
 import com.mongkids.domain.post.dto.LabPostSaveRequest;
 import com.mongkids.domain.post.dto.LabPostSummaryResponse;
 import com.mongkids.domain.post.dto.PostCreateResponse;
+import com.mongkids.domain.post.dto.PostImageUploadUrlRequest;
+import com.mongkids.domain.post.dto.PostImageUploadUrlResponse;
 import com.mongkids.domain.post.entity.LabCategory;
 import com.mongkids.domain.post.entity.LabPost;
 import com.mongkids.domain.post.repository.LabPostRepository;
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * 몽키즈 연구소 글 (FR-008, SCR-024). 권한·본문·사진 규칙은 수업 현장 게시물과 같다 (FR-009).
+ * 사진만 S3 {@code lab/} 경로에 따로 둔다.
  */
 @Service
 @Transactional(readOnly = true)
@@ -34,10 +39,17 @@ public class LabPostService {
 	private final FileStorage fileStorage;
 	private final PostContentSanitizer contentSanitizer;
 
+	/**
+	 * 사진을 S3 {@code lab/} 아래에 직접 올릴 URL을 발급한다 (FR-008: 최대 20장, 장당 10MB).
+	 */
+	public List<PostImageUploadUrlResponse> createImageUploadUrls(Long memberId, PostImageUploadUrlRequest request) {
+		return writeSupport.createImageUploadUrls(memberId, request, ArticleWriteSupport.LAB_IMAGE_KEY_PREFIX);
+	}
+
 	@Transactional
 	public PostCreateResponse createLabPost(Long memberId, LabPostSaveRequest request) {
 		Member member = writeSupport.getWriter(memberId);
-		SanitizedContent content = writeSupport.sanitizeContent(request.content());
+		SanitizedContent content = writeSupport.sanitizeContent(request.content(), ArticleWriteSupport.LAB_IMAGE_KEY_PREFIX);
 
 		LabPost labPost = LabPost.builder()
 			.member(member)
@@ -79,7 +91,8 @@ public class LabPostService {
 	@Transactional
 	public void updateLabPost(Long memberId, Long labPostId, LabPostSaveRequest request) {
 		LabPost labPost = getWritableLabPost(memberId, labPostId);
-		SanitizedContent content = writeSupport.sanitizeContent(request.content());
+		SanitizedContent content = writeSupport.sanitizeContent(request.content(),
+			ArticleWriteSupport.LAB_IMAGE_KEY_PREFIX, labPost);
 
 		labPost.update(request.category(), request.title(), content.html());
 		labPost.clearImages();

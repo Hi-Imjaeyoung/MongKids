@@ -1,9 +1,6 @@
 package com.mongkids.domain.post.service;
 
-import java.time.YearMonth;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,7 +24,6 @@ import com.mongkids.global.common.PageResponse;
 import com.mongkids.global.exception.BusinessException;
 import com.mongkids.global.exception.ErrorCode;
 import com.mongkids.global.storage.FileStorage;
-import com.mongkids.global.storage.PresignedUpload;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,41 +35,22 @@ public class PostService {
 	static final int MAX_PAGE_SIZE = 100;
 	static final Sort LATEST = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
 
-	private static final Map<String, String> IMAGE_EXTENSIONS = Map.of(
-		"image/jpeg", "jpg",
-		"image/png", "png",
-		"image/webp", "webp"
-	);
-
 	private final PostRepository postRepository;
 	private final ArticleWriteSupport writeSupport;
 	private final FileStorage fileStorage;
 	private final PostContentSanitizer contentSanitizer;
 
 	/**
-	 * 사진을 S3에 직접 올릴 URL을 발급한다 (FR-008: 최대 20장, 장당 10MB). 글을 쓸 수 있는 직원만 (FR-009).
-	 * 몽키즈 연구소 글도 이 URL로 사진을 올린다.
+	 * 사진을 S3 {@code posts/} 아래에 직접 올릴 URL을 발급한다 (FR-008). 연구소 글은 {@code lab/}로 따로 발급한다.
 	 */
 	public List<PostImageUploadUrlResponse> createImageUploadUrls(Long memberId, PostImageUploadUrlRequest request) {
-		writeSupport.getWriter(memberId);
-		writeSupport.validateImageCount(request.files().size());
-		return request.files().stream()
-			.map(file -> {
-				String extension = IMAGE_EXTENSIONS.get(file.contentType());
-				if (extension == null || file.size() <= 0 || file.size() > ArticleWriteSupport.MAX_IMAGE_SIZE) {
-					throw new BusinessException(ErrorCode.INVALID_POST_IMAGE);
-				}
-				String imageKey = newImageKey(extension);
-				PresignedUpload upload = fileStorage.createUploadUrl(imageKey, file.contentType(), file.size());
-				return new PostImageUploadUrlResponse(imageKey, upload.uploadUrl());
-			})
-			.toList();
+		return writeSupport.createImageUploadUrls(memberId, request, ArticleWriteSupport.POST_IMAGE_KEY_PREFIX);
 	}
 
 	@Transactional
 	public PostCreateResponse createPost(Long memberId, PostSaveRequest request) {
 		Member member = writeSupport.getWriter(memberId);
-		SanitizedContent content = writeSupport.sanitizeContent(request.content());
+		SanitizedContent content = writeSupport.sanitizeContent(request.content(), ArticleWriteSupport.POST_IMAGE_KEY_PREFIX);
 
 		Post post = Post.builder()
 			.member(member)
@@ -107,7 +84,8 @@ public class PostService {
 	@Transactional
 	public void updatePost(Long memberId, Long postId, PostSaveRequest request) {
 		Post post = getWritablePost(memberId, postId);
-		SanitizedContent content = writeSupport.sanitizeContent(request.content());
+		SanitizedContent content = writeSupport.sanitizeContent(request.content(),
+			ArticleWriteSupport.POST_IMAGE_KEY_PREFIX, post);
 
 		post.update(request.category(), request.title(), content.html());
 		post.clearImages();
@@ -140,11 +118,5 @@ public class PostService {
 		Post post = getActivePost(postId);
 		writeSupport.checkWritable(member, post);
 		return post;
-	}
-
-	private static String newImageKey(String extension) {
-		YearMonth now = YearMonth.now();
-		return "%s%d/%02d/%s.%s".formatted(ArticleWriteSupport.IMAGE_KEY_PREFIX, now.getYear(), now.getMonthValue(),
-			UUID.randomUUID(), extension);
 	}
 }
