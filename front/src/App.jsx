@@ -9,6 +9,7 @@ import Footer from './components/layout/Footer'
 import FloatingMenu from './components/layout/FloatingMenu'
 import MobileCtaBar from './components/layout/MobileCtaBar'
 import AboutPage from './pages/AboutPage'
+import AdminPage from './pages/AdminPage'
 import FaqPage from './pages/FaqPage'
 import HomePage from './pages/HomePage'
 import LabListPage from './pages/LabListPage'
@@ -23,8 +24,8 @@ import { labBoard } from './pages/boards'
 const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
 
 // 모바일 하단 고정 상담 바를 두지 않는 화면
-// SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문, SCR-012 수업 후기
-const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews']
+// SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문, SCR-012 수업 후기, SCR-014 관리자
+const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews', '/admin']
 // SCR-016~020 프로그램 상세 (/programs/:programId)
 const NO_MOBILE_CTA_PREFIXES = ['/programs/']
 
@@ -133,6 +134,7 @@ function App() {
               element={<NewsEditorPage member={member} onLoginClick={openLogin} board={labBoard} />}
             />
             <Route path="/reviews" element={<ReviewsPage member={member} onLoginClick={openLogin} />} />
+            <Route path="/admin" element={<AdminPage member={member} onLoginClick={openLogin} />} />
             <Route path="*" element={homePage} />
           </Routes>
         </Suspense>

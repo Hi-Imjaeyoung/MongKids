@@ -5,17 +5,28 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.mongkids.domain.consultation.dto.ChildAgeGroup;
 import com.mongkids.domain.consultation.dto.ConsultationCreateResponse;
+import com.mongkids.domain.consultation.dto.ConsultationDetailResponse;
+import com.mongkids.domain.consultation.dto.ConsultationStatusRequest;
+import com.mongkids.domain.consultation.dto.ConsultationSummaryResponse;
 import com.mongkids.domain.consultation.dto.InstitutionConsultationRequest;
 import com.mongkids.domain.consultation.dto.PersonalConsultationRequest;
+import com.mongkids.domain.consultation.entity.Consultation;
+import com.mongkids.domain.consultation.entity.ConsultationStatus;
+import com.mongkids.domain.consultation.entity.ConsultationType;
 import com.mongkids.domain.consultation.entity.InstitutionConsultation;
 import com.mongkids.domain.consultation.entity.PersonalConsultation;
 import com.mongkids.domain.consultation.repository.ConsultationRepository;
+import com.mongkids.domain.member.service.MemberService;
+import com.mongkids.global.common.PageResponse;
 import com.mongkids.global.exception.BusinessException;
 import com.mongkids.global.exception.ErrorCode;
 
@@ -36,7 +47,11 @@ public class ConsultationService {
 		DayOfWeek.SATURDAY, "토"
 	);
 
+	static final int MAX_PAGE_SIZE = 100;
+	static final Sort LATEST = Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id"));
+
 	private final ConsultationRepository consultationRepository;
+	private final MemberService memberService;
 
 	/**
 	 * 기관 상담 신청을 저장한다 (FR-001). 인증 없이 호출된다 (FR-003).
@@ -90,6 +105,40 @@ public class ConsultationService {
 			.privacyAgreedAt(now)
 			.build();
 		return new ConsultationCreateResponse(consultationRepository.save(consultation).getId());
+	}
+
+	/**
+	 * 관리자 상담 신청 목록 (FR-004). 최근 접수 순이고 유형·처리 상태로 거를 수 있다.
+	 */
+	public PageResponse<ConsultationSummaryResponse> getConsultations(Long adminId, ConsultationType type,
+		ConsultationStatus status, Pageable pageable) {
+		memberService.validateAdmin(adminId);
+		Pageable latest = PageRequest.of(pageable.getPageNumber(), Math.min(pageable.getPageSize(), MAX_PAGE_SIZE),
+			LATEST);
+		return PageResponse.from(consultationRepository.search(type, status, latest),
+			ConsultationSummaryResponse::from);
+	}
+
+	public ConsultationDetailResponse getConsultation(Long adminId, Long consultationId) {
+		memberService.validateAdmin(adminId);
+		return ConsultationDetailResponse.from(getConsultation(consultationId));
+	}
+
+	/**
+	 * 처리 상태를 바꾼다 (FR-026). 상담 완료 시각은 보관 기간(FR-023)의 기준이 된다.
+	 */
+	@Transactional
+	public ConsultationDetailResponse changeStatus(Long adminId, Long consultationId,
+		ConsultationStatusRequest request) {
+		memberService.validateAdmin(adminId);
+		Consultation consultation = getConsultation(consultationId);
+		consultation.changeStatus(request.status());
+		return ConsultationDetailResponse.from(consultation);
+	}
+
+	private Consultation getConsultation(Long consultationId) {
+		return consultationRepository.findById(consultationId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.CONSULTATION_NOT_FOUND));
 	}
 
 	private String toSchedule(InstitutionConsultationRequest request) {

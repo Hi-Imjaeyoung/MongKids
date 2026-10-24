@@ -1,0 +1,19 @@
+.admin-split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.admin-split__main {
+  display: flex;
+  flex: 3 1 460px;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.admin-split__side {
+  flex: 2 1 320px;
+  min-width: 0;
+}

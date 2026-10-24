@@ -1,0 +1,61 @@
+.consultation-table {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.consultation-table__inner {
+  min-width: 560px;
+}
+
+.consultation-table__row {
+  display: grid;
+  grid-template-columns: 96px 56px minmax(0, 1fr) 120px 80px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.consultation-table__row:last-child {
+  border-bottom: 0;
+}
+
+.consultation-table__row--head {
+  padding-block: 12px;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.consultation-table__row--selected {
+  background: var(--bg-soft);
+}
+
+.consultation-table__sub {
+  color: var(--text-sub);
+}
+
+.consultation-table__title {
+  min-height: 40px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-overflow: ellipsis;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.consultation-table__title:hover {
+  color: var(--blue);
+}

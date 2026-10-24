@@ -1,0 +1,40 @@
+.admin-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-badge--pill {
+  border-radius: 999px;
+}
+
+.admin-badge--tag {
+  border-radius: 6px;
+}
+
+.admin-badge--yellow {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.admin-badge--blue {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.admin-badge--green {
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
+.admin-badge--gray {
+  background: var(--bg-soft);
+  color: var(--text-sub);
+}
+
+.admin-badge--dark {
+  background: var(--text);
+  color: var(--bg);
+}

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import logoImage from '../../assets/logo.png'
 import Button from '../common/Button'
+import { isAdmin } from '../news/postPermission'
+import { headerAdminLink } from '../../data/adminContent'
 import { headerAuth } from '../../data/authContent'
 import { ctaButtons, navItems } from '../../data/homeContent'
 import './Header.css'
@@ -44,6 +46,11 @@ function Header({ member = null, onLoginClick, onLogoutClick, onInstitutionConsu
                     <span className="header__member-name">{member.name}</span>
                     {headerAuth.memberSuffix}
                   </span>
+                  {isAdmin(member) && (
+                    <Link to="/admin" className="header__admin-link" onClick={() => setMenuOpen(false)}>
+                      {headerAdminLink}
+                    </Link>
+                  )}
                   <button type="button" className="header__auth-button" onClick={onLogoutClick}>
                     {headerAuth.logout}
                   </button>

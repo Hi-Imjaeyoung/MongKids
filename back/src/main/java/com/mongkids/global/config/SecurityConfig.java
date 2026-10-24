@@ -57,6 +57,8 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/v1/members/me").authenticated()
+				// 관리자 화면 API (SCR-014). 관리자인지는 각 Service가 DB의 현재 역할로 검사한다
+				.requestMatchers("/api/v1/admin/**").authenticated()
 				// 게시물 쓰기 (FR-008). 직원 권한(FR-009)은 PostService가 DB의 현재 역할로 검사한다
 				// 댓글 쓰기·삭제(FR-010)와 공감·취소(FR-011)도 여기에 걸린다. 둘 다 로그인한 회원 누구나 쓸 수 있다
 				.requestMatchers(HttpMethod.POST, "/api/v1/posts/**").authenticated()
