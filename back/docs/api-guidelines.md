@@ -109,7 +109,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
-| POST | `/api/v1/posts/image-upload-urls` | 사진 업로드 URL 발급. 요청 `{files: [{contentType, size}]}` → `[{imageKey, uploadUrl}]`. 연구소 글(§7-1)도 같이 쓴다 | 직원 |
+| POST | `/api/v1/posts/image-upload-urls` | 사진 업로드 URL 발급. 요청 `{files: [{contentType, size}]}` → `[{imageKey, uploadUrl}]`. 키는 `posts/` 아래 | 직원 |
 | POST | `/api/v1/posts` | 작성 `{category, title, content}` → 201 `{id}`. `content`는 본문 HTML | 직원 |
 | GET | `/api/v1/posts?category=&page=&size=` | 최신순 목록 (`PageResponse<PostSummaryResponse>`). `category` 없으면 전체, 기본 `size` 12, 최대 100 | - |
 | GET | `/api/v1/posts/{postId}` | 상세 (`content`는 사진 `src`가 채워진 HTML, `authorId` 포함) | - |
@@ -122,7 +122,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
   - 사진 묶음: `<figure class="post-photos">` 안에 `<img data-image-key="…">` 1~3장 + `<figcaption>`(선택, 200자). `img`는 사진 묶음 안에만 둘 수 있다.
   - 본문 최대 100,000자, 글자나 사진이 하나 이상. 위반은 `P004`.
 - 사진 흐름: URL 발급 → 브라우저가 `uploadUrl`에 `PUT`(발급 때 보낸 `Content-Type`·크기 그대로) → 본문 HTML에 `data-image-key`로 넣어 작성·수정. 본문에 처음 나온 사진이 대표 사진. 수정 시 상세 응답 HTML을 그대로 편집해 보내면 된다(`src`는 서버가 지운다).
-- 사진 제한: 게시물당 최대 20장(`P002`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `posts/` 밖의 키, 중복 키는 `P003`.
+- 사진 제한: 게시물당 최대 20장(`P002`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, 묶음 경로 밖의 키(게시물 `posts/`, 연구소 글 `lab/`), 중복 키는 `P003`.
 - 권한 (FR-009): **직원** = `STAFF`·`ADMIN`. **작성자·관리자** = 직원인 작성자 본인 또는 `ADMIN`. 직원 권한이 회수된 작성자는 자기 글도 수정·삭제할 수 없다.
   - 역할은 토큰이 아니라 DB의 현재 역할로 `ArticleWriteSupport`가 검사한다 (연구소 글도 같음). 비로그인은 401 `A001`, 권한 없음은 403 `A002`.
 - 없거나 삭제된 게시물 `P001`(404).
@@ -133,6 +133,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
+| POST | `/api/v1/lab-posts/image-upload-urls` | 사진 업로드 URL 발급. 요청·응답은 §7과 같고 키는 `lab/` 아래 | 직원 |
 | POST | `/api/v1/lab-posts` | 작성 `{category, title, content}` → 201 `{id}` | 직원 |
 | GET | `/api/v1/lab-posts?category=&keyword=&page=&size=` | 최신순 목록 (`PageResponse<LabPostSummaryResponse>`). `category` 없으면 전체, `keyword`는 제목 부분 일치(앞뒤 공백 무시, 본문은 검색 안 함, FR-024), 기본 `size` 12, 최대 100 | - |
 | GET | `/api/v1/lab-posts/{labPostId}` | 상세 (`content`는 사진 `src`가 채워진 HTML, `authorId` 포함) | - |
@@ -141,7 +142,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 - `category`: `PARENT_QA`(부모님 궁금증), `GROWTH`(움직임과 성장), `EQUIPMENT`(교구 이야기). 수업 현장 분류는 받지 않는다(400).
 - 응답에 `likeCount`는 있고 `commentCount`는 없다 (연구소 글은 댓글 없음).
-- 사진은 `/api/v1/posts/image-upload-urls`로 받은 `posts/` 키를 쓴다.
+- 사진은 `/api/v1/lab-posts/image-upload-urls`로 받은 `lab/` 키를 쓴다 (2026-10-24 분리, ADR-002). 경로를 나누기 전에 `posts/`로 올린 사진은 그 글을 수정할 때 그대로 둘 수 있지만, 새로 넣을 수는 없다.
 - 없거나 삭제된 연구소 글 `P005`(404).
 
 ### 7-2. 게시물 댓글 API (FR-010)

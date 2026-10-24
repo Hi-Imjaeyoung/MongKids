@@ -72,6 +72,7 @@ function NewsEditorPage({ member, onLoginClick, board = newsBoard }) {
       onCancel={handleCancel}
       categories={board.categories}
       notice={board.editorNotice}
+      uploadImages={board.uploadImages}
     />
   )
 }

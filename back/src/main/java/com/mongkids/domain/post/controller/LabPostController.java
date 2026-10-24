@@ -1,5 +1,7 @@
 package com.mongkids.domain.post.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import com.mongkids.domain.post.dto.LabPostDetailResponse;
 import com.mongkids.domain.post.dto.LabPostSaveRequest;
 import com.mongkids.domain.post.dto.LabPostSummaryResponse;
 import com.mongkids.domain.post.dto.PostCreateResponse;
+import com.mongkids.domain.post.dto.PostImageUploadUrlRequest;
+import com.mongkids.domain.post.dto.PostImageUploadUrlResponse;
 import com.mongkids.domain.post.entity.LabCategory;
 import com.mongkids.domain.post.service.LabPostService;
 import com.mongkids.global.common.ApiResponse;
@@ -28,7 +32,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 /**
- * 몽키즈 연구소 글. 사진 업로드 URL은 {@code POST /api/v1/posts/image-upload-urls}를 같이 쓴다.
+ * 몽키즈 연구소 글. 사진 업로드 URL은 게시물과 요청·응답 형식이 같고, 키만 {@code lab/} 아래로 발급한다.
  */
 @RestController
 @RequestMapping("/api/v1/lab-posts")
@@ -36,6 +40,14 @@ import lombok.RequiredArgsConstructor;
 public class LabPostController {
 
 	private final LabPostService labPostService;
+
+	@PostMapping("/image-upload-urls")
+	public ApiResponse<List<PostImageUploadUrlResponse>> createImageUploadUrls(
+		@AuthenticationPrincipal Long memberId,
+		@Valid @RequestBody PostImageUploadUrlRequest request
+	) {
+		return ApiResponse.success(labPostService.createImageUploadUrls(memberId, request));
+	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)

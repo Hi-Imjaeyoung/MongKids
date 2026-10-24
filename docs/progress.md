@@ -76,6 +76,7 @@
 | 2026-10-22 | 공통 | GitHub Actions CI/CD 추가 (사용자 결정: 브랜치가 아닌 경로 필터로 영역 분리): `front.yml`(PR은 lint·build, `main` 반영 시 S3 업로드·`/index.html` 무효화, OIDC 역할 `mongkiz-github-front-deploy`), `back.yml`(PR·`main` 모두 `gradlew build`, 배포는 서버 결정 후) |
 | 2026-10-22 | 프론트엔드 | 홈·헤더·프로그램 상세 화면 문구·구성 수정 (사용자 결정): SCR-001 히어로 문구("유아체육은? / 몽키즈 유아체육!", 노란 반투명 밑줄)·한 줄 설명·운영 지역 변경, 히어로 상담 버튼 삭제, 메인 비주얼에 참고 시안 사진 적용(저해상도, 원본 교체 필요), 프로그램 섹션 숨김(삭제 전 QA). 헤더 GNB에서 강사 채용 삭제, 주메뉴 화면 정중앙 정렬. 플로팅 메뉴 견적 신청 → 인스타그램 바로가기. SCR-016~020 관련 FAQ 섹션·"자주 묻는 질문" 버튼 삭제 |
 | 2026-10-22 | 공통 | 백엔드 운영 배포 (NFR-004, 사용자 결정: EC2 1대 + Caddy, RDS MariaDB, 사진 S3 함께 구성). EC2 `mongkiz-back`(t4g.small, SSM 접속만), Caddy가 `origin.mongkiz.com` HTTPS(Let's Encrypt)·`X-Origin-Verify` 검사·`X-Forwarded-*` 고정, RDS `mongkiz-prod`(MariaDB 11.8, TLS 필수라 `sslMode=verify-full`), 환경 변수는 Parameter Store `/mongkiz/prod/*`. 첫 기동만 `ddl-auto=update`로 테이블 13개 생성 후 `validate`로 재기동 확인. 사진 버킷 `mongkiz-photos-prod`·전용 CloudFront `E21JTPP1GUA4UD`. `back.yml`에 `main` 반영 시 jar S3 업로드 → SSM `deploy.sh`(헬스 체크 실패 시 롤백) 추가, OIDC 역할 `mongkiz-github-back-deploy`. 계정이 무료 플랜이라 RDS 백업 1일 (사용자 결정, 공개 전 유료 전환). 기존 CloudFront에 백엔드 오리진·동작 3개 추가 후 점검: OAuth 302의 `redirect_uri`가 `https://mongkiz.com/...`(카카오·네이버), `/api/v1/members/me` 401 JSON, `/api/v1/reviews` 200, `/news/1` 200, 오리진 직접 접근 403, 8080 외부 차단. 브라우저 로그인 점검은 개발자 콘솔 등록 후 |
+| 2026-10-24 | 공통 | 연구소 글 사진 경로 분리 (FR-008, 사용자 결정): `POST /api/v1/lab-posts/image-upload-urls`가 `lab/` 키를 발급하고, 저장 시 묶음 경로 밖의 키는 `P003`. 분리 전 `posts/` 연구소 사진은 그 글 수정 때만 유지 허용. 프론트는 `board.uploadImages`로 업로드 주소를 나눔. S3 고아 사진 정리 방식은 [ADR-002](adr/ADR-002-s3-orphan-photo-cleanup.md)(Proposed)에서 검토 중 |
 
 ## 이슈 / 블로커
 
@@ -121,12 +122,15 @@
 - [ ] 게시물 사진 S3 실제 업로드 확인 (FR-008, PR #12 병합 후 미확인). 확인이 끝날 때까지 `feature/posts` 브랜치 유지 ([deploy-checklist.md](deploy-checklist.md) H)
   - [x] 운영 S3 버킷 CORS(`PUT`, `https://mongkiz.com`, `http://localhost:5173`), CloudFront(OAC) 구성 (2026-10-22). 로컬 `.env`는 개발 버킷 기준으로 따로 설정
   - [ ] 로그인 후 `/news/write`에서 사진 묶음 업로드 → 저장 → 목록 대표 사진·상세 본문 사진 표시
-  - [ ] 몽키즈 연구소 `/lab/write`도 같은 업로드 URL(`posts/` 키)로 사진 업로드 → 저장 → `/lab` 카드 대표 이미지·상세 본문 사진 표시, 수정 시 `lab_post_image` 교체 (FR-008, #22)
+  - [ ] 몽키즈 연구소 `/lab/write`도 연구소 업로드 URL(`lab/` 키)로 사진 업로드 → 저장 → `/lab` 카드 대표 이미지·상세 본문 사진 표시, 수정 시 `lab_post_image` 교체 (FR-008, #22)
   - [ ] 수정(사진 교체·순서 변경)·삭제, 21장·10MB 초과·이미지가 아닌 파일 거부
   - [ ] 확인이 끝나면 `feature/posts` 브랜치(로컬·원격) 삭제
 - [x] 게시물 작성 직원 권한 (FR-009, #14): 작성은 STAFF·ADMIN, 수정·삭제는 직원인 작성자 본인 또는 ADMIN (DB 역할 기준)
 - [ ] 직원 권한 부여·회수 (FR-022). 그 전까지 로컬은 `UPDATE member SET role = 'STAFF' WHERE id = ?`
-- [ ] 수정·삭제로 빠지거나 업로드 후 버려진 S3 사진 정리 (수명 주기 규칙 등)
+- [x] 연구소 글 사진을 `lab/` 경로로 분리 (FR-008, 사용자 결정 2026-10-24): 전용 업로드 URL, 접두사 검사, 프론트 업로드 호출
+  - [ ] 운영 IAM에 `lab/*` 권한 추가 ([deploy-checklist.md](deploy-checklist.md) H)
+  - [ ] 분리 전 `posts/`에 올라간 연구소 사진을 옮길지 정하기. 지금은 그 글을 수정할 때만 유지 허용 ([ADR-002](adr/ADR-002-s3-orphan-photo-cleanup.md))
+- [ ] 수정·삭제로 빠지거나 업로드 후 버려진 S3 사진 정리. 방식 검토 중 ([ADR-002](adr/ADR-002-s3-orphan-photo-cleanup.md))
 - [x] 요구사항 기반 DB 스키마 설계 (`back/docs/schema.md`)
 - [x] 스키마 기반 Entity 구현, 로컬 MariaDB 테이블 생성 (`ddl-auto: update`)
 - [x] 기관 상담 신청 저장 (FR-001, #17)

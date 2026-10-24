@@ -3,6 +3,7 @@ package com.mongkids.domain.post.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,12 +21,16 @@ import com.mongkids.domain.member.entity.MemberRole;
 import com.mongkids.domain.member.entity.Provider;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.domain.post.dto.LabPostSaveRequest;
+import com.mongkids.domain.post.dto.PostImageUploadUrlRequest;
+import com.mongkids.domain.post.dto.PostImageUploadUrlRequest.ImageFile;
+import com.mongkids.domain.post.dto.PostImageUploadUrlResponse;
 import com.mongkids.domain.post.entity.LabCategory;
 import com.mongkids.domain.post.entity.LabPost;
 import com.mongkids.domain.post.entity.LabPostImage;
 import com.mongkids.domain.post.repository.LabPostRepository;
 import com.mongkids.global.exception.ErrorCode;
 import com.mongkids.global.storage.FileStorage;
+import com.mongkids.global.storage.PresignedUpload;
 
 @ExtendWith(MockitoExtension.class)
 class LabPostServiceTest {
@@ -56,6 +61,23 @@ class LabPostServiceTest {
 	}
 
 	@Test
+	@DisplayName("연구소 사진 업로드 URL은 lab/ 아래 확장자가 붙은 키로 발급한다")
+	void createImageUploadUrls_issuesLabKeys() {
+		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
+		given(fileStorage.createUploadUrl(anyString(), eq("image/webp"), eq(1024L)))
+			.willReturn(new PresignedUpload("https://s3.test/upload", Instant.now()));
+
+		// when
+		List<PostImageUploadUrlResponse> responses = labPostService.createImageUploadUrls(WRITER_ID,
+			new PostImageUploadUrlRequest(List.of(new ImageFile("image/webp", 1024L))));
+
+		// then
+		assertThat(responses).singleElement()
+			.satisfies(response -> assertThat(response.imageKey()).startsWith("lab/").endsWith(".webp"));
+	}
+
+	@Test
 	@DisplayName("직원 권한이 없는 회원은 연구소 글을 작성할 수 없다")
 	void createLabPost_notStaff_forbidden() {
 		// given
@@ -78,14 +100,48 @@ class LabPostServiceTest {
 
 		// when
 		labPostService.createLabPost(WRITER_ID, request("<p onclick=\"x()\">글</p>"
-			+ "<figure class=\"post-photos\"><img data-image-key=\"posts/a.jpg\"><img data-image-key=\"posts/b.jpg\"></figure>"));
+			+ "<figure class=\"post-photos\"><img data-image-key=\"lab/a.jpg\"><img data-image-key=\"lab/b.jpg\"></figure>"));
 
 		// then
 		then(labPostRepository).should().save(argThat(labPost ->
 			labPost.getCategory() == LabCategory.PARENT_QA
 				&& !labPost.getContent().contains("onclick")
 				&& labPost.getImages().stream().map(LabPostImage::getImageKey).toList()
-				.equals(List.of("posts/a.jpg", "posts/b.jpg"))));
+				.equals(List.of("lab/a.jpg", "lab/b.jpg"))));
+	}
+
+	@Test
+	@DisplayName("수업 현장 경로(posts/)의 사진으로는 연구소 글을 작성할 수 없다")
+	void createLabPost_postImageKey_throwsException() {
+		// given
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
+
+		// when & then
+		assertThatThrownBy(() -> labPostService.createLabPost(WRITER_ID, request(photo("posts/a.jpg"))))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.INVALID_POST_IMAGE);
+		then(labPostRepository).should(never()).save(any());
+	}
+
+	@Test
+	@DisplayName("경로를 나누기 전 posts/에 올린 사진은 그 글을 수정할 때 유지할 수 있지만, 새로 넣을 수는 없다")
+	void updateLabPost_keepsLegacyImageOnly() {
+		// given
+		LabPost labPost = labPost(WRITER_ID);
+		labPost.addImage("posts/old.jpg");
+		given(memberService.getActiveMember(WRITER_ID)).willReturn(member(WRITER_ID, MemberRole.STAFF));
+		given(labPostRepository.findByIdAndDeletedAtIsNull(LAB_POST_ID)).willReturn(Optional.of(labPost));
+		given(fileStorage.findSize(anyString())).willReturn(Optional.of(1024L));
+
+		// when
+		labPostService.updateLabPost(WRITER_ID, LAB_POST_ID, request(photo("posts/old.jpg") + photo("lab/new.jpg")));
+
+		// then
+		assertThat(labPost.getImages().stream().map(LabPostImage::getImageKey).toList())
+			.containsExactly("posts/old.jpg", "lab/new.jpg");
+		assertThatThrownBy(() -> labPostService.updateLabPost(WRITER_ID, LAB_POST_ID, request(photo("posts/other.jpg"))))
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.INVALID_POST_IMAGE);
 	}
 
 	@Test
@@ -128,6 +184,10 @@ class LabPostServiceTest {
 		assertThatThrownBy(() -> labPostService.getLabPost(LAB_POST_ID))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.LAB_POST_NOT_FOUND);
+	}
+
+	private static String photo(String imageKey) {
+		return "<figure class=\"post-photos\"><img data-image-key=\"" + imageKey + "\"></figure>";
 	}
 
 	private static LabPostSaveRequest request(String content) {
