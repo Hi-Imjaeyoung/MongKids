@@ -14,6 +14,20 @@ function PhotoGroupView({ node, updateAttributes, deleteNode, editor, selected }
   const [uploading, setUploading] = useState(false)
   const editable = editor.isEditable
 
+  // 노드뷰는 속성 변경을 비동기로 다시 그린다. 노드 속성만 value로 쓰면 React가 입력값을 되돌려
+  // 한글 조합이 끊기므로 입력값은 로컬 상태로 들고, 실행 취소 등 밖에서 바뀐 캡션만 따라간다
+  const [draft, setDraft] = useState(caption)
+  const [prevCaption, setPrevCaption] = useState(caption)
+  if (caption !== prevCaption) {
+    setPrevCaption(caption)
+    setDraft(caption)
+  }
+
+  const changeCaption = (event) => {
+    setDraft(event.target.value)
+    updateAttributes({ caption: event.target.value })
+  }
+
   // 업로드가 끝났을 때 그사이 바뀐 사진 목록 위에 덧붙이기 위해 최신 노드를 들고 있는다
   const nodeRef = useRef(node)
   useEffect(() => {
@@ -85,11 +99,11 @@ function PhotoGroupView({ node, updateAttributes, deleteNode, editor, selected }
       <div className="photo-group__footer" contentEditable={false}>
         <input
           className="photo-group__caption"
-          value={caption}
+          value={draft}
           maxLength={MAX_CAPTION_LENGTH}
           placeholder={text.captionPlaceholder}
           aria-label={text.captionPlaceholder}
-          onChange={(event) => updateAttributes({ caption: event.target.value })}
+          onChange={changeCaption}
           disabled={!editable}
         />
         {editable && images.length < MAX_PHOTOS_PER_GROUP && (

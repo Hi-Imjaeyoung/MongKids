@@ -76,7 +76,10 @@
 | 2026-10-22 | 공통 | GitHub Actions CI/CD 추가 (사용자 결정: 브랜치가 아닌 경로 필터로 영역 분리): `front.yml`(PR은 lint·build, `main` 반영 시 S3 업로드·`/index.html` 무효화, OIDC 역할 `mongkiz-github-front-deploy`), `back.yml`(PR·`main` 모두 `gradlew build`, 배포는 서버 결정 후) |
 | 2026-10-22 | 프론트엔드 | 홈·헤더·프로그램 상세 화면 문구·구성 수정 (사용자 결정): SCR-001 히어로 문구("유아체육은? / 몽키즈 유아체육!", 노란 반투명 밑줄)·한 줄 설명·운영 지역 변경, 히어로 상담 버튼 삭제, 메인 비주얼에 참고 시안 사진 적용(저해상도, 원본 교체 필요), 프로그램 섹션 숨김(삭제 전 QA). 헤더 GNB에서 강사 채용 삭제, 주메뉴 화면 정중앙 정렬. 플로팅 메뉴 견적 신청 → 인스타그램 바로가기. SCR-016~020 관련 FAQ 섹션·"자주 묻는 질문" 버튼 삭제 |
 | 2026-10-22 | 공통 | 백엔드 운영 배포 (NFR-004, 사용자 결정: EC2 1대 + Caddy, RDS MariaDB, 사진 S3 함께 구성). EC2 `mongkiz-back`(t4g.small, SSM 접속만), Caddy가 `origin.mongkiz.com` HTTPS(Let's Encrypt)·`X-Origin-Verify` 검사·`X-Forwarded-*` 고정, RDS `mongkiz-prod`(MariaDB 11.8, TLS 필수라 `sslMode=verify-full`), 환경 변수는 Parameter Store `/mongkiz/prod/*`. 첫 기동만 `ddl-auto=update`로 테이블 13개 생성 후 `validate`로 재기동 확인. 사진 버킷 `mongkiz-photos-prod`·전용 CloudFront `E21JTPP1GUA4UD`. `back.yml`에 `main` 반영 시 jar S3 업로드 → SSM `deploy.sh`(헬스 체크 실패 시 롤백) 추가, OIDC 역할 `mongkiz-github-back-deploy`. 계정이 무료 플랜이라 RDS 백업 1일 (사용자 결정, 공개 전 유료 전환). 기존 CloudFront에 백엔드 오리진·동작 3개 추가 후 점검: OAuth 302의 `redirect_uri`가 `https://mongkiz.com/...`(카카오·네이버), `/api/v1/members/me` 401 JSON, `/api/v1/reviews` 200, `/news/1` 200, 오리진 직접 접근 403, 8080 외부 차단. 브라우저 로그인 점검은 개발자 콘솔 등록 후 |
+| 2026-10-22 | 공통 | 개발용 사진 저장소 구성 (FR-008, 사용자 결정: 개발 전용 버킷, 로컬은 기존 IAM 사용자 자격 증명): S3 `mongkids-images-dev`(퍼블릭 차단 유지, CORS `PUT`·`http://localhost:5173`), CloudFront `E3TMJZ3RI4R0S6`(`d26a7vzhdx0wie.cloudfront.net`, OAC, 버킷 정책은 이 배포의 `s3:GetObject`만). 로컬 `.env`의 `AWS_S3_BUCKET`·`STORAGE_PUBLIC_BASE_URL` 설정. 수업 현장·몽키즈 연구소·수업 후기 사진 업로드·표시 확인 (사용자) |
+| 2026-10-22 | 프론트엔드 | 사진 묶음 캡션 입력 시 한글 조합이 끊기는 문제 수정 (`PhotoGroupView`): TipTap 노드뷰의 비동기 재렌더 때문에 React 제어 input이 값을 되돌리던 것을 로컬 상태로 해결. 로컬 확인 (사용자) |
 | 2026-10-24 | 공통 | 연구소 글 사진 경로 분리 (FR-008, 사용자 결정): `POST /api/v1/lab-posts/image-upload-urls`가 `lab/` 키를 발급하고, 저장 시 묶음 경로 밖의 키는 `P003`. 분리 전 `posts/` 연구소 사진은 그 글 수정 때만 유지 허용. 프론트는 `board.uploadImages`로 업로드 주소를 나눔. S3 고아 사진 정리 방식은 [ADR-002](adr/ADR-002-s3-orphan-photo-cleanup.md)(Proposed)에서 검토 중 |
+| 2026-10-24 | 프론트엔드 | 운영 사이트에서 사진 설명 입력이 끊기는 현상 재보고: 2026-10-22 캡션 수정 커밋이 로컬 브랜치에만 있고 `main`에 병합되지 않았던 것이 원인. `main` 기준으로 다시 적용해 배포 (운영 확인 필요) |
 
 ## 이슈 / 블로커
 
@@ -142,7 +145,7 @@
 - [ ] 비로그인 열람 제한 (FR-012). 후기는 완료(#31), 수업 현장 게시물만 남음. 연구소 글에는 적용하지 않음
 - [x] 후기 작성·목록(무한 스크롤)·사진·수정·삭제 (FR-013~016, FR-025, #31)
 - [x] 후기 관리자 답글 (FR-017, #32): `PUT /api/v1/reviews/{reviewId}/reply`
-- [ ] 후기 사진 S3 실제 업로드 확인 (`reviews/` 키, 게시물 사진 확인 때 함께)
+- [x] 후기 사진 S3 실제 업로드 확인 (`reviews/` 키, 2026-10-22, 개발용 버킷, 사용자)
 - [ ] 상담 접수 메일 알림 (FR-005), 상담 신청 조회 (FR-004)
 - [ ] 상담 신청 보관 기간(상담 완료 후 3년) 지난 데이터 삭제 배치 (FR-023)
 
