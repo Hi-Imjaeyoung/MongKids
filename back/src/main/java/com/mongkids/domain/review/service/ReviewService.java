@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mongkids.domain.member.entity.Member;
 import com.mongkids.domain.member.service.MemberService;
+import com.mongkids.domain.review.dto.AdminReviewResponse;
+import com.mongkids.domain.review.dto.ReviewHiddenRequest;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlRequest;
 import com.mongkids.domain.review.dto.ReviewImageUploadUrlResponse;
 import com.mongkids.domain.review.dto.ReviewReplyRequest;
@@ -144,6 +146,34 @@ public class ReviewService {
 
 		review.reply(request.content());
 		return toResponse(review);
+	}
+
+	/**
+	 * 관리자 후기 목록 (FR-021). 숨긴 후기도 숨김 여부와 함께 최신순으로 주고, 숨긴 것만 거를 수 있다.
+	 */
+	public PageResponse<AdminReviewResponse> getAdminReviews(Long adminId, ReviewType type, boolean hiddenOnly,
+		Pageable pageable) {
+		memberService.validateAdmin(adminId);
+		Pageable latest = PageRequest.of(pageable.getPageNumber(), Math.min(pageable.getPageSize(), MAX_PAGE_SIZE),
+			LATEST);
+		return PageResponse.from(reviewRepository.searchForAdmin(type, hiddenOnly, latest),
+			review -> AdminReviewResponse.of(review, fileStorage::getUrl));
+	}
+
+	/**
+	 * 후기를 숨기거나 다시 공개한다 (FR-021). 이미 그 상태면 변화 없다.
+	 */
+	@Transactional
+	public AdminReviewResponse changeHidden(Long adminId, Long reviewId, ReviewHiddenRequest request) {
+		memberService.validateAdmin(adminId);
+		Review review = reviewRepository.findByIdAndDeletedAtIsNull(reviewId)
+			.orElseThrow(() -> new BusinessException(ErrorCode.REVIEW_NOT_FOUND));
+		if (request.hidden() && !review.isHidden()) {
+			review.hide();
+		} else if (!request.hidden()) {
+			review.unhide();
+		}
+		return AdminReviewResponse.of(review, fileStorage::getUrl);
 	}
 
 	private Page<Review> findVisible(ReviewType type, Pageable pageable) {

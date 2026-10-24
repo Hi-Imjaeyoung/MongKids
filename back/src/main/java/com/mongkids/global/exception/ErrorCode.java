@@ -22,6 +22,10 @@ public enum ErrorCode {
 	// 회원
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
 	MEMBER_WITHDRAWN(HttpStatus.FORBIDDEN, "M002", "탈퇴한 회원입니다."),
+	ADMIN_ROLE_UNCHANGEABLE(HttpStatus.BAD_REQUEST, "M003", "관리자 권한은 바꿀 수 없습니다."),
+
+	// 상담 신청
+	CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "상담 신청을 찾을 수 없습니다."),
 
 	// 게시물
 	POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "게시물을 찾을 수 없습니다."),

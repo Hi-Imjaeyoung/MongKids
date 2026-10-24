@@ -49,6 +49,9 @@ public abstract class Consultation extends BaseTimeEntity {
 	@Column(nullable = false)
 	private LocalDateTime privacyAgreedAt;
 
+	// 상담 완료로 바꾼 시각. 보관 기간(상담 완료 후 3년, FR-023)의 기준이다
+	private LocalDateTime completedAt;
+
 	protected Consultation(ConsultationType type, String phone, LocalDateTime privacyAgreedAt) {
 		this.type = type;
 		this.phone = phone;
@@ -56,7 +59,18 @@ public abstract class Consultation extends BaseTimeEntity {
 		this.status = ConsultationStatus.RECEIVED;
 	}
 
-	public void markContacted() {
-		this.status = ConsultationStatus.CONTACTED;
+	/**
+	 * 처리 상태를 바꾼다 (FR-026). 상담 완료가 되면 그 시각을 남기고, 다른 상태로 되돌리면 지운다.
+	 * 이미 상담 완료인데 다시 완료로 바꾸면 처음 완료 시각을 그대로 둔다.
+	 */
+	public void changeStatus(ConsultationStatus status) {
+		if (status == ConsultationStatus.COMPLETED) {
+			if (this.status != ConsultationStatus.COMPLETED) {
+				this.completedAt = LocalDateTime.now();
+			}
+		} else {
+			this.completedAt = null;
+		}
+		this.status = status;
 	}
 }

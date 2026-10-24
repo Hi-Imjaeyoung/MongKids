@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.mongkids.domain.review.entity.Review;
 import com.mongkids.domain.review.entity.ReviewType;
@@ -21,4 +23,15 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	@EntityGraph(attributePaths = "member")
 	Optional<Review> findByIdAndDeletedAtIsNull(Long id);
+
+	// 관리자 목록 (FR-021)은 숨긴 후기도 포함한다. 유형이 null이면 거르지 않는다
+	@EntityGraph(attributePaths = "member")
+	@Query("""
+		select r from Review r
+		where r.deletedAt is null
+		  and (:type is null or r.type = :type)
+		  and (:hiddenOnly = false or r.hiddenAt is not null)
+		""")
+	Page<Review> searchForAdmin(@Param("type") ReviewType type, @Param("hiddenOnly") boolean hiddenOnly,
+		Pageable pageable);
 }
