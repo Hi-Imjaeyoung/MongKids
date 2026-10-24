@@ -119,7 +119,7 @@ HTTP Response
 
 ## 8. 파일 저장소 (FR-008)
 
-사진은 S3에 저장하고 DB에는 객체 키만 둔다 ([schema.md](schema.md)). 업로드는 서버를 거치지 않는다.
+사진은 S3에 저장하고 DB에는 객체 키만 둔다 ([schema.md](schema.md)). 업로드는 서버를 거치지 않는다 ([ADR-003](../../docs/adr/ADR-003-photo-upload-presigned-url.md)).
 
 ```
 [작성 화면] → POST /api/v1/posts/image-upload-urls 또는 /api/v1/lab-posts/image-upload-urls (contentType, size)
