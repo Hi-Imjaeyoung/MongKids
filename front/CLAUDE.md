@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 웹 프론트엔드 (Vite + React SPA)
-- 현재 상태: 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현 (공통 푸터·모바일 하단 상담 바 포함). 소셜 로그인 모달(SCR-013, FR-018), 수업 현장(SCR-006, FR-008) 목록·상세·작성·수정·댓글(FR-010)·공감(FR-011) API 연동, 몽키즈 연구소(SCR-024) 목록·검색·상세·작성·수정·공감 API 연동(상세·작성은 수업 현장 화면 재사용), 기관 상담 신청 모달(SCR-009, FR-001), 개인 상담 신청 2단계 모달(SCR-010, FR-002), ABOUT 몽키즈(SCR-002)·체육/행사 프로그램 전체 안내·상세(SCR-003, SCR-016~020)·자주 묻는 질문(SCR-022) 정적 화면, 수업 후기(SCR-012) `/reviews` 목록(무한 스크롤)·작성·수정·삭제·관리자 답글(FR-017) API 연동. react-router-dom 라우팅.
+- 현재 상태: 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현 (공통 푸터·모바일 하단 상담 바 포함). 소셜 로그인 모달(SCR-013, FR-018), 수업 현장(SCR-006, FR-008) 목록·상세·작성·수정·댓글(FR-010)·공감(FR-011) API 연동, 몽키즈 연구소(SCR-024) 목록·검색·상세·작성·수정·공감 API 연동(상세·작성은 수업 현장 화면 재사용), 기관 상담 신청 모달(SCR-009, FR-001), 개인 상담 신청 2단계 모달(SCR-010, FR-002), ABOUT 몽키즈(SCR-002)·체육/행사 프로그램 전체 안내·상세(SCR-003, SCR-016~020)·자주 묻는 질문(SCR-022) 정적 화면, 수업 후기(SCR-012) `/reviews` 목록(무한 스크롤)·작성·수정·삭제·관리자 답글(FR-017) API 연동, 관리자 화면(SCR-014) `/admin` 상담 신청·후기 숨김·직원 권한 API 연동. react-router-dom 라우팅.
 - 요구사항 (백엔드와 공유) → [../docs/requirements.md](../docs/requirements.md)
 - 진행 사항 (백엔드와 공유) → [../docs/progress.md](../docs/progress.md)
 - 디자인 시안 → [../docs/design/](../docs/design/)
@@ -35,7 +35,7 @@ npm run preview    # 빌드 결과 미리보기
 
 ## 아키텍처 요약 → [docs/architecture.md](docs/architecture.md)
 
-- `pages/`(화면 조립·API 호출) → `components/{layout,home,about,program,faq,auth,news,lab,review,consultation,common}/`(UI) ← `data/`(콘텐츠). 라우트는 `App.jsx`
+- `pages/`(화면 조립·API 호출) → `components/{layout,home,about,program,faq,auth,news,lab,review,consultation,admin,common}/`(UI) ← `data/`(콘텐츠). 라우트는 `App.jsx`
 - API 호출은 `src/api/`(`client.js`의 `request`가 `ApiResponse`를 풀어 `data`만 반환). 인증은 HttpOnly 쿠키라 토큰을 JS에서 다루지 않는다.
 - 화면 문구·수치·목록은 컴포넌트에 하드코딩하지 않고 `src/data/`에 둔다. API 연동 시 이 데이터만 응답값으로 교체한다.
 

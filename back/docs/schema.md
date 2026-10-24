@@ -64,7 +64,7 @@ erDiagram
 - 직원 권한 부여·회수(FR-022)는 `role`을 `MEMBER` ↔ `STAFF`로 바꾼다. `ADMIN`은 운영 DB에서 직접 지정한다.
 - 탈퇴 시 `deleted_at`만 기록한다. 작성한 후기·댓글은 유지하고, 응답에서 작성자를 "탈퇴 회원"으로 표시한다.
 
-### consultation — 상담 신청 공통 (FR-003, FR-004, FR-023)
+### consultation — 상담 신청 공통 (FR-003, FR-004, FR-023, FR-026)
 
 기관·개인 폼의 항목이 크게 달라 JPA `@Inheritance(strategy = JOINED)`로 나눈다. 관리자 목록 조회(FR-004)는 부모 테이블 하나로 처리한다.
 
@@ -73,12 +73,14 @@ erDiagram
 | id | BIGINT | PK | |
 | type | VARCHAR(20) | NOT NULL | `INSTITUTION`, `PERSONAL` (일반 컬럼, 생성 후 변경 불가) |
 | phone | VARCHAR(20) | NOT NULL | 연락받을 전화번호 (두 폼 공통, 숫자만. 기관은 유선번호 허용, 개인은 010 휴대전화만) |
-| status | VARCHAR(20) | NOT NULL, 기본 `RECEIVED` | `RECEIVED`(접수), `CONTACTED`(연락 완료) |
+| status | VARCHAR(20) | NOT NULL, 기본 `RECEIVED` | 처리 상태(FR-026): `RECEIVED`(신규), `CONTACTED`(연락 완료), `COMPLETED`(상담 완료) |
 | privacy_agreed_at | DATETIME(6) | NOT NULL | 개인정보 수집 동의 시각 (필수) |
+| completed_at | DATETIME(6) | NULL | 상담 완료로 바꾼 시각. 다른 상태로 되돌리면 NULL (2026-10-24 추가) |
 
 - INDEX (`status`, `created_at`) — 관리자 목록 필터
 - 비회원 신청(FR-003)이므로 `member` FK를 두지 않는다.
-- 보관 기간(FR-023, 상담 완료 후 3년)이 지나면 행을 삭제하는 배치가 필요하다 (`created_at` 기준, 미구현).
+- 보관 기간(FR-023, 상담 완료 후 3년)이 지나면 행을 삭제하는 배치가 필요하다 (`completed_at` 기준, 미구현).
+- 운영 DB(`validate`)에는 배포 전에 `ALTER TABLE consultation ADD COLUMN completed_at DATETIME(6) NULL;`을 적용해야 한다 ([database.md](database.md#ddl-auto-정책)).
 
 ### institution_consultation — 기관 상담 신청 (FR-001)
 

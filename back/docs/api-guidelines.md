@@ -226,7 +226,28 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 답글 `content`: 일반 텍스트, 공백만은 안 됨, 1,000자 이내(400 `C001`).
 - 없거나 삭제된 후기 `R001`(404).
 
-## 10. 기타
+## 10. 관리자 API (SCR-014: FR-004, FR-021, FR-022, FR-026)
+
+관리자 화면 전용 API는 `/api/v1/admin/**`에 모은다. 모두 인증이 필요하고(비로그인 401 `A001`), 각 Service가 `MemberService.validateAdmin`으로 DB의 현재 역할이 `ADMIN`인지 확인한다(직원 `STAFF`도 403 `A002`). 후기 답글(FR-017)은 SCR-012 카드에서 입력하므로 §9의 `/api/v1/reviews/{reviewId}/reply`를 쓴다.
+
+| 메서드 | URL | 설명 |
+|---|---|---|
+| GET | `/api/v1/admin/consultations?type=&status=&page=&size=` | 상담 신청 최근 접수 순 목록 (`PageResponse<ConsultationSummaryResponse>`). 기본 `size` 20, 최대 100 |
+| GET | `/api/v1/admin/consultations/{consultationId}` | 상세 (`ConsultationDetailResponse`) |
+| PUT | `/api/v1/admin/consultations/{consultationId}/status` | 처리 상태 변경 `{status}` → `ConsultationDetailResponse` |
+| GET | `/api/v1/admin/reviews?type=&hiddenOnly=&page=&size=` | 숨긴 후기를 포함한 최신순 목록 (`PageResponse<AdminReviewResponse>`). `hiddenOnly=true`면 숨긴 것만 |
+| PUT | `/api/v1/admin/reviews/{reviewId}/hidden` | 숨김 `{hidden: true}`·다시 공개 `{hidden: false}` → `AdminReviewResponse` |
+| GET | `/api/v1/admin/members?role=&keyword=&page=&size=` | 탈퇴하지 않은 회원 최근 가입 순 목록 (`PageResponse<AdminMemberResponse>`) |
+| PUT | `/api/v1/admin/members/{memberId}/role` | 직원 지정 `{role: "STAFF"}`·해제 `{role: "MEMBER"}` → `AdminMemberResponse` |
+
+- `ConsultationSummaryResponse`: `{id, type, title, phone, status, createdAt}`. `title`은 기관명 또는 보호자 이름. `type`: `INSTITUTION`·`PERSONAL`, `status`: `RECEIVED`(신규)·`CONTACTED`(연락 완료)·`COMPLETED`(상담 완료).
+- `ConsultationDetailResponse`: `{id, type, phone, status, privacyAgreedAt, completedAt, createdAt, institution, personal}`. 유형에 맞는 쪽만 채우고 나머지는 `null`. `institution`은 기관 신청 항목(§8), `personal`은 개인 신청 항목과 `healthAgreedAt`.
+- 상태는 어느 단계로든 바꿀 수 있다. `COMPLETED`가 되면 `completedAt`을 남기고(이미 완료면 처음 시각 유지), 다른 상태로 되돌리면 `null`. 이 시각이 보관 기간(FR-023)의 기준이다. 없는 신청은 404 `S001`.
+- `AdminReviewResponse`: `{review: ReviewResponse, hidden, hiddenAt}`. 작성자 이름은 공개 응답처럼 가린다(FR-014). 숨긴 후기는 §9 공개 목록에서 빠진다. 없거나 삭제된 후기 404 `R001`.
+- `AdminMemberResponse`: `{id, name, phone, provider, role, createdAt}`. `keyword`는 이름 부분 일치, 숫자가 있으면 전화번호(하이픈 무시) 부분 일치로도 찾는다.
+- 권한 변경: 대상이 `ADMIN`이거나 `role`이 `ADMIN`이면 400 `M003`. 없는 회원 404 `M001`, 탈퇴 회원 403 `M002`. 회수해도 작성한 게시물은 남고 새 글 작성·자기 글 수정·삭제만 막힌다(FR-009).
+
+## 11. 기타
 
 - 날짜/시간: ISO-8601 (`2026-10-07T14:30:00`), 서버 타임존 `Asia/Seoul`.
 - JSON 필드는 camelCase.
