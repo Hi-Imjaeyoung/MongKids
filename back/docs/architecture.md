@@ -140,4 +140,4 @@ HTTP Response
 | 설정 | `app.storage.bucket`(`AWS_S3_BUCKET`), `region`(`AWS_REGION`, 기본 ap-northeast-2), `public-base-url`(`STORAGE_PUBLIC_BASE_URL`), `upload-url-duration`(10분) |
 | 본문 정화 | `domain/post/service/PostContentSanitizer` (jsoup). 허용 목록·구조 규칙은 [api-guidelines.md](api-guidelines.md#7-게시물-api-fr-008). 프론트는 출력 전에 DOMPurify로 한 번 더 거른다 |
 | 테스트 | S3에 접속하지 않는다. 통합 테스트는 `@MockitoBean FileStorage` |
-| 정리 | 업로드 후 저장하지 않았거나 수정·삭제로 빠진 객체는 지우지 않는다 (후속: S3 수명 주기 규칙 등) |
+| 정리 | 업로드 후 저장하지 않았거나 수정·삭제로 빠진 객체는 지우지 않는다 ([ADR-002](../../docs/adr/ADR-002-s3-orphan-photo-cleanup.md) 현상 유지). 정리 방식과 같은 키 공유 방지는 후속 작업 |
