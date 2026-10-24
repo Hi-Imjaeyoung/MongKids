@@ -94,7 +94,8 @@
 - [x] GitHub Actions 백엔드 배포 단계 (2026-10-22, 병합 후 첫 실행 확인 필요)
 - [x] 사진용 S3 버킷·CORS·CloudFront(OAC) (2026-10-22, [deploy-checklist.md](deploy-checklist.md) H)
 - [x] AWS 유료 플랜 전환 후 RDS 백업 보관 1일 → 7일 (2026-10-22)
-- [ ] AWS Activate Founders 크레딧 신청 (회사 도메인 이메일 필요)
+- [ ] AWS Activate Founders 크레딧 신청 (사용자, 업무용 이메일 사용)
+- [ ] 운영 DB 조회 전용 계정 검토 (`jaeyoung`은 전체 권한)
 - [ ] 운영 스키마 마이그레이션 방식 결정 (Flyway 도입 검토, [back/docs/database.md](../back/docs/database.md#ddl-auto-정책))
 - [x] 요구사항(사용자 역할, 기능 목록) 정리
 - [x] SCR-002 구성 확정 (디자인 초안 승인, 2026-10-20)

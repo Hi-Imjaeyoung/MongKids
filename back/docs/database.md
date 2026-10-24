@@ -61,7 +61,8 @@ spring:
 ```
 
 - 운영 DB는 RDS MariaDB 11.8 (`mongkiz-prod`, utf8mb4). TLS 연결만 받으므로 `DB_URL`에 `?sslMode=verify-full&serverSslCert=/opt/mongkiz/rds-global-bundle.pem`을 붙인다.
-- RDS는 퍼블릭 접근이 꺼져 있다. 직접 조회는 SSM 세션으로 EC2에 들어가 `mariadb --ssl --ssl-ca=/opt/mongkiz/rds-global-bundle.pem --ssl-verify-server-cert -h <엔드포인트> -u mongkiz -p mongkids`로 한다.
+- RDS는 퍼블릭 접근이 꺼져 있다. 로컬 DB 프로그램으로 조회할 때는 SSM 포트 포워딩 터널(`127.0.0.1:13306`)과 개인 계정 `jaeyoung`을 쓴다 → [../../docs/deploy-checklist.md](../../docs/deploy-checklist.md#운영-db-조회)
+- 설치 없이 바로 볼 때는 SSM 세션으로 EC2에 들어가 `mariadb --ssl --ssl-ca=/opt/mongkiz/rds-global-bundle.pem --ssl-verify-server-cert -h <엔드포인트> -u jaeyoung -p mongkids`로 한다.
 
 ### `.env`
 
