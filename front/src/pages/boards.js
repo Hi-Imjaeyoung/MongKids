@@ -7,8 +7,18 @@ import {
   likeLabPost,
   unlikeLabPost,
   updateLabPost,
+  uploadLabPostImages,
 } from '../api/labPosts'
-import { createPost, deletePost, getPost, getPostLike, likePost, unlikePost, updatePost } from '../api/posts'
+import {
+  createPost,
+  deletePost,
+  getPost,
+  getPostLike,
+  likePost,
+  unlikePost,
+  updatePost,
+  uploadPostImages,
+} from '../api/posts'
 import { labCategories, labEditorNotice, labNotice } from '../data/labContent'
 import { newsCategories } from '../data/newsContent'
 
@@ -21,6 +31,7 @@ export const newsBoard = {
   createPost,
   updatePost,
   deletePost,
+  uploadImages: uploadPostImages,
   getLike: getPostLike,
   like: likePost,
   unlike: unlikePost,
@@ -35,6 +46,7 @@ export const labBoard = {
   createPost: createLabPost,
   updatePost: updateLabPost,
   deletePost: deleteLabPost,
+  uploadImages: uploadLabPostImages,
   getLike: getLabPostLike,
   like: likeLabPost,
   unlike: unlikeLabPost,

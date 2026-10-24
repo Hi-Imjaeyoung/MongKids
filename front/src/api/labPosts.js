@@ -1,5 +1,6 @@
-// 몽키즈 연구소 글(FR-008, SCR-024) API. 사진은 게시물과 같은 업로드 URL(uploadPostImages)을 쓴다
+// 몽키즈 연구소 글(FR-008, SCR-024) API. 사진은 게시물과 같은 방식으로 올리고 경로만 lab/로 나뉜다
 import { request } from './client'
+import { uploadArticleImages } from './posts'
 
 function jsonBody(body) {
   return { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
@@ -28,6 +29,11 @@ export function updateLabPost(labPostId, labPost) {
 
 export function deleteLabPost(labPostId) {
   return request(`/api/v1/lab-posts/${labPostId}`, { method: 'DELETE' })
+}
+
+// 연구소 사진은 lab/ 아래에 올라간다
+export function uploadLabPostImages(files) {
+  return uploadArticleImages('/api/v1/lab-posts/image-upload-urls', files)
 }
 
 // 공감(FR-011). 모두 { liked, likeCount }를 돌려준다. 비로그인 조회는 liked가 false

@@ -11,7 +11,8 @@ function writableOf(categories) {
 
 // post: 수정할 게시물 (작성이면 null). onSubmit({ category, title, content })는 Promise를 돌려준다.
 // categories: 분류 목록 (기본은 수업 현장). notice: 분류 아래 작성자 안내 (몽키즈 연구소)
-function PostEditorForm({ post = null, onSubmit, onCancel, categories = newsCategories, notice }) {
+// uploadImages(files): 묶음의 사진 업로드 (기본은 수업 현장)
+function PostEditorForm({ post = null, onSubmit, onCancel, categories = newsCategories, notice, uploadImages }) {
   const writableCategories = writableOf(categories)
   const [category, setCategory] = useState(post?.category ?? writableCategories[0].id)
   const [title, setTitle] = useState(post?.title ?? '')
@@ -90,6 +91,7 @@ function PostEditorForm({ post = null, onSubmit, onCancel, categories = newsCate
           onChange={handleContentChange}
           onUploadingChange={setUploading}
           onError={setError}
+          uploadImages={uploadImages}
           disabled={submitting}
         />
       </div>

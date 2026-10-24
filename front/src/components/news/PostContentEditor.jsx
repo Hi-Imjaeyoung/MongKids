@@ -17,7 +17,15 @@ function isAllowedFile(file) {
 
 // 본문 HTML 편집기 (FR-008). 허용 서식: 굵게·기울임·밑줄·링크·목록·인용·구분선 + 사진 묶음.
 // onChange({ html, hasContent }), onUploadingChange(boolean), onError(message)
-function PostContentEditor({ initialContent = '', onChange, onUploadingChange, onError, disabled = false }) {
+// uploadImages(files) → 객체 키 목록. 연구소 글은 lab/ 경로로 올린다 (기본은 수업 현장 posts/)
+function PostContentEditor({
+  initialContent = '',
+  onChange,
+  onUploadingChange,
+  onError,
+  uploadImages = uploadPostImages,
+  disabled = false,
+}) {
   const fileInputId = useId()
   const [uploadingCount, setUploadingCount] = useState(0)
 
@@ -69,7 +77,7 @@ function PostContentEditor({ initialContent = '', onChange, onUploadingChange, o
 
     setUploadingCount((count) => count + 1)
     try {
-      const imageKeys = await uploadPostImages(files)
+      const imageKeys = await uploadImages(files)
       onError(null)
       // 미리보기는 내려받기 주소 대신 로컬 파일로 보여 준다
       return files.map((file, index) => ({ imageKey: imageKeys[index], src: URL.createObjectURL(file) }))

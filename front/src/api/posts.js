@@ -37,11 +37,11 @@ export function deletePost(postId) {
 }
 
 // 사진을 S3에 직접 올리고 순서대로 객체 키를 돌려준다.
-// 업로드 URL은 발급 때 정한 타입·크기로만 올릴 수 있다
-export async function uploadPostImages(files) {
+// 업로드 URL은 발급 때 정한 타입·크기로만 올릴 수 있다. path는 묶음별 업로드 URL 발급 주소
+export async function uploadArticleImages(path, files) {
   if (files.length === 0) return []
 
-  const uploads = await request('/api/v1/posts/image-upload-urls', {
+  const uploads = await request(path, {
     method: 'POST',
     ...jsonBody({ files: files.map((file) => ({ contentType: file.type, size: file.size })) }),
   })
@@ -56,6 +56,11 @@ export async function uploadPostImages(files) {
     }),
   )
   return uploads.map(({ imageKey }) => imageKey)
+}
+
+// 수업 현장 사진은 posts/ 아래에 올라간다
+export function uploadPostImages(files) {
+  return uploadArticleImages('/api/v1/posts/image-upload-urls', files)
 }
 
 // 댓글(FR-010). 목록은 오래된 순

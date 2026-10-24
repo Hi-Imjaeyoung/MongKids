@@ -64,7 +64,7 @@ pages → components/{화면} → components/common
   - 사진은 고르는 즉시 `uploadPostImages()`가 업로드 URL을 받아 S3에 직접 `PUT`하고, 노드에는 객체 키(`data-image-key`)만 남는다 (흐름은 [백엔드 아키텍처](../../back/docs/architecture.md#8-파일-저장소-fr-008)).
   - 상세 화면(`PostContent`)은 서버가 정화한 HTML을 DOMPurify로 한 번 더 거른 뒤 출력한다. 본문 스타일은 편집기와 같은 `PostBody.css`(`.post-body`)를 쓴다.
   - 작성·수정 화면은 편집기 번들이 커서 `React.lazy`로 불러온다.
-- 몽키즈 연구소(SCR-024)는 수업 현장과 API만 다르다. 상세·작성·수정 페이지는 `board` prop(`pages/boards.js`의 `labBoard`)으로 목록 주소(`/lab`), 분류(`labCategories`), API(`api/labPosts.js`), 본문 아래 참고용 안내·작성자 안내를 바꿔 쓴다. 사진 업로드는 게시물과 같은 `uploadPostImages()`.
+- 몽키즈 연구소(SCR-024)는 수업 현장과 API만 다르다. 상세·작성·수정 페이지는 `board` prop(`pages/boards.js`의 `labBoard`)으로 목록 주소(`/lab`), 분류(`labCategories`), API(`api/labPosts.js`), 본문 아래 참고용 안내·작성자 안내를 바꿔 쓴다. 사진 업로드는 `board.uploadImages`로 바꿔 쓴다 (연구소는 `uploadLabPostImages()`, `lab/` 경로).
   - 목록은 분류·검색어·페이지를 주소에 둔다(`?category=&keyword=&page=`, 기본값은 뺌). 한 페이지 9개(3열 × 3줄), 768px 이하는 썸네일 + 제목 목록.
   - 모바일 하단 상담 바를 두지 않는 화면은 `App.jsx`의 `NO_MOBILE_CTA_PATHS`에 둔다. 바를 숨기면서 `<html>`에 `no-mobile-cta`를 붙여 바 높이 여백(`--mobile-cta-height`)도 0으로 만든다.
 - 로그인 상태는 `App.jsx`가 `fetchMyInfo()`로 조회해 `Header`에 넘긴다. 로그인 실패 시 백엔드가 `/?loginError=true`로 돌려보내면 모달을 열고 오류 문구를 보여 준다.
