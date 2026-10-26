@@ -226,7 +226,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 답글 `content`: 일반 텍스트, 공백만은 안 됨, 1,000자 이내(400 `C001`).
 - 없거나 삭제된 후기 `R001`(404).
 
-## 10. 관리자 API (SCR-014: FR-004, FR-021, FR-022, FR-026)
+## 10. 관리자 API (SCR-014: FR-004, FR-005, FR-021, FR-022, FR-026)
 
 관리자 화면 전용 API는 `/api/v1/admin/**`에 모은다. 모두 인증이 필요하고(비로그인 401 `A001`), 각 Service가 `MemberService.validateAdmin`으로 DB의 현재 역할이 `ADMIN`인지 확인한다(직원 `STAFF`도 403 `A002`). 후기 답글(FR-017)은 SCR-012 카드에서 입력하므로 §9의 `/api/v1/reviews/{reviewId}/reply`를 쓴다.
 
@@ -235,11 +235,17 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | GET | `/api/v1/admin/consultations?type=&status=&page=&size=` | 상담 신청 최근 접수 순 목록 (`PageResponse<ConsultationSummaryResponse>`). 기본 `size` 20, 최대 100 |
 | GET | `/api/v1/admin/consultations/{consultationId}` | 상세 (`ConsultationDetailResponse`) |
 | PUT | `/api/v1/admin/consultations/{consultationId}/status` | 처리 상태 변경 `{status}` → `ConsultationDetailResponse` |
+| GET | `/api/v1/admin/consultations/new-count/stream` | 신규(`RECEIVED`) 상담 건수 실시간 구독 (SSE, `text/event-stream`). `ApiResponse` 래퍼를 쓰지 않는다 |
 | GET | `/api/v1/admin/reviews?type=&hiddenOnly=&page=&size=` | 숨긴 후기를 포함한 최신순 목록 (`PageResponse<AdminReviewResponse>`). `hiddenOnly=true`면 숨긴 것만 |
 | PUT | `/api/v1/admin/reviews/{reviewId}/hidden` | 숨김 `{hidden: true}`·다시 공개 `{hidden: false}` → `AdminReviewResponse` |
 | GET | `/api/v1/admin/members?role=&keyword=&page=&size=` | 탈퇴하지 않은 회원 최근 가입 순 목록 (`PageResponse<AdminMemberResponse>`) |
 | PUT | `/api/v1/admin/members/{memberId}/role` | 직원 지정 `{role: "STAFF"}`·해제 `{role: "MEMBER"}` → `AdminMemberResponse` |
 
+- 신규 건수 구독(FR-005, [ADR-004](../../docs/adr/ADR-004-admin-web-notification-transport.md)):
+  - 권한은 연결할 때 한 번 확인한다. 권한 오류는 다른 API처럼 JSON(401 `A001`, 403 `A002`)으로 내려간다.
+  - 이벤트 `new-count`의 `data`는 건수 숫자다. 연결하자마자 현재 건수를 보내고(`retry: 3000`), 신청 저장·처리 상태 변경이 커밋되면 다시 센 건수를 보낸다. 신청자 정보는 보내지 않는다.
+  - 커밋이 몰리면 1초에 한 번 이하로 묶어 보낸다. 15초마다 주석(`: ping`)을 보내 연결을 유지한다(CloudFront 오리진 응답 제한 시간 30초).
+  - 연결은 30분 뒤 서버가 닫는다. 브라우저 `EventSource`가 다시 연결하면서 권한을 다시 확인한다. 연결은 서버 메모리에만 있어 여러 대로 늘리면 인스턴스 간 전달이 필요하다.
 - `ConsultationSummaryResponse`: `{id, type, title, phone, status, createdAt}`. `title`은 기관명 또는 보호자 이름. `type`: `INSTITUTION`·`PERSONAL`, `status`: `RECEIVED`(신규)·`CONTACTED`(연락 완료)·`COMPLETED`(상담 완료).
 - `ConsultationDetailResponse`: `{id, type, phone, status, privacyAgreedAt, completedAt, createdAt, institution, personal}`. 유형에 맞는 쪽만 채우고 나머지는 `null`. `institution`은 기관 신청 항목(§8), `personal`은 개인 신청 항목과 `healthAgreedAt`.
 - 상태는 어느 단계로든 바꿀 수 있다. `COMPLETED`가 되면 `completedAt`을 남기고(이미 완료면 처음 시각 유지), 다른 상태로 되돌리면 `null`. 이 시각이 보관 기간(FR-023)의 기준이다. 없는 신청은 404 `S001`.

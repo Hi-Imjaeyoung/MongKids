@@ -28,6 +28,7 @@
 }
 
 .admin-layout__tab {
+  position: relative;
   min-height: 48px;
   padding: 0 16px;
   border: 1px solid var(--border);
@@ -49,6 +50,23 @@
   border-color: var(--text);
   background: var(--text);
   color: var(--bg);
+}
+
+/* 신규 상담 건수 (FR-005): 탭 우측 상단 빨간 원 */
+.admin-layout__tab-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
 }
 
 .admin-layout__content {

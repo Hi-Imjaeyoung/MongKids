@@ -93,6 +93,7 @@
 
 /* 관리자 화면 진입 (SCR-014, ADMIN만) */
 .header__admin-link {
+  position: relative;
   margin-left: 4px;
   padding: 4px 10px;
   border-radius: 999px;
@@ -104,6 +105,23 @@
 
 .header__admin-link:hover {
   background: var(--blue);
+}
+
+/* 신규 상담 건수 (FR-005): 링크 우측 상단 빨간 원 */
+.header__admin-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
 }
 
 .header__auth-button {
@@ -136,9 +154,14 @@
 
 .header__toggle span {
   display: block;
-  height: 2px;
+  height: 3px;
   background: var(--text);
-  border-radius: 2px;
+  border-radius: 3px;
+}
+
+/* 모바일 헤더 줄의 로그인·회원 영역. 데스크톱에서는 주메뉴 오른쪽(header__actions)에 있으므로 숨긴다 */
+.header__auth-bar {
+  display: none;
 }
 
 @media (max-width: 1280px) {
@@ -156,10 +179,26 @@
   .header__inner {
     display: flex;
     justify-content: space-between;
+    gap: 8px;
   }
 
   .header__toggle {
     display: flex;
+  }
+
+  .header__auth-bar {
+    display: flex;
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  .header__auth-bar .header__member {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header__auth--menu {
+    display: none;
   }
 
   .gnb {
