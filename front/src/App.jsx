@@ -8,6 +8,7 @@ import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import FloatingMenu from './components/layout/FloatingMenu'
 import MobileCtaBar from './components/layout/MobileCtaBar'
+import { isAdmin } from './components/news/postPermission'
 import AboutPage from './pages/AboutPage'
 import AdminPage from './pages/AdminPage'
 import FaqPage from './pages/FaqPage'
@@ -19,6 +20,7 @@ import ProgramDetailPage from './pages/ProgramDetailPage'
 import ProgramsPage from './pages/ProgramsPage'
 import ReviewsPage from './pages/ReviewsPage'
 import { labBoard } from './pages/boards'
+import useNewConsultationCount from './pages/useNewConsultationCount'
 
 // 편집기(TipTap)가 커서 작성·수정 화면에 들어갈 때만 불러온다
 const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
@@ -50,6 +52,8 @@ function App() {
   const [loginOpen, setLoginOpen] = useState(hasLoginError)
   const [consultOpen, setConsultOpen] = useState(false)
   const [personalConsultOpen, setPersonalConsultOpen] = useState(false)
+  // 관리자로 로그인해 있는 동안만 구독한다 (FR-005). 로그아웃하면 member가 null이 되어 연결을 닫는다
+  const newConsultationCount = useNewConsultationCount(isAdmin(member))
 
   useEffect(() => {
     fetchMyInfo()
@@ -103,6 +107,7 @@ function App() {
     <>
       <Header
         member={member}
+        newConsultationCount={newConsultationCount}
         onLoginClick={openLogin}
         onLogoutClick={handleLogout}
         onInstitutionConsultClick={openConsult}
@@ -134,7 +139,7 @@ function App() {
               element={<NewsEditorPage member={member} onLoginClick={openLogin} board={labBoard} />}
             />
             <Route path="/reviews" element={<ReviewsPage member={member} onLoginClick={openLogin} />} />
-            <Route path="/admin" element={<AdminPage member={member} onLoginClick={openLogin} />} />
+            <Route path="/admin" element={<AdminPage member={member} newConsultationCount={newConsultationCount} onLoginClick={openLogin} />} />
             <Route path="*" element={homePage} />
           </Routes>
         </Suspense>

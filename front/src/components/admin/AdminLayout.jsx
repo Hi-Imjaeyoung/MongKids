@@ -2,7 +2,7 @@ import { adminPage } from '../../data/adminContent'
 import './AdminLayout.css'
 
 // 관리자 화면(SCR-014) 틀: 왼쪽 메뉴(모바일은 위로 쌓임) + 본문
-// tabs: [{ id, label, badge? }], activeTab, onTabChange(id)
+// tabs: [{ id, label, badge?, badgeLabel? }], activeTab, onTabChange(id). badge는 1 이상일 때만 보인다
 function AdminLayout({ tabs, activeTab, onTabChange, children }) {
   return (
     <div className="admin-layout">
@@ -18,6 +18,11 @@ function AdminLayout({ tabs, activeTab, onTabChange, children }) {
               onClick={() => onTabChange(tab.id)}
             >
               {tab.label}
+              {tab.badge > 0 && (
+                <span className="admin-layout__tab-badge" aria-label={tab.badgeLabel}>
+                  {tab.badge}
+                </span>
+              )}
             </button>
           ))}
         </nav>

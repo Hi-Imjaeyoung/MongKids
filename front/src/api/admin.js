@@ -28,6 +28,14 @@ export function changeConsultationStatus(consultationId, status) {
   return request(`/api/v1/admin/consultations/${consultationId}/status`, { method: 'PUT', ...jsonBody({ status }) })
 }
 
+// 신규 상담 건수 실시간 구독 (FR-005, SSE). 연결하면 바로 현재 건수가 오고, 바뀔 때마다 다시 온다.
+// 끊기면 EventSource가 알아서 다시 연결한다. 돌려준 함수를 부르면 구독을 닫는다
+export function subscribeNewConsultationCount(onCount) {
+  const source = new EventSource('/api/v1/admin/consultations/new-count/stream')
+  source.addEventListener('new-count', (event) => onCount(Number(event.data)))
+  return () => source.close()
+}
+
 // 후기 (FR-021). 숨긴 후기도 포함한다. 항목은 { review, hidden, hiddenAt }
 export function getAdminReviews({ type, hiddenOnly = false, page = 0, size = 20 } = {}) {
   return request(`/api/v1/admin/reviews?${query({ type, hiddenOnly, page, size })}`)

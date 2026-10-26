@@ -15,6 +15,9 @@ export const adminPage = {
 // 헤더 이름 옆 진입 링크 (ADMIN만)
 export const headerAdminLink = '관리자'
 
+// 처리하지 않은(신규) 상담 건수 배지 (FR-005). 화면에는 숫자만 보이고 화면 읽기 프로그램에는 이 문구를 읽어 준다
+export const newConsultationCountLabel = (count) => `신규 상담 ${count}건`
+
 export const adminTabs = [
   { id: 'consultations', label: '상담 신청' },
   { id: 'reviews', label: '후기 관리' },

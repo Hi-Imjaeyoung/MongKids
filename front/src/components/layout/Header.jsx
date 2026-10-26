@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import logoImage from '../../assets/logo.png'
 import Button from '../common/Button'
 import { isAdmin } from '../news/postPermission'
-import { headerAdminLink } from '../../data/adminContent'
+import { headerAdminLink, newConsultationCountLabel } from '../../data/adminContent'
 import { headerAuth } from '../../data/authContent'
 import { ctaButtons, navItems } from '../../data/homeContent'
 import './Header.css'
@@ -11,8 +11,49 @@ import './Header.css'
 const navLinkClassName = ({ isActive }) => `gnb__link ${isActive ? 'gnb__link--active' : ''}`
 
 // member: 로그인한 회원 정보 (비로그인이면 null)
-function Header({ member = null, onLoginClick, onLogoutClick, onInstitutionConsultClick, onPersonalConsultClick }) {
+// newConsultationCount: 신규 상담 건수 (관리자만, FR-005). 1 이상이면 "관리자" 링크에 배지로 보여 준다
+function Header({
+  member = null,
+  newConsultationCount = null,
+  onLoginClick,
+  onLogoutClick,
+  onInstitutionConsultClick,
+  onPersonalConsultClick,
+}) {
   const [menuOpen, setMenuOpen] = useState(false)
+
+  // 로그인 버튼, 또는 회원 이름 · 관리자 링크(ADMIN만) · 로그아웃. 데스크톱은 주메뉴 오른쪽, 모바일은 햄버거 버튼 왼쪽에 둔다
+  const auth = member ? (
+    <>
+      <span className="header__member">
+        <span className="header__member-name">{member.name}</span>
+        {headerAuth.memberSuffix}
+      </span>
+      {isAdmin(member) && (
+        <Link to="/admin" className="header__admin-link" onClick={() => setMenuOpen(false)}>
+          {headerAdminLink}
+          {newConsultationCount > 0 && (
+            <span className="header__admin-count" aria-label={newConsultationCountLabel(newConsultationCount)}>
+              {newConsultationCount}
+            </span>
+          )}
+        </Link>
+      )}
+      <button type="button" className="header__auth-button" onClick={onLogoutClick}>
+        {headerAuth.logout}
+      </button>
+    </>
+  ) : (
+    <Button
+      variant="ghost"
+      onClick={() => {
+        setMenuOpen(false)
+        onLoginClick()
+      }}
+    >
+      {headerAuth.login}
+    </Button>
+  )
 
   return (
     <header className="header">
@@ -39,34 +80,8 @@ function Header({ member = null, onLoginClick, onLogoutClick, onInstitutionConsu
             ))}
           </ul>
           <div className="header__actions">
-            <div className="header__auth">
-              {member ? (
-                <>
-                  <span className="header__member">
-                    <span className="header__member-name">{member.name}</span>
-                    {headerAuth.memberSuffix}
-                  </span>
-                  {isAdmin(member) && (
-                    <Link to="/admin" className="header__admin-link" onClick={() => setMenuOpen(false)}>
-                      {headerAdminLink}
-                    </Link>
-                  )}
-                  <button type="button" className="header__auth-button" onClick={onLogoutClick}>
-                    {headerAuth.logout}
-                  </button>
-                </>
-              ) : (
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    onLoginClick()
-                  }}
-                >
-                  {headerAuth.login}
-                </Button>
-              )}
-            </div>
+            {/* 모바일 폭에서는 펼침 메뉴가 아닌 헤더 줄(header__auth-bar)에 보여 준다 */}
+            <div className="header__auth header__auth--menu">{auth}</div>
             <div className="header__cta">
               <Button
                 variant="yellow"
@@ -89,6 +104,8 @@ function Header({ member = null, onLoginClick, onLogoutClick, onInstitutionConsu
             </div>
           </div>
         </nav>
+
+        <div className="header__auth header__auth-bar">{auth}</div>
 
         <button
           type="button"
