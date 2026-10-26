@@ -7,8 +7,8 @@
 | 영역 | 상태 |
 |---|---|
 | 공통 | 모노레포 구성 완료. MVP 요구사항 정리(SCR-001~014, FR-001~026, NFR-001~004). SCR-002·003·012·014·016~020·022·024 디자인 초안, SCR-004·005·021은 병합해 결번. 프론트 정적 배포(S3 + CloudFront, `https://mongkiz.com`, NFR-004), 백엔드 배포(EC2 + Caddy, RDS, CloudFront `/api`·OAuth 경로 연결, 2026-10-22) |
-| 백엔드 | 도메인 Entity 10개, `global` 공통 클래스, 소셜 로그인(FR-018, OAuth2 + JWT 쿠키)·내 정보 API, 게시물 API(FR-008, S3 Presigned URL 업로드)·댓글 API(FR-010)·몽키즈 연구소 글 API(`/api/v1/lab-posts`, 제목 검색), 기관·개인 상담 신청 API(FR-001, FR-002), 후기 API(FR-013~016, FR-025, `/api/v1/reviews`), 관리자 API(`/api/v1/admin/**`: 상담 조회·처리 상태, 후기 숨김, 직원 권한, FR-004·021·022·026) 구현. 테스트는 H2 |
-| 프론트엔드 | Vite + React 프로젝트, react-router-dom 라우팅. 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현, 실제 로고·공통 푸터·모바일 하단 상담 바. 로그인 모달(SCR-013)·헤더 로그인 상태, 수업 현장(SCR-006) 목록·상세·작성·수정·댓글 API 연동, 기관 상담 신청 모달(SCR-009), 개인 상담 신청 2단계 모달(SCR-010). ABOUT 몽키즈(SCR-002), 체육/행사 프로그램 전체 안내·상세(SCR-003, SCR-016~020), 자주 묻는 질문(SCR-022) 정적 화면. 수업 후기(SCR-012) 목록·작성·수정·삭제 API 연동. 관리자 화면(SCR-014, `/admin`) 상담 신청·후기 관리·회원 직원 권한 API 연동 |
+| 백엔드 | 도메인 Entity 10개, `global` 공통 클래스, 소셜 로그인(FR-018, OAuth2 + JWT 쿠키)·내 정보 API, 게시물 API(FR-008, S3 Presigned URL 업로드)·댓글 API(FR-010)·몽키즈 연구소 글 API(`/api/v1/lab-posts`, 제목 검색), 기관·개인 상담 신청 API(FR-001, FR-002), 후기 API(FR-013~016, FR-025, `/api/v1/reviews`), 관리자 API(`/api/v1/admin/**`: 상담 조회·처리 상태, 후기 숨김, 직원 권한, FR-004·021·022·026), 신규 상담 건수 SSE(FR-005) 구현. 테스트는 H2 |
+| 프론트엔드 | Vite + React 프로젝트, react-router-dom 라우팅. 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현, 실제 로고·공통 푸터·모바일 하단 상담 바. 로그인 모달(SCR-013)·헤더 로그인 상태, 수업 현장(SCR-006) 목록·상세·작성·수정·댓글 API 연동, 기관 상담 신청 모달(SCR-009), 개인 상담 신청 2단계 모달(SCR-010). ABOUT 몽키즈(SCR-002), 체육/행사 프로그램 전체 안내·상세(SCR-003, SCR-016~020), 자주 묻는 질문(SCR-022) 정적 화면. 수업 후기(SCR-012) 목록·작성·수정·삭제 API 연동. 관리자 화면(SCR-014, `/admin`) 상담 신청·후기 관리·회원 직원 권한 API 연동, 신규 상담 건수 배지(FR-005, SSE) |
 
 ## 마일스톤
 
@@ -84,6 +84,8 @@
 | 2026-10-24 | 공통 | 관리자 화면 구현 (SCR-014, FR-004·021·022·026, #43): `/api/v1/admin/consultations`(목록·상세·처리 상태, `consultation.completed_at` 추가), `/api/v1/admin/reviews`(숨김 포함 목록·숨김/다시 공개), `/api/v1/admin/members`(이름·전화번호 검색·직원 지정/해제, 관리자 역할 변경 불가 `M003`). 권한은 `MemberService.validateAdmin`이 DB 역할로 검사. 프론트 `/admin?tab=` 세 메뉴, ADMIN이 아니면 안내만, 헤더 이름 옆 "관리자" 링크. 운영 배포 전 `completed_at` DDL 선적용 필요 |
 | 2026-10-24 | 공통 | 관리자 화면 운영 배포 (SCR-014, #44): 병합 전 운영 RDS에 `consultation.completed_at` 컬럼 추가(사용자), squash 병합 후 GitHub Actions `back`·`front` 배포 성공(`validate` 기동 정상). 운영 점검: 비로그인 `/api/v1/admin/{consultations,reviews,members}` 401 `A001`, `/api/v1/reviews` 200, `/admin` 200. 관리자 계정 화면 확인은 사용자 |
 | 2026-10-26 | 공통 | FR-005를 "상담 접수 메일 알림"에서 "상담 접수 알림"으로 재정의 (사용자 결정, #46): 지금은 메일을 보내지 않고, 관리자가 새 상담 신청을 빠르게 확인하는 방식을 [ADR-003](adr/ADR-003-fast-consultation-check.md)(Proposed)에서 검토 |
+| 2026-10-26 | 공통 | 신규 상담 건수 즉시 표시 구현 (FR-005, #46, [ADR-004](adr/ADR-004-admin-web-notification-transport.md) SSE): `GET /api/v1/admin/consultations/new-count/stream`. 연결할 때 `validateAdmin` + 초기 건수, 신청 저장·처리 상태 변경 커밋 뒤(`AFTER_COMMIT`) 다시 세어 전송, 1초 묶어 보내기, 15초 하트비트(전용 스케줄러, 사용자 결정), 연결 30분 후 재연결. 오류 응답 Content-Type을 JSON으로 고정(SSE 요청의 403 JSON을 쓰지 못하던 문제), SSE 비동기 재디스패치(`DispatcherType.ASYNC`) 보안 통과(재디스패치에서 JWT 필터가 돌지 않아 `AccessDenied` 오류 로그), 클라이언트 연결 끊김(`AsyncRequestNotUsableException`)은 응답 없이 debug 로그. 프론트는 `useNewConsultationCount` 훅(`EventSource`)으로 헤더 "관리자" 링크와 상담 신청 탭에 배지. CloudFront `/api/*` 오리진 응답 제한 시간 30초 확인(읽기 전용 조회) |
+| 2026-10-26 | 프론트엔드 | 모바일 헤더(1100px 이하) 변경 (사용자 요청): 로그인 버튼·회원 이름·관리자 링크·로그아웃을 펼침 메뉴에서 헤더 줄(햄버거 왼쪽)로 이동, 햄버거 선 굵기 2px → 3px. 신규 상담 배지는 링크·탭 우측 상단 빨간 원. 로컬 QA 완료 (사용자) |
 
 ## 이슈 / 블로커
 
@@ -152,8 +154,9 @@
 - [x] 후기 관리자 답글 (FR-017, #32): `PUT /api/v1/reviews/{reviewId}/reply`
 - [x] 후기 사진 S3 실제 업로드 확인 (`reviews/` 키, 2026-10-22, 개발용 버킷, 사용자)
 - [x] 상담 신청 조회 (FR-004)·처리 상태 (FR-026), 후기 숨김 (FR-021) (#43)
-- [ ] 상담 접수 알림 (FR-005, #46): [ADR-003](adr/ADR-003-fast-consultation-check.md) 알림 방식 결정 후 구현
-- [ ] 권한 검사가 요청마다 DB에서 회원을 조회하는 방식 검토. 관리자 API(`MemberService.validateAdmin`)와 게시물 작성·수정·삭제(FR-009)는 JWT의 `role` 클레임 대신 매 요청 `member`를 읽는다. 직원 해제(FR-022)·탈퇴를 바로 반영하려고 고른 방식이다. 신규 상담 건수 폴링([ADR-004](adr/ADR-004-admin-web-notification-transport.md))을 도입하면 조회 횟수가 늘어나므로 토큰 역할 사용, 짧은 캐시, 권한 변경 시 토큰 무효화 같은 대안과 비교한다
+- [x] 상담 접수 알림 (FR-005, #46): 헤더·상담 신청 탭 신규 건수 배지, SSE 즉시 반영 ([ADR-003](adr/ADR-003-fast-consultation-check.md), [ADR-004](adr/ADR-004-admin-web-notification-transport.md))
+  - [ ] 운영 배포 뒤 CloudFront → Caddy 경로에서 SSE 유지·재연결 확인 ([deploy-checklist.md](deploy-checklist.md) I)
+- [ ] 권한 검사가 요청마다 DB에서 회원을 조회하는 방식 검토. 관리자 API(`MemberService.validateAdmin`)와 게시물 작성·수정·삭제(FR-009)는 JWT의 `role` 클레임 대신 매 요청 `member`를 읽는다. 직원 해제(FR-022)·탈퇴를 바로 반영하려고 고른 방식이다. 신규 상담 건수는 폴링 대신 SSE로 정해([ADR-004](adr/ADR-004-admin-web-notification-transport.md)) 권한 조회가 연결·재연결(30분마다) 때만 일어나므로 조회 횟수는 늘지 않는다. 대신 연결 중에는 권한 변경이 재연결 전까지 반영되지 않는다. 토큰 역할 사용, 짧은 캐시, 권한 변경 시 토큰 무효화 같은 대안 비교는 남아 있다
 - [ ] 상담 신청 보관 기간(상담 완료 후 3년, `completed_at` 기준) 지난 데이터 삭제 배치 (FR-023)
 
 ### 프론트엔드
