@@ -86,6 +86,7 @@
 | 2026-10-26 | 공통 | FR-005를 "상담 접수 메일 알림"에서 "상담 접수 알림"으로 재정의 (사용자 결정, #46): 지금은 메일을 보내지 않고, 관리자가 새 상담 신청을 빠르게 확인하는 방식을 [ADR-003](adr/ADR-003-fast-consultation-check.md)(Proposed)에서 검토 |
 | 2026-10-26 | 공통 | 신규 상담 건수 즉시 표시 구현 (FR-005, #46, [ADR-004](adr/ADR-004-admin-web-notification-transport.md) SSE): `GET /api/v1/admin/consultations/new-count/stream`. 연결할 때 `validateAdmin` + 초기 건수, 신청 저장·처리 상태 변경 커밋 뒤(`AFTER_COMMIT`) 다시 세어 전송, 1초 묶어 보내기, 15초 하트비트(전용 스케줄러, 사용자 결정), 연결 30분 후 재연결. 오류 응답 Content-Type을 JSON으로 고정(SSE 요청의 403 JSON을 쓰지 못하던 문제), SSE 비동기 재디스패치(`DispatcherType.ASYNC`) 보안 통과(재디스패치에서 JWT 필터가 돌지 않아 `AccessDenied` 오류 로그), 클라이언트 연결 끊김(`AsyncRequestNotUsableException`)은 응답 없이 debug 로그. 프론트는 `useNewConsultationCount` 훅(`EventSource`)으로 헤더 "관리자" 링크와 상담 신청 탭에 배지. CloudFront `/api/*` 오리진 응답 제한 시간 30초 확인(읽기 전용 조회) |
 | 2026-10-26 | 프론트엔드 | 모바일 헤더(1100px 이하) 변경 (사용자 요청): 로그인 버튼·회원 이름·관리자 링크·로그아웃을 펼침 메뉴에서 헤더 줄(햄버거 왼쪽)로 이동, 햄버거 선 굵기 2px → 3px. 신규 상담 배지는 링크·탭 우측 상단 빨간 원. 로컬 QA 완료 (사용자) |
+| 2026-10-26 | 공통 | FR-005 운영 배포 (#47): 프론트·백엔드 Actions 배포 성공. 비로그인 SSE 요청이 401 JSON(`A001`). 관리자 로그인 후 CloudFront → Caddy 경로에서 초기 건수 즉시 수신, 30초 넘는 연결 유지, 다른 브라우저 신청·처리 상태 변경 시 배지 즉시 반영, 모바일 헤더 확인 (사용자). 재배포 뒤 자동 재연결은 다음 백엔드 배포 때 확인 |
 
 ## 이슈 / 블로커
 
@@ -155,7 +156,8 @@
 - [x] 후기 사진 S3 실제 업로드 확인 (`reviews/` 키, 2026-10-22, 개발용 버킷, 사용자)
 - [x] 상담 신청 조회 (FR-004)·처리 상태 (FR-026), 후기 숨김 (FR-021) (#43)
 - [x] 상담 접수 알림 (FR-005, #46): 헤더·상담 신청 탭 신규 건수 배지, SSE 즉시 반영 ([ADR-003](adr/ADR-003-fast-consultation-check.md), [ADR-004](adr/ADR-004-admin-web-notification-transport.md))
-  - [ ] 운영 배포 뒤 CloudFront → Caddy 경로에서 SSE 유지·재연결 확인 ([deploy-checklist.md](deploy-checklist.md) I)
+  - [x] 운영 배포 뒤 CloudFront → Caddy 경로에서 SSE 유지 확인 (2026-10-26, #47)
+  - [ ] 운영 재배포 뒤 자동 재연결 확인, 초기 몇 주 끊김·재연결 빈도 관찰 ([deploy-checklist.md](deploy-checklist.md) I)
 - [ ] 권한 검사가 요청마다 DB에서 회원을 조회하는 방식 검토. 관리자 API(`MemberService.validateAdmin`)와 게시물 작성·수정·삭제(FR-009)는 JWT의 `role` 클레임 대신 매 요청 `member`를 읽는다. 직원 해제(FR-022)·탈퇴를 바로 반영하려고 고른 방식이다. 신규 상담 건수는 폴링 대신 SSE로 정해([ADR-004](adr/ADR-004-admin-web-notification-transport.md)) 권한 조회가 연결·재연결(30분마다) 때만 일어나므로 조회 횟수는 늘지 않는다. 대신 연결 중에는 권한 변경이 재연결 전까지 반영되지 않는다. 토큰 역할 사용, 짧은 캐시, 권한 변경 시 토큰 무효화 같은 대안 비교는 남아 있다
 - [ ] 상담 신청 보관 기간(상담 완료 후 3년, `completed_at` 기준) 지난 데이터 삭제 배치 (FR-023)
 
