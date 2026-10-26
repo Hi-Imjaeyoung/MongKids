@@ -83,6 +83,7 @@
 | 2026-10-24 | 공통 | SCR-014 관리자 화면 디자인 초안("MongKids 화면 초안"에 페이지 추가)과 결정 반영 (사용자 결정, #43): 상담 처리 상태 3단계(신규 → 연락 완료 → 상담 완료) 도입, 완료 시각이 FR-023 보관 기간 기준(FR-026 신설). 관리자 후기 목록도 작성자 마스킹, 숨김은 확인 없이 즉시·다시 공개 가능, 직원 권한 회수 시 게시물 유지, 헤더 이름 옆 "관리자" 링크로 진입. FR-004·021·022·023, SCR-014 갱신 |
 | 2026-10-24 | 공통 | 관리자 화면 구현 (SCR-014, FR-004·021·022·026, #43): `/api/v1/admin/consultations`(목록·상세·처리 상태, `consultation.completed_at` 추가), `/api/v1/admin/reviews`(숨김 포함 목록·숨김/다시 공개), `/api/v1/admin/members`(이름·전화번호 검색·직원 지정/해제, 관리자 역할 변경 불가 `M003`). 권한은 `MemberService.validateAdmin`이 DB 역할로 검사. 프론트 `/admin?tab=` 세 메뉴, ADMIN이 아니면 안내만, 헤더 이름 옆 "관리자" 링크. 운영 배포 전 `completed_at` DDL 선적용 필요 |
 | 2026-10-24 | 공통 | 관리자 화면 운영 배포 (SCR-014, #44): 병합 전 운영 RDS에 `consultation.completed_at` 컬럼 추가(사용자), squash 병합 후 GitHub Actions `back`·`front` 배포 성공(`validate` 기동 정상). 운영 점검: 비로그인 `/api/v1/admin/{consultations,reviews,members}` 401 `A001`, `/api/v1/reviews` 200, `/admin` 200. 관리자 계정 화면 확인은 사용자 |
+| 2026-10-26 | 공통 | FR-005를 "상담 접수 메일 알림"에서 "상담 접수 알림"으로 재정의 (사용자 결정, #46): 지금은 메일을 보내지 않고, 관리자가 새 상담 신청을 빠르게 확인하는 방식을 [ADR-003](adr/ADR-003-fast-consultation-check.md)(Proposed)에서 검토 |
 
 ## 이슈 / 블로커
 
@@ -151,7 +152,7 @@
 - [x] 후기 관리자 답글 (FR-017, #32): `PUT /api/v1/reviews/{reviewId}/reply`
 - [x] 후기 사진 S3 실제 업로드 확인 (`reviews/` 키, 2026-10-22, 개발용 버킷, 사용자)
 - [x] 상담 신청 조회 (FR-004)·처리 상태 (FR-026), 후기 숨김 (FR-021) (#43)
-- [ ] 상담 접수 메일 알림 (FR-005)
+- [ ] 상담 접수 알림 (FR-005, #46): [ADR-003](adr/ADR-003-fast-consultation-check.md) 알림 방식 결정 후 구현
 - [ ] 상담 신청 보관 기간(상담 완료 후 3년, `completed_at` 기준) 지난 데이터 삭제 배치 (FR-023)
 
 ### 프론트엔드
