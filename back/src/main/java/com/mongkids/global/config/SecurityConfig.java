@@ -23,6 +23,7 @@ import com.mongkids.global.security.JwtProvider;
 import com.mongkids.global.security.SecurityResponseWriter;
 import com.mongkids.global.security.TokenCookieManager;
 
+import jakarta.servlet.DispatcherType;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -56,6 +57,9 @@ public class SecurityConfig {
 			// 로그인 상태는 JWT로만 유지한다 (세션은 OAuth2 인가 요청 보관에만 잠깐 쓰인다)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
+				// SSE(FR-005)가 끝날 때의 비동기 재디스패치. 처음 요청에서 이미 인증·권한을 확인했고,
+				// JWT 필터는 재디스패치에서 돌지 않아 막으면 이미 보낸 응답 위에 401/403을 쓰려다 실패한다
+				.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
 				.requestMatchers("/api/v1/members/me").authenticated()
 				// 관리자 화면 API (SCR-014). 관리자인지는 각 Service가 DB의 현재 역할로 검사한다
 				.requestMatchers("/api/v1/admin/**").authenticated()

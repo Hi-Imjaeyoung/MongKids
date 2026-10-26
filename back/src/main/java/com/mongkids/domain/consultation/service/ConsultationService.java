@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -52,6 +53,7 @@ public class ConsultationService {
 
 	private final ConsultationRepository consultationRepository;
 	private final MemberService memberService;
+	private final ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * 기관 상담 신청을 저장한다 (FR-001). 인증 없이 호출된다 (FR-003).
@@ -68,7 +70,7 @@ public class ConsultationService {
 			.note(StringUtils.hasText(request.note()) ? request.note().strip() : null)
 			.privacyAgreedAt(LocalDateTime.now())
 			.build();
-		return new ConsultationCreateResponse(consultationRepository.save(consultation).getId());
+		return save(consultation);
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class ConsultationService {
 			.motivation(stripToNull(request.motivation()))
 			.privacyAgreedAt(now)
 			.build();
-		return new ConsultationCreateResponse(consultationRepository.save(consultation).getId());
+		return save(consultation);
 	}
 
 	/**
@@ -132,8 +134,31 @@ public class ConsultationService {
 		ConsultationStatusRequest request) {
 		memberService.validateAdmin(adminId);
 		Consultation consultation = getConsultation(consultationId);
+		if (consultation.getStatus() != request.status()) {
+			eventPublisher.publishEvent(new NewConsultationCountChangedEvent());
+		}
 		consultation.changeStatus(request.status());
 		return ConsultationDetailResponse.from(consultation);
+	}
+
+	/**
+	 * 관리자 화면의 신규 상담 건수 (FR-005). 실시간 구독을 열기 전에 권한 확인과 초기 건수 조회를 함께 한다.
+	 */
+	public long getNewCount(Long adminId) {
+		memberService.validateAdmin(adminId);
+		return countNewConsultations();
+	}
+
+	// 권한 확인 없이 건수만 센다. 커밋 뒤 알림(NewConsultationCountNotifier)에서 쓴다
+	public long countNewConsultations() {
+		return consultationRepository.countByStatus(ConsultationStatus.RECEIVED);
+	}
+
+	// 신청 저장. 커밋되면 관리자 화면의 신규 건수를 다시 보낸다 (FR-005)
+	private ConsultationCreateResponse save(Consultation consultation) {
+		Long id = consultationRepository.save(consultation).getId();
+		eventPublisher.publishEvent(new NewConsultationCountChangedEvent());
+		return new ConsultationCreateResponse(id);
 	}
 
 	private Consultation getConsultation(Long consultationId) {

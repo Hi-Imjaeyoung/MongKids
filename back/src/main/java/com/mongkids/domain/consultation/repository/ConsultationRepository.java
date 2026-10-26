@@ -20,4 +20,7 @@ public interface ConsultationRepository extends JpaRepository<Consultation, Long
 		""")
 	Page<Consultation> search(@Param("type") ConsultationType type, @Param("status") ConsultationStatus status,
 		Pageable pageable);
+
+	// 신규 상담 건수 (FR-005). 인덱스 (status, created_at)의 앞부분만 읽는다
+	long countByStatus(ConsultationStatus status);
 }

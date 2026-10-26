@@ -5,7 +5,9 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,8 +16,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import com.mongkids.domain.consultation.dto.ChildAgeGroup;
+import com.mongkids.domain.consultation.dto.ConsultationStatusRequest;
 import com.mongkids.domain.consultation.dto.InstitutionConsultationRequest;
 import com.mongkids.domain.consultation.dto.PersonalConsultationRequest;
 import com.mongkids.domain.consultation.entity.Consultation;
@@ -25,6 +29,7 @@ import com.mongkids.domain.consultation.entity.Gender;
 import com.mongkids.domain.consultation.entity.InstitutionConsultation;
 import com.mongkids.domain.consultation.entity.PersonalConsultation;
 import com.mongkids.domain.consultation.repository.ConsultationRepository;
+import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.global.exception.BusinessException;
 import com.mongkids.global.exception.ErrorCode;
 
@@ -33,6 +38,12 @@ class ConsultationServiceTest {
 
 	@Mock
 	private ConsultationRepository consultationRepository;
+
+	@Mock
+	private MemberService memberService;
+
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
 
 	@InjectMocks
 	private ConsultationService consultationService;
@@ -69,6 +80,7 @@ class ConsultationServiceTest {
 		assertThat(saved.getPhone()).isEqualTo("021234567");
 		assertThat(saved.getNote()).isNull();
 		assertThat(saved.getPrivacyAgreedAt()).isNotNull();
+		then(eventPublisher).should().publishEvent(any(NewConsultationCountChangedEvent.class));
 	}
 
 	@Test
@@ -112,6 +124,7 @@ class ConsultationServiceTest {
 		assertThat(saved.getHealthNote()).isEqualTo("땅콩 알레르기");
 		assertThat(saved.getHealthAgreedAt()).isNotNull();
 		assertThat(saved.getPrivacyAgreedAt()).isNotNull();
+		then(eventPublisher).should().publishEvent(any(NewConsultationCountChangedEvent.class));
 	}
 
 	@Test
@@ -162,6 +175,33 @@ class ConsultationServiceTest {
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.INVALID_INPUT);
 		then(consultationRepository).should(never()).save(any());
+	}
+
+	@Test
+	@DisplayName("처리 상태가 바뀔 때만 신규 건수 변경 이벤트를 발행한다 (FR-005)")
+	void changeStatus_publishesOnlyWhenChanged() {
+		// given
+		InstitutionConsultation consultation = InstitutionConsultation.builder()
+			.phone("0212345678")
+			.privacyAgreedAt(LocalDateTime.now())
+			.institutionName("햇살어린이집")
+			.preferredSchedule("화·목 오전 10시")
+			.childAgeRange("만 4세")
+			.childCount(20)
+			.build();
+		given(consultationRepository.findById(1L)).willReturn(Optional.of(consultation));
+
+		// when
+		consultationService.changeStatus(9L, 1L, new ConsultationStatusRequest(ConsultationStatus.RECEIVED));
+
+		// then
+		then(eventPublisher).should(never()).publishEvent(any(NewConsultationCountChangedEvent.class));
+
+		// when
+		consultationService.changeStatus(9L, 1L, new ConsultationStatusRequest(ConsultationStatus.CONTACTED));
+
+		// then
+		then(eventPublisher).should().publishEvent(any(NewConsultationCountChangedEvent.class));
 	}
 
 	private PersonalConsultationRequest personalRequest(LocalDate birthDate, Integer ageMonths, String healthNote,
