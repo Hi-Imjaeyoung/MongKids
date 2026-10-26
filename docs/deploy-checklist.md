@@ -180,7 +180,7 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 관리자 브라우저가 `GET /api/v1/admin/consultations/new-count/stream`에 연결을 열어 두고 건수 이벤트를 받는다. 경로는 CloudFront → Caddy → Spring Boot다.
 
 - [x] CloudFront `mongkiz-back-origin`: `OriginReadTimeout` 30초, `OriginKeepaliveTimeout` 5초 (2026-10-26, `aws cloudfront get-distribution-config`로 확인). 서버 하트비트 15초는 이 30초보다 짧게 잡은 값이다. 제한 시간을 줄이면 하트비트도 함께 줄인다
-- [ ] Caddy가 `text/event-stream` 응답을 버퍼링 없이 흘려보내는지: 배포 뒤 관리자로 로그인해 DevTools Network → 구독 요청의 EventStream에 초기 `new-count`가 바로 보인다
-- [ ] 연결이 30초 넘게 유지된다 (15초마다 `ping` 주석). 끊기면 `EventSource`가 3초 뒤 다시 연결한다
-- [ ] 다른 브라우저(비로그인)로 상담 신청 → 관리자 헤더 "관리자" 링크와 상담 신청 탭 배지가 새로고침 없이 늘어난다. 처리 상태를 바꾸면 줄어든다
-- [ ] 재배포 뒤 배지가 자동으로 다시 연결된다. 초기 몇 주 동안 애플리케이션 로그에서 끊김·재연결 빈도를 본다
+- [x] Caddy가 `text/event-stream` 응답을 버퍼링 없이 흘려보내는지 (2026-10-26, 사용자): 배포 뒤 관리자로 로그인해 DevTools Network → 구독 요청의 EventStream에 초기 `new-count`가 바로 보인다
+- [x] 연결이 30초 넘게 유지된다 (2026-10-26, 사용자) (15초마다 `ping` 주석). 끊기면 `EventSource`가 3초 뒤 다시 연결한다
+- [x] 다른 브라우저(비로그인)로 상담 신청 → 관리자 헤더 "관리자" 링크와 상담 신청 탭 배지가 새로고침 없이 늘어난다. 처리 상태를 바꾸면 줄어든다 (2026-10-26, 사용자)
+- [ ] 재배포 뒤 배지가 자동으로 다시 연결된다 (로컬 재시작으로는 확인, 운영은 다음 백엔드 배포 때). 초기 몇 주 동안 애플리케이션 로그에서 끊김·재연결 빈도를 본다
