@@ -101,4 +101,5 @@
 - [x] 직원 권한 부여·회수(FR-022): 관리자 화면 API로 처리. 관리자(`ADMIN`) 지정만 DB에서 직접: `UPDATE member SET role = 'ADMIN' WHERE id = ?`
 - [x] 운영 CloudFront 뒤에서 OAuth redirect_uri가 `https://mongkiz.com/...`으로 만들어짐 (2026-10-22, prod `forward-headers-strategy: framework` + Caddy가 `X-Forwarded-*` 고정) → [../docs/deploy-checklist.md](../docs/deploy-checklist.md) B
 - [ ] 운영 브라우저 소셜 로그인 점검: 카카오 완료(2026-10-22), 네이버 남음 → [../docs/deploy-checklist.md](../docs/deploy-checklist.md) G
+- [ ] 비로그인 상담 신청 API(FR-001, FR-002) 요청 제한: 지금은 rate limit·봇 방지가 없어 스팸 신청이 쌓이고 관리자 SSE 알림(FR-005)도 울린다. CloudFront WAF rate-based rule 또는 앱 레벨 IP당 제한(bucket4j 등)·honeypot 중 선택 (2026-10-27 보안 점검)
 - 문서의 아키텍처 결정은 초기 권장안이며, 변경 시 이 파일과 `back/docs/`를 함께 갱신한다.
