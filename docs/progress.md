@@ -134,12 +134,12 @@
 - [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md) G): 카카오 완료(2026-10-22, 사용자), 네이버 남음
 - [ ] 가입 정보 입력 (FR-019)
 - [x] 게시물 저장·조회·수정·삭제 (FR-008)
-- [ ] 게시물 사진 S3 실제 업로드 확인 (FR-008, 운영 업로드·표시 확인 2026-10-27, 수정·거부 케이스 남음). 확인이 끝날 때까지 `feature/posts` 브랜치 유지 ([deploy-checklist.md](deploy-checklist.md) H)
+- [ ] 게시물 사진 S3 실제 업로드 확인 (FR-008, 운영 업로드·표시 확인 2026-10-27, 수정·거부 케이스 남음) ([deploy-checklist.md](deploy-checklist.md) H)
   - [x] 운영 S3 버킷 CORS(`PUT`, `https://mongkiz.com`, `http://localhost:5173`), CloudFront(OAC) 구성 (2026-10-22). 로컬 `.env`는 개발 버킷 기준으로 따로 설정
   - [x] 로그인 후 `/news/write`에서 사진 묶음 업로드 → 저장 → 목록 대표 사진·상세 본문 사진 표시 (운영, 2026-10-27, 사용자)
   - [x] 몽키즈 연구소 `/lab/write`도 연구소 업로드 URL(`lab/` 키)로 사진 업로드 → 저장 → `/lab` 카드 대표 이미지·상세 본문 사진 표시, 수정 시 `lab_post_image` 교체 (FR-008, #22)
   - [ ] 수정(사진 교체·순서 변경)·삭제, 21장·10MB 초과·이미지가 아닌 파일 거부
-  - [ ] 확인이 끝나면 `feature/posts` 브랜치(로컬·원격) 삭제
+  - [x] `feature/posts` 브랜치(로컬·원격) 삭제 (2026-10-27, #12 squash 병합본과 내용 같음 확인)
 - [x] 게시물 작성 직원 권한 (FR-009, #14): 작성은 STAFF·ADMIN, 수정·삭제는 직원인 작성자 본인 또는 ADMIN (DB 역할 기준)
 - [x] 직원 권한 부여·회수 (FR-022, #43): 관리자 화면에서 지정·해제. 관리자(ADMIN) 지정은 여전히 DB에서 `UPDATE member SET role = 'ADMIN' WHERE id = ?`
 - [x] 운영 DB에 `ALTER TABLE consultation ADD COLUMN completed_at DATETIME(6) NULL;` 적용 (2026-10-24, 사용자, #44 병합 전)
