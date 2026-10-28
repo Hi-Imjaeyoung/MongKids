@@ -17,6 +17,7 @@
 | CloudFront | 배포 `E1AWEJNTIYBX5U` (`d14t42trjr34p1.cloudfront.net`), 기본 루트 객체 `index.html` |
 | CloudFront Function | `mongkiz-spa-router` (기본 동작 Viewer Request): `www.mongkiz.com` → `https://mongkiz.com` 301, 확장자 없는 경로 → `/index.html` |
 | DNS | `mongkiz.com`, `www.mongkiz.com` A/AAAA 별칭 → CloudFront |
+| 메일 DNS | `mongkiz.com` MX `10 aspmx.daum.net.` (Daum 메일, `official@mongkiz.com`). 네임서버 이전 때 빠져 수신이 끊겼다가 2026-10-28 추가. 네임서버·호스팅 영역을 다시 옮길 때 메일 레코드도 함께 옮긴다 |
 
 2026-10-22 백엔드 배포 기준 (EC2 1대 + Caddy, RDS). 리전은 모두 `ap-northeast-2`.
 
@@ -184,3 +185,13 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] 연결이 30초 넘게 유지된다 (2026-10-26, 사용자) (15초마다 `ping` 주석). 끊기면 `EventSource`가 3초 뒤 다시 연결한다
 - [x] 다른 브라우저(비로그인)로 상담 신청 → 관리자 헤더 "관리자" 링크와 상담 신청 탭 배지가 새로고침 없이 늘어난다. 처리 상태를 바꾸면 줄어든다 (2026-10-26, 사용자)
 - [ ] 재배포 뒤 배지가 자동으로 다시 연결된다 (로컬 재시작으로는 확인, 운영은 다음 백엔드 배포 때). 초기 몇 주 동안 애플리케이션 로그에서 끊김·재연결 빈도를 본다
+
+## J. 도메인 메일 (`official@mongkiz.com`, Daum 메일)
+
+네임서버가 Route 53이라 가비아 DNS 설정은 쓰이지 않는다. 메일 레코드는 Route 53 호스팅 영역 `Z08923271RXL4OJ3104JD`에 둔다.
+
+- [x] MX `mongkiz.com` → `10 aspmx.daum.net.` (2026-10-28, 네임서버 이전 때 빠져 10-22부터 수신이 끊겼던 것을 복구)
+- [x] `nslookup -type=MX mongkiz.com 8.8.8.8`에 `aspmx.daum.net`이 보인다 (2026-10-28)
+- [x] 외부 메일에서 `official@mongkiz.com`으로 보낸 메일이 도착한다 (2026-10-28, 사용자)
+- [ ] 가비아 DNS에 있던 SPF(`v=spf1 ...`)·DKIM·DMARC TXT를 확인하고 Route 53에 옮긴다. 없으면 `official@mongkiz.com`에서 보낸 메일이 스팸함으로 갈 수 있다
+- [ ] 네임서버·호스팅 영역을 다시 바꿀 때 MX·메일 TXT를 먼저 옮기고 바꾼다
