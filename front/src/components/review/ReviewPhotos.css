@@ -1,6 +1,5 @@
+/* 카드(ReviewCard)의 왼쪽 400px 칸. 모바일은 본문 위 전체 폭 */
 .review-photos {
-  flex: 1 1 340px;
-  max-width: 400px;
   min-width: 0;
   padding: 20px;
   background: #f6f7fa;
@@ -98,8 +97,6 @@
 
 @media (max-width: 768px) {
   .review-photos {
-    flex-basis: 100%;
-    max-width: none;
     padding: 12px;
   }
 

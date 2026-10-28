@@ -1,0 +1,91 @@
+.review-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.review-content__text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre-line;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 사진 없는 후기: 6줄까지 */
+.review-content__text--folded {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  overflow: hidden;
+}
+
+/* 사진 있는 후기(데스크톱): 사진 칸 높이까지만 보여 주고 끝을 흐리게 */
+.review-card-item__body--fit .review-content {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.review-card-item__body--fit .review-content__text--folded {
+  display: block;
+  flex: 1 1 auto;
+  min-height: 0;
+  -webkit-line-clamp: none;
+}
+
+.review-card-item__body--fit .review-content__text--clipped {
+  -webkit-mask-image: linear-gradient(#000 65%, transparent);
+  mask-image: linear-gradient(#000 65%, transparent);
+}
+
+.review-content__toggle {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--blue-text);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-content__toggle svg {
+  transform: rotate(90deg);
+}
+
+.review-content__toggle--open svg {
+  transform: rotate(-90deg);
+}
+
+/* 모바일: 사진 유무와 관계없이 5줄까지 */
+@media (max-width: 768px) {
+  .review-content__text {
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .review-content__text--folded,
+  .review-card-item__body--fit .review-content__text--folded {
+    display: -webkit-box;
+    flex: none;
+    -webkit-line-clamp: 5;
+  }
+
+  .review-card-item__body--fit .review-content {
+    flex: none;
+  }
+
+  .review-card-item__body--fit .review-content__text--clipped {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .review-content__toggle {
+    font-size: 14px;
+  }
+}

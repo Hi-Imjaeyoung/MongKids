@@ -25,6 +25,9 @@ export const reviewList = {
   delete: '삭제',
   deleteConfirm: '이 후기를 삭제할까요? 삭제하면 되돌릴 수 없어요.',
   replyTitle: '몽키즈 답글',
+  // 긴 본문 접기·펼치기
+  more: '더보기',
+  less: '접기',
   photoLabel: (index) => `후기 사진 ${index}`,
   ratingLabel: (rating) => `만족도 5점 중 ${rating}점`,
 }
