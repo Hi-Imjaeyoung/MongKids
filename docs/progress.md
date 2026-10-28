@@ -87,6 +87,7 @@
 | 2026-10-26 | 공통 | 신규 상담 건수 즉시 표시 구현 (FR-005, #46, [ADR-004](adr/ADR-004-admin-web-notification-transport.md) SSE): `GET /api/v1/admin/consultations/new-count/stream`. 연결할 때 `validateAdmin` + 초기 건수, 신청 저장·처리 상태 변경 커밋 뒤(`AFTER_COMMIT`) 다시 세어 전송, 1초 묶어 보내기, 15초 하트비트(전용 스케줄러, 사용자 결정), 연결 30분 후 재연결. 오류 응답 Content-Type을 JSON으로 고정(SSE 요청의 403 JSON을 쓰지 못하던 문제), SSE 비동기 재디스패치(`DispatcherType.ASYNC`) 보안 통과(재디스패치에서 JWT 필터가 돌지 않아 `AccessDenied` 오류 로그), 클라이언트 연결 끊김(`AsyncRequestNotUsableException`)은 응답 없이 debug 로그. 프론트는 `useNewConsultationCount` 훅(`EventSource`)으로 헤더 "관리자" 링크와 상담 신청 탭에 배지. CloudFront `/api/*` 오리진 응답 제한 시간 30초 확인(읽기 전용 조회) |
 | 2026-10-26 | 프론트엔드 | 모바일 헤더(1100px 이하) 변경 (사용자 요청): 로그인 버튼·회원 이름·관리자 링크·로그아웃을 펼침 메뉴에서 헤더 줄(햄버거 왼쪽)로 이동, 햄버거 선 굵기 2px → 3px. 신규 상담 배지는 링크·탭 우측 상단 빨간 원. 로컬 QA 완료 (사용자) |
 | 2026-10-26 | 공통 | FR-005 운영 배포 (#47): 프론트·백엔드 Actions 배포 성공. 비로그인 SSE 요청이 401 JSON(`A001`). 관리자 로그인 후 CloudFront → Caddy 경로에서 초기 건수 즉시 수신, 30초 넘는 연결 유지, 다른 브라우저 신청·처리 상태 변경 시 배지 즉시 반영, 모바일 헤더 확인 (사용자). 재배포 뒤 자동 재연결은 다음 백엔드 배포 때 확인 |
+| 2026-10-28 | 공통 | `official@mongkiz.com` 메일 수신 복구: 2026-10-22 네임서버를 Route 53으로 옮길 때 가비아 DNS의 MX가 호스팅 영역에 옮겨지지 않아 수신이 끊겼음. MX `10 aspmx.daum.net.` 추가(사용자 실행), 8.8.8.8 조회 확인, 수신 확인 (사용자). SPF 등 메일 TXT는 가비아 설정 확인 후 필요하면 추가 |
 
 ## 이슈 / 블로커
 
