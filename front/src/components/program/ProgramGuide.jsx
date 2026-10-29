@@ -3,14 +3,18 @@ import SectionHeading from '../common/SectionHeading'
 import { programDetail } from '../../data/programContent'
 import './ProgramGuide.css'
 
-// 프로그램 안내: 사진 자리 + 상세 01~03
+// 프로그램 안내: 사진(없으면 사진 자리) + 상세 01~03
 function ProgramGuide({ program }) {
   return (
     <section className="program-guide container" aria-labelledby="program-guide-title">
       <SectionHeading {...programDetail.guide} titleId="program-guide-title" align="left" />
       <div className="program-guide__body">
         <div className="program-guide__photo">
-          <ImagePlaceholder label={`${program.photoLabel} · ${programDetail.photoPending}`} />
+          {program.photo ? (
+            <img src={program.photo} alt={program.photoLabel} />
+          ) : (
+            <ImagePlaceholder label={`${program.photoLabel} · ${programDetail.photoPending}`} />
+          )}
         </div>
         <div>
           <h3 className="program-guide__title">{program.summary}</h3>

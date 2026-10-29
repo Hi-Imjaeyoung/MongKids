@@ -1,6 +1,12 @@
 // ABOUT 몽키즈(SCR-002) 정적 데이터.
 // [대괄호] 문구는 대표 확인 전 빈칸이다. 확인되면 이 파일만 바꾼다.
 
+import trainingImage from '../assets/about-training.jpg'
+import themeClassImage from '../assets/about-theme-class.jpg'
+import teacherImage1 from '../assets/teacher-1.jpg'
+import teacherImage2 from '../assets/teacher-2.jpg'
+import teacherImage3 from '../assets/teacher-3.jpg'
+
 export const aboutHero = {
   eyebrow: 'ABOUT MONGKIDS',
   title: '즐거움과 체계적인 수업을 함께',
@@ -26,6 +32,7 @@ export const aboutPrinciples = [
     summary: '대표가 직접 모든 강사를 교육한 후 수업을 진행합니다.',
     label: '강사 교육',
     title: '대표가 직접 교육한 강사만 수업합니다',
+    photo: trainingImage,
     photoLabel: '강사 교육 사진',
     checks: ['[교육 과정 · 기간]', '[수업 시연 · 평가 방식]', '[정기 보수 교육 주기]'],
   },
@@ -56,6 +63,7 @@ export const aboutPrinciples = [
     summary: '다양한 교구와 2개월마다 진행하는 스토리텔링 테마수업을 활용합니다.',
     label: '새로운 활동 경험',
     title: '2개월마다 새로워지는 스토리텔링 테마수업',
+    photo: themeClassImage,
     photoLabel: '테마수업 · 교구 사진',
     examples: [
       { label: '테마 예시', value: '[테마 이름]' },
@@ -86,9 +94,9 @@ export const aboutTeachers = {
   recruit: { label: '함께할 강사를 찾습니다 · 강사 채용', href: '#recruit' },
   photoLabel: '강사 사진',
   items: [
-    { id: 1, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
-    { id: 2, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
-    { id: 3, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
+    { id: 1, photo: teacherImage1, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
+    { id: 2, photo: teacherImage2, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
+    { id: 3, photo: teacherImage3, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
   ],
 }
 

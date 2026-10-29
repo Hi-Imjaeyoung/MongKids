@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import ImagePlaceholder from '../common/ImagePlaceholder'
 import ChevronIcon from '../common/ChevronIcon'
 import './AboutPrinciple.css'
 
@@ -28,7 +27,7 @@ function AboutPrinciple({ principle }) {
       <div className="about-principle__media">
         {hasPhoto ? (
           <div className="about-principle__photo">
-            <ImagePlaceholder label={principle.photoLabel} />
+            <img src={principle.photo} alt={principle.photoLabel} />
           </div>
         ) : (
           <div className="about-principle__curriculum">

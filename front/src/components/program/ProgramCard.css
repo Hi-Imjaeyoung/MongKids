@@ -36,6 +36,11 @@
   color: var(--art-fg);
 }
 
+.program-card__icon {
+  width: 104px;
+  height: 104px;
+}
+
 .program-card__body {
   display: flex;
   flex-direction: column;
@@ -96,9 +101,9 @@
   height: 120px;
 }
 
-.program-card--special .program-card__art svg {
-  width: 52px;
-  height: 52px;
+.program-card--special .program-card__icon {
+  width: 88px;
+  height: 88px;
 }
 
 .program-card--special .program-card__body {
@@ -127,10 +132,10 @@
     border-radius: var(--radius-md);
   }
 
-  .program-card__art svg,
-  .program-card--special .program-card__art svg {
-    width: 36px;
-    height: 36px;
+  .program-card__icon,
+  .program-card--special .program-card__icon {
+    width: 56px;
+    height: 56px;
   }
 
   .program-card__body {
