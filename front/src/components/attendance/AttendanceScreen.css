@@ -1,0 +1,116 @@
+.attendance-screen {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.attendance-screen__head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.attendance-screen__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.attendance-screen__back:hover {
+  background: var(--bg-soft);
+}
+
+.attendance-screen__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.attendance-screen__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 20px;
+}
+
+/* 버튼이 화면 아래에 붙어 있도록 한다 (모바일에서 엄지로 누르기 쉬운 자리) */
+.attendance-screen__foot {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px 28px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* 하위 화면 공통 입력 칸 */
+.attendance-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attendance-field__label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.attendance-field__required {
+  color: var(--danger);
+}
+
+.attendance-field__optional {
+  font-weight: 500;
+  color: var(--text-sub);
+}
+
+.attendance-field__textarea {
+  padding: 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.attendance-field__textarea:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+}
+
+.attendance-field__count {
+  align-self: flex-end;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.attendance-hint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.attendance-error {
+  margin: 0;
+  font-size: 14px;
+  color: var(--danger);
+}

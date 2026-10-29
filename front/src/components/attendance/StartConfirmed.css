@@ -1,0 +1,35 @@
+.start-confirmed__summary {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 6px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.start-confirmed__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.start-confirmed__row + .start-confirmed__row {
+  border-top: 1px solid var(--border);
+}
+
+.start-confirmed__row dt {
+  color: var(--text-sub);
+}
+
+.start-confirmed__row dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.start-confirmed__status {
+  color: var(--green-text);
+}

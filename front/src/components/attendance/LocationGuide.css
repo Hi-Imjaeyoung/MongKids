@@ -1,0 +1,61 @@
+.location-guide__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.location-guide__heading {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.location-guide__message {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.location-guide__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.location-guide__tab {
+  min-height: 44px;
+  padding: 6px 4px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  word-break: keep-all;
+}
+
+.location-guide__tab--active {
+  background: var(--blue);
+  color: #fff;
+}
+
+.location-guide__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 18px 18px 18px 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: keep-all;
+}

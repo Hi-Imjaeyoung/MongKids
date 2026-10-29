@@ -1,0 +1,17 @@
+.manual-start__notice {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.manual-start__notice svg {
+  flex: none;
+  margin-top: 2px;
+}

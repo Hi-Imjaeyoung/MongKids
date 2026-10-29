@@ -1,0 +1,58 @@
+.attendance-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.attendance-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.attendance-action--lg {
+  min-height: 56px;
+  font-size: 17px;
+}
+
+.attendance-action--md {
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.attendance-action--primary {
+  background: var(--blue);
+  color: #fff;
+}
+
+.attendance-action--primary:not(:disabled):hover {
+  background: var(--blue-text);
+}
+
+.attendance-action--dark {
+  background: var(--text);
+  color: #fff;
+}
+
+.attendance-action--outline {
+  border-color: var(--border-strong);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.attendance-action--outline-blue {
+  border-color: var(--blue);
+  background: var(--bg);
+  color: var(--blue-text);
+}
+
+.attendance-action--outline:not(:disabled):hover,
+.attendance-action--outline-blue:not(:disabled):hover {
+  background: var(--bg-soft);
+}

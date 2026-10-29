@@ -1,0 +1,25 @@
+.attendance-layout {
+  background: var(--bg-soft);
+}
+
+.attendance-layout__inner {
+  max-width: 480px;
+  min-height: calc(100vh - var(--header-height));
+  margin: 0 auto;
+  background: var(--cream);
+}
+
+.attendance-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 120px 20px;
+  text-align: center;
+}
+
+.attendance-notice__message {
+  margin: 0;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
