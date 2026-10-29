@@ -10,7 +10,7 @@ function SpecialPrograms() {
       <div className="special__list">
         {specialPrograms.map((program) => (
           <article key={program.id} className="special-card">
-            <span className="special-card__icon" aria-hidden="true">{program.icon}</span>
+            <img className="special-card__icon" src={program.icon} alt="" />
             <div className="special-card__body">
               <span className="special-card__tag">{program.tag}</span>
               <h3 className="special-card__title">{program.title}</h3>

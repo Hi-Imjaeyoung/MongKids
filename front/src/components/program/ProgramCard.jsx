@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import ChevronIcon from '../common/ChevronIcon'
-import ProgramIcon from './ProgramIcon'
 import { programCardMore, programPath } from '../../data/programContent'
 import './ProgramCard.css'
 
@@ -13,7 +12,7 @@ function ProgramCard({ program, variant = 'regular' }) {
       className={`program-card program-card--${variant} program-card--${program.theme}`}
     >
       <div className="program-card__art">
-        <ProgramIcon programId={program.id} />
+        <img className="program-card__icon" src={program.icon} alt="" />
       </div>
       <div className="program-card__body">
         <span className="program-card__tag">{program.tag}</span>

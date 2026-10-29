@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import ImagePlaceholder from '../common/ImagePlaceholder'
 import SectionHeading from '../common/SectionHeading'
 import { sectionHeadings, services } from '../../data/homeContent'
 import './ServiceCards.css'
@@ -21,7 +20,7 @@ function ServiceCards() {
               </Link>
             </div>
             <div className="service-card__image">
-              <ImagePlaceholder label={service.imageLabel} />
+              <img src={service.image} alt={service.imageLabel} />
             </div>
           </article>
         ))}

@@ -14,6 +14,13 @@
   overflow: hidden;
 }
 
+.class-gallery__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .class-gallery__caption {
   display: flex;
   align-items: center;
@@ -21,16 +28,6 @@
   gap: 8px;
   margin: 12px 4px 0;
   font-size: 15px;
-}
-
-.class-gallery__caption span {
-  flex-shrink: 0;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--bg-soft);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
 }
 
 @media (max-width: 768px) {

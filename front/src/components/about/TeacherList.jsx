@@ -1,4 +1,3 @@
-import ImagePlaceholder from '../common/ImagePlaceholder'
 import SectionHeading from '../common/SectionHeading'
 import ChevronIcon from '../common/ChevronIcon'
 import { aboutTeachers } from '../../data/aboutContent'
@@ -25,7 +24,7 @@ function TeacherList() {
         {aboutTeachers.items.map((teacher) => (
           <article key={teacher.id} className="teacher-card">
             <div className="teacher-card__photo">
-              <ImagePlaceholder label={aboutTeachers.photoLabel} />
+              <img src={teacher.photo} alt={aboutTeachers.photoLabel} />
             </div>
             <div>
               <h3 className="teacher-card__name">{teacher.name}</h3>
