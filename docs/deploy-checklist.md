@@ -195,3 +195,16 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] 외부 메일에서 `official@mongkiz.com`으로 보낸 메일이 도착한다 (2026-10-28, 사용자)
 - [ ] 가비아 DNS에 있던 SPF(`v=spf1 ...`)·DKIM·DMARC TXT를 확인하고 Route 53에 옮긴다. 없으면 `official@mongkiz.com`에서 보낸 메일이 스팸함으로 갈 수 있다
 - [ ] 네임서버·호스팅 영역을 다시 바꿀 때 MX·메일 TXT를 먼저 옮기고 바꾼다
+
+## K. 근태 수업 시작·종료 체크 (EMP-SCR-001, #61)
+
+병합하면 백엔드가 `validate`로 기동하므로 아래 1~2를 **병합 전에** 끝낸다.
+
+- [ ] 1. 운영 RDS에 `back/docs/sql/attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 6개(`institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image`)
+- [ ] 2. 백엔드 IAM 권한에 사진 버킷 `attendance/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 수업 사진 업로드가 S3에서 403, 저장은 `E010`
+- [ ] 3. 실제 기관·좌표·수업을 `back/docs/sql/attendance-seed.sql` 형식으로 넣는다. 직원은 관리자 화면 "회원·직원 권한"에서 먼저 지정. 좌표는 기관 출입구 쪽을 소수점 6자리까지
+- [ ] 4. 직원 계정으로 로그인 → 헤더 "수업 체크" → `/attendance`에 오늘 수업이 보인다
+- [ ] 5. 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome, 삼성 인터넷): 기관 안에서 시작 확정, 기관에서 떨어진 곳에서 거리 안내 → 수동 등록, 위치 권한 거부·위치 꺼짐 안내
+- [ ] 6. 수업 종료 사진 여러 장 업로드 → 종료 완료 → 수업 기록 정정(사진 빼기·추가)
+- [ ] 7. 관리자 승인·반려는 화면이 없어(#63) API로 확인: `GET /api/v1/admin/attendance/pending-starts`, `POST .../classes/{id}/start/approve|reject`
+
