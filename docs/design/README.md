@@ -28,5 +28,6 @@
 | SCR-010 개인 상담 신청 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-015 게시물 작성·수정 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
+| EMP-SCR-001 수업 시작·종료 체크 (근태 관리) | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 시안 확정 (2026-10-29, 페이지 `EMP-SCR-001 수업 시작·종료 체크`, 모바일 390, 7화면: 오늘 수업·위치 확인 실패·위치 권한 안내·수동 등록·시작 확정·수업 종료·기록 정정). 확정 PNG 내보내기 필요 |
 
 - 초안은 아티팩트 하나("MongKids 화면 초안")에 모으고, 화면마다 페이지(`SCR-006 수업 현장` 등)를 나눈다.
