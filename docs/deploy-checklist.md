@@ -59,6 +59,16 @@ RDS는 비공개로 둔다. 로컬 DB 프로그램(DBeaver, HeidiSQL 등)으로 
 
 4. 다 쓰면 터널 창에서 `Ctrl+C`로 닫는다.
 
+SQL 파일을 명령줄로 실행할 때 (Git Bash, 터널을 연 채로)
+
+```bash
+export MYSQL_PWD=$(MSYS_NO_PATHCONV=1 aws ssm get-parameter --name /mongkiz/db-users/jaeyoung --with-decryption --query Parameter.Value --output text)
+mariadb --ssl --skip-ssl-verify-server-cert -h 127.0.0.1 -P 13306 -u jaeyoung mongkids < 파일.sql
+unset MYSQL_PWD
+```
+
+- Git Bash는 `/`로 시작하는 인자를 Windows 경로로 바꾼다. `MSYS_NO_PATHCONV=1`이 없으면 `ParameterNotFound`가 나고, 빈 비밀번호로 접속해 `Access denied ... (using password: NO)`가 난다.
+
 - `jaeyoung`은 `mongkids` 전체 권한 계정이다. 테이블·컬럼을 바꾸면 다음 배포에서 `validate`가 실패하므로 스키마 변경은 배포 절차에 맞춰 적용한다. 상담 신청 등 개인정보(FR-023)가 든 조회 결과는 파일로 내보내거나 공유하지 않는다.
 - 설치 없이 쿼리 몇 개만 볼 때는 EC2 Session Manager 세션에서 `mariadb` 클라이언트를 쓴다 ([back/docs/database.md](../back/docs/database.md)).
 - 터널을 쓸 수 없을 때만 RDS를 잠깐 퍼블릭으로 연다. `mongkiz-db-sg`에 내 IP `/32` 규칙을 추가하고 `--publicly-accessible`을 켠 뒤, 작업이 끝나면 둘 다 바로 되돌린다.
@@ -200,8 +210,8 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 
 병합하면 백엔드가 `validate`로 기동하므로 아래 1~2를 **병합 전에** 끝낸다.
 
-- [ ] 1. 운영 RDS에 `back/docs/sql/attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 6개(`institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image`)
-- [ ] 2. 백엔드 IAM 권한에 사진 버킷 `attendance/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 수업 사진 업로드가 S3에서 403, 저장은 `E010`
+- [x] 1. 운영 RDS에 `back/docs/sql/attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 6개(`institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image`) — 2026-10-29 적용, 6개 테이블 확인
+- [x] 2. 백엔드 IAM 권한에 사진 버킷 `attendance/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 수업 사진 업로드가 S3에서 403, 저장은 `E010` — 2026-10-29 적용
 - [ ] 3. 실제 기관·좌표·수업을 `back/docs/sql/attendance-seed.sql` 형식으로 넣는다. 직원은 관리자 화면 "회원·직원 권한"에서 먼저 지정. 좌표는 기관 출입구 쪽을 소수점 6자리까지
 - [ ] 4. 직원 계정으로 로그인 → 헤더 "수업 체크" → `/attendance`에 오늘 수업이 보인다
 - [ ] 5. 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome, 삼성 인터넷): 기관 안에서 시작 확정, 기관에서 떨어진 곳에서 거리 안내 → 수동 등록, 위치 권한 거부·위치 꺼짐 안내
