@@ -98,6 +98,7 @@
 | 2026-10-29 | 공통 | 요구사항 문서를 프로젝트별로 분리 (사용자 요청): `docs/requirements.md` → `docs/requirements/requirement_homepage.md`, 근태 관리(프로젝트 2)는 `next-projects.md`에서 `requirement_employee.md`로 이동. CLAUDE.md·`/extract-requirements` 스킬·영역 문서 링크 갱신 |
 | 2026-10-29 | 공통 | 요구사항 ID 접두사 규칙 (사용자 결정): 홈페이지는 접두사 없음, 근태 관리는 `EMP-SCR-`·`EMP-FR-`·`EMP-NFR-`. `requirement_employee.md`·CLAUDE.md·`/extract-requirements` 스킬에 반영 |
 | 2026-10-29 | 공통 | 회의록 2026-10-29 근태 관리 요구사항 반영 (EMP-SCR-001~006, EMP-FR-001~009, EMP-NFR-001, 모두 기획 상태, 미결 7건) |
+| 2026-10-29 | 공통 | ADR-005 결정 반영 (사용자 결정): 후기 작성 코드 발급(대안 D) + 사후 숨김(FR-021) 유지. FR-013 작성 자격 변경, FR-029 코드 발급·FR-030 코드 확인 신규, SCR-012 코드 입력·SCR-014 코드 메뉴 추가. 미결 "후기 작성 권한"·"승인된 후기만 공개" 정리 (즉시 공개 유지) |
 
 ## 이슈 / 블로커
 
