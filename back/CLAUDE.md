@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 백엔드 API 서버 (Spring Boot 기반 REST API)
-- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API, 게시물 API(FR-008: S3 Presigned URL 사진 업로드)·댓글 API(FR-010)·공감 API(FR-011, 연구소 글 포함)와 몽키즈 연구소 글 API(`lab_post`, 공통 부모 `Article`), 기관·개인 상담 신청 API(FR-001, FR-002), 수업 후기 API(FR-013~017, FR-025: 관리자 답글, 작성자 마스킹, 비로그인 4개 제한 FR-012), 관리자 API(`/api/v1/admin/**`: 상담 조회·처리 상태 FR-004·026, 후기 숨김 FR-021, 직원 권한 FR-022, 신규 상담 건수 SSE FR-005) 구현.
+- 현재 상태: Entity(member, consultation, post, review), `global` 공통 클래스, 소셜 로그인(FR-018: OAuth2 + JWT 쿠키)과 내 정보 API, 게시물 API(FR-008: S3 Presigned URL 사진 업로드)·댓글 API(FR-010)·공감 API(FR-011, 연구소 글 포함)와 몽키즈 연구소 글 API(`lab_post`, 공통 부모 `Article`), 기관·개인 상담 신청 API(FR-001, FR-002), 수업 후기 API(FR-013~017, FR-025: 관리자 답글, 작성자 마스킹, 비로그인 4개 제한 FR-012), 관리자 API(`/api/v1/admin/**`: 상담 조회·처리 상태 FR-004·026, 후기 숨김 FR-021, 직원 권한 FR-022, 신규 상담 건수 SSE FR-005) 구현. 근태 관리 수업 시작·종료 API(`/api/v1/attendance/**`, `/api/v1/admin/attendance/**`, EMP-FR-001·002·003·010·011·013·014: 위치 반경 판정, 수동 등록·승인, 수업 종료 사진, 당일 정정). 운영 DDL·시드는 `docs/sql/`.
 - 요구사항 (프론트와 공유) → [../docs/requirements/requirement_homepage.md](../docs/requirements/requirement_homepage.md)
 - 진행 사항 (프론트와 공유) → [../docs/progress.md](../docs/progress.md)
 

@@ -134,7 +134,7 @@ HTTP Response
 | 항목 | 내용 |
 |---|---|
 | 인터페이스 | `global/storage/FileStorage`. 도메인 규칙(키 prefix, 허용 형식, 개수)은 각 도메인 Service에 둔다 |
-| 키 경로 | 사진 테이블마다 하나: `posts/` → `post_image`, `lab/` → `lab_post_image`, `reviews/` → `review_image`. 연구소 글은 2026-10-24에 `posts/`에서 분리했다 (ADR-002). 분리 전 연구소 사진은 `posts/`에 남아 있을 수 있다 |
+| 키 경로 | 사진 테이블마다 하나: `posts/` → `post_image`, `lab/` → `lab_post_image`, `reviews/` → `review_image`, `attendance/` → `class_end_image`(근태 수업 사진). 연구소 글은 2026-10-24에 `posts/`에서 분리했다 (ADR-002). 분리 전 연구소 사진은 `posts/`에 남아 있을 수 있다 |
 | 구현 | `S3FileStorage` (AWS SDK v2 `S3Client`, `S3Presigner`). Presigned URL에 `Content-Type`·`Content-Length`를 서명해 다른 타입·크기의 업로드는 S3가 거부한다 |
 | 자격 증명 | SDK 기본 체인. 로컬은 `AWS_ACCESS_KEY_ID`·`AWS_SECRET_ACCESS_KEY`, 운영은 IAM 역할 |
 | 설정 | `app.storage.bucket`(`AWS_S3_BUCKET`), `region`(`AWS_REGION`, 기본 ap-northeast-2), `public-base-url`(`STORAGE_PUBLIC_BASE_URL`), `upload-url-duration`(10분) |

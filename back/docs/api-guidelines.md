@@ -253,7 +253,43 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - `AdminMemberResponse`: `{id, name, phone, provider, role, createdAt}`. `keyword`는 이름 부분 일치, 숫자가 있으면 전화번호(하이픈 무시) 부분 일치로도 찾는다.
 - 권한 변경: 대상이 `ADMIN`이거나 `role`이 `ADMIN`이면 400 `M003`. 없는 회원 404 `M001`, 탈퇴 회원 403 `M002`. 회수해도 작성한 게시물은 남고 새 글 작성·자기 글 수정·삭제만 막힌다(FR-009).
 
-## 11. 기타
+## 11. 근태 수업 시작·종료 API (EMP-SCR-001, EMP-FR-001·002·003·010·011·013·014)
+
+근태 관리(직원용) 수업 체크. 판정 규칙은 [ADR-006](../../docs/adr/ADR-006-attendance-location-verification.md)을 따른다. 직원 API는 DB의 현재 역할이 `STAFF`·`ADMIN`인 회원만(그 외 403 `A002`), 자기에게 할당된 수업만 쓴다. 남의 수업은 없는 수업처럼 404 `E001`.
+
+| 메서드 | URL | 설명 | 인증 |
+|---|---|---|---|
+| GET | `/api/v1/attendance/classes/today` | 오늘 수업 + 수업 시작이 반려된 채 남은 지난 수업, 시간순 → `ClassSessionResponse[]` (EMP-FR-013) | 직원 |
+| POST | `/api/v1/attendance/classes/{id}/start` | 위치로 수업 시작 확인 `{latitude, longitude, accuracy}` → `{confirmed, distanceMeters, radiusMeters, classSession}` (EMP-FR-001) | 직원 |
+| POST | `/api/v1/attendance/classes/{id}/start/manual` | 수동 등록 `{reason, latitude?, longitude?, accuracy?}` → 승인 대기 `ClassSessionResponse` (EMP-FR-011) | 직원 |
+| PATCH | `/api/v1/attendance/classes/{id}/start/note` | 수업 시작 특이사항 `{note}` (1,000자 이내, 비우면 지움) (EMP-FR-002) | 직원 |
+| POST | `/api/v1/attendance/image-upload-urls` | 수업 사진 업로드 URL 발급 `{files: [{contentType, size}]}` → `[{imageKey, uploadUrl}]` | 직원 |
+| POST | `/api/v1/attendance/classes/{id}/end` | 수업 종료 `{note, imageKeys}` → 201 `ClassSessionResponse` (EMP-FR-010) | 직원 |
+| PUT | `/api/v1/attendance/classes/{id}/end` | 수업 기록 정정 `{note, imageKeys}` → `ClassSessionResponse`. 사진·특이사항을 통째로 바꾼다 (EMP-FR-014) | 작성자 |
+
+관리자 API (`/api/v1/admin/attendance`, §10과 같은 권한 규칙). 화면(EMP-SCR-006)은 #63에서 만든다.
+
+| 메서드 | URL | 설명 |
+|---|---|---|
+| GET | `/api/v1/admin/attendance/pending-starts` | 승인 대기 수업 시작, 먼저 등록한 순 → `AdminClassSessionResponse[]` |
+| POST | `/api/v1/admin/attendance/classes/{id}/start/approve` | 승인 → `AdminClassSessionResponse` |
+| POST | `/api/v1/admin/attendance/classes/{id}/start/reject` | 반려 `{reason}` (200자 이내) |
+| POST | `/api/v1/admin/attendance/classes/{id}/start` | 관리자 직접 등록 `{reason}`. 기록이 없거나 반려된 수업만 |
+| GET | `/api/v1/admin/attendance/classes?from=&to=&staffId=` | 기간(최대 31일)·직원별 수업 시작·종료 기록. `staffId`가 없으면 전 직원 (EMP-FR-003, EMP-FR-007) |
+
+- `ClassSessionResponse`: `{id, classDate, startTime, endTime, target, institutionName, institutionAddress, status, start, end}`.
+  - `status`: `NOT_STARTED`(시작 전)·`STARTED`(시작 확정: 자동 확정·승인·관리자 등록)·`PENDING`(승인 대기)·`REJECTED`(반려)·`ENDED`(종료 완료). 저장하지 않고 기록에서 계산한다. 수업 종료 기록이 있어도 수업 시작이 반려되면 `REJECTED`.
+  - `start`: `{method, status, startedAt, distanceMeters, accuracy, reason, rejectReason, note, processedAt}` | `null`. `method`: `LOCATION`·`MANUAL`·`ADMIN`. 좌표 원본은 응답에 넣지 않는다.
+  - `end`: `{endedAt, correctedAt, note, images: [{imageKey, url}], correctable}` | `null`. `correctable`은 요청한 직원이 작성자이고 수업 당일(서버 시각 기준)인지.
+- `AdminClassSessionResponse`: `{staffId, staffName, classSession}`.
+- 수업 시작 판정: 서버가 하버사인 거리(m, 반올림)로 기관 좌표 반경 100m 안이면 `confirmed=true`로 확정, 밖이면 저장하지 않고 `confirmed=false`(200)와 거리·기준 반경을 준다. 정확도로는 거절하지 않는다. 결과와 상관없이 시도마다 `class_start_attempt`에 남긴다. 시작 시각은 서버 시각이고 시간 제한은 없다.
+- 수업 시작 기록은 수업당 1건. 기록이 없거나 반려된 수업만 다시 확인할 수 있고(반려 기록을 덮어씀), 확정·승인 대기면 409 `E002`. 승인·반려는 승인 대기만(그 외 409 `E004`), 기록이 없으면 404 `E003`.
+- 수업 종료: 수업 시작이 확정·승인 대기인 수업만(그 외 409 `E005`), 수업당 1건(409 `E006`). 위치는 받지 않는다. 승인 대기 중 종료한 뒤 반려돼도 종료 기록은 지우지 않는다.
+- 사진: 흐름은 §7과 같다. 1장 이상 20장 이하(400 `E009`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `attendance/` 밖의 키, 중복 키는 400 `E010`. 정정할 때 남길 사진은 응답의 `imageKey`를 다시 보낸다.
+- 정정: 작성자 본인만(남의 수업은 404 `E001`), 수업 날짜 당일까지(지나면 409 `E008`). 수업 시작·종료 시각은 바뀌지 않고 `correctedAt`만 남긴다. 이력은 보관하지 않는다. 종료 기록이 없으면 404 `E007`.
+- 수업 시작 특이사항은 확정·승인 대기 기록에만(없거나 반려면 404 `E003`).
+
+## 12. 기타
 
 - 날짜/시간: ISO-8601 (`2026-10-07T14:30:00`), 서버 타임존 `Asia/Seoul`.
 - JSON 필드는 camelCase.

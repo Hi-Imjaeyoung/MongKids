@@ -1,7 +1,7 @@
 # DB 스키마
 
 > 기준: [docs/requirements/requirement_homepage.md](../../docs/requirements/requirement_homepage.md) (2026-10-14 시점, FR-001~023).
-> 네이밍·JPA 규칙은 [database.md](database.md)를 따른다. Entity는 `com.mongkids.domain.{member,consultation,post,review}.entity`에 있고, 스키마를 바꾸면 이 문서를 함께 갱신한다.
+> 네이밍·JPA 규칙은 [database.md](database.md)를 따른다. Entity는 `com.mongkids.domain.{member,consultation,post,review,attendance}.entity`에 있고, 스키마를 바꾸면 이 문서를 함께 갱신한다.
 
 ## 1. 공통 규칙
 
@@ -33,6 +33,12 @@ erDiagram
 	review ||--o{ review_image : 포함
 	consultation ||--o| institution_consultation : "type=INSTITUTION"
 	consultation ||--o| personal_consultation : "type=PERSONAL"
+	institution ||--o{ class_session : 열림
+	member ||--o{ class_session : "할당(직원)"
+	class_session ||--o| class_start : 기록
+	class_session ||--o{ class_start_attempt : 시도
+	class_session ||--o| class_end : 기록
+	class_end ||--o{ class_end_image : 포함
 ```
 
 | 도메인 | 테이블 | 요구사항 |
@@ -41,6 +47,7 @@ erDiagram
 | consultation | `consultation`, `institution_consultation`, `personal_consultation` | FR-001~004, FR-023 |
 | post | `post`, `post_image`, `post_comment`, `post_like` (수업 현장), `lab_post`, `lab_post_image`, `lab_post_like` (몽키즈 연구소) | FR-008~012 |
 | review | `review`, `review_image` | FR-012~017, FR-021 |
+| attendance | `institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image` (근태 관리) | EMP-FR-001~004, 010~014 |
 
 ## 3. 테이블 정의
 
@@ -212,6 +219,89 @@ erDiagram
 | review_id | BIGINT | NOT NULL, FK → review.id | |
 | image_key | VARCHAR(255) | NOT NULL | S3 객체 키 |
 | sort_order | INT | NOT NULL | 표시 순서 |
+
+### institution — 기관 (EMP-FR-012)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| name | VARCHAR(100) | NOT NULL | |
+| address | VARCHAR(255) | NOT NULL | |
+| latitude | DOUBLE | NOT NULL | 수업 시작 판정 기준 좌표 |
+| longitude | DOUBLE | NOT NULL | |
+
+- 등록 화면(EMP-SCR-006, #63)이 생기기 전까지 `back/docs/sql/attendance-seed.sql`로 직접 넣는다.
+
+### class_session — 날짜별 수업 (EMP-FR-004)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| institution_id | BIGINT | NOT NULL, FK → institution.id | |
+| staff_id | BIGINT | NOT NULL, FK → member.id | 담당 직원 |
+| class_date | DATE | NOT NULL | |
+| start_time | TIME | NOT NULL | |
+| end_time | TIME | NOT NULL | |
+| target | VARCHAR(50) | NULL | 대상(반) |
+
+- 수업 1행 = 한 날짜의 한 회. 반복 일정은 #63에서 정한다.
+- INDEX (`staff_id`, `class_date`)
+
+### class_start — 수업 시작 기록 (EMP-FR-001, 002, 011)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| class_session_id | BIGINT | NOT NULL, UNIQUE, FK → class_session.id | 수업당 1건 |
+| method | VARCHAR(20) | NOT NULL | `LOCATION`(자동 확정), `MANUAL`(수동 등록), `ADMIN`(관리자 직접 등록) |
+| status | VARCHAR(20) | NOT NULL | `CONFIRMED`, `PENDING`, `REJECTED` |
+| latitude, longitude, accuracy | DOUBLE | NULL | 기기가 보낸 위치 원본·정확도(m). 위치를 못 받았으면 NULL |
+| distance_meters | INT | NULL | 기관 좌표까지 거리(m) |
+| started_at | DATETIME(6) | NOT NULL | 서버 시각 |
+| reason | VARCHAR(200) | NULL | 수동·관리자 등록 사유 |
+| reject_reason | VARCHAR(200) | NULL | |
+| note | VARCHAR(1000) | NULL | 수업 시작 특이사항 |
+| processed_by | BIGINT | NULL, FK → member.id | 승인·반려·직접 등록한 관리자 |
+| processed_at | DATETIME(6) | NULL | |
+
+- 반려된 기록만 직원이 다시 확인해 덮어쓴다(처리 값·특이사항도 지운다).
+
+### class_start_attempt — 수업 시작 확인 시도 로그 (EMP-FR-001)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| class_session_id | BIGINT | NOT NULL, FK → class_session.id | |
+| member_id | BIGINT | NOT NULL, FK → member.id | |
+| latitude, longitude, accuracy | DOUBLE | NULL | |
+| distance_meters | INT | NULL | |
+| within_radius | BIT(1) | NOT NULL | 반경 안이면 1 |
+| attempted_at | DATETIME(6) | NOT NULL | |
+
+- 반경 재측정용(ADR-006). 덮어쓰지 않는다. 보관 기간은 미정.
+- INDEX (`class_session_id`)
+
+### class_end — 수업 종료 기록 (EMP-FR-010, EMP-FR-014)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| class_session_id | BIGINT | NOT NULL, UNIQUE, FK → class_session.id | 수업당 1건 |
+| writer_id | BIGINT | NOT NULL, FK → member.id | |
+| ended_at | DATETIME(6) | NOT NULL | 서버 시각. 정정해도 바뀌지 않는다 |
+| note | TEXT | NULL | 특이사항 |
+| corrected_at | DATETIME(6) | NULL | 마지막 정정 시각. 이력은 두지 않는다 |
+
+### class_end_image — 수업 사진 (EMP-FR-010)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| class_end_id | BIGINT | NOT NULL, FK → class_end.id | |
+| image_key | VARCHAR(255) | NOT NULL | S3 객체 키 (`attendance/`) |
+| sort_order | INT | NOT NULL | 표시 순서 |
+
+- 운영 DDL: `back/docs/sql/attendance-ddl.sql` (로컬에서 Hibernate가 만든 DDL과 같다).
 
 ## 4. 테이블을 두지 않는 기능
 
