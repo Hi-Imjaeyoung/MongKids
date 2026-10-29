@@ -1,0 +1,78 @@
+/* ② 위치 확인 실패, ⑤ 수업 시작 확정의 가운데 결과 표시 */
+.location-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.location-result__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+
+.location-result__icon--warn {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.location-result__icon--ok {
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
+.location-result__heading {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+
+.location-result__message {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.location-result__link {
+  align-self: center;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--blue-text);
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.location-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.location-tips__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.location-tips__list {
+  padding-left: 18px;
+  list-style: disc;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-sub);
+}

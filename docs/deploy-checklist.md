@@ -59,6 +59,16 @@ RDS는 비공개로 둔다. 로컬 DB 프로그램(DBeaver, HeidiSQL 등)으로 
 
 4. 다 쓰면 터널 창에서 `Ctrl+C`로 닫는다.
 
+SQL 파일을 명령줄로 실행할 때 (Git Bash, 터널을 연 채로)
+
+```bash
+export MYSQL_PWD=$(MSYS_NO_PATHCONV=1 aws ssm get-parameter --name /mongkiz/db-users/jaeyoung --with-decryption --query Parameter.Value --output text)
+mariadb --ssl --skip-ssl-verify-server-cert -h 127.0.0.1 -P 13306 -u jaeyoung mongkids < 파일.sql
+unset MYSQL_PWD
+```
+
+- Git Bash는 `/`로 시작하는 인자를 Windows 경로로 바꾼다. `MSYS_NO_PATHCONV=1`이 없으면 `ParameterNotFound`가 나고, 빈 비밀번호로 접속해 `Access denied ... (using password: NO)`가 난다.
+
 - `jaeyoung`은 `mongkids` 전체 권한 계정이다. 테이블·컬럼을 바꾸면 다음 배포에서 `validate`가 실패하므로 스키마 변경은 배포 절차에 맞춰 적용한다. 상담 신청 등 개인정보(FR-023)가 든 조회 결과는 파일로 내보내거나 공유하지 않는다.
 - 설치 없이 쿼리 몇 개만 볼 때는 EC2 Session Manager 세션에서 `mariadb` 클라이언트를 쓴다 ([back/docs/database.md](../back/docs/database.md)).
 - 터널을 쓸 수 없을 때만 RDS를 잠깐 퍼블릭으로 연다. `mongkiz-db-sg`에 내 IP `/32` 규칙을 추가하고 `--publicly-accessible`을 켠 뒤, 작업이 끝나면 둘 다 바로 되돌린다.
@@ -195,3 +205,40 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] 외부 메일에서 `official@mongkiz.com`으로 보낸 메일이 도착한다 (2026-10-28, 사용자)
 - [ ] 가비아 DNS에 있던 SPF(`v=spf1 ...`)·DKIM·DMARC TXT를 확인하고 Route 53에 옮긴다. 없으면 `official@mongkiz.com`에서 보낸 메일이 스팸함으로 갈 수 있다
 - [ ] 네임서버·호스팅 영역을 다시 바꿀 때 MX·메일 TXT를 먼저 옮기고 바꾼다
+
+## K. 근태 수업 시작·종료 체크 (EMP-SCR-001, #61)
+
+병합하면 백엔드가 `validate`로 기동하므로 아래 1~2를 **병합 전에** 끝낸다.
+
+- [x] 1. 운영 RDS에 `back/docs/sql/attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 6개(`institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image`) — 2026-10-29 적용, 6개 테이블 확인
+- [x] 2. 백엔드 IAM 권한에 사진 버킷 `attendance/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 수업 사진 업로드가 S3에서 403, 저장은 `E010` — 2026-10-29 적용
+- [ ] 3. 실제 기관·좌표·수업을 `back/docs/sql/attendance-seed.sql` 형식으로 넣는다. 직원은 관리자 화면 "회원·직원 권한"에서 먼저 지정. 좌표는 기관 출입구 쪽을 소수점 6자리까지
+- [ ] 4. 직원 계정으로 로그인 → 헤더 "수업 체크" → `/attendance`에 오늘 수업이 보인다
+- [ ] 5. 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome, 삼성 인터넷): 기관 안에서 시작 확정, 기관에서 떨어진 곳에서 거리 안내 → 수동 등록, 위치 권한 거부·위치 꺼짐 안내
+- [ ] 6. 수업 종료 사진 여러 장 업로드 → 종료 완료 → 수업 기록 정정(사진 빼기·추가)
+- [ ] 7. 관리자 승인·반려는 화면이 없어(#63) API로 확인: `GET /api/v1/admin/attendance/pending-starts`, `POST .../classes/{id}/start/approve|reject`
+
+### K-1. 사용자 직접 테스트 (배포 후)
+
+실제 기관 시드를 넣기 전에, 테스트 계정 하나에 테스터가 직접 갈 수 있는 장소를 기관으로 할당해 위치 판정이 정확한지와 기능 전체를 직접 확인한다.
+
+준비 (운영 DB 터널, `attendance-seed.sql` 형식)
+- [ ] 1. 테스트 계정을 정해 관리자 화면 "회원·직원 권한"에서 직원으로 지정하고 `member.id`를 확인한다
+- [ ] 2. 테스트 기관을 넣는다. 테스터가 갈 수 있는 곳(사무실·집 등)의 출입구 좌표를 지도에서 소수점 6자리까지 찍는다. 이름은 `[테스트]`로 시작해 실제 기관과 구분한다
+- [ ] 3. 그 계정에 오늘 수업을 3개 이상 할당한다(위치 확정, 수동 등록, 반려 후 재확인용). RDS 시간대가 KST가 아닐 수 있으니 `curdate()` 대신 날짜를 `'2026-10-30'`처럼 직접 쓴다
+
+위치 정확성 (휴대폰 GPS 켜고, 실외 또는 창가에서)
+- [ ] 4. 기관 좌표 지점에서 "수업 시작" → 시작 확정. 화면·DB의 거리가 실제(0m 근처)와 크게 다르지 않은지 본다
+- [ ] 5. 지도로 잰 150~300m 떨어진 곳에서 시도 → 반경 밖 안내. 화면 거리와 지도 거리 차이를 적어 둔다 (오차가 50m를 넘기면 반경 100m 재검토)
+- [ ] 6. 경계 근처(80~120m)와 실내 깊은 곳에서도 시도해 판정이 흔들리는지 본다
+- [ ] 7. 시도 기록을 DB에서 확인: `select attempted_at, latitude, longitude, accuracy, distance_meters, within_radius from class_start_attempt where member_id = ? order by id;` 정확도(`accuracy`)가 큰 시도가 오판정과 겹치는지 본다
+
+기능
+- [ ] 8. 반경 밖 → 수동 등록(사유) → 승인 대기, 관리자 API로 반려 → 목록에 `반려` → 기관에서 다시 위치 확인 → 시작 확정
+- [ ] 9. 시작 특이사항 저장, 수업 종료(사진 여러 장) → 종료 완료, 당일 정정(사진 빼기·추가·메모 수정)
+- [ ] 10. 위치 권한 거부, 휴대폰 위치 끔 상태에서 안내 화면이 맞게 나오는지 (기기별: 아이폰 Safari, 안드로이드 Chrome, 삼성 인터넷)
+- [ ] 11. 다른 계정(일반 회원)으로는 헤더 "수업 체크"가 안 보이고 `/attendance` 접근 시 직원 아님 안내
+
+정리
+- [ ] 12. 결과(기기, 장소, 화면 거리 vs 지도 거리, 정확도)를 `docs/progress.md`에 남기고, 테스트 기관·수업·기록을 지운다 (`class_end_image` → `class_end` → `class_start` → `class_start_attempt` → `class_session` → `institution` 순서, S3 `attendance/` 테스트 사진도 삭제). 테스트 계정 직원 권한이 필요 없으면 회수
+

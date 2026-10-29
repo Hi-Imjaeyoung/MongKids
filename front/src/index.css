@@ -15,6 +15,9 @@
 
   /* 오류 문구 */
   --danger: #c62828;
+  /* 반려 등 오류 상태 배지·카드 (근태 EMP-SCR-001) */
+  --danger-soft: #fdeaea;
+  --danger-border: #f3c6c6;
 
   /* 소셜 로그인 브랜드 컬러 */
   --kakao: #fee500;
@@ -94,6 +97,11 @@ button {
 .main {
   flex: 1;
   padding-bottom: 96px;
+}
+
+/* 푸터가 없는 직원용 화면 (근태 EMP-SCR-001)은 푸터 앞 여백도 두지 않는다 */
+.main--staff-tool {
+  padding-bottom: 0;
 }
 
 /* 섹션 공통 제목 */

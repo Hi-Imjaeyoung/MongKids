@@ -1,0 +1,65 @@
+.class-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.class-card--highlighted {
+  gap: 12px;
+  padding: 18px;
+  border: 2px solid var(--blue);
+  box-shadow: var(--shadow-sm);
+}
+
+.class-card--rejected {
+  border-color: var(--danger-border);
+}
+
+.class-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.class-card__next {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.class-card__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  word-break: keep-all;
+}
+
+.class-card__name--lg {
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.class-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.class-card__detail {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.class-card .attendance-action {
+  margin-top: 4px;
+}

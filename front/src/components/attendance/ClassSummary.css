@@ -1,0 +1,36 @@
+.class-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.class-summary__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.class-summary__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.class-summary__name {
+  font-size: 17px;
+}
+
+.class-summary__meta,
+.class-summary__extra {
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+.class-summary__extra {
+  font-size: 13px;
+}

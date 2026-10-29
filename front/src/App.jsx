@@ -11,6 +11,7 @@ import MobileCtaBar from './components/layout/MobileCtaBar'
 import { isAdmin } from './components/news/postPermission'
 import AboutPage from './pages/AboutPage'
 import AdminPage from './pages/AdminPage'
+import AttendancePage from './pages/AttendancePage'
 import FaqPage from './pages/FaqPage'
 import HomePage from './pages/HomePage'
 import LabListPage from './pages/LabListPage'
@@ -26,10 +27,13 @@ import useNewConsultationCount from './pages/useNewConsultationCount'
 const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
 
 // 모바일 하단 고정 상담 바를 두지 않는 화면
-// SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문, SCR-012 수업 후기, SCR-014 관리자
-const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews', '/admin']
+// SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문, SCR-012 수업 후기, SCR-014 관리자,
+// 근태 EMP-SCR-001 수업 시작·종료 체크
+const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews', '/admin', '/attendance']
 // SCR-016~020 프로그램 상세 (/programs/:programId)
 const NO_MOBILE_CTA_PREFIXES = ['/programs/']
+// 고객용 푸터와 빠른 상담 버튼(후기·전화·인스타그램)을 두지 않는 직원용 화면 (근태 EMP-SCR-001)
+const STAFF_TOOL_PATHS = ['/attendance']
 
 function hasMobileCta(pathname) {
   return (
@@ -78,6 +82,7 @@ function App() {
 
   // 하단 상담 바가 없는 화면은 바 높이만큼 비워 둔 여백(--mobile-cta-height)도 없앤다
   const showMobileCta = hasMobileCta(pathname)
+  const isStaffTool = STAFF_TOOL_PATHS.includes(pathname)
   useEffect(() => {
     document.documentElement.classList.toggle('no-mobile-cta', !showMobileCta)
   }, [showMobileCta])
@@ -113,7 +118,7 @@ function App() {
         onInstitutionConsultClick={openConsult}
         onPersonalConsultClick={openPersonalConsult}
       />
-      <main className="main">
+      <main className={`main ${isStaffTool ? 'main--staff-tool' : ''}`}>
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={homePage} />
@@ -140,12 +145,13 @@ function App() {
             />
             <Route path="/reviews" element={<ReviewsPage member={member} onLoginClick={openLogin} />} />
             <Route path="/admin" element={<AdminPage member={member} newConsultationCount={newConsultationCount} onLoginClick={openLogin} />} />
+            <Route path="/attendance" element={<AttendancePage member={member} onLoginClick={openLogin} />} />
             <Route path="*" element={homePage} />
           </Routes>
         </Suspense>
       </main>
-      <Footer />
-      <FloatingMenu />
+      {!isStaffTool && <Footer />}
+      {!isStaffTool && <FloatingMenu />}
       {showMobileCta && (
         <MobileCtaBar onInstitutionConsultClick={openConsult} onPersonalConsultClick={openPersonalConsult} />
       )}

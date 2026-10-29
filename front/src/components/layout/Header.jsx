@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import logoImage from '../../assets/logo.png'
 import Button from '../common/Button'
+import { canUseAttendance } from '../attendance/attendanceFormat'
 import { isAdmin } from '../news/postPermission'
 import { headerAdminLink, newConsultationCountLabel } from '../../data/adminContent'
+import { headerAttendanceLink } from '../../data/attendanceContent'
 import { headerAuth } from '../../data/authContent'
 import { ctaButtons, navItems } from '../../data/homeContent'
 import './Header.css'
@@ -22,13 +24,18 @@ function Header({
 }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
-  // 로그인 버튼, 또는 회원 이름 · 관리자 링크(ADMIN만) · 로그아웃. 데스크톱은 주메뉴 오른쪽, 모바일은 햄버거 버튼 왼쪽에 둔다
+  // 로그인 버튼, 또는 회원 이름 · 수업 체크 링크(STAFF·ADMIN, EMP-SCR-001) · 관리자 링크(ADMIN만) · 로그아웃. 데스크톱은 주메뉴 오른쪽, 모바일은 햄버거 버튼 왼쪽에 둔다
   const auth = member ? (
     <>
       <span className="header__member">
         <span className="header__member-name">{member.name}</span>
         {headerAuth.memberSuffix}
       </span>
+      {canUseAttendance(member) && (
+        <Link to="/attendance" className="header__admin-link" onClick={() => setMenuOpen(false)}>
+          {headerAttendanceLink}
+        </Link>
+      )}
       {isAdmin(member) && (
         <Link to="/admin" className="header__admin-link" onClick={() => setMenuOpen(false)}>
           {headerAdminLink}
