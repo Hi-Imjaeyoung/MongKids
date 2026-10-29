@@ -168,13 +168,13 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] 사진용 S3 버킷 생성, 퍼블릭 액세스 차단 유지 (읽기는 CloudFront로만) — `mongkiz-photos-prod`
 - [x] 버킷 CORS: `PUT`을 `https://{도메인}`과 `http://localhost:5173`에서 허용, 허용 헤더 `Content-Type`
 - [x] 백엔드 IAM 권한: 버킷의 `posts/*`, `reviews/*`에 `s3:PutObject`(URL 서명용), `s3:GetObject`(`HeadObject`)
-- [ ] 백엔드 IAM 권한에 `lab/*` 추가 (연구소 사진 경로 분리, 2026-10-24). 빠지면 연구소 사진 업로드가 S3에서 403, 저장은 `P003`
+- [x] 백엔드 IAM 권한에 `lab/*` 추가 (연구소 사진 경로 분리, 2026-10-24). 빠지면 연구소 사진 업로드가 S3에서 403, 저장은 `P003`
 - [x] 사진 전용 CloudFront(OAC) `E21JTPP1GUA4UD`, `STORAGE_PUBLIC_BASE_URL=https://d3vc95fih5p9fq.cloudfront.net`
 - [ ] 수명 주기 규칙 검토: 업로드만 하고 저장하지 않았거나 수정·삭제로 빠진 사진이 남는다
-- [ ] 작성 화면에서 사진 여러 장 업로드 → 목록 대표 사진·상세 갤러리 표시 → 수정으로 사진 교체 → 삭제
-- [ ] 몽키즈 연구소(`/lab/write`)도 같은 흐름 확인. 업로드 URL은 `/api/v1/lab-posts/image-upload-urls`, 키는 `lab/*` (`lab_post_image`)
+- [ ] 작성 화면에서 사진 여러 장 업로드 → 목록 대표 사진·상세 갤러리 표시 → 수정으로 사진 교체 → 삭제 (업로드·표시는 확인 2026-10-27, 수정·삭제 남음)
+- [x] 몽키즈 연구소(`/lab/write`)도 같은 흐름 확인. 업로드 URL은 `/api/v1/lab-posts/image-upload-urls`, 키는 `lab/*` (`lab_post_image`)
 - [ ] 21장, 10MB 초과, 이미지가 아닌 파일은 거부된다
-- [ ] 후기(`/reviews`) 사진도 같은 흐름 확인 (`reviews/*` 키, 최대 5장)
+- [x] 후기(`/reviews`) 사진도 같은 흐름 확인 (`reviews/*` 키, 최대 5장)
 
 ## I. 신규 상담 건수 SSE (FR-005, [ADR-004](adr/ADR-004-admin-web-notification-transport.md))
 

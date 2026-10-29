@@ -211,7 +211,7 @@ export const mobileCta = {
 }
 
 export const floatingActions = [
-  { id: 'kakao', icon: '💬', label: '카카오톡\n상담하기', theme: 'yellow' },
+  { id: 'reviews', icon: '🍌', label: '후기\n보러가기', theme: 'yellow', to: '/reviews' },
   { id: 'phone', icon: '📞', label: '전화 문의', theme: 'blue' },
   { id: 'instagram', label: '인스타그램', theme: 'green', href: instagram.href },
 ]

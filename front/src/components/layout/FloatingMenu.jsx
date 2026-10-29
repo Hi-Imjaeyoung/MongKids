@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import InstagramIcon from '../common/InstagramIcon'
 import { floatingActions } from '../../data/homeContent'
 import './FloatingMenu.css'
@@ -17,6 +18,15 @@ function FloatingMenu() {
             <span className="floating-menu__label">{action.label}</span>
           </>
         )
+
+        // to가 있는 항목(후기 보러가기)은 같은 창에서 화면 이동
+        if (action.to) {
+          return (
+            <Link key={action.id} to={action.to} className={className}>
+              {content}
+            </Link>
+          )
+        }
 
         // href가 있는 항목(인스타그램)은 외부 링크로 새 창에서 연다
         return action.href ? (
