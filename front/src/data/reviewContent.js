@@ -25,8 +25,20 @@ export const reviewList = {
   delete: '삭제',
   deleteConfirm: '이 후기를 삭제할까요? 삭제하면 되돌릴 수 없어요.',
   replyTitle: '몽키즈 답글',
+  // 긴 본문 접기·펼치기
+  more: '더보기',
+  less: '접기',
   photoLabel: (index) => `후기 사진 ${index}`,
+  photoOpen: (index) => `후기 사진 ${index} 크게 보기`,
   ratingLabel: (rating) => `만족도 5점 중 ${rating}점`,
+}
+
+// 후기 사진 크게 보기. 자동으로 넘어가지 않는다 (NFR-003)
+export const photoViewer = {
+  label: '후기 사진 크게 보기',
+  close: '닫기',
+  prev: '이전 사진',
+  next: '다음 사진',
 }
 
 // 관리자 답글 입력 (FR-017). 관리자에게만 보인다

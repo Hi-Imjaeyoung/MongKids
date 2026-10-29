@@ -3,7 +3,7 @@ import { saveReviewReply } from '../../api/reviews'
 import { reviewList, reviewReply } from '../../data/reviewContent'
 import './ReviewReply.css'
 
-// 후기 카드의 "몽키즈 답글" (FR-017). 관리자에게는 답글 쓰기·수정 칸을 보여 준다.
+// 후기 카드 아래쪽 전체 폭의 "몽키즈 답글" (FR-017). 관리자에게는 답글 쓰기·수정 칸을 보여 준다.
 // 저장하면 onSaved(답글이 반영된 후기)를 부른다
 function ReviewReply({ review, canReply, onSaved }) {
   const [editing, setEditing] = useState(false)
@@ -76,10 +76,12 @@ function ReviewReply({ review, canReply, onSaved }) {
 
   if (!reply) {
     return (
-      <button type="button" className="review-reply__write" onClick={startEdit}>
-        <ReplyIcon />
-        {reviewReply.write}
-      </button>
+      <div className="review-reply review-reply--write">
+        <button type="button" className="review-reply__write" onClick={startEdit}>
+          <ReplyIcon />
+          {reviewReply.write}
+        </button>
+      </div>
     )
   }
 
