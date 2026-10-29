@@ -97,6 +97,7 @@
 | 2026-10-29 | 공통 | 회의록 2026-10-29 요구사항 반영 (SCR-025, FR-027~028 신규, SCR-001 변경, 미결 4건). 다음 계획(프로젝트 2~5)은 `docs/next-projects.md`로 분리 |
 | 2026-10-29 | 공통 | 요구사항 문서를 프로젝트별로 분리 (사용자 요청): `docs/requirements.md` → `docs/requirements/requirement_homepage.md`, 근태 관리(프로젝트 2)는 `next-projects.md`에서 `requirement_employee.md`로 이동. CLAUDE.md·`/extract-requirements` 스킬·영역 문서 링크 갱신 |
 | 2026-10-29 | 공통 | 요구사항 ID 접두사 규칙 (사용자 결정): 홈페이지는 접두사 없음, 근태 관리는 `EMP-SCR-`·`EMP-FR-`·`EMP-NFR-`. `requirement_employee.md`·CLAUDE.md·`/extract-requirements` 스킬에 반영 |
+| 2026-10-29 | 공통 | 회의록 2026-10-29 근태 관리 요구사항 반영 (EMP-SCR-001~006, EMP-FR-001~009, EMP-NFR-001, 모두 기획 상태, 미결 7건) |
 
 ## 이슈 / 블로커
 
