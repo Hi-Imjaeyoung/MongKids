@@ -1,6 +1,6 @@
 # 디자인 시안
 
-화면 디자인 시안과 관리 규칙을 둔다. 화면 ID는 [requirements.md](../requirements.md)를 따른다.
+화면 디자인 시안과 관리 규칙을 둔다. 화면 ID는 [requirement_homepage.md](../requirements/requirement_homepage.md)를 따른다.
 
 ## 관리 규칙
 

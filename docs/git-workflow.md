@@ -56,7 +56,7 @@ docs: 요구사항에 문의 기능 추가
 ## 3. Pull Request
 
 - `main` 대상 PR로 병합. 병합 방식은 Squash merge 권장.
-- PR 설명: 변경 내용, 변경 이유, 테스트 방법, 관련 요구사항 ID([requirements.md](requirements.md)) 또는 이슈.
+- PR 설명: 변경 내용, 변경 이유, 테스트 방법, 관련 요구사항 ID([requirement_homepage.md](requirements/requirement_homepage.md)) 또는 이슈.
 - PR 병합 후 브랜치(로컬·원격)를 제거할지는 사용자에게 승인받는다. 승인 없이 삭제하지 않는다.
 - 병합 전 체크리스트 (변경한 영역만)
   - [ ] back: `./gradlew build` 통과 (`back/`에서 실행)
@@ -64,7 +64,7 @@ docs: 요구사항에 문의 기능 추가
   - [ ] 새 기능/수정에 테스트 포함
   - [ ] 비밀값·개인정보 미포함
   - [ ] 규칙·구조 변경 시 해당 `CLAUDE.md`, `docs/` 갱신
-  - [ ] 요구사항·진행 상황 변경 시 [requirements.md](requirements.md), [progress.md](progress.md) 갱신
+  - [ ] 요구사항·진행 상황 변경 시 [requirement_homepage.md](requirements/requirement_homepage.md), [progress.md](progress.md) 갱신
   - [ ] 회의록(`docs/meetings/`)을 추가했다면 `/extract-requirements`로 요구사항에 반영
 
 ## 4. CI/CD (GitHub Actions)

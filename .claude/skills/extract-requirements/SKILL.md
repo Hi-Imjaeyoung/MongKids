@@ -1,13 +1,16 @@
 ---
 name: extract-requirements
-description: docs/meetings/의 회의록에서 요구사항을 추출해 초안을 제시하고, 승인 후 docs/requirements.md에 반영한다. 회의록에 접근하는 유일한 경로.
+description: docs/meetings/의 회의록에서 요구사항을 추출해 초안을 제시하고, 승인 후 docs/requirements/의 프로젝트별 요구사항 문서에 반영한다. 회의록에 접근하는 유일한 경로.
 argument-hint: "[회의록 파일명...]"
 disable-model-invocation: true
 ---
 
 # 회의록 → 요구사항 추출
 
-`docs/meetings/`의 회의록을 읽어 `docs/requirements.md`에 반영한다.
+`docs/meetings/`의 회의록을 읽어 `docs/requirements/requirement_{프로젝트}.md`에 반영한다.
+- 홈페이지: `requirement_homepage.md`, 근태 관리(직원용): `requirement_employee.md`
+- 아직 요구사항 문서가 없는 프로젝트 아이디어는 `docs/next-projects.md`에 둔다.
+
 이 스킬은 **회의록에 접근할 수 있는 유일한 작업**이다. 여기서 읽은 회의록 내용은 요구사항 추출에만 쓴다.
 
 ## 1. 대상 회의록 결정
@@ -15,26 +18,27 @@ disable-model-invocation: true
 - 인자가 있으면 그 파일만 대상으로 한다: `$ARGUMENTS`
 - 인자가 없으면 아직 반영하지 않은 회의록을 찾는다.
   1. `ls docs/meetings`로 파일명 목록만 확인한다. 이 단계에서 내용은 열지 않는다.
-  2. `docs/requirements.md`의 "반영된 회의록" 표와 비교해 표에 없는 파일을 고른다.
+  2. `docs/requirements/`의 모든 요구사항 문서의 "반영된 회의록" 표와 비교해 어느 표에도 없는 파일을 고른다.
 - 대상이 없으면 "반영할 회의록이 없습니다"라고 알리고 끝낸다.
 - 회의록 파일명 규칙: `YYYY-MM-DD.md` 또는 `YYYY-MM-DD-주제.md`. 규칙에 맞지 않는 파일이 있으면 알린다.
 
 ## 2. 읽기
 
-- 대상 회의록과 `docs/requirements.md`만 읽는다. 대상이 아닌 회의록은 열지 않는다.
+- 대상 회의록과 반영할 요구사항 문서(`docs/requirements/`, 필요하면 `docs/next-projects.md`)만 읽는다. 대상이 아닌 회의록은 열지 않는다.
 - 회의록을 읽을 때마다 승인 프롬프트가 뜨는 것이 정상이다(`.claude/settings.json`의 ask 규칙).
 - 회의록은 Read 도구로만 읽는다. Bash(`cat` 등)로 읽지 않는다.
 
 ## 3. 초안 제시 (반영 전)
 
-`requirements.md`를 수정하기 전에 채팅으로 초안을 보여주고 승인을 받는다.
+요구사항 문서를 수정하기 전에 채팅으로 초안을 보여주고 승인을 받는다. 한 회의록에 여러 프로젝트가 섞여 있으면 문서별로 나눠 제시한다.
 
 | 구분 | ID | 내용 | 영역 | 근거 |
 |---|---|---|---|---|
 | 신규 / 변경 / 폐기 | `SCR-` · `FR-` · `NFR-` | 요구사항 한 문장 | SCR: front, FR: back, NFR: front / back / 공통 | 회의록 파일명 + 한 줄 요약 |
 
-- ID는 기존 최대 번호 다음부터 3자리로 매긴다 (`FR-001`, `FR-002`, …).
+- ID는 반영할 문서의 기존 최대 번호 다음부터 3자리로 매긴다 (`FR-001`, `FR-002`, …).
   - `SCR-`: 화면(프론트엔드 요구사항), `FR-`: 기능(백엔드 요구사항, `관련 화면`으로 SCR과 연결), `NFR-`: 비기능 요구사항(성능, 보안, 접근성 등)
+  - 홈페이지 외 프로젝트는 문서에 정한 접두사를 붙인다. 근태 관리(`requirement_employee.md`)는 `EMP-SCR-`·`EMP-FR-`·`EMP-NFR-`. 접두사 없는 ID는 홈페이지 전용이다.
 - 하나의 논의에 화면과 서버 동작이 섞여 있으면 나눈다. 화면 구성·UI 표현(버튼, 아이콘, 표시 방식)은 SCR 설명에, 저장·검증·권한·제공 규칙은 FR에 적는다. 서버 동작이 없는 기능은 FR로 만들지 않는다.
 - 결정되지 않았거나 모호한 내용은 추측해서 요구사항으로 만들지 않고 **미결** 구분으로 따로 나열한다.
 - 제약 사항·범위 외로 합의된 내용도 따로 나열한다.
@@ -45,7 +49,7 @@ disable-model-invocation: true
 
 ## 4. 반영 (승인 후)
 
-1. `docs/requirements.md`
+1. 해당 `docs/requirements/requirement_{프로젝트}.md`
    - 해당 표에 행을 추가하거나 수정하고, `출처` 열에 회의록 파일명을 적는다.
    - 기존 ID의 번호는 바꾸지 않는다. 폐기된 항목은 행을 지우지 않고 상태를 `폐기`로 바꾼다.
    - 미결 사항, 제약 사항, 범위 외 섹션을 갱신한다.

@@ -1,6 +1,6 @@
 # DB 스키마
 
-> 기준: [docs/requirements.md](../../docs/requirements.md) (2026-10-14 시점, FR-001~023).
+> 기준: [docs/requirements/requirement_homepage.md](../../docs/requirements/requirement_homepage.md) (2026-10-14 시점, FR-001~023).
 > 네이밍·JPA 규칙은 [database.md](database.md)를 따른다. Entity는 `com.mongkids.domain.{member,consultation,post,review}.entity`에 있고, 스키마를 바꾸면 이 문서를 함께 갱신한다.
 
 ## 1. 공통 규칙
