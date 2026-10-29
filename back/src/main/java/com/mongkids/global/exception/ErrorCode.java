@@ -38,7 +38,19 @@ public enum ErrorCode {
 	// 후기
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "후기를 찾을 수 없습니다."),
 	REVIEW_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "R002", "후기 사진은 최대 5장까지 올릴 수 있습니다."),
-	INVALID_REVIEW_IMAGE(HttpStatus.BAD_REQUEST, "R003", "올바르지 않은 사진입니다.");
+	INVALID_REVIEW_IMAGE(HttpStatus.BAD_REQUEST, "R003", "올바르지 않은 사진입니다."),
+
+	// 근태 관리
+	CLASS_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "E001", "수업을 찾을 수 없습니다."),
+	CLASS_START_NOT_ALLOWED(HttpStatus.CONFLICT, "E002", "이미 수업 시작이 확정됐거나 승인 대기 중입니다."),
+	CLASS_START_NOT_FOUND(HttpStatus.NOT_FOUND, "E003", "수업 시작 기록이 없습니다."),
+	CLASS_START_NOT_PENDING(HttpStatus.CONFLICT, "E004", "승인 대기 중인 수업 시작이 아닙니다."),
+	CLASS_END_NOT_ALLOWED(HttpStatus.CONFLICT, "E005", "수업 시작이 확정되거나 승인 대기 중일 때만 수업을 종료할 수 있습니다."),
+	CLASS_END_ALREADY_EXISTS(HttpStatus.CONFLICT, "E006", "이미 수업 종료를 제출했습니다."),
+	CLASS_END_NOT_FOUND(HttpStatus.NOT_FOUND, "E007", "수업 종료 기록이 없습니다."),
+	CLASS_END_CORRECTION_EXPIRED(HttpStatus.CONFLICT, "E008", "수업 기록은 수업 당일까지만 정정할 수 있습니다."),
+	CLASS_END_IMAGE_COUNT(HttpStatus.BAD_REQUEST, "E009", "수업 사진은 1장 이상 20장 이하로 올려 주세요."),
+	INVALID_CLASS_END_IMAGE(HttpStatus.BAD_REQUEST, "E010", "올바르지 않은 사진입니다.");
 
 	private final HttpStatus status;
 	private final String code;
