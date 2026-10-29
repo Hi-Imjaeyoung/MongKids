@@ -76,6 +76,13 @@
   border-radius: 24px;
 }
 
+.about-principle__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* 강사 교육: 체크 목록 */
 .about-principle__checks {
   display: flex;

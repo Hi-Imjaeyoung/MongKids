@@ -1,5 +1,14 @@
 // 체육/행사 프로그램 전체 안내(SCR-003)와 프로그램 상세(SCR-016~020) 정적 데이터
 
+import classSchoolImage from '../assets/class-school.jpg'
+import classHomeImage from '../assets/class-home-2.jpg'
+import classTaekwondoImage from '../assets/class-taekwondo.jpg'
+import schoolIcon from '../assets/program-icon-school.png'
+import homeIcon from '../assets/program-icon-home.png'
+import taekwondoIcon from '../assets/program-icon-taekwondo.png'
+import sportsdayIcon from '../assets/program-icon-sportsday.png'
+import publicIcon from '../assets/program-icon-public.png'
+
 export const programGroups = [
   {
     id: 'regular',
@@ -33,6 +42,8 @@ export const programs = [
       '다양한 교구를 활용한 신체활동을 운영합니다.',
       '2개월마다 스토리텔링 테마수업을 진행합니다.',
     ],
+    icon: schoolIcon,
+    photo: classSchoolImage,
     photoLabel: '기관 수업 사진',
     consult: 'institution',
   },
@@ -49,6 +60,8 @@ export const programs = [
       '아이의 흥미와 활동 수준을 고려해 수업을 구성합니다.',
       '방문 가능 지역·준비 공간·일정은 상담 후 안내합니다.',
     ],
+    icon: homeIcon,
+    photo: classHomeImage,
     photoLabel: '가정 방문 수업 사진',
     consult: 'personal',
   },
@@ -65,6 +78,8 @@ export const programs = [
       '다양한 교구 및 연령별 놀이체육을 운영합니다.',
       '도장 공간과 일정에 맞는 운영 조건을 협의합니다.',
     ],
+    icon: taekwondoIcon,
+    photo: classTaekwondoImage,
     photoLabel: '태권도장 수업 사진',
     consult: 'institution',
   },
@@ -81,6 +96,7 @@ export const programs = [
       '놀이체육과 레크리에이션 활동을 구성합니다.',
       '행사 일정과 운영 방식에 따라 별도 견적을 안내합니다.',
     ],
+    icon: sportsdayIcon,
     photoLabel: '운동회 사진',
     consult: 'institution',
   },
@@ -97,6 +113,7 @@ export const programs = [
       '1회성 및 단기 프로그램 운영 경험을 바탕으로 협의합니다.',
       '프로그램 내용·장소·인원에 따라 구성과 비용을 제안합니다.',
     ],
+    icon: publicIcon,
     photoLabel: '공공기관 프로그램 사진',
     consult: 'institution',
   },

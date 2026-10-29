@@ -1,5 +1,5 @@
 import Highlight from '../common/Highlight'
-import heroImage from '../../assets/hero-main.png'
+import heroImage from '../../assets/hero-main.jpg'
 import { hero } from '../../data/homeContent'
 import './Hero.css'
 

@@ -1,5 +1,10 @@
 // 홈 화면 정적 콘텐츠. 추후 API 연동 시 이 데이터를 응답값으로 대체한다.
 
+import classSchoolImage from '../assets/class-school.jpg'
+import classHomeImage from '../assets/class-home-1.jpg'
+import classTaekwondoImage from '../assets/class-taekwondo.jpg'
+import sportsdayIcon from '../assets/program-icon-sportsday.png'
+import publicIcon from '../assets/program-icon-public.png'
 import { faqsByIds } from './faqContent'
 import { programPath } from './programContent'
 
@@ -77,6 +82,7 @@ export const services = [
     tag: '현재 주력 사업',
     title: '어린이집·유치원',
     description: '같은 교구도 연령과 활동 수준에 맞춰 다르게 구성하는 정기 방문체육',
+    image: classSchoolImage,
     imageLabel: '기관 수업 사진',
     to: programPath('school'),
   },
@@ -86,6 +92,7 @@ export const services = [
     tag: '운영 중',
     title: '1:1 가정 방문체육',
     description: '아이의 연령과 흥미에 맞춰 강사가 가정으로 찾아가는 개별 체육수업',
+    image: classHomeImage,
     imageLabel: '1:1 수업 사진',
     to: programPath('home'),
   },
@@ -95,6 +102,7 @@ export const services = [
     tag: '운영 중',
     title: '태권도장 유아체육',
     description: '태권도 기술 수업이 아닌, 도장 공간에서 진행하는 일반 유아체육',
+    image: classTaekwondoImage,
     imageLabel: '태권도장 수업 사진',
     to: programPath('taekwondo'),
   },
@@ -103,7 +111,7 @@ export const services = [
 export const specialPrograms = [
   {
     id: 'sportsday',
-    icon: '🎈',
+    icon: sportsdayIcon,
     tag: '운영 중',
     title: '운동회·체육대회',
     description: '기관과 단체의 규모·연령·장소에 맞춰 운동회와 체육대회를 진행합니다.',
@@ -111,7 +119,7 @@ export const specialPrograms = [
   },
   {
     id: 'public',
-    icon: '🏛️',
+    icon: publicIcon,
     tag: '운영 중',
     title: '복지센터·공공기관',
     description: '기관의 목적과 참여 연령에 맞춘 1회성·단기 체육 프로그램을 운영합니다.',
@@ -121,11 +129,10 @@ export const specialPrograms = [
 
 export const gallery = {
   items: [
-    { id: 'school', title: '기관 수업 현장' },
-    { id: 'homeclass', title: '1:1 방문 수업' },
-    { id: 'taekwondo', title: '태권도장 유아체육' },
+    { id: 'school', title: '기관 수업 현장', image: classSchoolImage },
+    { id: 'homeclass', title: '1:1 방문 수업', image: classHomeImage },
+    { id: 'taekwondo', title: '태권도장 유아체육', image: classTaekwondoImage },
   ],
-  pending: '실제 사진 등록 예정',
   more: { label: '수업 현장 더 보기', to: '/news' },
 }
 
