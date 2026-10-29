@@ -17,6 +17,7 @@
 | CloudFront | 배포 `E1AWEJNTIYBX5U` (`d14t42trjr34p1.cloudfront.net`), 기본 루트 객체 `index.html` |
 | CloudFront Function | `mongkiz-spa-router` (기본 동작 Viewer Request): `www.mongkiz.com` → `https://mongkiz.com` 301, 확장자 없는 경로 → `/index.html` |
 | DNS | `mongkiz.com`, `www.mongkiz.com` A/AAAA 별칭 → CloudFront |
+| 메일 DNS | `mongkiz.com` MX `10 aspmx.daum.net.` (Daum 메일, `official@mongkiz.com`). 네임서버 이전 때 빠져 수신이 끊겼다가 2026-10-28 추가. 네임서버·호스팅 영역을 다시 옮길 때 메일 레코드도 함께 옮긴다 |
 
 2026-10-22 백엔드 배포 기준 (EC2 1대 + Caddy, RDS). 리전은 모두 `ap-northeast-2`.
 
@@ -167,13 +168,13 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] 사진용 S3 버킷 생성, 퍼블릭 액세스 차단 유지 (읽기는 CloudFront로만) — `mongkiz-photos-prod`
 - [x] 버킷 CORS: `PUT`을 `https://{도메인}`과 `http://localhost:5173`에서 허용, 허용 헤더 `Content-Type`
 - [x] 백엔드 IAM 권한: 버킷의 `posts/*`, `reviews/*`에 `s3:PutObject`(URL 서명용), `s3:GetObject`(`HeadObject`)
-- [ ] 백엔드 IAM 권한에 `lab/*` 추가 (연구소 사진 경로 분리, 2026-10-24). 빠지면 연구소 사진 업로드가 S3에서 403, 저장은 `P003`
+- [x] 백엔드 IAM 권한에 `lab/*` 추가 (연구소 사진 경로 분리, 2026-10-24). 빠지면 연구소 사진 업로드가 S3에서 403, 저장은 `P003`
 - [x] 사진 전용 CloudFront(OAC) `E21JTPP1GUA4UD`, `STORAGE_PUBLIC_BASE_URL=https://d3vc95fih5p9fq.cloudfront.net`
 - [ ] 수명 주기 규칙 검토: 업로드만 하고 저장하지 않았거나 수정·삭제로 빠진 사진이 남는다
-- [ ] 작성 화면에서 사진 여러 장 업로드 → 목록 대표 사진·상세 갤러리 표시 → 수정으로 사진 교체 → 삭제
-- [ ] 몽키즈 연구소(`/lab/write`)도 같은 흐름 확인. 업로드 URL은 `/api/v1/lab-posts/image-upload-urls`, 키는 `lab/*` (`lab_post_image`)
+- [ ] 작성 화면에서 사진 여러 장 업로드 → 목록 대표 사진·상세 갤러리 표시 → 수정으로 사진 교체 → 삭제 (업로드·표시는 확인 2026-10-27, 수정·삭제 남음)
+- [x] 몽키즈 연구소(`/lab/write`)도 같은 흐름 확인. 업로드 URL은 `/api/v1/lab-posts/image-upload-urls`, 키는 `lab/*` (`lab_post_image`)
 - [ ] 21장, 10MB 초과, 이미지가 아닌 파일은 거부된다
-- [ ] 후기(`/reviews`) 사진도 같은 흐름 확인 (`reviews/*` 키, 최대 5장)
+- [x] 후기(`/reviews`) 사진도 같은 흐름 확인 (`reviews/*` 키, 최대 5장)
 
 ## I. 신규 상담 건수 SSE (FR-005, [ADR-004](adr/ADR-004-admin-web-notification-transport.md))
 
@@ -184,3 +185,13 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] 연결이 30초 넘게 유지된다 (2026-10-26, 사용자) (15초마다 `ping` 주석). 끊기면 `EventSource`가 3초 뒤 다시 연결한다
 - [x] 다른 브라우저(비로그인)로 상담 신청 → 관리자 헤더 "관리자" 링크와 상담 신청 탭 배지가 새로고침 없이 늘어난다. 처리 상태를 바꾸면 줄어든다 (2026-10-26, 사용자)
 - [ ] 재배포 뒤 배지가 자동으로 다시 연결된다 (로컬 재시작으로는 확인, 운영은 다음 백엔드 배포 때). 초기 몇 주 동안 애플리케이션 로그에서 끊김·재연결 빈도를 본다
+
+## J. 도메인 메일 (`official@mongkiz.com`, Daum 메일)
+
+네임서버가 Route 53이라 가비아 DNS 설정은 쓰이지 않는다. 메일 레코드는 Route 53 호스팅 영역 `Z08923271RXL4OJ3104JD`에 둔다.
+
+- [x] MX `mongkiz.com` → `10 aspmx.daum.net.` (2026-10-28, 네임서버 이전 때 빠져 10-22부터 수신이 끊겼던 것을 복구)
+- [x] `nslookup -type=MX mongkiz.com 8.8.8.8`에 `aspmx.daum.net`이 보인다 (2026-10-28)
+- [x] 외부 메일에서 `official@mongkiz.com`으로 보낸 메일이 도착한다 (2026-10-28, 사용자)
+- [ ] 가비아 DNS에 있던 SPF(`v=spf1 ...`)·DKIM·DMARC TXT를 확인하고 Route 53에 옮긴다. 없으면 `official@mongkiz.com`에서 보낸 메일이 스팸함으로 갈 수 있다
+- [ ] 네임서버·호스팅 영역을 다시 바꿀 때 MX·메일 TXT를 먼저 옮기고 바꾼다
