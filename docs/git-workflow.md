@@ -80,6 +80,7 @@ docs: 요구사항에 문의 기능 추가
 - AWS 인증은 OIDC 역할로 받는다. 액세스 키를 Secrets에 넣지 않는다.
   - 역할 ARN은 저장소 변수 `AWS_FRONT_DEPLOY_ROLE_ARN`(`mongkiz-github-front-deploy`), `AWS_BACK_DEPLOY_ROLE_ARN`(`mongkiz-github-back-deploy`)에 둔다.
   - 역할은 이 저장소의 `main` 브랜치에서만 쓸 수 있다. 프론트는 프론트 버킷 쓰기·삭제와 배포 무효화, 백엔드는 jar 업로드와 운영 인스턴스 하나에 대한 `AWS-RunShellScript` 실행·결과 조회만 허용한다.
+  - 두 역할의 신뢰 정책은 `token.actions.githubusercontent.com:sub`가 `repo:Hi-Imjaeyoung@106050747/MongKids@1408177560:ref:refs/heads/main`일 때만 허용한다 (저장소 소유자·이름·ID가 함께 들어가는 형식). 저장소 이름이나 소유자를 바꾸면 이 값도 두 역할 모두 함께 고쳐야 한다. 안 고치면 배포가 `Not authorized to perform sts:AssumeRoleWithWebIdentity`로 실패한다 (2026-10-29 `MongKidsTest` → `MongKids` 변경 때 겪음).
 - 운영 DB는 `ddl-auto: validate`라서 Entity 스키마를 바꾼 PR은 병합 전에 RDS에 DDL을 먼저 적용한다 ([deploy-checklist.md](deploy-checklist.md)).
 - PR의 CI가 실패하면 병합하지 않는다.
 
