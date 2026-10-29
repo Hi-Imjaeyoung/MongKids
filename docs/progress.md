@@ -141,7 +141,7 @@
 - [ ] 동시 접속 30명 부하 확인 (NFR-001)
 - [ ] 근태 관리 관리자 화면(EMP-SCR-006: 기관 위치 등록·수업 할당·수업 시작 승인) 구현 (#63, 선행: 지도 API 제공자 ADR-007·시안). #61은 기관·좌표·수업 할당 시드 데이터로 진행 (사용자 결정 2026-10-29)
 - [ ] #61 병합 전: 운영 DDL 적용, IAM `attendance/*` 권한, 실제 기관·수업 시드 ([deploy-checklist.md](deploy-checklist.md) K)
-- [ ] #61 배포 후 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome·삼성 인터넷) 점검 ([deploy-checklist.md](deploy-checklist.md) K)
+- [ ] #61 배포 후 사용자 직접 테스트: 테스트 계정에 테스트 기관·수업을 할당해 위치 판정 정확성과 기능 확인, 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome·삼성 인터넷) 점검 ([deploy-checklist.md](deploy-checklist.md) K, K-1)
 - [ ] EMP-SCR-001 시안 확정 PNG 내보내기 → `docs/design/` (사용자)
 - [ ] SCR-024 디자인 초안 확정 (PNG 내보내기)
 - [ ] 화면 구성 신규 기획 바탕으로 수정
