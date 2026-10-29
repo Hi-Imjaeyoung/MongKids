@@ -126,7 +126,7 @@
 ### 후속 작업
 - 운영 IAM 권한에 `lab/*`를 추가한다 (`lab/` 분리 코드는 2026-10-24 구현).
 - 분리 전 `posts/`에 올라간 연구소 글 사진을 `lab/`로 옮길지(객체 복사 + `lab_post_image.image_key`·본문 `data-image-key` 변경) 예외로 둘지 정한다.
-- 어느 대안이든, 삭제된 글·후기 사진의 보관 기간을 정해 `docs/requirements.md`에 기록한다 (즉시 / N일 / 지우지 않음).
+- 어느 대안이든, 삭제된 글·후기 사진의 보관 기간을 정해 `docs/requirements/requirement_homepage.md`에 기록한다 (즉시 / N일 / 지우지 않음).
 - A가 아니면 정리를 켜기 전에 사진 키 소유를 보장한다 (ADR-001 6절). C는 업로드 기록으로 이를 함께 다룬다.
 - `back/docs/architecture.md` 8절 "정리" 항목, `docs/deploy-checklist.md` H의 수명 주기 항목을 결정에 맞게 고친다.
 

@@ -19,7 +19,7 @@
 | 직원 | 수업 현장·몽키즈 연구소 게시물 작성 (HTML 편집기, 사진 업로드) |
 | 관리자 | 상담 신청 조회·처리 상태 관리, 신규 상담 건수 실시간 배지, 후기 숨김·답글, 직원 권한 관리 |
 
-요구사항 전체와 구현 상태는 [요구사항](docs/requirements.md)에서, 진행 상황은 [진행 사항](docs/progress.md)에서 볼 수 있습니다.
+요구사항 전체와 구현 상태는 [요구사항](docs/requirements/requirement_homepage.md)에서, 진행 상황은 [진행 사항](docs/progress.md)에서 볼 수 있습니다.
 
 ## 구성
 
@@ -63,7 +63,7 @@ npm run dev    # http://localhost:5173, /api·로그인 경로는 백엔드(8080
 
 ## 문서
 
-- [요구사항](docs/requirements.md) · [진행 사항](docs/progress.md)
+- [요구사항](docs/requirements/requirement_homepage.md) · [진행 사항](docs/progress.md)
 - [Git 워크플로](docs/git-workflow.md) · [배포 점검 체크리스트](docs/deploy-checklist.md)
 - [아키텍처 결정 기록(ADR)](docs/adr/)
 - 개발 규칙: [백엔드](back/CLAUDE.md), [프론트엔드](front/CLAUDE.md)

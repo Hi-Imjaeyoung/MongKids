@@ -73,7 +73,7 @@ pages → components/{화면} → components/common
   - 호출 코드는 `src/api/`에 두고, 컴포넌트는 응답 데이터만 받는다. `request()`는 실패 시 `ApiError`(status, code)를 던진다.
   - 개발 서버는 `vite.config.js`의 `server.proxy`로 `/api`, `/oauth2`, `/login/oauth2`를 백엔드(8080)에 연결한다. 인증 쿠키가 같은 출처로 오가야 하므로 `changeOrigin`은 끈다.
   - 응답 형식은 백엔드 규칙([../../back/docs/api-guidelines.md](../../back/docs/api-guidelines.md))의 `ApiResponse<T>`를 따른다.
-- 어떤 데이터를 API로 바꿀지는 [요구사항](../../docs/requirements.md)의 기능 ID 단위로 결정한다.
+- 어떤 데이터를 API로 바꿀지는 [요구사항](../../docs/requirements/requirement_homepage.md)의 기능 ID 단위로 결정한다.
 
 ## 4. 반응형 기준
 

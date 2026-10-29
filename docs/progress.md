@@ -1,6 +1,6 @@
 # 프로젝트 진행 사항
 
-프론트엔드와 백엔드의 진행 상황을 함께 기록한다. 항목에는 가능하면 요구사항 ID([requirements.md](requirements.md))를 붙인다.
+프론트엔드와 백엔드의 진행 상황을 함께 기록한다. 항목에는 가능하면 요구사항 ID([requirement_homepage.md](requirements/requirement_homepage.md))를 붙인다.
 
 ## 현재 상태
 
@@ -94,6 +94,9 @@
 | 2026-10-28 | 프론트엔드 | 수업 후기 카드 개편 (SCR-012, #52, 사용자 결정): 사진과 본문을 카드 위쪽 한 묶음으로 두고 답글(FR-017)은 그 아래 전체 폭으로 분리. 접혀 있는 동안 사진 있는 후기의 본문 칸은 사진 칸 높이에 맞추고, 넘치는 본문(사진 없으면 6줄, 모바일 5줄)은 "더보기"·"접기"로 펼침(`ReviewContent`, `ResizeObserver`로 잘림 여부 판단). 시안(아티팩트 SCR-012) 먼저 수정·확인 후 구현. 목 API로 데스크톱·태블릿·모바일 화면 확인. 사진 크게 보기는 범위 밖(별도 이슈) |
 | 2026-10-28 | 프론트엔드 | 후기 사진 칸 축소와 사진 크게 보기 (SCR-012, #52, 사용자 요청): 짧은 후기에서 사진 옆 여백이 크게 남아 데스크톱 사진 칸을 400px → 280px로 줄임(사진 1장 카드 높이 310 → 218px). 큰 사진·모바일 사진·"+N" 칸을 누르면 `ReviewPhotoViewer`(이전·다음, ←·→·Esc 키, 손으로 넘김, 배경 클릭 닫기, 닫으면 연 버튼으로 초점 복귀, 자동 전환 없음 NFR-003). 목 API로 데스크톱·모바일 확인 |
 | 2026-10-29 | 공통 | #51·#53 병합 후 운영 배포. 처음에는 front·back 배포가 OIDC 역할 위임(`sts:AssumeRoleWithWebIdentity`)에서 실패: 저장소 이름이 `MongKidsTest` → `MongKids`로 바뀌었는데 역할 2개의 신뢰 정책 `sub`에 옛 이름이 남아 있었음. 두 역할의 `sub`를 `repo:Hi-Imjaeyoung@106050747/MongKids@1408177560:ref:refs/heads/main`으로 고친 뒤 재실행해 성공(사용자 승인). [git-workflow.md](git-workflow.md) 4에 주의 사항 추가 |
+| 2026-10-29 | 공통 | 회의록 2026-10-29 요구사항 반영 (SCR-025, FR-027~028 신규, SCR-001 변경, 미결 4건). 다음 계획(프로젝트 2~5)은 `docs/next-projects.md`로 분리 |
+| 2026-10-29 | 공통 | 요구사항 문서를 프로젝트별로 분리 (사용자 요청): `docs/requirements.md` → `docs/requirements/requirement_homepage.md`, 근태 관리(프로젝트 2)는 `next-projects.md`에서 `requirement_employee.md`로 이동. CLAUDE.md·`/extract-requirements` 스킬·영역 문서 링크 갱신 |
+| 2026-10-29 | 공통 | 요구사항 ID 접두사 규칙 (사용자 결정): 홈페이지는 접두사 없음, 근태 관리는 `EMP-SCR-`·`EMP-FR-`·`EMP-NFR-`. `requirement_employee.md`·CLAUDE.md·`/extract-requirements` 스킬에 반영 |
 
 ## 이슈 / 블로커
 
