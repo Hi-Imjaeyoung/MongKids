@@ -10,14 +10,21 @@ import com.mongkids.domain.member.entity.Provider;
 
 /**
  * 카카오·네이버 사용자 정보 응답에서 회원 가입에 필요한 값만 꺼낸다.
- * 이름이 없으면 기본 이름을 쓰고, 이메일은 동의하지 않았으면 null이다.
+ * 이름이 없으면 기본 이름을 쓰고, 이메일·휴대폰 번호는 동의하지 않았으면 null이다.
+ * 휴대폰 번호는 숫자만 국내 형식으로 저장한다 (예: 01012345678, FR-019).
  */
-public record OAuth2UserInfo(Provider provider, String providerId, String name, String email) {
+public record OAuth2UserInfo(Provider provider, String providerId, String name, String email, String phone) {
 
 	public static final String DEFAULT_NAME = "회원";
 	// 탈퇴 본인 확인용 재로그인 registration (FR-028). 예: kakao-withdraw
 	public static final String WITHDRAW_SUFFIX = "-withdraw";
 	private static final int NAME_MAX_LENGTH = 50;
+	private static final String KOREA_COUNTRY_CODE = "82";
+
+	// 휴대폰 번호를 받지 않은 경우
+	public OAuth2UserInfo(Provider provider, String providerId, String name, String email) {
+		this(provider, providerId, name, email, null);
+	}
 
 	public static boolean isWithdrawRegistration(String registrationId) {
 		return registrationId.endsWith(WITHDRAW_SUFFIX);
@@ -36,6 +43,7 @@ public record OAuth2UserInfo(Provider provider, String providerId, String name, 
 	}
 
 	// https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#req-user-info
+	// 휴대폰 번호(phone_number)는 "+82 10-1234-5678" 형식
 	private static OAuth2UserInfo ofKakao(Map<String, Object> attributes) {
 		Map<String, Object> account = getMap(attributes, "kakao_account");
 		Map<String, Object> profile = getMap(account, "profile");
@@ -43,11 +51,13 @@ public record OAuth2UserInfo(Provider provider, String providerId, String name, 
 			Provider.KAKAO,
 			requireId(attributes.get("id")),
 			normalizeName(getString(profile, "nickname")),
-			getString(account, "email")
+			getString(account, "email"),
+			normalizePhone(getString(account, "phone_number"))
 		);
 	}
 
 	// https://developers.naver.com/docs/login/profile/profile.md
+	// 휴대폰 번호(mobile)는 "010-1234-5678" 형식
 	private static OAuth2UserInfo ofNaver(Map<String, Object> attributes) {
 		Map<String, Object> response = getMap(attributes, "response");
 		String name = getString(response, "name");
@@ -55,12 +65,25 @@ public record OAuth2UserInfo(Provider provider, String providerId, String name, 
 			Provider.NAVER,
 			requireId(response.get("id")),
 			normalizeName(name != null ? name : getString(response, "nickname")),
-			getString(response, "email")
+			getString(response, "email"),
+			normalizePhone(getString(response, "mobile"))
 		);
 	}
 
 	public SocialLoginRequest toSocialLoginRequest() {
-		return new SocialLoginRequest(provider, providerId, name, email);
+		return new SocialLoginRequest(provider, providerId, name, email, phone);
+	}
+
+	// 숫자만 남기고 국가 번호 82는 0으로 바꾼다. "+82 10-1234-5678" → "01012345678"
+	static String normalizePhone(String phone) {
+		if (phone == null) {
+			return null;
+		}
+		String digits = phone.replaceAll("\\D", "");
+		if (phone.strip().startsWith("+") && digits.startsWith(KOREA_COUNTRY_CODE)) {
+			digits = "0" + digits.substring(KOREA_COUNTRY_CODE.length());
+		}
+		return digits.isEmpty() ? null : digits;
 	}
 
 	private static String requireId(Object id) {

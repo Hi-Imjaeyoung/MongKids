@@ -62,12 +62,26 @@ public class Member extends BaseTimeEntity {
 	private LocalDateTime deletedAt;
 
 	@Builder
-	private Member(Provider provider, String providerId, String name, String email) {
+	private Member(Provider provider, String providerId, String name, String email, String phone) {
 		this.provider = provider;
 		this.providerId = providerId;
 		this.name = name;
 		this.email = email;
+		this.phone = phone;
 		this.role = MemberRole.MEMBER;
+	}
+
+	/**
+	 * 로그인할 때 소셜 서비스에서 받은 이메일·휴대폰 번호로 갱신한다 (FR-019).
+	 * 동의를 철회해 값이 오지 않으면 기존 값을 그대로 둔다.
+	 */
+	public void updateSocialContact(String email, String phone) {
+		if (email != null) {
+			this.email = email;
+		}
+		if (phone != null) {
+			this.phone = phone;
+		}
 	}
 
 	public void registerSignUpInfo(String phone, boolean snsAgreed) {

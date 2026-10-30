@@ -59,6 +59,30 @@ class OAuth2UserInfoTest {
 	}
 
 	@Test
+	@DisplayName("카카오·네이버 휴대폰 번호는 숫자만 국내 형식으로 꺼낸다")
+	void of_phone_normalized() {
+		// given
+		Map<String, Object> kakao = Map.of(
+			"id", 1L,
+			"kakao_account", Map.of("email", "monkey@kakao.com", "phone_number", "+82 10-1234-5678"));
+		Map<String, Object> naver = Map.of(
+			"response", Map.of("id", "naver-id", "email", "monkey@naver.com", "mobile", "010-9876-5432"));
+
+		// when & then
+		assertThat(OAuth2UserInfo.of("kakao", kakao).phone()).isEqualTo("01012345678");
+		assertThat(OAuth2UserInfo.of("naver", naver).phone()).isEqualTo("01098765432");
+		assertThat(OAuth2UserInfo.of("naver", naver).toSocialLoginRequest().phone()).isEqualTo("01098765432");
+	}
+
+	@Test
+	@DisplayName("휴대폰 번호 동의가 없으면 null이고, 국가 번호 없는 번호는 그대로 숫자만 남긴다")
+	void normalizePhone() {
+		assertThat(OAuth2UserInfo.of("kakao", Map.of("id", 1L)).phone()).isNull();
+		assertThat(OAuth2UserInfo.normalizePhone("010 1234 5678")).isEqualTo("01012345678");
+		assertThat(OAuth2UserInfo.normalizePhone("+82 2-123-4567")).isEqualTo("021234567");
+	}
+
+	@Test
 	@DisplayName("이름이 50자를 넘으면 50자로 자른다")
 	void of_longName_truncated() {
 		// given

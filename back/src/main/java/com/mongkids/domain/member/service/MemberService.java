@@ -35,6 +35,7 @@ public class MemberService {
 
 	/**
 	 * 소셜 계정으로 로그인한다. 처음 로그인하면 회원으로 가입시킨다 (FR-018).
+	 * 소셜 서비스에서 받은 이메일·휴대폰 번호는 가입할 때 저장하고, 이후 로그인마다 갱신한다 (FR-019).
 	 */
 	@Transactional
 	public LoginMemberResponse loginOrRegister(SocialLoginRequest request) {
@@ -43,6 +44,7 @@ public class MemberService {
 		if (member.isWithdrawn()) {
 			throw new BusinessException(ErrorCode.MEMBER_WITHDRAWN);
 		}
+		member.updateSocialContact(request.email(), request.phone());
 		return LoginMemberResponse.from(member);
 	}
 
@@ -61,21 +63,16 @@ public class MemberService {
 	}
 
 	/**
-	 * 탈퇴할 수 있는지 확인한다 (FR-028). 관리자·직원은 탈퇴할 수 없고,
+	 * 회원을 탈퇴시키고 개인정보를 지운다 (FR-028). 관리자·직원은 탈퇴할 수 없고,
 	 * 본인 확인으로 다시 로그인한 소셜 계정이 가입한 계정과 같아야 한다.
-	 */
-	public void validateWithdrawable(Long memberId, Provider provider, String providerId) {
-		checkWithdrawable(getActiveMember(memberId), provider, providerId);
-	}
-
-	/**
-	 * 회원을 탈퇴시키고 개인정보를 지운다 (FR-028). 소셜 연결 끊기가 끝난 뒤에 부른다.
+	 * 소셜 연결을 끊기 전에 DB 제약 위반 등을 드러내도록 바로 flush한다 (SocialWithdrawService).
 	 */
 	@Transactional
 	public void withdraw(Long memberId, Provider provider, String providerId) {
 		Member member = getActiveMember(memberId);
 		checkWithdrawable(member, provider, providerId);
 		member.withdraw();
+		memberRepository.flush();
 	}
 
 	private void checkWithdrawable(Member member, Provider provider, String providerId) {

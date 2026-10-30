@@ -106,7 +106,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 - 인증은 `access_token` HttpOnly 쿠키로 한다. 흐름은 [architecture.md](architecture.md#7-인증-fr-018) 참고.
 - 미인증 401 `A001`, 권한 없음 403 `A002`.
-- 회원 탈퇴 결과는 프론트로 리다이렉트해 알린다. 성공 `app.auth.withdraw-success-url`(`/me?withdrawn=true`, 쿠키 삭제). 실패 `app.auth.withdraw-failure-url`에 `withdrawError` 코드가 붙는다:
+- 회원 탈퇴 결과는 프론트로 리다이렉트해 알린다. 성공 `app.auth.withdraw-success-url`(홈 `/?withdrawn=true`, 쿠키 삭제. 프론트가 완료 모달을 띄운다). 실패 `app.auth.withdraw-failure-url`에 `withdrawError` 코드가 붙는다:
   - `cancelled`: 재로그인 취소
   - `failed`: 그 밖의 소셜 로그인 실패
   - `A001`: 로그인 쿠키 없음·만료

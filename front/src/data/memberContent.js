@@ -65,7 +65,7 @@ export const withdrawConfirm = {
 export const withdrawDone = {
   title: '탈퇴가 완료되었어요',
   description: '그동안 몽키즈와 함께해 주셔서 감사합니다.',
-  home: '홈으로',
+  confirm: '확인',
 }
 
 // 백엔드가 /me?withdrawError=코드로 돌려보낸 탈퇴 실패 사유 (back/docs/api-guidelines.md 6)

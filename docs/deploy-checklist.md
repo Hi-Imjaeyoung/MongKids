@@ -247,12 +247,14 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 ## L. 회원 탈퇴 (SCR-025, FR-028, #54)
 
 병합 전
+- [ ] 카카오 운영 앱 동의항목에서 `account_email`(카카오계정 이메일)·`phone_number`(휴대폰 번호) 켜기. 백엔드가 이 scope를 요청하므로 꺼져 있으면 **카카오 로그인 전체가 KOE205로 실패**한다. 휴대폰 번호는 비즈 앱 권한이 필요하다
+- [ ] 네이버 운영 앱 "제공 정보"에 이메일·휴대전화번호 추가 (기존 회원은 다음 로그인 때 추가 동의 화면)
 - [ ] 운영 RDS에 [`back/docs/sql/member-withdraw-ddl.sql`](../back/docs/sql/member-withdraw-ddl.sql) 실행 (`member.provider_id` NULL 허용). `validate` 기동이라 먼저 적용하지 않으면 새 jar가 뜨지 않는다
 - [ ] 카카오·네이버 콘솔에 `/login/oauth2/code/{kakao|naver}-withdraw` Redirect URI 등록 ([D](#d-개발자-콘솔))
 
 배포 후 (탈퇴해도 되는 테스트 계정으로)
 - [ ] `/oauth2/authorization/kakao-withdraw` 302의 `Location`에 `prompt=login`, `redirect_uri=https://{도메인}/login/oauth2/code/kakao-withdraw`. 네이버는 `auth_type=reauthenticate`
-- [ ] `/me`에서 탈퇴 → 소셜 로그인 화면이 다시 뜨는지 → 완료 화면, 로그아웃 상태
+- [ ] `/me`에서 탈퇴 → 소셜 로그인 화면이 다시 뜨는지 → 홈으로 이동해 완료 모달, 로그아웃 상태
 - [ ] 카카오: 내 카카오계정 > 연결된 서비스에서 몽키즈가 빠졌는지. 네이버: 네이버ID > 이력 관리 > 연결된 서비스에서 빠졌는지
 - [ ] DB: 그 회원 행의 `name`="탈퇴 회원", `provider_id`·`email`·`phone` NULL, `deleted_at` 기록
 - [ ] 같은 계정으로 다시 로그인하면 새 `member.id`로 가입되고, 탈퇴 전에 쓴 후기·댓글 작성자는 "탈퇴 회원"

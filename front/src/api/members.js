@@ -11,7 +11,7 @@ export function changeSnsAgreement(agreed) {
 }
 
 // 회원 탈퇴 (FR-028)는 페이지 이동으로 시작한다. 가입한 소셜 계정으로 다시 로그인해 본인을 확인하고,
-// 백엔드가 결과를 /me?withdrawn=true 또는 /me?withdrawError=코드로 돌려보낸다
+// 백엔드가 성공하면 홈(/?withdrawn=true, 완료 모달), 실패하면 /me?withdrawError=코드로 돌려보낸다
 export function getWithdrawUrl(provider) {
   return `/oauth2/authorization/${provider.toLowerCase()}-withdraw`
 }

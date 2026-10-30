@@ -1,8 +1,21 @@
 .withdraw-done {
-  padding: 64px 28px;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(31, 36, 48, 0.5);
+}
+
+.withdraw-done__dialog {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 28px 28px;
   background: var(--bg);
-  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   text-align: center;
   word-break: keep-all;
 }
@@ -20,7 +33,7 @@
 
 .withdraw-done__title {
   margin: 16px 0 0;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
 }
 
@@ -30,20 +43,21 @@
   font-size: 15px;
 }
 
-.withdraw-done__home {
+.withdraw-done__confirm {
+  width: 100%;
+  min-height: 52px;
   margin-top: 28px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--blue);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 @media (max-width: 640px) {
-  .withdraw-done {
-    padding: 48px 20px;
-  }
-
-  .withdraw-done__title {
-    font-size: 22px;
-  }
-
-  .withdraw-done__home {
-    width: 100%;
+  .withdraw-done__dialog {
+    padding: 36px 20px 20px;
   }
 }

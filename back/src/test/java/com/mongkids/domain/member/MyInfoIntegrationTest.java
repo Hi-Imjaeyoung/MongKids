@@ -30,6 +30,7 @@ import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mongkids.domain.auth.dto.OAuth2WithdrawPrincipal;
@@ -101,6 +102,26 @@ class MyInfoIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("소셜 로그인에서 받은 이메일·휴대폰 번호를 가입 때 저장하고, 다음 로그인에서 받은 값으로 갱신한다")
+	void login_savesSocialContact() {
+		// given: 처음 로그인 (가입)
+		LoginMemberResponse member = memberService.loginOrRegister(
+			new SocialLoginRequest(Provider.NAVER, "naver-id", "몽키", "first@naver.com", "01012345678"));
+		Member saved = memberRepository.findById(member.id()).orElseThrow();
+		assertThat(saved.getEmail()).isEqualTo("first@naver.com");
+		assertThat(saved.getPhone()).isEqualTo("01012345678");
+
+		// when: 번호가 바뀐 뒤 로그인, 이메일 동의는 철회
+		memberService.loginOrRegister(
+			new SocialLoginRequest(Provider.NAVER, "naver-id", "몽키", null, "01099998888"));
+
+		// then
+		Member updated = memberRepository.findById(member.id()).orElseThrow();
+		assertThat(updated.getPhone()).isEqualTo("01099998888");
+		assertThat(updated.getEmail()).isEqualTo("first@naver.com");
+	}
+
+	@Test
 	@DisplayName("SNS 수신 동의를 바꾸면 동의 시각을 저장하고, 철회하면 지운다")
 	void changeSnsAgreement() throws Exception {
 		Cookie cookie = tokenCookie(register("12345", "몽키"));
@@ -167,7 +188,7 @@ class MyInfoIntegrationTest {
 		MockHttpServletResponse response = withdraw(member, "12345");
 
 		// then
-		assertThat(response.getRedirectedUrl()).isEqualTo("/me?withdrawn=true");
+		assertThat(response.getRedirectedUrl()).isEqualTo("/?withdrawn=true");
 		assertThat(response.getCookie(TokenCookieManager.COOKIE_NAME).getMaxAge()).isZero();
 		then(socialUnlinkClient).should().unlink(Provider.KAKAO, "social-access-token");
 
@@ -209,20 +230,35 @@ class MyInfoIntegrationTest {
 		assertThat(memberRepository.findById(member.id()).orElseThrow().isWithdrawn()).isFalse();
 	}
 
+	// 파기를 먼저 flush하고 연결 끊기가 실패하면 롤백되는지 보려면 테스트 트랜잭션 밖에서 실제로 커밋·롤백돼야 한다
 	@Test
-	@DisplayName("소셜 연결 끊기가 실패하면 개인정보를 지우지 않고 탈퇴를 중단한다")
-	void withdraw_unlinkFailed_keepsMember() throws Exception {
-		LoginMemberResponse member = register("12345", "몽키");
-		willThrow(new BusinessException(ErrorCode.SOCIAL_UNLINK_FAILED))
-			.given(socialUnlinkClient).unlink(any(), any());
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
+	@DisplayName("소셜 연결 끊기가 실패하면 파기를 되돌려 개인정보를 남기고 탈퇴를 중단한다")
+	void withdraw_unlinkFailed_rollsBack() throws Exception {
+		LoginMemberResponse member = register("unlink-fail", "몽키");
+		try {
+			willThrow(new BusinessException(ErrorCode.SOCIAL_UNLINK_FAILED))
+				.given(socialUnlinkClient).unlink(any(), any());
+			MockHttpServletResponse response = withdraw(member, "unlink-fail");
 
-		MockHttpServletResponse response = withdraw(member, "12345");
+			assertThat(response.getRedirectedUrl()).isEqualTo("/me?withdrawError=M006");
+			assertThat(response.getCookie(TokenCookieManager.COOKIE_NAME)).isNull();
+			assertKept(member.id(), "unlink-fail");
 
-		assertThat(response.getRedirectedUrl()).isEqualTo("/me?withdrawError=M006");
-		assertThat(response.getCookie(TokenCookieManager.COOKIE_NAME)).isNull();
-		Member kept = memberRepository.findById(member.id()).orElseThrow();
+			// 예상하지 못한 오류도 오류 화면 대신 내 정보로 돌려보내고 되돌린다
+			willThrow(new IllegalStateException("network")).given(socialUnlinkClient).unlink(any(), any());
+			assertThat(withdraw(member, "unlink-fail").getRedirectedUrl()).isEqualTo("/me?withdrawError=failed");
+			assertKept(member.id(), "unlink-fail");
+		} finally {
+			memberRepository.deleteById(member.id());
+		}
+	}
+
+	private void assertKept(Long memberId, String providerId) {
+		Member kept = memberRepository.findById(memberId).orElseThrow();
 		assertThat(kept.isWithdrawn()).isFalse();
-		assertThat(kept.getProviderId()).isEqualTo("12345");
+		assertThat(kept.getProviderId()).isEqualTo(providerId);
+		assertThat(kept.getEmail()).isEqualTo("monkey@kakao.com");
 	}
 
 	@Test

@@ -65,6 +65,11 @@ public class OAuth2WithdrawHandler {
 			log.info("회원 탈퇴 실패: memberId={}, {}", memberId.get(), e.getErrorCode().getCode());
 			redirectFailure(response, e.getErrorCode().getCode());
 			return;
+		} catch (RuntimeException e) {
+			// 브라우저 이동 중이라 오류 페이지 대신 내 정보 화면으로 돌려보낸다. 트랜잭션은 이미 롤백됐다
+			log.error("회원 탈퇴 중 오류: memberId={}", memberId.get(), e);
+			redirectFailure(response, FAILED);
+			return;
 		}
 		tokenCookieManager.removeTokenCookie(response);
 		response.sendRedirect(authProperties.withdrawSuccessUrl());
