@@ -37,6 +37,7 @@ spring:
 ```
 
 - H2의 MariaDB 모드는 문법 일부만 호환한다. MariaDB 전용 함수·네이티브 쿼리는 H2에서 검증되지 않으므로 로컬 MariaDB에서 따로 확인한다.
+- 테스트 JVM은 운영과 같은 `Asia/Seoul` 시간대로 돈다(`build.gradle`의 `test` 작업). CI(UTC)에서 `jdbc.time_zone` 변환으로 15시 이후 `LocalTime`이 자정을 넘겨 저장돼 정렬이 바뀌는 문제를 막는다 (#63).
 
 ## 4. 작성 규칙
 
