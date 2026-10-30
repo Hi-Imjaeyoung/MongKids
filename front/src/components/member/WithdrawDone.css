@@ -1,0 +1,49 @@
+.withdraw-done {
+  padding: 64px 28px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.withdraw-done__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
+.withdraw-done__title {
+  margin: 16px 0 0;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.withdraw-done__description {
+  margin: 8px 0 0;
+  color: var(--text-sub);
+  font-size: 15px;
+}
+
+.withdraw-done__home {
+  margin-top: 28px;
+}
+
+@media (max-width: 640px) {
+  .withdraw-done {
+    padding: 48px 20px;
+  }
+
+  .withdraw-done__title {
+    font-size: 22px;
+  }
+
+  .withdraw-done__home {
+    width: 100%;
+  }
+}

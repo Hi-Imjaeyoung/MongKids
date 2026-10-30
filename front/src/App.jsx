@@ -15,6 +15,7 @@ import AttendancePage from './pages/AttendancePage'
 import FaqPage from './pages/FaqPage'
 import HomePage from './pages/HomePage'
 import LabListPage from './pages/LabListPage'
+import MyInfoPage from './pages/MyInfoPage'
 import NewsDetailPage from './pages/NewsDetailPage'
 import NewsListPage from './pages/NewsListPage'
 import ProgramDetailPage from './pages/ProgramDetailPage'
@@ -28,8 +29,8 @@ const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
 
 // 모바일 하단 고정 상담 바를 두지 않는 화면
 // SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문, SCR-012 수업 후기, SCR-014 관리자,
-// 근태 EMP-SCR-001 수업 시작·종료 체크
-const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews', '/admin', '/attendance']
+// 근태 EMP-SCR-001 수업 시작·종료 체크, SCR-025 내 정보
+const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews', '/admin', '/attendance', '/me']
 // SCR-016~020 프로그램 상세 (/programs/:programId)
 const NO_MOBILE_CTA_PREFIXES = ['/programs/']
 // 고객용 푸터와 빠른 상담 버튼(후기·전화·인스타그램)을 두지 않는 직원용 화면 (근태 EMP-SCR-001)
@@ -146,6 +147,10 @@ function App() {
             <Route path="/reviews" element={<ReviewsPage member={member} onLoginClick={openLogin} />} />
             <Route path="/admin" element={<AdminPage member={member} newConsultationCount={newConsultationCount} onLoginClick={openLogin} />} />
             <Route path="/attendance" element={<AttendancePage member={member} onLoginClick={openLogin} />} />
+            <Route
+              path="/me"
+              element={<MyInfoPage member={member} onLoginClick={openLogin} onMemberChange={setMember} />}
+            />
             <Route path="*" element={homePage} />
           </Routes>
         </Suspense>

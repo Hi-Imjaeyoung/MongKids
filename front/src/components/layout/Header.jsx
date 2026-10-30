@@ -27,10 +27,15 @@ function Header({
   // 로그인 버튼, 또는 회원 이름 · 수업 체크 링크(STAFF·ADMIN, EMP-SCR-001) · 관리자 링크(ADMIN만) · 로그아웃. 데스크톱은 주메뉴 오른쪽, 모바일은 햄버거 버튼 왼쪽에 둔다
   const auth = member ? (
     <>
-      <span className="header__member">
+      {/* 내 정보(SCR-025)로 들어가는 링크 */}
+      <NavLink
+        to="/me"
+        className={({ isActive }) => `header__member ${isActive ? 'header__member--active' : ''}`}
+        onClick={() => setMenuOpen(false)}
+      >
         <span className="header__member-name">{member.name}</span>
         {headerAuth.memberSuffix}
-      </span>
+      </NavLink>
       {canUseAttendance(member) && (
         <Link to="/attendance" className="header__admin-link" onClick={() => setMenuOpen(false)}>
           {headerAttendanceLink}

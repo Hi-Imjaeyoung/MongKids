@@ -1,0 +1,77 @@
+.my-info-layout {
+  min-height: calc(100vh - var(--header-height));
+  background: var(--bg-soft);
+}
+
+.my-info-layout__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 56px 20px 80px;
+}
+
+.my-info-heading__eyebrow {
+  margin: 0;
+  color: var(--blue-text);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.my-info-heading__title {
+  margin: 8px 0 0;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.my-info-heading__description {
+  margin: 8px 0 0;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.my-info-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.my-info-notice__message {
+  margin: 0;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+/* 탈퇴 실패 등 화면 위쪽 안내 */
+.my-info-alert {
+  margin: 0;
+  padding: 12px 16px;
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-md);
+  color: var(--danger);
+  font-size: 14px;
+  font-weight: 600;
+  word-break: keep-all;
+}
+
+@media (max-width: 640px) {
+  .my-info-layout__inner {
+    gap: 20px;
+    padding: 32px 16px 56px;
+  }
+
+  .my-info-heading__title {
+    font-size: 26px;
+  }
+
+  .my-info-heading__description {
+    font-size: 14px;
+  }
+}

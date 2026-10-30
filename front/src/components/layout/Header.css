@@ -83,8 +83,19 @@
   white-space: nowrap;
 }
 
+/* 내 정보(SCR-025) 링크 */
 .header__member {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-weight: 700;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--blue);
+}
+
+.header__member:hover,
+.header__member--active {
+  text-decoration-line: underline;
 }
 
 .header__member-name {
