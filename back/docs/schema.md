@@ -231,7 +231,7 @@ erDiagram
 | latitude | DOUBLE | NOT NULL | 수업 시작 판정 기준 좌표 |
 | longitude | DOUBLE | NOT NULL | |
 
-- 등록 화면(EMP-SCR-006, #63)이 생기기 전까지 `back/docs/sql/attendance-seed.sql`로 직접 넣는다.
+- 관리자 화면(EMP-SCR-006)에서 등록·수정한다. 할당된 수업이 있으면 삭제할 수 없다. 좌표를 바꿔도 `class_start.distance_meters`는 다시 계산하지 않는다.
 
 ### class_session — 날짜별 수업 (EMP-FR-004)
 
@@ -245,7 +245,7 @@ erDiagram
 | end_time | TIME | NOT NULL | |
 | target | VARCHAR(50) | NULL | 대상(반) |
 
-- 수업 1행 = 한 날짜의 한 회. 반복 일정은 #63에서 정한다.
+- 수업 1행 = 한 날짜의 한 회. 반복 일정은 테이블로 두지 않고, 관리자가 기간·요일로 반복 등록하면 날짜마다 행을 만든다(EMP-FR-004). 수업 시작·종료 기록이나 시도 로그가 있는 행은 수정·삭제하지 않는다.
 - INDEX (`staff_id`, `class_date`)
 
 ### class_start — 수업 시작 기록 (EMP-FR-001, 002, 011)

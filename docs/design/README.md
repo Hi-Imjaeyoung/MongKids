@@ -29,5 +29,6 @@
 | SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-015 게시물 작성·수정 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | EMP-SCR-001 수업 시작·종료 체크 (근태 관리) | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 시안 확정 (2026-10-29, 페이지 `EMP-SCR-001 수업 시작·종료 체크`, 모바일 390, 7화면: 오늘 수업·위치 확인 실패·위치 권한 안내·수동 등록·시작 확정·수업 종료·기록 정정). 확정 PNG 내보내기 필요 |
+| EMP-SCR-006 근태 관리자 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 승인 (2026-10-30, 페이지 `EMP-SCR-006 근태 관리자`, 데스크톱 4화면: 수업 시작 승인·수업 기록·수업 할당·기관 위치 + 직접 등록 대화상자 + 모바일 수업 시작 승인). 구현에서 상세·승인·기관·수업 등록 폼을 오른쪽 칸 대신 모달로 바꿈(사용자 결정 2026-10-30, 시안에는 미반영). 확정 PNG 내보내기 필요 |
 
 - 초안은 아티팩트 하나("MongKids 화면 초안")에 모으고, 화면마다 페이지(`SCR-006 수업 현장` 등)를 나눈다.

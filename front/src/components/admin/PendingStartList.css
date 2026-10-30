@@ -1,0 +1,54 @@
+.pending-start-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pending-start-list__card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pending-start-list__card:hover {
+  border-color: var(--border-strong);
+}
+
+.pending-start-list__card--selected,
+.pending-start-list__card--selected:hover {
+  border-color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.pending-start-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pending-start-list__title {
+  font-size: 16px;
+  word-break: keep-all;
+}
+
+.pending-start-list__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  color: var(--text-sub);
+  font-size: 14px;
+}

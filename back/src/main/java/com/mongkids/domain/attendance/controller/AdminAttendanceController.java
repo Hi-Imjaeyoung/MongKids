@@ -21,7 +21,7 @@ import com.mongkids.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-// 근태 관리자 기능 (EMP-FR-003, EMP-FR-011). 화면(EMP-SCR-006)은 #63에서 만든다
+// 근태 관리자 기능 (EMP-FR-003, EMP-FR-011, EMP-SCR-006)
 @RestController
 @RequestMapping("/api/v1/admin/attendance")
 @RequiredArgsConstructor
@@ -39,9 +39,10 @@ public class AdminAttendanceController {
 		@AuthenticationPrincipal Long memberId,
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-		@RequestParam(required = false) Long staffId
+		@RequestParam(required = false) Long staffId,
+		@RequestParam(required = false) Long institutionId
 	) {
-		return ApiResponse.success(attendanceService.getClassRecords(memberId, from, to, staffId));
+		return ApiResponse.success(attendanceService.getClassRecords(memberId, from, to, staffId, institutionId));
 	}
 
 	@PostMapping("/classes/{classSessionId}/start/approve")

@@ -213,11 +213,11 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 
 - [x] 1. 운영 RDS에 `back/docs/sql/attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 6개(`institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image`) — 2026-10-29 적용, 6개 테이블 확인
 - [x] 2. 백엔드 IAM 권한에 사진 버킷 `attendance/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 수업 사진 업로드가 S3에서 403, 저장은 `E010` — 2026-10-29 적용
-- [ ] 3. 실제 기관·좌표·수업을 `back/docs/sql/attendance-seed.sql` 형식으로 넣는다. 직원은 관리자 화면 "회원·직원 권한"에서 먼저 지정. 좌표는 기관 출입구 쪽을 소수점 6자리까지
+- [ ] 3. (#63 이후: 관리자 화면 "기관 위치"·"수업 할당"에서 등록 → [M](#m-근태-관리자-화면-emp-scr-006-63)) 실제 기관·좌표·수업을 `back/docs/sql/attendance-seed.sql` 형식으로 넣는다. 직원은 관리자 화면 "회원·직원 권한"에서 먼저 지정. 좌표는 기관 출입구 쪽을 소수점 6자리까지
 - [ ] 4. 직원 계정으로 로그인 → 헤더 "수업 체크" → `/attendance`에 오늘 수업이 보인다
 - [ ] 5. 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome, 삼성 인터넷): 기관 안에서 시작 확정, 기관에서 떨어진 곳에서 거리 안내 → 수동 등록, 위치 권한 거부·위치 꺼짐 안내
 - [ ] 6. 수업 종료 사진 여러 장 업로드 → 종료 완료 → 수업 기록 정정(사진 빼기·추가)
-- [ ] 7. 관리자 승인·반려는 화면이 없어(#63) API로 확인: `GET /api/v1/admin/attendance/pending-starts`, `POST .../classes/{id}/start/approve|reject`
+- [ ] 7. 관리자 승인·반려는 #63 이후 관리자 화면 "수업 시작 승인"에서 확인. 그 전에는 API로 확인: `GET /api/v1/admin/attendance/pending-starts`, `POST .../classes/{id}/start/approve|reject`
 
 ### K-1. 사용자 직접 테스트 (배포 후)
 
@@ -260,3 +260,18 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [ ] 같은 계정으로 다시 로그인하면 새 `member.id`로 가입되고, 탈퇴 전에 쓴 후기·댓글 작성자는 "탈퇴 회원"
 - [ ] 다른 소셜 계정으로 본인 확인하면 "가입한 계정으로 확인" 안내가 나오고 탈퇴되지 않는지, 재로그인을 취소하면 취소 안내가 나오는지
 - [ ] 직원·관리자 계정은 탈퇴 버튼 대신 안내
+
+## M. 근태 관리자 화면 (EMP-SCR-006, #63)
+
+새 테이블은 없다(운영 DDL 불필요). 지도는 카카오맵([ADR-007](adr/ADR-007-map-api-provider.md))이고 키는 프론트 빌드에 들어간다.
+
+- [ ] 1. 카카오 개발자 콘솔: 카카오맵 활성화(계정의 첫 활성화 앱이어야 무료 제공량, "카카오맵 무료 쿼터" 확인), JavaScript 키의 Web 사이트 도메인에 `https://mongkiz.com`과 `http://localhost:5173` 등록 (사용자)
+- [ ] 2. 로컬: `front/.env.local`에 `VITE_KAKAO_MAP_KEY=<JavaScript 키>` (커밋 안 함, `*.local`은 gitignore). 키가 없으면 지도 대신 위도·경도 직접 입력으로 동작한다
+- [ ] 3. 운영 빌드: GitHub Actions `front.yml`의 `npm run build`에 `VITE_KAKAO_MAP_KEY`를 넘긴다(저장소 Variables). 카카오 개발자 앱 승인 후 추가한다 (사용자 결정 2026-10-30). 그 전 운영은 위도·경도 직접 입력으로 동작
+- [ ] 4. 관리자 로그인 → `/admin` "기관 위치": 주소로 찾기 → 핀 끌어 보정 → 저장. 할당된 수업이 있는 기관은 삭제 버튼이 꺼져 있다
+- [ ] 5. "수업 할당": 기간·요일로 등록 → 목록에 날짜별 수업. 같은 직원 시간 겹침은 거절. 기록 있는 수업은 수정·삭제 불가
+- [ ] 6. 직원 계정으로 기관 반경 안에서 수업 시작 → 시작 확정 (등록한 좌표로 판정되는지)
+- [ ] 7. 직원 수동 등록 → "수업 시작 승인" 배지·목록 → 승인 / 반려(사유) → 직원 화면에 반려 사유
+- [ ] 8. "수업 기록": 기간·직원·상태 필터, 종료 사진·특이사항 보기, 시작 전 수업 직접 등록
+- [ ] 9. 모바일 폭(390px)에서 메뉴·목록·승인 화면 확인
+- [ ] 10. #61 시드로 넣은 기관·수업은 일반 데이터로 그대로 쓰고, 좌표가 맞는지 "기관 위치"에서 지도로 다시 확인한다

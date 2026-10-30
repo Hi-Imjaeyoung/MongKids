@@ -54,3 +54,64 @@ export function getMembers({ role, keyword, page = 0, size = 20 } = {}) {
 export function changeMemberRole(memberId, role) {
   return request(`/api/v1/admin/members/${memberId}/role`, { method: 'PUT', ...jsonBody({ role }) })
 }
+
+// 근태 관리 (EMP-SCR-006) ---------------------------------------------------------
+// 수업 항목은 AdminClassSessionResponse { staffId, staffName, institutionId, classSession }
+
+// 수업 시작 승인 대기, 먼저 등록한 순 (EMP-FR-011)
+export function getPendingStarts() {
+  return request('/api/v1/admin/attendance/pending-starts')
+}
+
+export function approveStart(classSessionId) {
+  return request(`/api/v1/admin/attendance/classes/${classSessionId}/start/approve`, { method: 'POST' })
+}
+
+export function rejectStart(classSessionId, reason) {
+  return request(`/api/v1/admin/attendance/classes/${classSessionId}/start/reject`, {
+    method: 'POST',
+    ...jsonBody({ reason }),
+  })
+}
+
+// 관리자 직접 등록. 기록이 없거나 반려된 수업만
+export function registerStart(classSessionId, reason) {
+  return request(`/api/v1/admin/attendance/classes/${classSessionId}/start`, { method: 'POST', ...jsonBody({ reason }) })
+}
+
+// 기간(최대 31일)·직원·기관별 수업과 시작·종료 기록 (EMP-FR-003, 004, 007). 날짜는 'YYYY-MM-DD'
+export function getClassRecords({ from, to, staffId, institutionId }) {
+  return request(`/api/v1/admin/attendance/classes?${query({ from, to, staffId, institutionId })}`)
+}
+
+// 수업 반복 등록 (EMP-FR-004). { institutionId, staffId, firstDate, lastDate, daysOfWeek, startTime, endTime, target }
+export function createClassSessions(body) {
+  return request('/api/v1/admin/attendance/classes', { method: 'POST', ...jsonBody(body) })
+}
+
+// { institutionId, staffId, classDate, startTime, endTime, target }
+export function updateClassSession(classSessionId, body) {
+  return request(`/api/v1/admin/attendance/classes/${classSessionId}`, { method: 'PUT', ...jsonBody(body) })
+}
+
+export function deleteClassSession(classSessionId) {
+  return request(`/api/v1/admin/attendance/classes/${classSessionId}`, { method: 'DELETE' })
+}
+
+// 기관 위치 (EMP-FR-012). 항목은 { id, name, address, latitude, longitude, classSessionCount }
+export function getInstitutions() {
+  return request('/api/v1/admin/institutions')
+}
+
+// { name, address, latitude, longitude }
+export function createInstitution(body) {
+  return request('/api/v1/admin/institutions', { method: 'POST', ...jsonBody(body) })
+}
+
+export function updateInstitution(institutionId, body) {
+  return request(`/api/v1/admin/institutions/${institutionId}`, { method: 'PUT', ...jsonBody(body) })
+}
+
+export function deleteInstitution(institutionId) {
+  return request(`/api/v1/admin/institutions/${institutionId}`, { method: 'DELETE' })
+}

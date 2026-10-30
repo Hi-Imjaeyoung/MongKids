@@ -12,5 +12,7 @@ public interface ClassEndRepository extends JpaRepository<ClassEnd, Long> {
 
 	Optional<ClassEnd> findByClassSessionId(Long classSessionId);
 
+	boolean existsByClassSessionId(Long classSessionId);
+
 	List<ClassEnd> findByClassSessionIdIn(Collection<Long> classSessionIds);
 }

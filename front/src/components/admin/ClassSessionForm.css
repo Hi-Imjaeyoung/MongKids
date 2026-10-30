@@ -1,0 +1,42 @@
+.class-session-form {
+  gap: 14px;
+}
+
+.class-session-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.class-session-form__group legend {
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+.class-session-form__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.class-session-form__day {
+  min-height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-sub);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.class-session-form__day--on {
+  border-color: var(--text);
+  background: var(--text);
+  color: var(--bg);
+}

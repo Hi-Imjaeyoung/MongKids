@@ -124,6 +124,9 @@
 | 2026-10-30 | 백엔드 | 소셜 로그인에서 휴대폰 번호·이메일 받기 (FR-019, 사용자 요청): 네이버 `mobile`·`email`, 카카오 `phone_number`·`email` 파싱. 번호는 숫자만 국내 형식(`+82 10-…` → `010…`)으로 가입 때 저장하고 로그인마다 갱신(값이 없으면 유지). 테스트 3개 추가(전체 176개 통과). 네이버 로컬 확인 (사용자). 카카오는 비즈 앱 전환이 필요해 scope를 `profile_nickname`으로 유지하고 추후 진행 (사용자 결정) |
 | 2026-10-30 | 공통 | #68 병합 전 운영 RDS에 `member-withdraw-ddl.sql` 적용 (사용자가 SSM 터널 열고 승인): `member.provider_id` NOT NULL → NULL 허용, `uk_member_provider` 유지 확인. 적용 후 운영 API 정상(`/api/v1/reviews` 200, `/members/me` 비로그인 401) |
 | 2026-10-30 | 공통 | #68 squash 병합 후 운영 배포 (front·back Actions 성공, `validate` 기동 정상). 점검: `/members/me`·SNS 변경 비로그인 401, `/me` 200, `{kakao,naver}-withdraw` 인가 주소에 `prompt=login`·`auth_type=reauthenticate`와 `https://mongkiz.com/login/oauth2/code/*-withdraw` 콜백, 일반 로그인에는 재인증 파라미터 없음. 실제 운영 탈퇴·번호 저장 확인은 네이버 검수 완료 후 (사용자). `feature/54-my-info` 삭제, 이전 브랜치 `feature/54-my-page`(PR #55)는 요구사항이 #68에 반영돼 닫고 진행 기록만 옮김 |
+| 2026-10-30 | 공통 | #63 작업 계획 확정 (사용자): 지도는 카카오맵(ADR-007 Accepted), 관리자 화면은 `/admin`에 "근태 관리" 메뉴 4개, 수업 할당은 기간·요일 반복 등록 → 날짜별 `class_session` 생성(새 테이블 없음), 기관 좌표를 바꿔도 저장된 수업 시작 거리는 그대로. EMP-SCR-006 시안 초안 승인([아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy), PNG 내보내기 필요) |
+| 2026-10-30 | 백엔드 | #63 기관 위치 API(`/api/v1/admin/institutions`, EMP-FR-012: 등록·수정·삭제, 수업 있으면 삭제 불가), 수업 할당 API(`/api/v1/admin/attendance/classes` POST·PUT·DELETE, EMP-FR-004: 최대 6개월 반복 등록, 같은 직원 시간 겹침 거절, 기록·시작 시도가 있는 수업은 수정·삭제 불가), 직원 본인 할당 조회(`GET /api/v1/attendance/classes?from&to`), 기록 조회에 기관 필터·`institutionId` 추가. `ErrorCode` E011~E016. 통합 테스트 3개 추가, `gradlew build` 통과 |
+| 2026-10-30 | 프론트 | #63 `/admin` 근태 관리 메뉴(EMP-SCR-006): 수업 시작 승인(승인 대기 배지·승인·반려 사유), 수업 기록(기간·직원·상태 필터, 종료 사진·특이사항, 직접 등록 대화상자), 수업 할당(반복 등록 폼·회차 수정·삭제), 기관 위치(카카오맵 SDK 동적 로드, 주소 검색·핀 보정·반경 100m 원, 키가 없으면 위도·경도 직접 입력). 근태 메뉴는 지연 로딩(첫 번들 471→481kB). `npm run lint && npm run build` 통과. 로컬 화면 확인(관리자 로그인)은 아직 |
 
 ## 이슈 / 블로커
 
@@ -150,7 +153,8 @@
 - [x] SCR-003 범위·구성 확정 (2026-10-20, 기획 v4 기준 디자인 초안)
 - [x] SCR-024 몽키즈 연구소 범위 결정 (2026-10-20, FR-008·009·012 변경, FR-024 신설)
 - [ ] 동시 접속 30명 부하 확인 (NFR-001)
-- [ ] 근태 관리 관리자 화면(EMP-SCR-006: 기관 위치 등록·수업 할당·수업 시작 승인) 구현 (#63, 선행: 지도 API 제공자 ADR-007·시안). #61은 기관·좌표·수업 할당 시드 데이터로 진행 (사용자 결정 2026-10-29)
+- [x] 근태 관리 관리자 화면(EMP-SCR-006: 기관 위치 등록·수업 할당·수업 시작 승인·기록 조회) 구현 (#63, 2026-10-30)
+- [ ] #63 확인·배포: 카카오맵 활성화·도메인 등록(사용자), `front/.env.local`에 `VITE_KAKAO_MAP_KEY`, 운영 빌드 키(`front.yml`)는 카카오 개발자 앱 승인 후 추가(사용자 결정 2026-10-30), 로컬·운영 화면 점검, EMP-SCR-006 시안 PNG 내보내기 ([deploy-checklist.md](deploy-checklist.md) M)
 - [x] #61 병합 전: 운영 DDL 적용, IAM `attendance/*` 권한 (2026-10-29, [deploy-checklist.md](deploy-checklist.md) K)
 - [ ] #61 배포 후 실제 기관·수업 시드 입력 ([deploy-checklist.md](deploy-checklist.md) K)
 - [ ] #61 배포 후 사용자 직접 테스트: 테스트 계정에 테스트 기관·수업을 할당해 위치 판정 정확성과 기능 확인, 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome·삼성 인터넷) 점검 ([deploy-checklist.md](deploy-checklist.md) K, K-1)
