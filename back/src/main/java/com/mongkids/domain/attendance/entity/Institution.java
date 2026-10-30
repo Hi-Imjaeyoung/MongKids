@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 수업하는 기관과 위치 (EMP-FR-012). 좌표는 수업 시작 판정(EMP-FR-001)의 기준이다.
- * 등록 화면(EMP-SCR-006)이 생기기 전까지는 시드 SQL로 넣는다.
+ * 관리자 화면(EMP-SCR-006)에서 등록·수정한다. 좌표를 바꿔도 이미 저장된 수업 시작 기록의 거리는 그대로 둔다.
  */
 @Entity
 @Table(name = "institution")
@@ -41,6 +41,13 @@ public class Institution extends BaseTimeEntity {
 
 	@Builder
 	private Institution(String name, String address, double latitude, double longitude) {
+		this.name = name;
+		this.address = address;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+
+	public void update(String name, String address, double latitude, double longitude) {
 		this.name = name;
 		this.address = address;
 		this.latitude = latitude;
