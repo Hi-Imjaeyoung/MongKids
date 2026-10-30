@@ -59,6 +59,6 @@ class JwtProviderTest {
 	}
 
 	private static AuthProperties properties(String secret, Duration expiration) {
-		return new AuthProperties(secret, expiration, false, "/", "/?loginError=true");
+		return new AuthProperties(secret, expiration, false, "/", "/?loginError=true", "/?withdrawn=true", "/me");
 	}
 }

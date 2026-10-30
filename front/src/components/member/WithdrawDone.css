@@ -1,0 +1,63 @@
+.withdraw-done {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(31, 36, 48, 0.5);
+}
+
+.withdraw-done__dialog {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 28px 28px;
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.withdraw-done__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
+.withdraw-done__title {
+  margin: 16px 0 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.withdraw-done__description {
+  margin: 8px 0 0;
+  color: var(--text-sub);
+  font-size: 15px;
+}
+
+.withdraw-done__confirm {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 28px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--blue);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .withdraw-done__dialog {
+    padding: 36px 20px 20px;
+  }
+}

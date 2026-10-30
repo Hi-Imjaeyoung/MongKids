@@ -1,0 +1,129 @@
+.my-info-card {
+  padding: 8px 28px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.my-info-card__list {
+  margin: 0;
+}
+
+.my-info-card__row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.my-info-card__row:last-child {
+  border-bottom: 0;
+}
+
+.my-info-card__label {
+  color: var(--text-sub);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.my-info-card__value {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.my-info-card__value--email {
+  word-break: break-all;
+}
+
+.my-info-card__empty {
+  color: var(--text-sub);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.my-info-card__account {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.my-info-card__provider {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 999px;
+  font-size: 15px;
+}
+
+.my-info-card__provider-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.my-info-card__provider--kakao {
+  background: var(--yellow-soft);
+}
+
+.my-info-card__provider--kakao .my-info-card__provider-mark {
+  background: var(--kakao);
+  color: var(--kakao-text);
+}
+
+.my-info-card__provider--naver {
+  background: var(--green-soft);
+}
+
+.my-info-card__provider--naver .my-info-card__provider-mark {
+  background: var(--naver);
+  color: #fff;
+}
+
+.my-info-card__joined {
+  color: var(--text-sub);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.my-info-card__sns {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+@media (max-width: 640px) {
+  .my-info-card {
+    padding: 4px 18px;
+  }
+
+  .my-info-card__row {
+    display: block;
+    padding: 16px 0;
+  }
+
+  .my-info-card__label {
+    font-size: 13px;
+  }
+
+  .my-info-card__value {
+    margin-top: 4px;
+    font-size: 16px;
+  }
+
+  .my-info-card__account {
+    margin-top: 8px;
+  }
+
+  .my-info-card__joined {
+    font-size: 13px;
+  }
+}

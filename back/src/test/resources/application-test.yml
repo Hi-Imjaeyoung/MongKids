@@ -16,6 +16,12 @@ spring:
           naver:
             client-id: test-naver-client-id
             client-secret: test-naver-client-secret
+          kakao-withdraw:
+            client-id: test-kakao-client-id
+            client-secret: test-kakao-client-secret
+          naver-withdraw:
+            client-id: test-naver-client-id
+            client-secret: test-naver-client-secret
 
 app:
   auth:

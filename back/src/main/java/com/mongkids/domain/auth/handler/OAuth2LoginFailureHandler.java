@@ -22,11 +22,17 @@ import lombok.extern.slf4j.Slf4j;
 public class OAuth2LoginFailureHandler implements AuthenticationFailureHandler {
 
 	private final AuthProperties authProperties;
+	private final OAuth2WithdrawHandler withdrawHandler;
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException exception) throws IOException {
 		log.info("소셜 로그인 실패: {}", exception.getMessage());
+		// 탈퇴 본인 확인 재로그인 (FR-028)을 취소하거나 실패하면 내 정보 화면으로 돌려보낸다
+		if (withdrawHandler.isWithdrawCallback(request)) {
+			withdrawHandler.onFailure(response, exception);
+			return;
+		}
 		response.sendRedirect(authProperties.loginFailureUrl());
 	}
 }

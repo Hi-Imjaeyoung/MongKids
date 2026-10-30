@@ -27,6 +27,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
+	public static final String WITHDRAWN_NAME = "탈퇴 회원";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -35,7 +37,8 @@ public class Member extends BaseTimeEntity {
 	@Column(nullable = false, columnDefinition = "varchar(10)")
 	private Provider provider;
 
-	@Column(nullable = false, length = 100)
+	// 탈퇴하면 지운다 (FR-028). 같은 소셜 계정으로 다시 가입할 수 있도록 NULL을 허용한다
+	@Column(length = 100)
 	private String providerId;
 
 	@Column(nullable = false, length = 50)
@@ -59,12 +62,26 @@ public class Member extends BaseTimeEntity {
 	private LocalDateTime deletedAt;
 
 	@Builder
-	private Member(Provider provider, String providerId, String name, String email) {
+	private Member(Provider provider, String providerId, String name, String email, String phone) {
 		this.provider = provider;
 		this.providerId = providerId;
 		this.name = name;
 		this.email = email;
+		this.phone = phone;
 		this.role = MemberRole.MEMBER;
+	}
+
+	/**
+	 * 로그인할 때 소셜 서비스에서 받은 이메일·휴대폰 번호로 갱신한다 (FR-019).
+	 * 동의를 철회해 값이 오지 않으면 기존 값을 그대로 둔다.
+	 */
+	public void updateSocialContact(String email, String phone) {
+		if (email != null) {
+			this.email = email;
+		}
+		if (phone != null) {
+			this.phone = phone;
+		}
 	}
 
 	public void registerSignUpInfo(String phone, boolean snsAgreed) {
@@ -85,8 +102,20 @@ public class Member extends BaseTimeEntity {
 		this.role = MemberRole.MEMBER;
 	}
 
+	/**
+	 * 탈퇴 표시와 함께 개인정보를 바로 지운다 (FR-028). 작성한 글은 남고 작성자는 "탈퇴 회원"으로 보인다.
+	 */
 	public void withdraw() {
 		this.deletedAt = LocalDateTime.now();
+		this.name = WITHDRAWN_NAME;
+		this.providerId = null;
+		this.email = null;
+		this.phone = null;
+		changeSnsAgreement(false);
+	}
+
+	public boolean isSocialAccount(Provider provider, String providerId) {
+		return this.provider == provider && providerId != null && providerId.equals(this.providerId);
 	}
 
 	public boolean isWithdrawn() {

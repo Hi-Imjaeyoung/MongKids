@@ -22,8 +22,29 @@ spring:
             client-authentication-method: client_secret_post
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            # 이메일·휴대폰 번호(FR-019)는 비즈 앱 전환 후 동의항목을 켜고 account_email, phone_number를 추가한다.
+            # 콘솔에서 켜지 않은 항목을 요청하면 로그인이 KOE205로 실패한다. 응답 파싱(OAuth2UserInfo)은 이미 되어 있다
             scope: profile_nickname
+          # 네이버는 scope를 쓰지 않고, 콘솔 "제공 정보"(이메일·휴대전화번호)에서 받을 항목을 정한다
           naver:
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
+            client-name: Naver
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          # 탈퇴 본인 확인 재로그인 (FR-028). 같은 앱 키를 쓰고 콜백 주소만 다르다 (각 콘솔에 Redirect URI 등록 필요)
+          kakao-withdraw:
+            provider: kakao
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-name: Kakao
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: profile_nickname
+          naver-withdraw:
+            provider: naver
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
             client-name: Naver
@@ -49,6 +70,8 @@ app:
     cookie-secure: false
     login-success-url: /
     login-failure-url: /?loginError=true
+    withdraw-success-url: /?withdrawn=true
+    withdraw-failure-url: /me
   storage:
     bucket: ${AWS_S3_BUCKET}
     region: ${AWS_REGION:ap-northeast-2}
