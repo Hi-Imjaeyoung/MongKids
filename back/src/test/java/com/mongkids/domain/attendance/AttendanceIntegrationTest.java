@@ -424,7 +424,7 @@ class AttendanceIntegrationTest {
 		startByLocation(tokenCookie(staff), started, NEAR_LAT).andExpect(status().isOk());
 		startByLocation(tokenCookie(staff), attempted, FAR_LAT).andExpect(status().isOk());
 
-		updateSession(admin, started, staff.id(), "15:00", "15:50")
+		updateSession(admin, started, staff.id(), "14:00", "14:50")
 			.andExpect(status().isConflict())
 			.andExpect(jsonPath("$.error.code").value("E013"));
 		mockMvc.perform(delete("/api/v1/admin/attendance/classes/{id}", attempted).cookie(admin))
@@ -433,10 +433,11 @@ class AttendanceIntegrationTest {
 		updateSession(admin, free, staff.id(), "09:30", "10:00")
 			.andExpect(jsonPath("$.error.code").value("E014"));
 
-		updateSession(admin, free, other.id(), "15:00", "15:50")
+		// CI(UTC) 테스트 JVM에서는 jdbc.time_zone(Asia/Seoul) 변환으로 15시 이후 시각이 자정을 넘겨 정렬이 바뀌므로 14시를 쓴다
+		updateSession(admin, free, other.id(), "14:00", "14:50")
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.staffId").value(other.id()))
-			.andExpect(jsonPath("$.data.classSession.startTime").value("15:00:00"))
+			.andExpect(jsonPath("$.data.classSession.startTime").value("14:00:00"))
 			.andExpect(jsonPath("$.data.classSession.target").value("달님반"));
 
 		mockMvc.perform(get("/api/v1/attendance/classes").cookie(tokenCookie(other))
