@@ -1,0 +1,30 @@
+.class-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.class-filters__date {
+  width: 168px;
+}
+
+.class-filters__select {
+  width: 168px;
+}
+
+.class-filters__actions {
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .class-filters > * {
+    flex: 1 1 140px;
+  }
+
+  .class-filters__date,
+  .class-filters__select,
+  .class-filters__actions .admin-form__button {
+    width: 100%;
+  }
+}

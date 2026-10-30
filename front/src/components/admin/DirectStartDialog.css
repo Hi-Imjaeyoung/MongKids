@@ -1,0 +1,35 @@
+.direct-start-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 140px 16px 20px;
+  background: rgba(31, 36, 48, 0.45);
+  overflow-y: auto;
+}
+
+.direct-start-dialog__box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  box-shadow: var(--shadow-md);
+  word-break: keep-all;
+}
+
+.direct-start-dialog__title {
+  margin: 0;
+  font-size: 20px;
+}
+
+@media (max-width: 640px) {
+  .direct-start-dialog {
+    padding-top: 80px;
+  }
+}

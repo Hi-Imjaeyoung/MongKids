@@ -1,0 +1,16 @@
+.institution-form {
+  gap: 14px;
+}
+
+.institution-form__search {
+  display: flex;
+  gap: 8px;
+}
+
+.institution-form__search .admin-form__button {
+  flex: none;
+}
+
+.institution-form__delete {
+  margin-right: auto;
+}
