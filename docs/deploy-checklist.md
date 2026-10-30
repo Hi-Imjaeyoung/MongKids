@@ -267,7 +267,7 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 
 - [ ] 1. 카카오 개발자 콘솔: 카카오맵 활성화(계정의 첫 활성화 앱이어야 무료 제공량, "카카오맵 무료 쿼터" 확인), JavaScript 키의 Web 사이트 도메인에 `https://mongkiz.com`과 `http://localhost:5173` 등록 (사용자)
 - [ ] 2. 로컬: `front/.env.local`에 `VITE_KAKAO_MAP_KEY=<JavaScript 키>` (커밋 안 함, `*.local`은 gitignore). 키가 없으면 지도 대신 위도·경도 직접 입력으로 동작한다
-- [ ] 3. 운영 빌드: GitHub Actions `front.yml`의 `npm run build`에 `VITE_KAKAO_MAP_KEY`를 넘긴다(저장소 Variables). 워크플로 변경은 사용자 확인 후
+- [ ] 3. 운영 빌드: GitHub Actions `front.yml`의 `npm run build`에 `VITE_KAKAO_MAP_KEY`를 넘긴다(저장소 Variables). 카카오 개발자 앱 승인 후 추가한다 (사용자 결정 2026-10-30). 그 전 운영은 위도·경도 직접 입력으로 동작
 - [ ] 4. 관리자 로그인 → `/admin` "기관 위치": 주소로 찾기 → 핀 끌어 보정 → 저장. 할당된 수업이 있는 기관은 삭제 버튼이 꺼져 있다
 - [ ] 5. "수업 할당": 기간·요일로 등록 → 목록에 날짜별 수업. 같은 직원 시간 겹침은 거절. 기록 있는 수업은 수정·삭제 불가
 - [ ] 6. 직원 계정으로 기관 반경 안에서 수업 시작 → 시작 확정 (등록한 좌표로 판정되는지)

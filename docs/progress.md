@@ -154,7 +154,7 @@
 - [x] SCR-024 몽키즈 연구소 범위 결정 (2026-10-20, FR-008·009·012 변경, FR-024 신설)
 - [ ] 동시 접속 30명 부하 확인 (NFR-001)
 - [x] 근태 관리 관리자 화면(EMP-SCR-006: 기관 위치 등록·수업 할당·수업 시작 승인·기록 조회) 구현 (#63, 2026-10-30)
-- [ ] #63 확인·배포: 카카오맵 활성화·도메인 등록(사용자), `front/.env.local`·운영 빌드에 `VITE_KAKAO_MAP_KEY`, 로컬·운영 화면 점검, EMP-SCR-006 시안 PNG 내보내기 ([deploy-checklist.md](deploy-checklist.md) M)
+- [ ] #63 확인·배포: 카카오맵 활성화·도메인 등록(사용자), `front/.env.local`에 `VITE_KAKAO_MAP_KEY`, 운영 빌드 키(`front.yml`)는 카카오 개발자 앱 승인 후 추가(사용자 결정 2026-10-30), 로컬·운영 화면 점검, EMP-SCR-006 시안 PNG 내보내기 ([deploy-checklist.md](deploy-checklist.md) M)
 - [x] #61 병합 전: 운영 DDL 적용, IAM `attendance/*` 권한 (2026-10-29, [deploy-checklist.md](deploy-checklist.md) K)
 - [ ] #61 배포 후 실제 기관·수업 시드 입력 ([deploy-checklist.md](deploy-checklist.md) K)
 - [ ] #61 배포 후 사용자 직접 테스트: 테스트 계정에 테스트 기관·수업을 할당해 위치 판정 정확성과 기능 확인, 실제 휴대폰(아이폰 Safari, 안드로이드 Chrome·삼성 인터넷) 점검 ([deploy-checklist.md](deploy-checklist.md) K, K-1)
