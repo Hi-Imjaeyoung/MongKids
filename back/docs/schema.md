@@ -51,13 +51,13 @@ erDiagram
 
 ## 3. 테이블 정의
 
-### member — 회원 (FR-018, FR-019, FR-022)
+### member — 회원 (FR-018, FR-019, FR-022, FR-028)
 
 | 컬럼 | 타입 | 제약 | 설명 |
 |---|---|---|---|
 | id | BIGINT | PK | |
 | provider | VARCHAR(10) | NOT NULL | `KAKAO`, `NAVER` |
-| provider_id | VARCHAR(100) | NOT NULL | 소셜 서비스의 사용자 식별자 |
+| provider_id | VARCHAR(100) | NULL | 소셜 서비스의 사용자 식별자. 탈퇴하면 NULL |
 | name | VARCHAR(50) | NOT NULL | 소셜 프로필 이름(닉네임). 후기 마스킹 표시 대상(FR-014) |
 | email | VARCHAR(255) | NULL | 소셜에서 제공될 때만 |
 | phone | VARCHAR(20) | NULL | 가입 정보 입력(FR-019) 전에는 NULL |
@@ -66,10 +66,11 @@ erDiagram
 | role | VARCHAR(10) | NOT NULL, 기본 `MEMBER` | `MEMBER`, `STAFF`, `ADMIN` |
 | deleted_at | DATETIME(6) | NULL | 탈퇴 시각 |
 
-- UNIQUE (`provider`, `provider_id`)
+- UNIQUE (`provider`, `provider_id`). NULL은 여러 행이 가질 수 있어 탈퇴 회원이 쌓여도 충돌하지 않는다.
 - 기관/개인 회원 타입은 두지 않는다 (FR-020 폐기).
 - 직원 권한 부여·회수(FR-022)는 `role`을 `MEMBER` ↔ `STAFF`로 바꾼다. `ADMIN`은 운영 DB에서 직접 지정한다.
-- 탈퇴 시 `deleted_at`만 기록한다. 작성한 후기·댓글은 유지하고, 응답에서 작성자를 "탈퇴 회원"으로 표시한다.
+- 탈퇴(FR-028) 시 `deleted_at`을 기록하고 개인정보를 바로 지운다: `name` = "탈퇴 회원", `provider_id`·`email`·`phone`·`sns_agreed_at` = NULL, `sns_agreed` = false. 행은 남겨 작성한 후기·게시물·댓글·공감을 유지하고 작성자를 "탈퇴 회원"으로 표시한다. 같은 소셜 계정으로 다시 로그인하면 새 행으로 가입된다.
+- 운영 DDL: [sql/member-withdraw-ddl.sql](sql/member-withdraw-ddl.sql) (`provider_id` NULL 허용).
 
 ### consultation — 상담 신청 공통 (FR-003, FR-004, FR-023, FR-026)
 

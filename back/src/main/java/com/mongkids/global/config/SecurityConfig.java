@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -46,6 +47,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(
 		HttpSecurity http,
 		OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService,
+		OAuth2AuthorizationRequestResolver oAuth2AuthorizationRequestResolver,
 		AuthenticationSuccessHandler oAuth2LoginSuccessHandler,
 		AuthenticationFailureHandler oAuth2LoginFailureHandler
 	) throws Exception {
@@ -60,7 +62,8 @@ public class SecurityConfig {
 				// SSE(FR-005)가 끝날 때의 비동기 재디스패치. 처음 요청에서 이미 인증·권한을 확인했고,
 				// JWT 필터는 재디스패치에서 돌지 않아 막으면 이미 보낸 응답 위에 401/403을 쓰려다 실패한다
 				.dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
-				.requestMatchers("/api/v1/members/me").authenticated()
+				// 내 정보 조회·SNS 수신 동의 변경 (FR-027, FR-019)
+				.requestMatchers("/api/v1/members/me", "/api/v1/members/me/**").authenticated()
 				// 관리자 화면 API (SCR-014). 관리자인지는 각 Service가 DB의 현재 역할로 검사한다
 				.requestMatchers("/api/v1/admin/**").authenticated()
 				// 게시물 쓰기 (FR-008). 직원 권한(FR-009)은 PostService가 DB의 현재 역할로 검사한다
@@ -80,6 +83,8 @@ public class SecurityConfig {
 				.requestMatchers("/api/v1/attendance/**").authenticated()
 				.anyRequest().permitAll())
 			.oauth2Login(oauth2 -> oauth2
+				// 탈퇴 본인 확인 재로그인(FR-028)에는 강제 재인증 파라미터를 붙인다
+				.authorizationEndpoint(endpoint -> endpoint.authorizationRequestResolver(oAuth2AuthorizationRequestResolver))
 				.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
 				.successHandler(oAuth2LoginSuccessHandler)
 				.failureHandler(oAuth2LoginFailureHandler))

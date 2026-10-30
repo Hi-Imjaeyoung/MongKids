@@ -23,6 +23,9 @@ public enum ErrorCode {
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "회원을 찾을 수 없습니다."),
 	MEMBER_WITHDRAWN(HttpStatus.FORBIDDEN, "M002", "탈퇴한 회원입니다."),
 	ADMIN_ROLE_UNCHANGEABLE(HttpStatus.BAD_REQUEST, "M003", "관리자 권한은 바꿀 수 없습니다."),
+	MEMBER_WITHDRAW_NOT_ALLOWED(HttpStatus.FORBIDDEN, "M004", "관리자·직원 계정은 탈퇴할 수 없습니다."),
+	WITHDRAW_ACCOUNT_MISMATCH(HttpStatus.BAD_REQUEST, "M005", "가입한 소셜 계정으로 본인 확인을 해 주세요."),
+	SOCIAL_UNLINK_FAILED(HttpStatus.BAD_GATEWAY, "M006", "소셜 계정 연결을 끊지 못했습니다. 잠시 후 다시 시도해 주세요."),
 
 	// 상담 신청
 	CONSULTATION_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "상담 신청을 찾을 수 없습니다."),

@@ -94,16 +94,25 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 ```
 - Spring `Page` 객체를 그대로 직렬화하지 말고 `PageResponse<T>` record로 변환한다.
 
-## 6. 인증 API (FR-018)
+## 6. 인증·내 정보 API (FR-018, FR-019, FR-027, FR-028)
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
 | GET | `/oauth2/authorization/{kakao\|naver}` | 소셜 로그인 시작 (브라우저 이동, API 아님) | - |
-| GET | `/api/v1/members/me` | 내 정보 (`id`, `provider`, `name`, `email`, `role`) | 필요 |
+| GET | `/api/v1/members/me` | 내 정보 `MemberResponse` (`id`, `provider`, `name`, `email`, `phone`, `snsAgreed`, `snsAgreedAt`, `role`, `createdAt`). 헤더 로그인 상태·권한 판단에도 쓴다 | 필요 |
+| PUT | `/api/v1/members/me/sns-agreement` | SNS 수신 동의 변경 `{agreed}` → `MemberResponse`. 동의하면 `snsAgreedAt` 저장, 철회하면 `null` | 필요 |
+| GET | `/oauth2/authorization/{kakao\|naver}-withdraw` | 회원 탈퇴 시작 (브라우저 이동). 강제 재인증으로 소셜 로그인을 다시 받는다 | 로그인 쿠키 |
 | POST | `/api/v1/auth/logout` | 로그아웃 (토큰 쿠키 삭제) | - |
 
 - 인증은 `access_token` HttpOnly 쿠키로 한다. 흐름은 [architecture.md](architecture.md#7-인증-fr-018) 참고.
 - 미인증 401 `A001`, 권한 없음 403 `A002`.
+- 회원 탈퇴 결과는 프론트로 리다이렉트해 알린다. 성공 `app.auth.withdraw-success-url`(`/me?withdrawn=true`, 쿠키 삭제). 실패 `app.auth.withdraw-failure-url`에 `withdrawError` 코드가 붙는다:
+  - `cancelled`: 재로그인 취소
+  - `failed`: 그 밖의 소셜 로그인 실패
+  - `A001`: 로그인 쿠키 없음·만료
+  - `M004`: 관리자·직원
+  - `M005`: 가입한 계정과 다른 소셜 계정
+  - `M006`: 연결 끊기 실패. 개인정보는 지우지 않는다
 
 ## 7. 게시물 API (FR-008)
 

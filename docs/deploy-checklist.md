@@ -140,6 +140,7 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] 네이버: 서비스 URL `https://{도메인}`, Callback URL `https://{도메인}/login/oauth2/code/naver` 등록 (2026-10-22, 사용자)
 - [ ] 네이버: 앱이 "개발 중"이면 등록된 테스트 계정만 로그인된다. 공개 전에 검수를 요청한다.
 - [ ] 로컬 개발용 URI(`http://localhost:5173/login/oauth2/code/{kakao|naver}`)는 그대로 둔다
+- [ ] 회원 탈퇴(FR-028, #54) 본인 확인용 Redirect URI 등록 (사용자): 카카오 `.../login/oauth2/code/kakao-withdraw`, 네이버 Callback URL `.../login/oauth2/code/naver-withdraw`. 운영(`https://{도메인}`)과 로컬(`http://localhost:5173`) 모두. 운영 키 앱과 로컬 키 앱이 다르면 앱마다 등록한다 → [L](#l-회원-탈퇴-scr-025-fr-028-54)
 
 ## E. 운영 환경 변수
 
@@ -242,3 +243,18 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 정리
 - [ ] 12. 결과(기기, 장소, 화면 거리 vs 지도 거리, 정확도)를 `docs/progress.md`에 남기고, 테스트 기관·수업·기록을 지운다 (`class_end_image` → `class_end` → `class_start` → `class_start_attempt` → `class_session` → `institution` 순서, S3 `attendance/` 테스트 사진도 삭제). 테스트 계정 직원 권한이 필요 없으면 회수
 
+
+## L. 회원 탈퇴 (SCR-025, FR-028, #54)
+
+병합 전
+- [ ] 운영 RDS에 [`back/docs/sql/member-withdraw-ddl.sql`](../back/docs/sql/member-withdraw-ddl.sql) 실행 (`member.provider_id` NULL 허용). `validate` 기동이라 먼저 적용하지 않으면 새 jar가 뜨지 않는다
+- [ ] 카카오·네이버 콘솔에 `/login/oauth2/code/{kakao|naver}-withdraw` Redirect URI 등록 ([D](#d-개발자-콘솔))
+
+배포 후 (탈퇴해도 되는 테스트 계정으로)
+- [ ] `/oauth2/authorization/kakao-withdraw` 302의 `Location`에 `prompt=login`, `redirect_uri=https://{도메인}/login/oauth2/code/kakao-withdraw`. 네이버는 `auth_type=reauthenticate`
+- [ ] `/me`에서 탈퇴 → 소셜 로그인 화면이 다시 뜨는지 → 완료 화면, 로그아웃 상태
+- [ ] 카카오: 내 카카오계정 > 연결된 서비스에서 몽키즈가 빠졌는지. 네이버: 네이버ID > 이력 관리 > 연결된 서비스에서 빠졌는지
+- [ ] DB: 그 회원 행의 `name`="탈퇴 회원", `provider_id`·`email`·`phone` NULL, `deleted_at` 기록
+- [ ] 같은 계정으로 다시 로그인하면 새 `member.id`로 가입되고, 탈퇴 전에 쓴 후기·댓글 작성자는 "탈퇴 회원"
+- [ ] 다른 소셜 계정으로 본인 확인하면 "가입한 계정으로 확인" 안내가 나오고 탈퇴되지 않는지, 재로그인을 취소하면 취소 안내가 나오는지
+- [ ] 직원·관리자 계정은 탈퇴 버튼 대신 안내

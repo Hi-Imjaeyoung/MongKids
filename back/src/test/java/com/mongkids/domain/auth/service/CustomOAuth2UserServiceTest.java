@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 
 import com.mongkids.domain.auth.dto.OAuth2MemberPrincipal;
+import com.mongkids.domain.auth.dto.OAuth2WithdrawPrincipal;
 import com.mongkids.domain.member.dto.LoginMemberResponse;
 import com.mongkids.domain.member.dto.SocialLoginRequest;
 import com.mongkids.domain.member.entity.MemberRole;
@@ -48,6 +49,21 @@ class CustomOAuth2UserServiceTest {
 		// then
 		assertThat(principal.getName()).isEqualTo("1");
 		assertThat(principal.member().role()).isEqualTo(MemberRole.MEMBER);
+	}
+
+	@Test
+	@DisplayName("탈퇴 본인 확인 재로그인은 회원을 조회·가입시키지 않고 소셜 계정과 토큰만 담는다")
+	void toWithdrawPrincipal_doesNotRegister() {
+		// when
+		OAuth2WithdrawPrincipal principal =
+			customOAuth2UserService.toWithdrawPrincipal("kakao-withdraw", KAKAO_ATTRIBUTES, "access-token");
+
+		// then
+		assertThat(principal.provider()).isEqualTo(Provider.KAKAO);
+		assertThat(principal.providerId()).isEqualTo("12345");
+		assertThat(principal.accessToken()).isEqualTo("access-token");
+		assertThat(principal.toString()).doesNotContain("access-token");
+		then(memberService).shouldHaveNoInteractions();
 	}
 
 	@Test

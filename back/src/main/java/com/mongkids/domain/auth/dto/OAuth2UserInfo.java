@@ -15,10 +15,19 @@ import com.mongkids.domain.member.entity.Provider;
 public record OAuth2UserInfo(Provider provider, String providerId, String name, String email) {
 
 	public static final String DEFAULT_NAME = "회원";
+	// 탈퇴 본인 확인용 재로그인 registration (FR-028). 예: kakao-withdraw
+	public static final String WITHDRAW_SUFFIX = "-withdraw";
 	private static final int NAME_MAX_LENGTH = 50;
 
+	public static boolean isWithdrawRegistration(String registrationId) {
+		return registrationId.endsWith(WITHDRAW_SUFFIX);
+	}
+
 	public static OAuth2UserInfo of(String registrationId, Map<String, Object> attributes) {
-		return switch (registrationId) {
+		String socialId = isWithdrawRegistration(registrationId)
+			? registrationId.substring(0, registrationId.length() - WITHDRAW_SUFFIX.length())
+			: registrationId;
+		return switch (socialId) {
 			case "kakao" -> ofKakao(attributes);
 			case "naver" -> ofNaver(attributes);
 			default -> throw new OAuth2AuthenticationException(

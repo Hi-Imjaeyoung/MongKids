@@ -11,9 +11,11 @@ import com.mongkids.domain.member.dto.AdminMemberResponse;
 import com.mongkids.domain.member.dto.LoginMemberResponse;
 import com.mongkids.domain.member.dto.MemberResponse;
 import com.mongkids.domain.member.dto.MemberRoleRequest;
+import com.mongkids.domain.member.dto.SnsAgreementRequest;
 import com.mongkids.domain.member.dto.SocialLoginRequest;
 import com.mongkids.domain.member.entity.Member;
 import com.mongkids.domain.member.entity.MemberRole;
+import com.mongkids.domain.member.entity.Provider;
 import com.mongkids.domain.member.repository.MemberRepository;
 import com.mongkids.global.common.PageResponse;
 import com.mongkids.global.exception.BusinessException;
@@ -46,6 +48,43 @@ public class MemberService {
 
 	public MemberResponse getMember(Long memberId) {
 		return MemberResponse.from(getActiveMember(memberId));
+	}
+
+	/**
+	 * 본인의 SNS 수신 동의를 바꾼다 (FR-019). 동의하면 시각을 저장하고 철회하면 지운다.
+	 */
+	@Transactional
+	public MemberResponse changeSnsAgreement(Long memberId, SnsAgreementRequest request) {
+		Member member = getActiveMember(memberId);
+		member.changeSnsAgreement(request.agreed());
+		return MemberResponse.from(member);
+	}
+
+	/**
+	 * 탈퇴할 수 있는지 확인한다 (FR-028). 관리자·직원은 탈퇴할 수 없고,
+	 * 본인 확인으로 다시 로그인한 소셜 계정이 가입한 계정과 같아야 한다.
+	 */
+	public void validateWithdrawable(Long memberId, Provider provider, String providerId) {
+		checkWithdrawable(getActiveMember(memberId), provider, providerId);
+	}
+
+	/**
+	 * 회원을 탈퇴시키고 개인정보를 지운다 (FR-028). 소셜 연결 끊기가 끝난 뒤에 부른다.
+	 */
+	@Transactional
+	public void withdraw(Long memberId, Provider provider, String providerId) {
+		Member member = getActiveMember(memberId);
+		checkWithdrawable(member, provider, providerId);
+		member.withdraw();
+	}
+
+	private void checkWithdrawable(Member member, Provider provider, String providerId) {
+		if (!member.getRole().canWithdraw()) {
+			throw new BusinessException(ErrorCode.MEMBER_WITHDRAW_NOT_ALLOWED);
+		}
+		if (!member.isSocialAccount(provider, providerId)) {
+			throw new BusinessException(ErrorCode.WITHDRAW_ACCOUNT_MISMATCH);
+		}
 	}
 
 	/**

@@ -7,6 +7,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.mongkids.domain.auth.dto.OAuth2MemberPrincipal;
+import com.mongkids.domain.auth.dto.OAuth2WithdrawPrincipal;
 import com.mongkids.global.security.AuthProperties;
 import com.mongkids.global.security.JwtProvider;
 import com.mongkids.global.security.TokenCookieManager;
@@ -26,19 +27,26 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 	private final JwtProvider jwtProvider;
 	private final TokenCookieManager tokenCookieManager;
 	private final AuthProperties authProperties;
+	private final OAuth2WithdrawHandler withdrawHandler;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException {
-		OAuth2MemberPrincipal principal = (OAuth2MemberPrincipal) authentication.getPrincipal();
-		String token = jwtProvider.createToken(principal.member().id(), principal.member().role().name());
-		tokenCookieManager.addTokenCookie(response, token, jwtProvider.getExpirationSeconds());
-
 		// OAuth2 인가 요청 보관에 쓴 세션은 더 필요 없다
 		HttpSession session = request.getSession(false);
 		if (session != null) {
 			session.invalidate();
 		}
+
+		// 탈퇴 본인 확인 재로그인 (FR-028)은 토큰을 새로 발급하지 않는다
+		if (authentication.getPrincipal() instanceof OAuth2WithdrawPrincipal withdrawPrincipal) {
+			withdrawHandler.onSuccess(request, response, withdrawPrincipal);
+			return;
+		}
+
+		OAuth2MemberPrincipal principal = (OAuth2MemberPrincipal) authentication.getPrincipal();
+		String token = jwtProvider.createToken(principal.member().id(), principal.member().role().name());
+		tokenCookieManager.addTokenCookie(response, token, jwtProvider.getExpirationSeconds());
 		response.sendRedirect(authProperties.loginSuccessUrl());
 	}
 }

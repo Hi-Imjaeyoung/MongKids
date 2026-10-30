@@ -101,6 +101,14 @@ HTTP Response
 
 이후 요청: JwtAuthenticationFilter가 쿠키의 JWT를 검증 → principal = 회원 ID(Long)
   → Controller에서 @AuthenticationPrincipal Long memberId
+
+[회원 탈퇴 FR-028] → GET /oauth2/authorization/{kakao|naver}-withdraw
+  → WithdrawAuthorizationRequestResolver: 강제 재인증 파라미터(카카오 prompt=login, 네이버 auth_type=reauthenticate)
+  → 소셜 재로그인 → GET /login/oauth2/code/{kakao|naver}-withdraw
+  → CustomOAuth2UserService: 가입 처리 없이 OAuth2WithdrawPrincipal(소셜 계정 + 액세스 토큰)
+  → OAuth2LoginSuccessHandler → OAuth2WithdrawHandler: 로그인 쿠키로 회원 확인
+    → SocialWithdrawService: 탈퇴 가능 확인(역할·같은 계정) → SocialUnlinkClient 연결 끊기 → MemberService.withdraw(개인정보 파기)
+    → 쿠키 삭제 → app.auth.withdraw-success-url / 실패 시 withdraw-failure-url?withdrawError=코드
 ```
 
 | 항목 | 내용 |
@@ -111,11 +119,12 @@ HTTP Response
 | CSRF | Spring CSRF는 끄고 SameSite=Lax 쿠키로 교차 사이트 POST를 막는다 |
 | 세션 | `STATELESS`. OAuth2 인가 요청(state, PKCE)만 로그인 과정 동안 세션에 보관하고 성공 시 무효화한다 |
 | 로그아웃 | `POST /api/v1/auth/logout` → 쿠키 삭제. 이미 발급된 토큰은 만료 전까지 서버에서 무효화하지 않는다 |
-| 탈퇴 회원 | 소셜 로그인 실패 처리. 토큰이 남아 있어도 `/members/me`는 `M002`(403) |
+| 탈퇴 회원 | 토큰이 남아 있어도 `/members/me`는 `M002`(403). 탈퇴하면 `provider_id`를 지우므로 같은 소셜 계정으로 로그인하면 새 회원으로 가입된다 |
+| 탈퇴 재로그인 | registration `kakao-withdraw`·`naver-withdraw`(앱 키는 로그인과 같고 콜백만 다름). 소셜 액세스 토큰은 연결 끊기에 한 번 쓰고 저장하지 않는다(OAuth2 필터가 메모리에 보관한 것도 바로 지움). 연결 끊기가 실패하면 탈퇴를 중단한다 |
 | 인가 규칙 | `SecurityConfig.authorizeHttpRequests`에 경로별로 추가한다 (현재 `/api/v1/members/me`, 게시물·연구소 글 `POST·PUT·DELETE`가 인증 필요). 역할 검사는 토큰의 `role` 대신 Service에서 DB의 현재 역할로 한다 (게시물·연구소 글 FR-009: `ArticleWriteSupport`, `MemberRole.canWritePost()`). 권한 회수가 다시 로그인하지 않아도 바로 반영된다 |
 
 설정·환경변수: `spring.security.oauth2.client.*`(application.yml), `KAKAO_CLIENT_ID`, `KAKAO_CLIENT_SECRET`, `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`, `JWT_SECRET` (`.env.example` 참고).
-각 개발자 콘솔에는 Redirect URI `{서비스 주소}/login/oauth2/code/kakao`, `.../naver`를 등록한다. 로컬은 Vite 프록시를 거치므로 `http://localhost:5173/login/oauth2/code/{kakao|naver}`.
+각 개발자 콘솔에는 Redirect URI `{서비스 주소}/login/oauth2/code/kakao`, `.../naver`와 탈퇴용 `.../kakao-withdraw`, `.../naver-withdraw`를 등록한다. 로컬은 Vite 프록시를 거치므로 `http://localhost:5173/login/oauth2/code/{kakao|naver}[-withdraw]`.
 
 ## 8. 파일 저장소 (FR-008)
 

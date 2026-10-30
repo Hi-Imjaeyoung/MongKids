@@ -12,6 +12,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @param cookieSecure    인증 쿠키 Secure 속성 (HTTPS 환경에서 true)
  * @param loginSuccessUrl 소셜 로그인 성공 후 이동할 프론트 주소
  * @param loginFailureUrl 소셜 로그인 실패 후 이동할 프론트 주소
+ * @param withdrawSuccessUrl 회원 탈퇴(FR-028) 완료 후 이동할 프론트 주소
+ * @param withdrawFailureUrl 회원 탈퇴 실패 후 이동할 프론트 주소. {@code withdrawError}에 사유 코드를 붙인다
  */
 @ConfigurationProperties(prefix = "app.auth")
 public record AuthProperties(
@@ -19,6 +21,8 @@ public record AuthProperties(
 	Duration tokenExpiration,
 	boolean cookieSecure,
 	String loginSuccessUrl,
-	String loginFailureUrl
+	String loginFailureUrl,
+	String withdrawSuccessUrl,
+	String withdrawFailureUrl
 ) {
 }
