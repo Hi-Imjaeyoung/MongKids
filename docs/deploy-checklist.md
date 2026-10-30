@@ -247,8 +247,8 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 ## L. 회원 탈퇴 (SCR-025, FR-028, #54)
 
 병합 전
-- [ ] 카카오 운영 앱 동의항목에서 `account_email`(카카오계정 이메일)·`phone_number`(휴대폰 번호) 켜기. 백엔드가 이 scope를 요청하므로 꺼져 있으면 **카카오 로그인 전체가 KOE205로 실패**한다. 휴대폰 번호는 비즈 앱 권한이 필요하다
-- [ ] 네이버 운영 앱 "제공 정보"에 이메일·휴대전화번호 추가 (기존 회원은 다음 로그인 때 추가 동의 화면)
+- [x] 네이버 운영 앱 "제공 정보"에 이메일·휴대전화번호 추가 (2026-10-30, 사용자. 기존 회원은 다음 로그인 때 추가 동의 화면)
+- 카카오 이메일·휴대폰 번호는 이번 배포에서 받지 않는다 (scope `profile_nickname` 유지). 나중에: 비즈 앱 전환 → 동의항목 `account_email`·`phone_number` 켜기(로컬·운영 앱 모두) → `application.yml` scope 추가 → 배포. 순서를 바꾸면 카카오 로그인 전체가 KOE205로 실패한다
 - [ ] 운영 RDS에 [`back/docs/sql/member-withdraw-ddl.sql`](../back/docs/sql/member-withdraw-ddl.sql) 실행 (`member.provider_id` NULL 허용). `validate` 기동이라 먼저 적용하지 않으면 새 jar가 뜨지 않는다
 - [ ] 카카오·네이버 콘솔에 `/login/oauth2/code/{kakao|naver}-withdraw` Redirect URI 등록 ([D](#d-개발자-콘솔))
 
