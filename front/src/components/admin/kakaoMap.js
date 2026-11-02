@@ -39,6 +39,32 @@ export function searchAddress(maps, address) {
   })
 }
 
+// 기관명 같은 키워드로 장소를 찾는다 (카카오 키워드 장소 검색, 최대 15곳). 못 찾거나 실패하면 빈 배열
+export function searchPlaces(maps, keyword) {
+  return new Promise((resolve) => {
+    new maps.services.Places().keywordSearch(
+      keyword,
+      (result, status) => {
+        if (status !== maps.services.Status.OK) {
+          resolve([])
+          return
+        }
+        resolve(
+          result.map((place) => ({
+            id: place.id,
+            name: place.place_name,
+            address: place.road_address_name || place.address_name,
+            category: place.category_name?.split(' > ').pop() ?? '',
+            latitude: roundCoordinate(Number(place.y)),
+            longitude: roundCoordinate(Number(place.x)),
+          })),
+        )
+      },
+      { size: 15 },
+    )
+  })
+}
+
 // 소수점 6자리 (약 0.1m)
 export function roundCoordinate(value) {
   return Math.round(value * 1e6) / 1e6

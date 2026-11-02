@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { institutionAdmin } from '../../data/attendanceAdminContent'
 import InstitutionMap from './InstitutionMap'
-import { loadKakaoMaps, searchAddress } from './kakaoMap'
+import { loadKakaoMaps, searchAddress, searchPlaces } from './kakaoMap'
 import './AdminForm.css'
 import './InstitutionForm.css'
 
@@ -9,7 +9,7 @@ function toNumber(value) {
   return value === '' || value === null ? null : Number(value)
 }
 
-// 기관 등록·수정 (EMP-FR-012). 주소로 찾기 → 지도에서 핀 보정 → 위도·경도 확인 후 저장.
+// 기관 등록·수정 (EMP-FR-012). 기관명(키워드)이나 주소로 찾기 → 지도에서 핀 보정 → 위도·경도 확인 후 저장.
 // 지도를 못 불러오면(키 없음·실패) 위도·경도를 직접 입력한다.
 // institution이 null이면 새 기관. onSave(body), onDelete(), onCancel(). 부모가 key로 폼을 새로 만든다
 function InstitutionForm({ institution, busy, onSave, onDelete, onCancel }) {
@@ -21,6 +21,9 @@ function InstitutionForm({ institution, busy, onSave, onDelete, onCancel }) {
   }))
   const [map, setMap] = useState({ status: 'loading', maps: null })
   const [searching, setSearching] = useState(false)
+  // 기관명 검색: keyword 입력값, places 결과(null이면 목록을 닫은 상태)
+  const [keyword, setKeyword] = useState('')
+  const [places, setPlaces] = useState(null)
   const [error, setError] = useState('')
   const text = institutionAdmin
 
@@ -55,6 +58,38 @@ function InstitutionForm({ institution, busy, onSave, onDelete, onCancel }) {
     change({ latitude: String(found.latitude), longitude: String(found.longitude) })
   }
 
+  // 기관명으로 장소를 찾는다. 결과가 없으면 입력값을 주소로 보고 한 번 더 찾는다
+  const searchByKeyword = async () => {
+    const query = keyword.trim()
+    if (!map.maps || !query) return
+    setSearching(true)
+    setError('')
+    const found = await searchPlaces(map.maps, query)
+    if (found.length > 0) {
+      setSearching(false)
+      setPlaces(found)
+      return
+    }
+    const byAddress = await searchAddress(map.maps, query)
+    setSearching(false)
+    setPlaces(null)
+    if (!byAddress) {
+      setError(text.placeNotFound)
+      return
+    }
+    change({ address: query, latitude: String(byAddress.latitude), longitude: String(byAddress.longitude) })
+  }
+
+  const pickPlace = (place) => {
+    change({
+      name: form.name.trim() ? form.name : place.name,
+      address: place.address,
+      latitude: String(place.latitude),
+      longitude: String(place.longitude),
+    })
+    setPlaces(null)
+  }
+
   const submit = (event) => {
     event.preventDefault()
     const latitude = toNumber(form.latitude)
@@ -76,6 +111,64 @@ function InstitutionForm({ institution, busy, onSave, onDelete, onCancel }) {
         <h2 className="admin-card__title">{title}</h2>
         {institution && <span className="admin-card__sub">{text.assigned(institution.classSessionCount)}</span>}
       </div>
+
+      {mapReady && (
+        <div className="admin-form__field">
+          <label className="admin-form__label" htmlFor="institution-keyword">
+            {text.placeSearch}
+          </label>
+          <div className="institution-form__search">
+            <input
+              id="institution-keyword"
+              className="admin-form__input"
+              type="search"
+              maxLength={100}
+              placeholder={text.placePlaceholder}
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault()
+                  searchByKeyword()
+                }
+              }}
+            />
+            <button
+              type="button"
+              className="admin-form__button admin-form__button--dark"
+              disabled={searching || !keyword.trim()}
+              onClick={searchByKeyword}
+            >
+              {searching ? text.searching : text.placeSearchButton}
+            </button>
+          </div>
+          {places && (
+            <div className="institution-form__places">
+              <p className="admin-form__hint">
+                {text.placeResults(places.length)} · {text.placeHint}
+              </p>
+              <ul className="institution-form__place-list">
+                {places.map((place) => (
+                  <li key={place.id}>
+                    <button
+                      type="button"
+                      className="institution-form__place"
+                      aria-label={text.placeSelect(place.name, place.address)}
+                      onClick={() => pickPlace(place)}
+                    >
+                      <span className="institution-form__place-head">
+                        <strong className="institution-form__place-name">{place.name}</strong>
+                        {place.category && <span className="institution-form__place-category">{place.category}</span>}
+                      </span>
+                      <span className="institution-form__place-address">{place.address}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="admin-form__field">
         <label className="admin-form__label" htmlFor="institution-name">
