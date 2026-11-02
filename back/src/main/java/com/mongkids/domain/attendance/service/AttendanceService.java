@@ -89,6 +89,17 @@ public class AttendanceService {
 	}
 
 	/**
+	 * 직원 본인에게 할당된 기간 안의 수업 (EMP-FR-004). 기간은 최대 31일.
+	 */
+	public List<ClassSessionResponse> getMyClasses(Long memberId, LocalDate from, LocalDate to) {
+		Member staff = getStaff(memberId);
+		validateSearchPeriod(from, to);
+		List<ClassSession> sessions = classSessionRepository
+			.findByStaffIdAndClassDateBetweenOrderByClassDateAscStartTimeAscIdAsc(staff.getId(), from, to);
+		return toResponses(sessions, memberId);
+	}
+
+	/**
 	 * 위치로 수업 시작을 확인한다 (EMP-FR-001). 기관 반경 안이면 자동 확정하고, 밖이면 저장하지 않고 거리만 알려 준다.
 	 * 결과와 상관없이 시도마다 재조정 로그를 남긴다.
 	 */
@@ -233,15 +244,14 @@ public class AttendanceService {
 	}
 
 	/**
-	 * 관리자 수업 시작·종료 기록 조회 (EMP-FR-003, EMP-FR-007). 기간은 최대 31일, 직원을 고르지 않으면 전 직원.
+	 * 관리자 수업 시작·종료 기록 조회 (EMP-FR-003, EMP-FR-007). 수업 할당 목록(EMP-FR-004)도 이것으로 본다.
+	 * 기간은 최대 31일, 직원·기관을 고르지 않으면 전체.
 	 */
 	public List<AdminClassSessionResponse> getClassRecords(Long adminId, LocalDate from, LocalDate to,
-		Long staffId) {
+		Long staffId, Long institutionId) {
 		memberService.validateAdmin(adminId);
-		if (to.isBefore(from) || from.plusDays(MAX_SEARCH_DAYS).isBefore(to)) {
-			throw new BusinessException(ErrorCode.INVALID_INPUT);
-		}
-		return toAdminResponses(classSessionRepository.searchForAdmin(from, to, staffId));
+		validateSearchPeriod(from, to);
+		return toAdminResponses(classSessionRepository.searchForAdmin(from, to, staffId, institutionId));
 	}
 
 	@Transactional
@@ -333,6 +343,12 @@ public class AttendanceService {
 		return session;
 	}
 
+	private void validateSearchPeriod(LocalDate from, LocalDate to) {
+		if (to.isBefore(from) || from.plusDays(MAX_SEARCH_DAYS).isBefore(to)) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+	}
+
 	private boolean isCorrectionOpen(ClassSession session) {
 		return !today().isAfter(session.getClassDate());
 	}
@@ -374,11 +390,12 @@ public class AttendanceService {
 		return toAdminResponses(List.of(session)).get(0);
 	}
 
-	private List<AdminClassSessionResponse> toAdminResponses(List<ClassSession> sessions) {
+	// 수업 할당(ClassSessionService)도 같은 응답을 쓴다
+	List<AdminClassSessionResponse> toAdminResponses(List<ClassSession> sessions) {
 		List<ClassSessionResponse> responses = toResponses(sessions, null);
 		return IntStream.range(0, sessions.size())
 			.mapToObj(i -> new AdminClassSessionResponse(sessions.get(i).getStaff().getId(),
-				sessions.get(i).getStaff().getName(), responses.get(i)))
+				sessions.get(i).getStaff().getName(), sessions.get(i).getInstitution().getId(), responses.get(i)))
 			.toList();
 	}
 

@@ -47,4 +47,6 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	// 운영(-Duser.timezone=Asia/Seoul)과 같은 시간대로 테스트한다. CI(UTC)에서 jdbc.time_zone 변환으로 LocalTime 정렬이 바뀌지 않도록
+	systemProperty 'user.timezone', 'Asia/Seoul'
 }

@@ -1,0 +1,52 @@
+.institution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.institution-list__count {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+.institution-list__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.institution-list__item {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.institution-list__item:hover {
+  border-color: var(--border-strong);
+}
+
+.institution-list__item--selected,
+.institution-list__item--selected:hover {
+  border-color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.institution-list__meta {
+  color: var(--text-sub);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}

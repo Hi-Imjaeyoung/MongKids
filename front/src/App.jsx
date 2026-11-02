@@ -36,6 +36,8 @@ const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews', '/admin', 
 const NO_MOBILE_CTA_PREFIXES = ['/programs/']
 // 고객용 푸터와 빠른 상담 버튼(후기·전화·인스타그램)을 두지 않는 직원용 화면 (근태 EMP-SCR-001)
 const STAFF_TOOL_PATHS = ['/attendance']
+// 빠른 상담 버튼만 두지 않는 화면 (SCR-014 관리자: 목록·모달 버튼을 가린다)
+const NO_FLOATING_MENU_PATHS = ['/admin']
 
 function hasMobileCta(pathname) {
   return (
@@ -171,7 +173,7 @@ function App() {
         </Suspense>
       </main>
       {!isStaffTool && <Footer />}
-      {!isStaffTool && <FloatingMenu />}
+      {!isStaffTool && !NO_FLOATING_MENU_PATHS.includes(pathname) && <FloatingMenu />}
       {showMobileCta && (
         <MobileCtaBar onInstitutionConsultClick={openConsult} onPersonalConsultClick={openPersonalConsult} />
       )}

@@ -1,0 +1,73 @@
+.institution-form {
+  gap: 14px;
+}
+
+.institution-form__search {
+  display: flex;
+  gap: 8px;
+}
+
+.institution-form__search .admin-form__button {
+  flex: none;
+}
+
+.institution-form__delete {
+  margin-right: auto;
+}
+
+.institution-form__places {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.institution-form__place-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 280px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  list-style: none;
+}
+
+.institution-form__place-list li + li {
+  border-top: 1px solid var(--border);
+}
+
+.institution-form__place {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.institution-form__place:hover,
+.institution-form__place:focus-visible {
+  background: var(--bg-soft);
+}
+
+.institution-form__place-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.institution-form__place-name {
+  font-size: 14px;
+}
+
+.institution-form__place-category,
+.institution-form__place-address {
+  font-size: 12px;
+  color: var(--text-sub);
+}

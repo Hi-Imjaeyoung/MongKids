@@ -53,7 +53,13 @@ public enum ErrorCode {
 	CLASS_END_NOT_FOUND(HttpStatus.NOT_FOUND, "E007", "수업 종료 기록이 없습니다."),
 	CLASS_END_CORRECTION_EXPIRED(HttpStatus.CONFLICT, "E008", "수업 기록은 수업 당일까지만 정정할 수 있습니다."),
 	CLASS_END_IMAGE_COUNT(HttpStatus.BAD_REQUEST, "E009", "수업 사진은 1장 이상 20장 이하로 올려 주세요."),
-	INVALID_CLASS_END_IMAGE(HttpStatus.BAD_REQUEST, "E010", "올바르지 않은 사진입니다.");
+	INVALID_CLASS_END_IMAGE(HttpStatus.BAD_REQUEST, "E010", "올바르지 않은 사진입니다."),
+	INSTITUTION_NOT_FOUND(HttpStatus.NOT_FOUND, "E011", "기관을 찾을 수 없습니다."),
+	INSTITUTION_IN_USE(HttpStatus.CONFLICT, "E012", "할당된 수업이 있는 기관은 삭제할 수 없습니다."),
+	CLASS_SESSION_LOCKED(HttpStatus.CONFLICT, "E013", "수업 시작·종료 기록이 있는 수업은 수정하거나 삭제할 수 없습니다."),
+	CLASS_SESSION_OVERLAP(HttpStatus.CONFLICT, "E014", "같은 직원의 같은 시간에 이미 수업이 있습니다."),
+	INVALID_CLASS_STAFF(HttpStatus.BAD_REQUEST, "E015", "직원 권한이 있는 회원에게만 수업을 할당할 수 있습니다."),
+	NO_CLASS_SESSION_CREATED(HttpStatus.BAD_REQUEST, "E016", "기간 안에 고른 요일이 없어 만들 수업이 없습니다.");
 
 	private final HttpStatus status;
 	private final String code;

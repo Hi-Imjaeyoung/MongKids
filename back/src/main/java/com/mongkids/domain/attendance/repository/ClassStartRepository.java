@@ -14,6 +14,8 @@ public interface ClassStartRepository extends JpaRepository<ClassStart, Long> {
 
 	Optional<ClassStart> findByClassSessionId(Long classSessionId);
 
+	boolean existsByClassSessionId(Long classSessionId);
+
 	List<ClassStart> findByClassSessionIdIn(Collection<Long> classSessionIds);
 
 	// 관리자 승인 대기 목록 (EMP-FR-011)

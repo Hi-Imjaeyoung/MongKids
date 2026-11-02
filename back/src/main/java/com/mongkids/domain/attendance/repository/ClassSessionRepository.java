@@ -30,14 +30,37 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 	List<ClassSession> findTodayClasses(@Param("staffId") Long staffId, @Param("today") LocalDate today,
 		@Param("rejected") ClassStartStatus rejected);
 
-	// 관리자 기록 조회 (EMP-FR-003). 직원이 null이면 전 직원
+	// 관리자 기록 조회 (EMP-FR-003). 직원·기관이 null이면 전체
 	@EntityGraph(attributePaths = {"institution", "staff"})
 	@Query("""
 		select s from ClassSession s
 		where s.classDate between :from and :to
 		  and (:staffId is null or s.staff.id = :staffId)
+		  and (:institutionId is null or s.institution.id = :institutionId)
 		order by s.classDate, s.startTime, s.id
 		""")
 	List<ClassSession> searchForAdmin(@Param("from") LocalDate from, @Param("to") LocalDate to,
-		@Param("staffId") Long staffId);
+		@Param("staffId") Long staffId, @Param("institutionId") Long institutionId);
+
+	// 직원 본인 할당 조회 (EMP-FR-004), 수업 시간 겹침 확인
+	@EntityGraph(attributePaths = "institution")
+	List<ClassSession> findByStaffIdAndClassDateBetweenOrderByClassDateAscStartTimeAscIdAsc(Long staffId,
+		LocalDate from, LocalDate to);
+
+	long countByInstitutionId(Long institutionId);
+
+	// 기관 목록에 보여 줄 기관별 수업 수
+	@Query("""
+		select s.institution.id as institutionId, count(s) as sessionCount
+		from ClassSession s
+		group by s.institution.id
+		""")
+	List<InstitutionSessionCount> countByInstitution();
+
+	interface InstitutionSessionCount {
+
+		Long getInstitutionId();
+
+		long getSessionCount();
+	}
 }

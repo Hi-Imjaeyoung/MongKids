@@ -1,0 +1,199 @@
+/* 근태 관리자 화면(EMP-SCR-006)의 카드·입력·버튼 공통 모양. 여러 컴포넌트가 함께 import한다 */
+
+.admin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  scroll-margin-top: calc(var(--header-height) + 16px);
+}
+
+.admin-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.admin-card__title {
+  margin: 0;
+  font-size: 18px;
+  word-break: keep-all;
+}
+
+.admin-card__sub {
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+.admin-card__divider {
+  height: 1px;
+  background: var(--border);
+}
+
+/* 항목 이름 + 값 */
+.admin-fields {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 8px 12px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.admin-fields dt {
+  color: var(--text-sub);
+  font-weight: 700;
+}
+
+.admin-fields dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.admin-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.admin-form__label {
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-form__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+}
+
+.admin-form__input:read-only {
+  background: var(--bg-soft);
+}
+
+textarea.admin-form__input {
+  min-height: 88px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.admin-form__hint {
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+.admin-form__error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-form__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.admin-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.admin-form__button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.admin-form__button--sm {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.admin-form__button--dark {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.admin-form__button--blue {
+  background: var(--blue-text);
+  color: var(--bg);
+}
+
+.admin-form__button--ghost {
+  border-color: var(--border-strong);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.admin-form__button--danger {
+  border-color: var(--danger-border);
+  background: var(--bg);
+  color: var(--danger);
+}
+
+.admin-form__button:disabled {
+  border-color: var(--border);
+  background: var(--bg-soft);
+  color: var(--text-sub);
+  cursor: not-allowed;
+}
+
+.admin-callout {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  word-break: keep-all;
+}
+
+.admin-callout--warn {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.admin-callout--info {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.admin-callout--plain {
+  background: var(--bg-soft);
+  color: var(--text);
+  white-space: pre-line;
+}
+
+/* 짧은 값 여러 개를 한 줄에 (거리 · 기준 · 정확도) */
+.admin-inline-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+}
+
+.admin-warn-text {
+  color: var(--danger);
+  font-weight: 700;
+}

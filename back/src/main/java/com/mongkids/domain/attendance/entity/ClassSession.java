@@ -72,4 +72,19 @@ public class ClassSession extends BaseTimeEntity {
 	public boolean isAssignedTo(Long memberId) {
 		return staff.getId().equals(memberId);
 	}
+
+	public void update(Institution institution, Member staff, LocalDate classDate, LocalTime startTime,
+		LocalTime endTime, String target) {
+		this.institution = institution;
+		this.staff = staff;
+		this.classDate = classDate;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.target = target;
+	}
+
+	// 같은 날 시간이 겹치는지 (끝 시각과 다음 시작 시각이 같으면 겹치지 않음)
+	public boolean overlaps(LocalDate date, LocalTime start, LocalTime end) {
+		return classDate.equals(date) && startTime.isBefore(end) && start.isBefore(endTime);
+	}
 }

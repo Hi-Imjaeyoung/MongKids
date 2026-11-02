@@ -27,6 +27,14 @@
   letter-spacing: 0.06em;
 }
 
+/* 메뉴 묶음 이름 (근태 관리) */
+.admin-layout__group {
+  margin: 12px 0 2px;
+  color: var(--text-sub);
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .admin-layout__tab {
   position: relative;
   min-height: 48px;
@@ -87,7 +95,8 @@
     flex-wrap: wrap;
   }
 
-  .admin-layout__eyebrow {
+  .admin-layout__eyebrow,
+  .admin-layout__group {
     width: 100%;
   }
 

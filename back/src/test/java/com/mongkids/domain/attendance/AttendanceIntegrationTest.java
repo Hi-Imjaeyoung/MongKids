@@ -30,6 +30,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mongkids.domain.attendance.entity.ClassSession;
@@ -325,6 +326,155 @@ class AttendanceIntegrationTest {
 		mockMvc.perform(get("/api/v1/admin/attendance/classes").cookie(admin)
 				.param("from", TODAY.toString()).param("to", TODAY.toString()))
 			.andExpect(jsonPath("$.data.length()").value(2));
+	}
+
+	@Test
+	@DisplayName("기관 위치: 관리자만 등록·수정·삭제, 좌표 범위 검증, 좌표를 바꿔도 저장된 수업 시작 거리는 그대로, 수업 있는 기관은 삭제 불가")
+	void institutions() throws Exception {
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		Long classId = session(staff, TODAY, 10);
+		startByLocation(tokenCookie(staff), classId, NEAR_LAT).andExpect(status().isOk());
+
+		mockMvc.perform(get("/api/v1/admin/institutions").cookie(tokenCookie(staff)))
+			.andExpect(status().isForbidden());
+		saveInstitution(admin, post("/api/v1/admin/institutions"), 91.0)
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.error.code").value("C001"));
+
+		String created = saveInstitution(admin, post("/api/v1/admin/institutions"), 37.6)
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.data.name").value("별빛유치원"))
+			.andExpect(jsonPath("$.data.classSessionCount").value(0))
+			.andReturn().getResponse().getContentAsString();
+		Long newId = objectMapper.readTree(created).get("data").get("id").asLong();
+
+		mockMvc.perform(get("/api/v1/admin/institutions").cookie(admin))
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.data[0].name").value("별빛유치원"))
+			.andExpect(jsonPath("$.data[1].classSessionCount").value(1));
+
+		saveInstitution(admin, put("/api/v1/admin/institutions/{id}", institution.getId()), 37.51)
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.latitude").value(37.51))
+			.andExpect(jsonPath("$.data.classSessionCount").value(1));
+		mockMvc.perform(get("/api/v1/admin/attendance/classes").cookie(admin)
+				.param("from", TODAY.toString()).param("to", TODAY.toString()))
+			.andExpect(jsonPath("$.data[0].classSession.start.distanceMeters").value(56));
+
+		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", institution.getId()).cookie(admin))
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.error.code").value("E012"));
+		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", newId).cookie(admin))
+			.andExpect(status().isOk());
+		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", newId).cookie(admin))
+			.andExpect(jsonPath("$.error.code").value("E011"));
+	}
+
+	@Test
+	@DisplayName("수업 반복 등록: 기간 안의 고른 요일마다 만들고, 같은 직원 시간이 겹치면 하나도 만들지 않는다")
+	void createClassSessions() throws Exception {
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		LoginMemberResponse member = register("2", MemberRole.MEMBER);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		session(staff, TODAY.plusDays(9), 10);
+
+		// 2026-11-02(월) ~ 11-15(일), 월·수 → 11/2, 11/4, 11/9, 11/11
+		createSessions(admin, staff.id(), TODAY, TODAY.plusDays(13), List.of("MONDAY", "WEDNESDAY"), "14:00", "14:50")
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.data.length()").value(4))
+			.andExpect(jsonPath("$.data[0].classSession.classDate").value("2026-11-02"))
+			.andExpect(jsonPath("$.data[3].classSession.classDate").value("2026-11-11"))
+			.andExpect(jsonPath("$.data[0].institutionId").value(institution.getId()))
+			.andExpect(jsonPath("$.data[0].classSession.status").value("NOT_STARTED"));
+
+		// 11/11(수) 10:00 수업과 겹침
+		createSessions(admin, staff.id(), TODAY, TODAY.plusDays(13), List.of("WEDNESDAY"), "10:30", "11:20")
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.error.code").value("E014"));
+		// 끝 시각과 시작 시각이 같으면 겹치지 않음
+		createSessions(admin, staff.id(), TODAY.plusDays(9), TODAY.plusDays(9), List.of("WEDNESDAY"), "11:00", "11:50")
+			.andExpect(status().isCreated());
+
+		createSessions(admin, member.id(), TODAY, TODAY, List.of("MONDAY"), "10:00", "10:50")
+			.andExpect(jsonPath("$.error.code").value("E015"));
+		createSessions(admin, staff.id(), TODAY, TODAY, List.of("TUESDAY"), "10:00", "10:50")
+			.andExpect(jsonPath("$.error.code").value("E016"));
+		createSessions(admin, staff.id(), TODAY, TODAY.plusMonths(6).plusDays(1), List.of("MONDAY"), "10:00", "10:50")
+			.andExpect(jsonPath("$.error.code").value("C001"));
+		createSessions(admin, staff.id(), TODAY, TODAY, List.of("MONDAY"), "10:00", "10:00")
+			.andExpect(jsonPath("$.error.code").value("C001"));
+		createSessions(tokenCookie(staff), staff.id(), TODAY, TODAY, List.of("MONDAY"), "10:00", "10:50")
+			.andExpect(status().isForbidden());
+
+		Long count = entityManager.createQuery("select count(s) from ClassSession s", Long.class).getSingleResult();
+		assertThat(count).isEqualTo(6);
+	}
+
+	@Test
+	@DisplayName("수업 수정·삭제: 기록·시작 시도가 없는 수업만. 직원은 기간으로 자기 수업만 조회")
+	void updateDeleteClassSession() throws Exception {
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		LoginMemberResponse other = register("2", MemberRole.STAFF);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		Long started = session(staff, TODAY, 9);
+		Long attempted = session(staff, TODAY, 11);
+		Long free = session(staff, TODAY, 13);
+		session(other, TODAY, 10);
+		startByLocation(tokenCookie(staff), started, NEAR_LAT).andExpect(status().isOk());
+		startByLocation(tokenCookie(staff), attempted, FAR_LAT).andExpect(status().isOk());
+
+		updateSession(admin, started, staff.id(), "15:00", "15:50")
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.error.code").value("E013"));
+		mockMvc.perform(delete("/api/v1/admin/attendance/classes/{id}", attempted).cookie(admin))
+			.andExpect(jsonPath("$.error.code").value("E013"));
+		// 9시 수업과 겹침
+		updateSession(admin, free, staff.id(), "09:30", "10:00")
+			.andExpect(jsonPath("$.error.code").value("E014"));
+
+		updateSession(admin, free, other.id(), "15:00", "15:50")
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.staffId").value(other.id()))
+			.andExpect(jsonPath("$.data.classSession.startTime").value("15:00:00"))
+			.andExpect(jsonPath("$.data.classSession.target").value("달님반"));
+
+		mockMvc.perform(get("/api/v1/attendance/classes").cookie(tokenCookie(other))
+				.param("from", TODAY.toString()).param("to", TODAY.plusDays(7).toString()))
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.data[1].id").value(free));
+
+		mockMvc.perform(delete("/api/v1/admin/attendance/classes/{id}", free).cookie(admin))
+			.andExpect(status().isOk());
+		mockMvc.perform(get("/api/v1/attendance/classes").cookie(tokenCookie(staff))
+				.param("from", TODAY.toString()).param("to", TODAY.toString()))
+			.andExpect(jsonPath("$.data.length()").value(2));
+	}
+
+	private ResultActions saveInstitution(Cookie cookie, MockHttpServletRequestBuilder request, double latitude)
+		throws Exception {
+		return mockMvc.perform(request.cookie(cookie).contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(Map.of(
+				"name", "별빛유치원", "address", "서울시 어딘가 2", "latitude", latitude, "longitude", INSTITUTION_LNG))));
+	}
+
+	private ResultActions createSessions(Cookie cookie, Long staffId, LocalDate firstDate, LocalDate lastDate,
+		List<String> daysOfWeek, String startTime, String endTime) throws Exception {
+		return mockMvc.perform(post("/api/v1/admin/attendance/classes").cookie(cookie)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(Map.of(
+				"institutionId", institution.getId(), "staffId", staffId, "firstDate", firstDate.toString(),
+				"lastDate", lastDate.toString(), "daysOfWeek", daysOfWeek, "startTime", startTime,
+				"endTime", endTime, "target", "햇살반"))));
+	}
+
+	private ResultActions updateSession(Cookie cookie, Long classId, Long staffId, String startTime, String endTime)
+		throws Exception {
+		return mockMvc.perform(put("/api/v1/admin/attendance/classes/{id}", classId).cookie(cookie)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(Map.of(
+				"institutionId", institution.getId(), "staffId", staffId, "classDate", TODAY.toString(),
+				"startTime", startTime, "endTime", endTime, "target", "달님반"))));
 	}
 
 	private ResultActions startByLocation(Cookie cookie, Long classId, double latitude) throws Exception {
