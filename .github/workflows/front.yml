@@ -48,7 +48,11 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
+      # 카카오맵 JavaScript 키 (EMP-FR-012, ADR-007). 브라우저에 보이는 키라 Secrets가 아닌 저장소 Variables에 두고,
+      # 카카오 콘솔에서 도메인으로 제한한다. 없으면 기관 위치는 위도·경도 직접 입력으로 동작한다
       - run: npm run build
+        env:
+          VITE_KAKAO_MAP_KEY: ${{ vars.VITE_KAKAO_MAP_KEY }}
 
       - name: AWS 자격 증명 (OIDC)
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
