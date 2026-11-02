@@ -165,3 +165,62 @@ export const classEndForm = {
   submitEdit: '정정 내용 저장',
   submitting: '저장하는 중…',
 }
+
+// ⑧·⑩ 날짜별 수업 기록 (EMP-FR-015). 오늘 수업 헤더의 시계 버튼에서 들어간다
+export const classHistory = {
+  open: '내 수업 기록',
+  title: '수업 기록',
+  calendar: '달력에서 날짜 고르기',
+  weekLabel: '날짜 선택',
+  prevWeek: '이전 주',
+  nextWeek: '다음 주',
+  today: '오늘',
+  weekRange: (start, end) =>
+    `${start.getMonth() + 1}월 ${start.getDate()}일 – ${end.getMonth() + 1}월 ${end.getDate()}일`,
+  weekday: (date) => WEEKDAYS[date.getDay()],
+  dayLabel: (date, count) =>
+    `${date.getMonth() + 1}월 ${date.getDate()}일 (${WEEKDAYS[date.getDay()]})${count ? `, 수업 ${count}개` : ''}`,
+  dateTitle: (date, count) => `${todayLabel(date)} · 수업 ${count}개`,
+  loading: '수업 기록을 불러오는 중이에요.',
+  empty: '이날은 할당된 수업이 없어요.',
+  retry: '다시 불러오기',
+  scheduled: '예정',
+  noRecord: '기록 없음',
+  viewRecord: '기록 보기',
+  note: (text) => `특이사항: ${text}`,
+  pastNotice: '지난 수업 기록은 볼 수만 있어요. 정정은 수업 당일까지 오늘 수업에서 할 수 있어요.',
+  futureNotice: '수업 시작은 수업 당일 오늘 수업 화면에서 할 수 있어요. 일정이 바뀌면 관리자에게 알려 주세요.',
+}
+
+// ⑨ 지난 수업 기록 보기 (읽기 전용)
+export const classRecordView = {
+  title: (date) => `${todayLabel(date)} 수업 기록`,
+  start: '수업 시작',
+  end: '수업 종료',
+  corrected: '마지막 정정',
+  rejectReason: '반려 사유',
+  distance: (meters) => `기관까지 ${meters}m`,
+  methods: { LOCATION: '위치 확인', MANUAL: '수동 등록', ADMIN: '관리자 등록' },
+  photos: (count) => `수업 사진 ${count}장`,
+  photoAlt: (index) => `수업 사진 ${index}`,
+  notes: '특이사항',
+  startNote: '수업 시작',
+  endNote: '수업 종료',
+  none: '없음',
+  locked: '정정 기간(수업 당일)이 지나 볼 수만 있어요.',
+}
+
+// ⑪ 달력으로 날짜 고르기. 월요일부터 시작한다
+export const historyCalendar = {
+  title: (year, month) => `${year}년 ${month}월`,
+  prevMonth: '이전 달',
+  nextMonth: '다음 달',
+  weekdays: ['월', '화', '수', '목', '금', '토', '일'],
+  legendClass: '수업 있음',
+  legendRejected: '반려된 수업 있음',
+  legendToday: '오늘',
+  loadError: '수업 표시를 불러오지 못했어요.',
+  goToday: '오늘로',
+  view: (date) => `${date.getMonth() + 1}월 ${date.getDate()}일 보기`,
+  close: '닫기',
+}

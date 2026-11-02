@@ -1,0 +1,64 @@
+.class-history__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.class-history__head-start {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.class-history__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.class-history__icon:hover {
+  background: var(--bg-soft);
+}
+
+.class-history__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.class-history__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.class-history__date {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.class-history__notice {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.class-history__notice-text {
+  margin: 0;
+  padding: 40px 0;
+  text-align: center;
+  color: var(--text-sub);
+}

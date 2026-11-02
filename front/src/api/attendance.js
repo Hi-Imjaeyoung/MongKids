@@ -55,3 +55,8 @@ export function endClass(classId, body) {
 export function correctClassEnd(classId, body) {
   return request(`/api/v1/attendance/classes/${classId}/end`, { method: 'PUT', ...jsonBody(body) })
 }
+
+// 날짜별 내 수업 기록 (EMP-FR-015). from·to는 'YYYY-MM-DD', 기간은 최대 31일. 지난·앞으로 날짜 모두 상태·기록과 함께 온다
+export function getMyClasses(from, to) {
+  return request(`/api/v1/attendance/classes?from=${from}&to=${to}`)
+}

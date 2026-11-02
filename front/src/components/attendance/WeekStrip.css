@@ -1,0 +1,128 @@
+.week-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.week-strip__nav,
+.week-strip__nav-end {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.week-strip__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.week-strip__arrow:hover {
+  background: var(--bg-soft);
+}
+
+.week-strip__range {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.week-strip__today {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.week-strip__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.week-strip__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 64px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.week-strip__day--today {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.week-strip__day--selected {
+  background: var(--blue);
+  color: #fff;
+}
+
+.week-strip__weekday {
+  font-size: 12px;
+}
+
+.week-strip__day:not(.week-strip__day--selected):not(.week-strip__day--today) .week-strip__weekday {
+  color: var(--text-sub);
+}
+
+.week-strip__day--today .week-strip__weekday {
+  font-weight: 700;
+}
+
+.week-strip__date {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* 수업 표시: 수업 있는 날 점, 반려 있는 날 빨간 테두리 원(모양으로도 구분) */
+.week-strip__mark {
+  box-sizing: border-box;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.week-strip__mark--class {
+  background: var(--blue);
+}
+
+.week-strip__mark--rejected {
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--danger);
+  background: none;
+}
+
+.week-strip__day--selected .week-strip__mark--class {
+  background: #fff;
+}
+
+.week-strip__day--selected .week-strip__mark--rejected {
+  border-color: #fff;
+  background: none;
+}
