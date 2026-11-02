@@ -265,9 +265,9 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 
 새 테이블은 없다(운영 DDL 불필요). 지도는 카카오맵([ADR-007](adr/ADR-007-map-api-provider.md))이고 키는 프론트 빌드에 들어간다.
 
-- [ ] 1. 카카오 개발자 콘솔: 카카오맵 활성화(계정의 첫 활성화 앱이어야 무료 제공량, "카카오맵 무료 쿼터" 확인), JavaScript 키의 Web 사이트 도메인에 `https://mongkiz.com`과 `http://localhost:5173` 등록 (사용자)
+- [x] 1. (2026-11-02 사용자, 운영 키 앱 "몽키즈유아체육"에서 카카오맵 활성화, `https://mongkiz.com` 등록 확인. 활성화 전에는 SDK가 403 `disabled OPEN_MAP_AND_LOCAL service`) 카카오 개발자 콘솔: 카카오맵 활성화(계정의 첫 활성화 앱이어야 무료 제공량, "카카오맵 무료 쿼터" 확인), JavaScript 키의 Web 사이트 도메인에 `https://mongkiz.com`과 `http://localhost:5173` 등록 (사용자)
 - [ ] 2. 로컬: `front/.env.local`에 `VITE_KAKAO_MAP_KEY=<JavaScript 키>` (커밋 안 함, `*.local`은 gitignore). 키가 없으면 지도 대신 위도·경도 직접 입력으로 동작한다
-- [ ] 3. 운영 빌드: GitHub Actions `front.yml`의 `npm run build`가 저장소 Variables `VITE_KAKAO_MAP_KEY`를 넘긴다(2026-11-02 반영). 값은 사용자가 `gh variable set VITE_KAKAO_MAP_KEY`로 등록. 값이 없으면 운영은 위도·경도 직접 입력으로 동작
+- [x] 3. 운영 빌드: GitHub Actions `front.yml`의 `npm run build`가 저장소 Variables `VITE_KAKAO_MAP_KEY`를 넘긴다(2026-11-02 반영). 값은 사용자가 `gh variable set VITE_KAKAO_MAP_KEY`로 등록. 값이 없으면 운영은 위도·경도 직접 입력으로 동작
 - [ ] 4. 관리자 로그인 → `/admin` "기관 위치": 주소로 찾기 → 핀 끌어 보정 → 저장. 할당된 수업이 있는 기관은 삭제 버튼이 꺼져 있다
 - [ ] 5. "수업 할당": 기간·요일로 등록 → 목록에 날짜별 수업. 같은 직원 시간 겹침은 거절. 기록 있는 수업은 수정·삭제 불가
 - [ ] 6. 직원 계정으로 기관 반경 안에서 수업 시작 → 시작 확정 (등록한 좌표로 판정되는지)
