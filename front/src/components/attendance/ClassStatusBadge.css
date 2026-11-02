@@ -28,3 +28,9 @@
   background: var(--danger-soft);
   color: var(--danger);
 }
+
+/* 날짜별 수업 기록의 앞으로 날짜 `예정` (EMP-FR-015) */
+.class-status--blue {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}

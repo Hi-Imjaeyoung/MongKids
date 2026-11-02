@@ -268,7 +268,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
-| GET | `/api/v1/attendance/classes?from=&to=` | 내 수업 할당, 기간(최대 31일) 안 시간순 → `ClassSessionResponse[]` (EMP-FR-004) | 직원 |
+| GET | `/api/v1/attendance/classes?from=&to=` | 내 수업 할당과 날짜별 기록, 기간(최대 31일, 지난·앞으로 날짜 모두) 안 시간순 → `ClassSessionResponse[]`. 31일을 넘거나 끝 < 시작이면 400 `C001` (EMP-FR-004, 015) | 직원 |
 | GET | `/api/v1/attendance/classes/today` | 오늘 수업 + 수업 시작이 반려된 채 남은 지난 수업, 시간순 → `ClassSessionResponse[]` (EMP-FR-013) | 직원 |
 | POST | `/api/v1/attendance/classes/{id}/start` | 위치로 수업 시작 확인 `{latitude, longitude, accuracy}` → `{confirmed, distanceMeters, radiusMeters, classSession}` (EMP-FR-001) | 직원 |
 | POST | `/api/v1/attendance/classes/{id}/start/manual` | 수동 등록 `{reason, latitude?, longitude?, accuracy?}` → 승인 대기 `ClassSessionResponse` (EMP-FR-011) | 직원 |
@@ -303,6 +303,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 수업 반복 등록: `firstDate`~`lastDate`(최대 6개월) 안에서 `daysOfWeek`에 든 날짜마다 수업을 하나씩 만든다. 기간·시간이 잘못되면(끝 ≤ 시작) 400 `C001`, 만들 날짜가 없으면 400 `E016`. 담당은 `STAFF`·`ADMIN`만(그 외 400 `E015`). 같은 직원의 같은 날 수업과 시간이 겹치면(끝 시각 = 다음 시작 시각은 허용) 409 `E014`이고 하나도 만들지 않는다. 수정도 같은 규칙.
 - 수업 수정·삭제: 수업 시작·종료 기록이나 수업 시작 시도 로그가 있으면 409 `E013`.
 - 수업 시작 판정: 서버가 하버사인 거리(m, 반올림)로 기관 좌표 반경 100m 안이면 `confirmed=true`로 확정, 밖이면 저장하지 않고 `confirmed=false`(200)와 거리·기준 반경을 준다. 정확도로는 거절하지 않는다. 결과와 상관없이 시도마다 `class_start_attempt`에 남긴다. 시작 시각은 서버 시각이고 시간 제한은 없다.
+- 수업 시작은 수업 날짜(서버 시각 기준)가 오늘이거나 지난 수업만. 앞으로 날짜 수업은 위치·수동 등록·관리자 직접 등록 모두 409 `E017`이고 시도 로그도 남기지 않는다 (EMP-FR-001, 015).
 - 수업 시작 기록은 수업당 1건. 기록이 없거나 반려된 수업만 다시 확인할 수 있고(반려 기록을 덮어씀), 확정·승인 대기면 409 `E002`. 승인·반려는 승인 대기만(그 외 409 `E004`), 기록이 없으면 404 `E003`.
 - 수업 종료: 수업 시작이 확정·승인 대기인 수업만(그 외 409 `E005`), 수업당 1건(409 `E006`). 위치는 받지 않는다. 승인 대기 중 종료한 뒤 반려돼도 종료 기록은 지우지 않는다.
 - 사진: 흐름은 §7과 같다. 1장 이상 20장 이하(400 `E009`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `attendance/` 밖의 키, 중복 키는 400 `E010`. 정정할 때 남길 사진은 응답의 `imageKey`를 다시 보낸다.

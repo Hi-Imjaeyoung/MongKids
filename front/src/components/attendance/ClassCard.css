@@ -63,3 +63,10 @@
 .class-card .attendance-action {
   margin-top: 4px;
 }
+
+/* 날짜별 기록 카드의 특이사항 등 긴 줄은 한 줄로 자른다 */
+.class-card__detail--clamp {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,178 @@
+.history-calendar {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(31, 36, 48, 0.55);
+}
+
+.history-calendar__sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 480px;
+  padding: 12px 16px 28px;
+  border-radius: 24px 24px 0 0;
+  background: var(--bg);
+}
+
+.history-calendar__handle {
+  align-self: center;
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-strong);
+}
+
+.history-calendar__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.history-calendar__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.history-calendar__arrow:hover {
+  background: var(--bg-soft);
+}
+
+.history-calendar__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.history-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  text-align: center;
+}
+
+.history-calendar__weekday {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.history-calendar__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-calendar__day--today {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.history-calendar__day--selected {
+  background: var(--blue);
+  color: #fff;
+}
+
+.history-calendar__day--selected .history-mark--class {
+  background: #fff;
+}
+
+.history-calendar__day--selected .history-mark--rejected {
+  border-color: #fff;
+  background: none;
+}
+
+.history-calendar__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.history-calendar__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-calendar__legend-today {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: var(--yellow-soft);
+}
+
+.history-calendar__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.history-calendar__button {
+  flex: 1;
+  height: 52px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-calendar__button--primary {
+  flex: 2;
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+.history-calendar__button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* 수업 표시: 수업 있는 날 점, 반려 있는 날 빨간 테두리 원 (날짜 띠 WeekStrip과 같은 모양) */
+.history-mark {
+  box-sizing: border-box;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.history-mark--class {
+  background: var(--blue);
+}
+
+.history-mark--rejected {
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--danger);
+  background: none;
+}

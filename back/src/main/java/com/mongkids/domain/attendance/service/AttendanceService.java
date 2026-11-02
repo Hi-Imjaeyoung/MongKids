@@ -89,7 +89,7 @@ public class AttendanceService {
 	}
 
 	/**
-	 * 직원 본인에게 할당된 기간 안의 수업 (EMP-FR-004). 기간은 최대 31일.
+	 * 직원 본인에게 할당된 기간 안의 수업 (EMP-FR-004, 015). 기간은 최대 31일. 지난·앞으로 날짜 모두 상태·기록과 함께 준다.
 	 */
 	public List<ClassSessionResponse> getMyClasses(Long memberId, LocalDate from, LocalDate to) {
 		Member staff = getStaff(memberId);
@@ -289,8 +289,12 @@ public class AttendanceService {
 
 	/**
 	 * 수업 시작을 새로 기록할 수 있는 기록. 없으면 새로 만들고, 반려된 기록만 덮어쓴다 (ADR-006).
+	 * 수업 날짜가 오늘보다 뒤면 시작할 수 없다 (EMP-FR-001, 015).
 	 */
 	private ClassStart getStartableRecord(ClassSession session) {
+		if (session.getClassDate().isAfter(today())) {
+			throw new BusinessException(ErrorCode.CLASS_START_TOO_EARLY);
+		}
 		return classStartRepository.findByClassSessionId(session.getId())
 			.map(start -> {
 				if (!start.isRejected()) {

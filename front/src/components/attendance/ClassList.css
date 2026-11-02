@@ -1,9 +1,31 @@
 .class-list__head {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 20px 20px 16px;
   background: var(--yellow);
+}
+
+.class-list__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.class-list__history {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+  cursor: pointer;
 }
 
 .class-list__date {

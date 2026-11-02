@@ -40,3 +40,38 @@ export function formatStart(start) {
   if (start.method === 'ADMIN') return classCard.adminRegistered(time)
   return classCard.started(time)
 }
+
+// 날짜별 수업 기록(EMP-FR-015)의 날짜 계산. 날짜는 브라우저 시간대의 자정 Date와 'YYYY-MM-DD' 키를 오간다
+
+export function toDateKey(date) {
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
+export function fromDateKey(key) {
+  const [year, month, day] = key.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+export function addDays(date, days) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days)
+}
+
+// 그 주의 월요일
+export function weekStartOf(date) {
+  return addDays(date, -((date.getDay() + 6) % 7))
+}
+
+// 날짜 키별 수업 수와 반려 여부. 날짜 띠·달력의 표시에 쓴다
+export function summarizeByDate(classes) {
+  const summary = new Map()
+  classes?.forEach((classSession) => {
+    const current = summary.get(classSession.classDate) ?? { count: 0, rejected: false }
+    summary.set(classSession.classDate, {
+      count: current.count + 1,
+      rejected: current.rejected || classSession.status === 'REJECTED',
+    })
+  })
+  return summary
+}

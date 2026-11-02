@@ -18,6 +18,7 @@ import StartConfirmed from '../components/attendance/StartConfirmed'
 import { canUseAttendance } from '../components/attendance/attendanceFormat'
 import Button from '../components/common/Button'
 import { attendancePage } from '../data/attendanceContent'
+import AttendanceHistory from './AttendanceHistory'
 import useCurrentPosition from './useCurrentPosition'
 import useTodayClasses from './useTodayClasses'
 
@@ -31,14 +32,14 @@ async function toImageKeys(photos) {
   return photos.map((photo) => photo.imageKey ?? keyByPhotoId.get(photo.id))
 }
 
-// 수업 시작·종료 체크 (EMP-SCR-001). 오늘 수업 목록(①)에서 하위 화면(②~⑦)으로 바꿔 가며 보여 준다.
+// 수업 시작·종료 체크 (EMP-SCR-001). 오늘 수업 목록(①)에서 하위 화면(②~⑦)과 날짜별 수업 기록(⑧~⑪)으로 바꿔 가며 보여 준다.
 // member: undefined면 로그인 상태 확인 중, null이면 비로그인. 직원(STAFF·ADMIN)이 아니면 API를 부르지 않는다
 function AttendancePage({ member, onLoginClick }) {
   const allowed = canUseAttendance(member)
   const { classes, error, reload, replaceClass } = useTodayClasses(allowed)
   const { locate } = useCurrentPosition()
   const [today] = useState(() => new Date())
-  // view.name: list | fail | guide | manual | started | end | edit
+  // view.name: list | fail | guide | manual | started | end | edit | history
   const [view, setView] = useState(LIST)
   const [locatingId, setLocatingId] = useState(null)
   const [actionError, setActionError] = useState(null)
@@ -185,6 +186,8 @@ function AttendancePage({ member, onLoginClick }) {
         }
       />
     )
+  } else if (view.name === 'history') {
+    content = <AttendanceHistory today={today} onGoToday={backToList} />
   } else {
     content = (
       <ClassList
@@ -197,6 +200,7 @@ function AttendancePage({ member, onLoginClick }) {
         onStart={(item) => startClass(item.id)}
         onEnd={(item) => show({ name: 'end', classId: item.id })}
         onCorrect={(item) => show({ name: 'edit', classId: item.id })}
+        onHistory={() => show({ name: 'history' })}
       />
     )
   }
