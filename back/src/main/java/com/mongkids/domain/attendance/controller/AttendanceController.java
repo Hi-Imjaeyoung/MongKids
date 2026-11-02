@@ -44,7 +44,7 @@ public class AttendanceController {
 		return ApiResponse.success(attendanceService.getTodayClasses(memberId));
 	}
 
-	// 내 수업 할당 (EMP-FR-004)
+	// 내 수업 할당과 날짜별 기록 (EMP-FR-004, 015)
 	@GetMapping("/classes")
 	public ApiResponse<List<ClassSessionResponse>> getMyClasses(
 		@AuthenticationPrincipal Long memberId,

@@ -187,6 +187,66 @@ class AttendanceIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("앞으로 날짜 수업은 위치·수동·관리자 직접 등록 모두 시작할 수 없고 시도 로그도 남지 않는다")
+	void futureClass_startNotAllowed() throws Exception {
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		Long classId = session(staff, TODAY.plusDays(1), 10);
+		Cookie cookie = tokenCookie(staff);
+
+		startByLocation(cookie, classId, NEAR_LAT)
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.error.code").value("E017"));
+		startManually(cookie, classId)
+			.andExpect(jsonPath("$.error.code").value("E017"));
+		mockMvc.perform(post("/api/v1/admin/attendance/classes/{id}/start", classId).cookie(admin)
+				.contentType(MediaType.APPLICATION_JSON).content("""
+					{"reason": "직원 휴대폰 고장"}
+					"""))
+			.andExpect(jsonPath("$.error.code").value("E017"));
+
+		Long attempts = entityManager.createQuery("select count(a) from ClassStartAttempt a", Long.class)
+			.getSingleResult();
+		assertThat(attempts).isZero();
+
+		clock.setDate(TODAY.plusDays(1));
+		startByLocation(cookie, classId, NEAR_LAT)
+			.andExpect(jsonPath("$.data.confirmed").value(true));
+	}
+
+	@Test
+	@DisplayName("날짜별 내 수업 기록: 지난 수업은 상태·종료 기록과 함께, 앞으로 수업은 시작 전으로 준다. 지난 수업은 정정할 수 없다")
+	void classHistory() throws Exception {
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		Cookie cookie = tokenCookie(staff);
+		Long pastId = session(staff, TODAY.minusDays(1), 10);
+		Long futureId = session(staff, TODAY.plusDays(3), 10);
+		session(register("2", MemberRole.STAFF), TODAY.minusDays(1), 13);
+
+		clock.setDate(TODAY.minusDays(1));
+		startByLocation(cookie, pastId, NEAR_LAT).andExpect(status().isOk());
+		endClass(cookie, pastId, 2).andExpect(status().isCreated());
+		clock.setDate(TODAY);
+
+		mockMvc.perform(get("/api/v1/attendance/classes").cookie(cookie)
+				.param("from", TODAY.minusDays(7).toString()).param("to", TODAY.plusDays(7).toString()))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.data[0].id").value(pastId))
+			.andExpect(jsonPath("$.data[0].status").value("ENDED"))
+			.andExpect(jsonPath("$.data[0].start.method").value("LOCATION"))
+			.andExpect(jsonPath("$.data[0].end.images.length()").value(2))
+			.andExpect(jsonPath("$.data[0].end.correctable").value(false))
+			.andExpect(jsonPath("$.data[1].id").value(futureId))
+			.andExpect(jsonPath("$.data[1].status").value("NOT_STARTED"))
+			.andExpect(jsonPath("$.data[1].start").doesNotExist());
+
+		mockMvc.perform(get("/api/v1/attendance/classes").cookie(cookie)
+				.param("from", TODAY.minusDays(32).toString()).param("to", TODAY.toString()))
+			.andExpect(status().isBadRequest());
+	}
+
+	@Test
 	@DisplayName("남의 수업은 시작·종료·정정할 수 없다")
 	void otherStaffClass_notFound() throws Exception {
 		LoginMemberResponse owner = register("1", MemberRole.STAFF);

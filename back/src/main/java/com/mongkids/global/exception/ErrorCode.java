@@ -59,7 +59,8 @@ public enum ErrorCode {
 	CLASS_SESSION_LOCKED(HttpStatus.CONFLICT, "E013", "수업 시작·종료 기록이 있는 수업은 수정하거나 삭제할 수 없습니다."),
 	CLASS_SESSION_OVERLAP(HttpStatus.CONFLICT, "E014", "같은 직원의 같은 시간에 이미 수업이 있습니다."),
 	INVALID_CLASS_STAFF(HttpStatus.BAD_REQUEST, "E015", "직원 권한이 있는 회원에게만 수업을 할당할 수 있습니다."),
-	NO_CLASS_SESSION_CREATED(HttpStatus.BAD_REQUEST, "E016", "기간 안에 고른 요일이 없어 만들 수업이 없습니다.");
+	NO_CLASS_SESSION_CREATED(HttpStatus.BAD_REQUEST, "E016", "기간 안에 고른 요일이 없어 만들 수업이 없습니다."),
+	CLASS_START_TOO_EARLY(HttpStatus.CONFLICT, "E017", "수업 당일부터 수업을 시작할 수 있습니다.");
 
 	private final HttpStatus status;
 	private final String code;
