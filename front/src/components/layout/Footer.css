@@ -36,6 +36,21 @@
   color: var(--yellow);
 }
 
+.footer__privacy {
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.footer__privacy a {
+  font-weight: 800;
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer__privacy a:hover {
+  color: var(--yellow);
+}
+
 .footer__note {
   margin: 8px 0 0;
   font-size: 13px;

@@ -1,0 +1,27 @@
+.privacy-policy {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  margin-top: 8px;
+}
+
+.privacy-policy__body {
+  min-width: 0;
+  max-width: 800px;
+}
+
+@media (max-width: 1024px) {
+  .privacy-policy {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .privacy-policy {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    margin-top: 0;
+  }
+}
