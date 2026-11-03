@@ -74,7 +74,7 @@
 - [x] 카카오·네이버 실제 키로 로그인 확인 (로컬)
 - [ ] 배포 후 소셜 로그인 점검 ([deploy-checklist.md](deploy-checklist.md) G): 카카오 완료(2026-10-22, 사용자), 네이버 남음
 - [ ] 가입 정보 입력 (FR-019). SNS 수신 동의 변경은 내 정보에서 가능(#54), 전화번호·이메일은 네이버 동의항목으로 저장(#54)
-- [ ] 카카오 이메일·휴대폰 번호 (FR-019): 비즈 앱 전환 → 동의항목 `account_email`·`phone_number` 켜기(로컬·운영) → `application.yml` 카카오 scope 추가 ([deploy-checklist.md](deploy-checklist.md) L)
+- [ ] 카카오 이메일·휴대폰 번호 (FR-019): 비즈 앱 전환·동의항목 `account_email`·`phone_number`(필수) 켜기(로컬·운영, 사용자, 2026-11-03), `application.yml` 카카오 scope 추가(`feature/kakao-email-phone`, 2026-11-03). 남은 것: 카카오 심사 통과 → 로컬 카카오 로그인 확인 → 병합·배포 → 운영 확인 ([deploy-checklist.md](deploy-checklist.md) L)
 - [ ] 회원 탈퇴 (FR-028, #54) 실제 확인: 카카오·네이버 콘솔에 `-withdraw` Redirect URI 등록(사용자) → 로컬 DB에도 `member-withdraw-ddl.sql` 적용 → 로컬·운영 탈퇴 점검 ([deploy-checklist.md](deploy-checklist.md) L)
 - [x] 게시물 저장·조회·수정·삭제 (FR-008)
 - [ ] 게시물 사진 S3 실제 업로드 확인 (FR-008, 운영 업로드·표시 확인 2026-10-27, 수정·거부 케이스 남음) ([deploy-checklist.md](deploy-checklist.md) H)
