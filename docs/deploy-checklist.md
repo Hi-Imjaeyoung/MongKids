@@ -241,7 +241,7 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [ ] 11. 다른 계정(일반 회원)으로는 헤더 "수업 체크"가 안 보이고 `/attendance` 접근 시 직원 아님 안내
 
 정리
-- [ ] 12. 결과(기기, 장소, 화면 거리 vs 지도 거리, 정확도)를 `docs/progress.md`에 남기고, 테스트 기관·수업·기록을 지운다 (`class_end_image` → `class_end` → `class_start` → `class_start_attempt` → `class_session` → `institution` 순서, S3 `attendance/` 테스트 사진도 삭제). 테스트 계정 직원 권한이 필요 없으면 회수
+- [ ] 12. 결과(기기, 장소, 화면 거리 vs 지도 거리, 정확도)를 진행 로그(`docs/progress/` 그 주 파일)에 남기고, 테스트 기관·수업·기록을 지운다 (`class_end_image` → `class_end` → `class_start` → `class_start_attempt` → `class_session` → `institution` 순서, S3 `attendance/` 테스트 사진도 삭제). 테스트 계정 직원 권한이 필요 없으면 회수
 
 
 ## L. 회원 탈퇴 (SCR-025, FR-028, #54)

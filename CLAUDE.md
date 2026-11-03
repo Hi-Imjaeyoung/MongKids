@@ -17,7 +17,8 @@ MongKids/
 │  ├─ requirements/     요구사항 (프로젝트별 단일 출처)
 │  │  ├─ requirement_homepage.md  홈페이지
 │  │  └─ requirement_employee.md  근태 관리 (직원용)
-│  ├─ progress.md       진행 사항
+│  ├─ progress.md       진행 사항 (현재 상태, 주별 로그 목록, 다음 할 일)
+│  ├─ progress/         주별 진행 로그 (YYYY-Www.md)
 │  ├─ next-projects.md  홈페이지 외 신규 프로젝트 후보
 │  ├─ git-workflow.md   브랜치·커밋·PR 규칙
 │  ├─ deploy-checklist.md  배포 후 점검 체크리스트
@@ -33,7 +34,8 @@ MongKids/
 |---|---|---|
 | [docs/requirements/requirement_homepage.md](docs/requirements/requirement_homepage.md) | 공유 | 홈페이지 화면(프론트)·기능(백엔드)·비기능 요구사항과 ID |
 | [docs/requirements/requirement_employee.md](docs/requirements/requirement_employee.md) | 공유 | 근태 관리(직원용) 요구사항 (기획 단계) |
-| [docs/progress.md](docs/progress.md) | 공유 | 영역별 현재 상태, 진행 로그, 다음 할 일 |
+| [docs/progress.md](docs/progress.md) | 공유 | 영역별 현재 상태, 주별 진행 로그 목록, 다음 할 일 |
+| `docs/progress/` | 공유 | 주별 진행 로그 (`2026-W45.md`, ISO 주차·월요일 시작) |
 | [docs/next-projects.md](docs/next-projects.md) | 공유 | 홈페이지 외 신규 프로젝트 후보 (기획 단계, ID 없음) |
 | [docs/git-workflow.md](docs/git-workflow.md) | 공유 | 브랜치, 커밋 scope, PR 체크리스트 |
 | [docs/deploy-checklist.md](docs/deploy-checklist.md) | 공유 | 배포(S3 + CloudFront) 후 점검 항목 |
@@ -84,4 +86,5 @@ npm run lint && npm run build
   - 백그라운드 작업만 멈추면 자식 프로세스(java, node)가 남을 수 있다. 포트(8080, 5173)를 점유한 프로세스까지 종료하고, 포트가 비었는지 확인한 뒤 보고한다.
 - 기존 코드의 스타일(들여쓰기, 네이밍, 주석 밀도)을 따른다.
 - 요구사항·진행 상황이 바뀌면 `docs/requirements/`의 해당 문서와 `docs/progress.md`를 함께 갱신한다.
+  - 진행 로그는 `docs/progress/`의 그 주 파일 표 끝에 한 줄 추가한다. 새 주의 첫 기록이면 파일을 만들고 `progress.md` 주별 목록 맨 위에 넣는다.
 - 비밀값(DB 접속 정보, API 키 등)은 절대 커밋하지 않는다.
