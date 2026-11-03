@@ -1,0 +1,267 @@
+.privacy-section {
+  padding-top: 48px;
+  scroll-margin-top: var(--header-height);
+}
+
+.privacy-section__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  word-break: keep-all;
+}
+
+.privacy-section__text,
+.privacy-section__list li,
+.privacy-section__callout li {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.privacy-section__text {
+  margin: 12px 0 0;
+}
+
+.privacy-section__note {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+.privacy-section__list {
+  margin-top: 12px;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.privacy-section__list strong,
+.privacy-section__callout strong {
+  color: var(--text);
+}
+
+.privacy-section__callout {
+  margin-top: 16px;
+  padding: 22px 24px 22px 44px;
+  border: 1px solid var(--yellow-soft);
+  border-radius: var(--radius-lg);
+  background: var(--cream);
+  list-style: disc;
+}
+
+.privacy-section__table-wrap {
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.privacy-section__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.privacy-section__table th,
+.privacy-section__table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.privacy-section__table tbody tr:last-child th,
+.privacy-section__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.privacy-section__table thead th {
+  background: var(--bg-soft);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.privacy-section__table tbody th {
+  width: 18%;
+  font-weight: 700;
+}
+
+.privacy-section__line {
+  display: block;
+}
+
+.privacy-section__line--muted {
+  font-weight: 500;
+  color: var(--text-sub);
+}
+
+.privacy-section__contact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 22px 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.privacy-section__contact-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  font-size: 15px;
+}
+
+.privacy-section__contact dt {
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.privacy-section__contact dd {
+  margin: 0;
+}
+
+.privacy-section__contact a {
+  color: var(--blue-text);
+  text-decoration: underline;
+}
+
+.privacy-section__agencies {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.privacy-section__agencies li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--bg-soft);
+  font-size: 14px;
+}
+
+.privacy-section__agencies a {
+  font-weight: 700;
+}
+
+.privacy-section__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 10px 18px;
+  border: 1px solid var(--blue);
+  border-radius: 999px;
+  color: var(--blue-text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.privacy-section__link:hover {
+  background: var(--blue-soft);
+}
+
+@media (max-width: 768px) {
+  .privacy-section {
+    padding-top: 36px;
+  }
+
+  .privacy-section__title {
+    font-size: 19px;
+  }
+
+  .privacy-section__text,
+  .privacy-section__list li,
+  .privacy-section__callout li {
+    font-size: 14px;
+  }
+
+  .privacy-section__callout {
+    padding: 16px 16px 16px 34px;
+    border-radius: var(--radius-md);
+  }
+
+  /* 표를 행마다 카드로 쌓는다 */
+  .privacy-section__table-wrap {
+    border: 0;
+    border-radius: 0;
+  }
+
+  .privacy-section__table thead {
+    display: none;
+  }
+
+  .privacy-section__table,
+  .privacy-section__table tbody,
+  .privacy-section__table tr,
+  .privacy-section__table th,
+  .privacy-section__table td {
+    display: block;
+    width: 100%;
+  }
+
+  .privacy-section__table tr {
+    margin-top: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .privacy-section__table tr:first-child {
+    margin-top: 0;
+  }
+
+  .privacy-section__table th,
+  .privacy-section__table td,
+  .privacy-section__table tbody th {
+    width: 100%;
+    padding: 0 0 10px;
+    border-bottom: 0;
+  }
+
+  .privacy-section__table tbody tr > :last-child {
+    padding-bottom: 0;
+  }
+
+  .privacy-section__table th::before,
+  .privacy-section__table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-sub);
+  }
+
+  .privacy-section__contact {
+    padding: 16px;
+    border-radius: var(--radius-md);
+  }
+
+  .privacy-section__contact-row {
+    grid-template-columns: 64px 1fr;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .privacy-section__agencies {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .privacy-section__link {
+    display: flex;
+    justify-content: center;
+    min-height: 48px;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+  }
+}

@@ -209,7 +209,9 @@ export const footer = {
   slogan: '놀이는 신나게! 성장은 알차게!',
   area: '용인 · 수원 · 경기광주 중심 운영 / 정확한 수업 가능 여부는 상담으로 안내합니다.',
   instagram,
-  pending: '연락처 · 사업자 정보 · 개인정보처리방침은 정식 오픈 전에 등록합니다.',
+  business: '대표 오재혁 · 사업자등록번호 130-51-00905 · 연락처 010-5176-4225',
+  // 개인정보처리방침 (SCR-023)
+  privacy: { label: '개인정보처리방침', to: '/privacy' },
 }
 
 export const mobileCta = {
