@@ -281,8 +281,8 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 운영 DDL: [`back/docs/sql/2026-11-05-homepage-ddl.sql`](../back/docs/sql/2026-11-05-homepage-ddl.sql). 1단계는 지금 운영 jar와 새 jar 모두에서 안전하다.
 
 병합 전
-- [ ] 운영 RDS에 1단계 실행: `quote_consultation` 생성, `post.category` EVENT → GENERAL, `review.type` FREE_TRIAL → CLASS와 기본값 'CLASS'. `validate` 기동이라 테이블이 없으면 새 jar가 뜨지 않고, EVENT 게시물이 남아 있으면 목록 조회가 실패한다
-- [ ] 확인: `select count(*) from post where category = 'EVENT';`, `select type, count(*) from review group by type;`
+- [x] (2026-11-05 적용, 사용자) 운영 RDS에 1단계 실행: `quote_consultation` 생성, `post.category` EVENT → GENERAL, `review.type` FREE_TRIAL → CLASS와 기본값 'CLASS'. `validate` 기동이라 테이블이 없으면 새 jar가 뜨지 않고, EVENT 게시물이 남아 있으면 목록 조회가 실패한다
+- [x] (2026-11-05, 사용자) 확인: `select count(*) from post where category = 'EVENT';`, `select type, count(*) from review group by type;`
 
 배포 후
 - [ ] `/programs/sportsday` → "운동회 견적 요청" 제출 → 접수 완료, 관리자 화면 신규 배지 +1
