@@ -275,3 +275,19 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [ ] 8. "수업 기록": 기간·직원·상태 필터, 종료 사진·특이사항 보기, 시작 전 수업 직접 등록
 - [ ] 9. 모바일 폭(390px)에서 메뉴·목록·승인 화면 확인
 - [ ] 10. #61 시드로 넣은 기관·수업은 일반 데이터로 그대로 쓰고, 좌표가 맞는지 "기관 위치"에서 지도로 다시 확인한다
+
+## N. 회의록 2026-11-05 반영 (견적 신청 FR-031, 후기 유형·현장 사진 분류 삭제)
+
+운영 DDL: [`back/docs/sql/2026-11-05-homepage-ddl.sql`](../back/docs/sql/2026-11-05-homepage-ddl.sql). 1단계는 지금 운영 jar와 새 jar 모두에서 안전하다.
+
+병합 전
+- [ ] 운영 RDS에 1단계 실행: `quote_consultation` 생성, `post.category` EVENT → GENERAL, `review.type` FREE_TRIAL → CLASS와 기본값 'CLASS'. `validate` 기동이라 테이블이 없으면 새 jar가 뜨지 않고, EVENT 게시물이 남아 있으면 목록 조회가 실패한다
+- [ ] 확인: `select count(*) from post where category = 'EVENT';`, `select type, count(*) from review group by type;`
+
+배포 후
+- [ ] `/programs/sportsday` → "운동회 견적 요청" 제출 → 접수 완료, 관리자 화면 신규 배지 +1
+- [ ] `/admin` 상담 신청 "견적" 필터 → 상세에 행사 일정·장소·참여 대상·인원·희망 프로그램
+- [ ] `/reviews` 후기 작성·수정 (화면은 아직 `type: CLASS`를 보내고 서버는 무시한다)
+- [ ] `/news` 탭에 "현장 사진" 없음, 옮긴 게시물이 "게시글"로 보임
+- [ ] 2단계 실행: `review.type` 컬럼·`idx_review_type_created_at` 삭제, `idx_review_created_at` 생성
+- [ ] 프론트 후기 저장 요청에서 `type: 'CLASS'`(`DEFAULT_REVIEW_TYPE`) 제거 후 배포
