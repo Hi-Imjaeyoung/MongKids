@@ -28,8 +28,7 @@ function TeacherList() {
             </div>
             <div>
               <h3 className="teacher-card__name">{teacher.name}</h3>
-              <p className="teacher-card__meta">{teacher.school}</p>
-              <p className="teacher-card__meta">{teacher.career}</p>
+              <p className="teacher-card__specialty">{teacher.specialty}</p>
             </div>
           </article>
         ))}

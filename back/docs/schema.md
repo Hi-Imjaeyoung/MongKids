@@ -33,6 +33,7 @@ erDiagram
 	review ||--o{ review_image : 포함
 	consultation ||--o| institution_consultation : "type=INSTITUTION"
 	consultation ||--o| personal_consultation : "type=PERSONAL"
+	consultation ||--o| quote_consultation : "type=QUOTE"
 	institution ||--o{ class_session : 열림
 	member ||--o{ class_session : "할당(직원)"
 	class_session ||--o| class_start : 기록
@@ -44,7 +45,7 @@ erDiagram
 | 도메인 | 테이블 | 요구사항 |
 |---|---|---|
 | member | `member` | FR-018, FR-019, FR-022 |
-| consultation | `consultation`, `institution_consultation`, `personal_consultation` | FR-001~004, FR-023 |
+| consultation | `consultation`, `institution_consultation`, `personal_consultation`, `quote_consultation` | FR-001~004, FR-023, FR-031 |
 | post | `post`, `post_image`, `post_comment`, `post_like` (수업 현장), `lab_post`, `lab_post_image`, `lab_post_like` (몽키즈 연구소) | FR-008~012 |
 | review | `review`, `review_image` | FR-012~017, FR-021 |
 | attendance | `institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image` (근태 관리) | EMP-FR-001~004, 010~014 |
@@ -79,7 +80,7 @@ erDiagram
 | 컬럼 | 타입 | 제약 | 설명 |
 |---|---|---|---|
 | id | BIGINT | PK | |
-| type | VARCHAR(20) | NOT NULL | `INSTITUTION`, `PERSONAL` (일반 컬럼, 생성 후 변경 불가) |
+| type | VARCHAR(20) | NOT NULL | `INSTITUTION`, `PERSONAL`, `QUOTE`(견적, FR-031) (일반 컬럼, 생성 후 변경 불가) |
 | phone | VARCHAR(20) | NOT NULL | 연락받을 전화번호 (두 폼 공통, 숫자만. 기관은 유선번호 허용, 개인은 010 휴대전화만) |
 | status | VARCHAR(20) | NOT NULL, 기본 `RECEIVED` | 처리 상태(FR-026): `RECEIVED`(신규), `CONTACTED`(연락 완료), `COMPLETED`(상담 완료) |
 | privacy_agreed_at | DATETIME(6) | NOT NULL | 개인정보 수집 동의 시각 (필수) |
@@ -120,13 +121,33 @@ erDiagram
 | health_agreed_at | DATETIME(6) | NULL | 건강정보 별도 동의 시각. `health_note`가 있을 때만 저장(동의 필수), 없으면 NULL |
 | motivation | TEXT | NULL | 신청 이유·기대하는 점 |
 
+### quote_consultation — 운동회 견적 신청 (FR-031)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK, FK → consultation.id | |
+| institution_name | VARCHAR(100) | NOT NULL | 기관·단체명 |
+| schedule_undecided | BIT(1) | NOT NULL | 일정 미정 |
+| event_date | DATE | NULL | 희망 행사 날짜. 일정 미정이면 NULL, 아니면 필수(오늘 이후, Service 검증) |
+| event_time | TIME | NULL | 희망 시작 시간. 일정 미정이면 NULL |
+| venue_type | VARCHAR(20) | NOT NULL | `INDOOR`(실내), `OUTDOOR`(실외), `UNDECIDED`(장소 미정) |
+| address | VARCHAR(255) | NULL | 행사 주소. 실내·실외면 필수, 장소 미정이면 NULL |
+| participant_groups | VARCHAR(100) | NOT NULL | 참여 대상 enum 이름을 쉼표로 이은 값 (`PRESCHOOL,ELEMENTARY,SECONDARY,ADULT` 중 1개 이상) |
+| child_count | INT | NULL | 아동 인원 (보호자 인원과 둘 중 하나 이상, Service 검증) |
+| guardian_count | INT | NULL | 보호자 인원 |
+| programs | VARCHAR(100) | NULL | 희망 프로그램 (`SPORTS_DAY,WORKSHOP,TO_BE_DISCUSSED`, 선택). 고르지 않으면 NULL |
+| note | TEXT | NULL | 추가 요청사항 |
+
+- 여러 개 고르는 값은 조회 조건으로 쓰지 않아 별도 테이블 대신 한 컬럼에 둔다 (`EnumListConverter`).
+- 운영 DDL: [sql/2026-11-05-homepage-ddl.sql](sql/2026-11-05-homepage-ddl.sql).
+
 ### post — 게시물 (FR-008, FR-009)
 
 | 컬럼 | 타입 | 제약 | 설명 |
 |---|---|---|---|
 | id | BIGINT | PK | |
 | member_id | BIGINT | NOT NULL, FK → member.id | 작성 직원 |
-| category | VARCHAR(20) | NOT NULL | SCR-006 탭: `GENERAL`(게시글), `NEWS`(소식), `EVENT`(현장 사진) |
+| category | VARCHAR(20) | NOT NULL | SCR-006 탭: `GENERAL`(게시글), `NEWS`(소식). 현장 사진(`EVENT`)은 2026-11-05 삭제, 기존 게시물은 `GENERAL`로 옮김 |
 | title | VARCHAR(100) | NOT NULL | 제목 |
 | content | TEXT | NOT NULL | 본문 HTML. 서버가 허용 목록으로 정화해 저장하고, 사진은 `src` 없이 `<img data-image-key>`로만 둔다 (응답 때 URL을 채움) |
 | like_count | INT | NOT NULL, 기본 0 | 공감 수 (목록 조회용 비정규화) |
@@ -199,7 +220,6 @@ erDiagram
 |---|---|---|---|
 | id | BIGINT | PK | |
 | member_id | BIGINT | NOT NULL, FK → member.id | 작성자 |
-| type | VARCHAR(20) | NOT NULL | `FREE_TRIAL`(무료체험 후기), `CLASS`(수업 후기) |
 | satisfaction | TINYINT | NOT NULL | 바나나 만족도 1~5 (FR-016) |
 | content | TEXT | NOT NULL | |
 | reply_content | TEXT | NULL | 관리자 답글 (FR-017) |
@@ -210,7 +230,8 @@ erDiagram
 - 작성 즉시 노출(FR-013)이므로 승인 상태 컬럼은 두지 않는다.
 - 답글은 후기당 1개로 보고 `review`에 컬럼으로 둔다. 여러 개가 필요해지면 `review_reply` 테이블로 분리한다.
 - 작성자 마스킹(FR-014)은 응답 DTO에서 처리하고 DB에는 원본을 둔다.
-- INDEX (`type`, `created_at`)
+- INDEX (`created_at`) — 최신순 목록
+- 후기 유형(`type`: 무료체험·수업)은 2026-11-05 삭제했다(FR-013). 운영 DB는 기존 무료체험 후기를 수업 후기로 바꾼 뒤 배포 확인 후 컬럼을 지운다 ([sql/2026-11-05-homepage-ddl.sql](sql/2026-11-05-homepage-ddl.sql)).
 
 ### review_image — 후기 사진 (FR-015)
 

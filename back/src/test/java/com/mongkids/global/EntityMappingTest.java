@@ -30,7 +30,6 @@ import com.mongkids.domain.post.entity.Post;
 import com.mongkids.domain.post.entity.PostCategory;
 import com.mongkids.domain.post.entity.PostLike;
 import com.mongkids.domain.review.entity.Review;
-import com.mongkids.domain.review.entity.ReviewType;
 import com.mongkids.global.config.JpaConfig;
 
 @DataJpaTest
@@ -164,7 +163,6 @@ class EntityMappingTest {
 		Member member = em.persist(createMember("naver-1"));
 		Review review = Review.builder()
 			.member(member)
-			.type(ReviewType.FREE_TRIAL)
 			.satisfaction(5)
 			.content("즐거웠어요")
 			.build();

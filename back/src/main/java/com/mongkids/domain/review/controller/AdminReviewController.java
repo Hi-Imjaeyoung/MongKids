@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mongkids.domain.review.dto.AdminReviewResponse;
 import com.mongkids.domain.review.dto.ReviewHiddenRequest;
-import com.mongkids.domain.review.entity.ReviewType;
 import com.mongkids.domain.review.service.ReviewService;
 import com.mongkids.global.common.ApiResponse;
 import com.mongkids.global.common.PageResponse;
@@ -32,11 +31,10 @@ public class AdminReviewController {
 	@GetMapping
 	public ApiResponse<PageResponse<AdminReviewResponse>> getReviews(
 		@AuthenticationPrincipal Long memberId,
-		@RequestParam(required = false) ReviewType type,
 		@RequestParam(defaultValue = "false") boolean hiddenOnly,
 		@PageableDefault(size = 20) Pageable pageable
 	) {
-		return ApiResponse.success(reviewService.getAdminReviews(memberId, type, hiddenOnly, pageable));
+		return ApiResponse.success(reviewService.getAdminReviews(memberId, hiddenOnly, pageable));
 	}
 
 	@PutMapping("/{reviewId}/hidden")

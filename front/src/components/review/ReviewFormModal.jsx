@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { createReview, reviewImageRules, updateReview, uploadReviewImages } from '../../api/reviews'
-import { reviewForm, reviewTypes } from '../../data/reviewContent'
+import { DEFAULT_REVIEW_TYPE, reviewForm } from '../../data/reviewContent'
 import BananaRating from './BananaRating'
 import './ReviewFormModal.css'
-
-const WRITABLE_TYPES = reviewTypes.filter((type) => type.id !== 'ALL')
 
 let nextPhotoId = 0
 
@@ -22,7 +20,6 @@ function isAllowedFile(file) {
 // review가 있으면 그 값으로 채워 수정한다. 저장하면 onSaved(저장된 후기)를 부르고 완료 화면을 보여 준다
 function ReviewFormModal({ review, onSaved, onClose }) {
   const editing = Boolean(review)
-  const [type, setType] = useState(review?.type ?? null)
   const [satisfaction, setSatisfaction] = useState(review?.satisfaction ?? 0)
   const [content, setContent] = useState(review?.content ?? '')
   const [photos, setPhotos] = useState(() => (review?.images ?? []).map(toPhoto))
@@ -51,7 +48,7 @@ function ReviewFormModal({ review, onSaved, onClose }) {
     return () => objectUrls.forEach((url) => URL.revokeObjectURL(url))
   }, [])
 
-  const canSubmit = Boolean(type) && satisfaction > 0 && content.trim().length > 0 && !submitting
+  const canSubmit = satisfaction > 0 && content.trim().length > 0 && !submitting
 
   const addFiles = (event) => {
     const files = [...event.target.files]
@@ -90,7 +87,7 @@ function ReviewFormModal({ review, onSaved, onClose }) {
       const uploadedKeys = await uploadReviewImages(newPhotos.map((photo) => photo.file))
       const keyByPhotoId = new Map(newPhotos.map((photo, index) => [photo.id, uploadedKeys[index]]))
       const body = {
-        type,
+        type: DEFAULT_REVIEW_TYPE,
         satisfaction,
         content: content.trim(),
         imageKeys: photos.map((photo) => photo.imageKey ?? keyByPhotoId.get(photo.id)),
@@ -142,25 +139,6 @@ function ReviewFormModal({ review, onSaved, onClose }) {
           </div>
         ) : (
           <form className="review-modal__form" onSubmit={submit}>
-            <fieldset className="review-modal__field">
-              <legend className="review-modal__label">
-                {reviewForm.typeLabel} <span className="review-modal__required">*</span>
-              </legend>
-              <div className="review-modal__types">
-                {WRITABLE_TYPES.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={`review-modal__type ${type === item.id ? 'review-modal__type--active' : ''}`}
-                    aria-pressed={type === item.id}
-                    onClick={() => setType(item.id)}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-
             <fieldset className="review-modal__field">
               <legend className="review-modal__label">
                 {reviewForm.ratingLabel} <span className="review-modal__required">*</span>

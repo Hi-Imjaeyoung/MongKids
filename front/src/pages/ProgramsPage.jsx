@@ -9,10 +9,7 @@ import { programGroups, programs, programsCta, programsProcess } from '../data/p
 function ProgramsPage({ onInstitutionConsultClick, onPersonalConsultClick }) {
   return (
     <>
-      <ProgramsHero
-        onInstitutionConsultClick={onInstitutionConsultClick}
-        onPersonalConsultClick={onPersonalConsultClick}
-      />
+      <ProgramsHero />
       {programGroups.map((group) => (
         <ProgramGroup
           key={group.id}

@@ -7,12 +7,9 @@ export const reviewHero = {
   loginToWrite: '로그인하고 후기 쓰기',
 }
 
-// id는 백엔드 ReviewType. ALL은 전체 탭
-export const reviewTypes = [
-  { id: 'ALL', label: '전체' },
-  { id: 'FREE_TRIAL', label: '무료체험 후기', tone: 'green' },
-  { id: 'CLASS', label: '수업 후기', tone: 'blue' },
-]
+// 후기 유형(무료체험 후기 / 수업 후기)은 삭제하고 모두 수업 후기로 받는다 (2026-11-05).
+// 백엔드가 아직 유형을 필수로 받으므로 유형 삭제(FR-013)가 배포될 때까지 저장 요청에 CLASS를 함께 보낸다
+export const DEFAULT_REVIEW_TYPE = 'CLASS'
 
 export const reviewList = {
   sort: '최신순',
@@ -72,7 +69,6 @@ export const reviewWriteBox = {
 export const reviewForm = {
   createTitle: '후기 쓰기',
   editTitle: '후기 수정',
-  typeLabel: '후기 유형',
   ratingLabel: '만족도',
   ratingHint: '바나나를 눌러 골라 주세요',
   ratingText: (rating) => `${rating}점 / 5점`,

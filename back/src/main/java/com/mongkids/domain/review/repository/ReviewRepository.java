@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.mongkids.domain.review.entity.Review;
-import com.mongkids.domain.review.entity.ReviewType;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
@@ -19,19 +18,14 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 	Page<Review> findByDeletedAtIsNullAndHiddenAtIsNull(Pageable pageable);
 
 	@EntityGraph(attributePaths = "member")
-	Page<Review> findByTypeAndDeletedAtIsNullAndHiddenAtIsNull(ReviewType type, Pageable pageable);
-
-	@EntityGraph(attributePaths = "member")
 	Optional<Review> findByIdAndDeletedAtIsNull(Long id);
 
-	// 관리자 목록 (FR-021)은 숨긴 후기도 포함한다. 유형이 null이면 거르지 않는다
+	// 관리자 목록 (FR-021)은 숨긴 후기도 포함한다
 	@EntityGraph(attributePaths = "member")
 	@Query("""
 		select r from Review r
 		where r.deletedAt is null
-		  and (:type is null or r.type = :type)
 		  and (:hiddenOnly = false or r.hiddenAt is not null)
 		""")
-	Page<Review> searchForAdmin(@Param("type") ReviewType type, @Param("hiddenOnly") boolean hiddenOnly,
-		Pageable pageable);
+	Page<Review> searchForAdmin(@Param("hiddenOnly") boolean hiddenOnly, Pageable pageable);
 }

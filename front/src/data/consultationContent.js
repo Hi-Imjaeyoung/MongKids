@@ -1,4 +1,4 @@
-// 상담 신청 모달(SCR-009 기관, SCR-010 개인) 문구와 선택지. value는 백엔드 enum 이름과 같다
+// 상담 신청 모달(SCR-009 기관, SCR-010 개인, SCR-011 견적) 문구와 선택지. value는 백엔드 enum 이름과 같다
 
 export const institutionConsultation = {
   badge: '어린이집 · 유치원',
@@ -129,7 +129,7 @@ export const personalStoryFields = [
   {
     name: 'healthNote',
     label: '건강 · 알레르기 · 주의사항',
-    placeholder: '예) 땅콩 알레르기가 있어요',
+    placeholder: '예) 어깨가 자주 빠져요',
     rows: 2,
     hint: '적어 주시면 아래에서 건강정보 수집에 따로 동의해 주셔야 해요.',
   },
@@ -186,5 +186,89 @@ export const personalFieldErrorMessages = {
   phone: '휴대전화 번호 8자리를 확인해 주세요.',
   childAgeMonths: '개월 수는 0~120으로 입력해 주세요.',
   childBirthDate: '생년월일을 확인해 주세요.',
+  default: '입력값을 확인해 주세요.',
+}
+
+// ---- 견적 신청 (SCR-011, FR-031) ----
+// 백엔드(FR-031)는 아직 없다. value·필드 이름은 백엔드 구현 때 이 이름으로 맞춘다
+
+export const quoteConsultation = {
+  badge: '운동회 · 체육대회',
+  title: '운동회 견적 요청',
+  description: '행사 정보를 남겨주시면 담당자가 견적 상담을 위해 연락드려요',
+  submit: '견적 요청하기',
+  submitting: '요청하는 중…',
+  errorMessage: '요청하지 못했습니다. 잠시 후 다시 시도해 주세요.',
+}
+
+export const quoteConsultationFields = {
+  optional: '(선택)',
+  institutionName: { label: '기관·단체명', placeholder: '예) 몽키즈 어린이집' },
+  schedule: { label: '희망 행사 일정', dateLabel: '행사 날짜', timeLabel: '시작 시간', undecided: '일정 미정' },
+  venue: { label: '행사 장소', addressLabel: '행사 주소', addressPlaceholder: '행사가 열리는 곳의 주소를 적어 주세요.' },
+  participants: { label: '참여 대상', hint: '여러 개를 고를 수 있어요.' },
+  headcount: {
+    label: '인원',
+    hint: '둘 중 하나 이상 적어 주세요.',
+    childLabel: '아동',
+    guardianLabel: '보호자',
+    unit: '명',
+  },
+  programs: { label: '희망 프로그램', hint: '여러 개를 고를 수 있어요.' },
+  phone: { label: '연락받을 전화번호', placeholder: '010-1234-5678 또는 02-123-4567' },
+  note: { label: '추가 요청사항', placeholder: '행사 목적, 희망 진행 시간, 예산 등 알려 주실 내용을 적어 주세요.' },
+}
+
+export const venueTypes = [
+  { value: 'INDOOR', label: '실내' },
+  { value: 'OUTDOOR', label: '실외' },
+  { value: 'UNDECIDED', label: '장소 미정' },
+]
+
+export const participantGroups = [
+  { value: 'PRESCHOOL', label: '유아' },
+  { value: 'ELEMENTARY', label: '초등' },
+  { value: 'SECONDARY', label: '중고등' },
+  { value: 'ADULT', label: '성인' },
+]
+
+export const quotePrograms = [
+  { value: 'SPORTS_DAY', label: '운동회' },
+  { value: 'WORKSHOP', label: '워크샵' },
+  { value: 'TO_BE_DISCUSSED', label: '협의 후 결정' },
+]
+
+// 개인정보 수집·이용 안내 (FR-023). "수집 항목 및 보관 기간 보기"를 누르면 펼친다
+export const quotePrivacyNotice = {
+  title: '개인정보 수집·이용 안내',
+  toggle: '수집 항목 및 보관 기간 보기',
+  items: [
+    { term: '수집 항목', description: '기관·단체명, 연락받을 전화번호, 희망 행사 일정·장소, 참여 대상·인원, 희망 프로그램, 추가 요청사항' },
+    { term: '목적', description: '견적 상담 연락 및 행사 안내' },
+    { term: '보관 기간', description: '상담 완료 후 3년' },
+  ],
+  refusal: '동의하지 않을 수 있으며, 동의하지 않으면 견적 요청을 할 수 없어요.',
+  agree: '개인정보 수집·이용에 동의합니다',
+  required: '(필수)',
+}
+
+export const quoteConsultationDone = {
+  title: '견적 요청이 접수되었어요',
+  description: ['남겨 주신 전화번호로 담당자가 확인 후 연락드릴게요.', '조금만 기다려 주세요!'],
+  confirm: '확인',
+}
+
+export const quoteConsultationRules = {
+  institutionNameMax: 100,
+  addressMax: 255,
+  headcountMin: 1,
+  headcountMax: 9999,
+  noteMax: 1000,
+  phonePattern: consultationRules.phonePattern,
+}
+
+export const quoteFieldErrorMessages = {
+  phone: '전화번호 형식을 확인해 주세요.',
+  headcount: '인원은 1~9999명으로 입력해 주세요.',
   default: '입력값을 확인해 주세요.',
 }

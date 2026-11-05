@@ -1,0 +1,72 @@
+/* 견적 신청 모달(SCR-011). 기본 틀은 InstitutionConsultationModal.css의 consult-modal을 함께 쓴다 */
+
+/* 날짜 · 시작 시간 */
+.quote-modal__schedule {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 10px;
+}
+
+.consult-modal__input:disabled {
+  background: var(--bg-soft);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.quote-modal__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.quote-modal__check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--yellow-text);
+}
+
+/* 아동 · 보호자 인원 */
+.quote-modal__headcount {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+
+.quote-modal__headcount .consult-modal__count-label {
+  min-width: 42px;
+}
+
+.quote-modal__privacy-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.quote-modal__privacy-toggle {
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: var(--blue-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .quote-modal__schedule {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-modal__headcount .consult-modal__input--count {
+    width: 96px;
+  }
+}

@@ -105,3 +105,4 @@ EMP-SCR-001(수업 시작·종료 체크)과 관련 FR은 #61, EMP-SCR-006(관�
 | 회의록 | 반영일 | 추출 ID |
 |---|---|---|
 | 2026-10-29.md | 2026-10-29 | EMP-SCR-001~006, EMP-FR-001~009, EMP-NFR-001 (프로젝트 2, 기획 단계) |
+| 2026-11-05.md | 2026-11-05 | 추출 ID 없음 (EMP-SCR-001 구현 진행 보고만. 홈페이지 안건은 [requirement_homepage.md](requirement_homepage.md)) |

@@ -83,32 +83,6 @@
   color: var(--text-sub);
 }
 
-.review-modal__types {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.review-modal__type {
-  min-height: 56px;
-  border: 2px solid var(--border-strong);
-  border-radius: var(--radius-md);
-  background: var(--bg);
-  color: var(--text);
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.review-modal__type:hover {
-  border-color: var(--blue);
-}
-
-.review-modal__type--active {
-  border-color: var(--blue);
-  background: var(--blue-soft);
-}
-
 .review-modal__rating {
   display: flex;
   flex-wrap: wrap;
@@ -358,10 +332,6 @@
   .review-modal__form {
     gap: 24px;
     padding: 20px 16px 32px;
-  }
-
-  .review-modal__type {
-    font-size: 15px;
   }
 
   .review-modal__photo,

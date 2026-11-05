@@ -12,14 +12,13 @@ function jsonBody(body) {
   return { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
 }
 
-// 최신순. type이 없으면 전체 탭. 비로그인은 page·size와 상관없이 최신 4개만 온다 (FR-012)
-export function getReviews({ type, page = 0, size = 10 } = {}) {
+// 최신순. 비로그인은 page·size와 상관없이 최신 4개만 온다 (FR-012)
+export function getReviews({ page = 0, size = 10 } = {}) {
   const params = new URLSearchParams({ page, size })
-  if (type) params.set('type', type)
   return request(`/api/v1/reviews?${params}`)
 }
 
-// review: { type, satisfaction, content, imageKeys }. 저장된 후기(ReviewResponse)를 돌려준다
+// review: { type(유형 삭제 배포 전까지 CLASS 고정), satisfaction, content, imageKeys }. 저장된 후기(ReviewResponse)를 돌려준다
 export function createReview(review) {
   return request('/api/v1/reviews', { method: 'POST', ...jsonBody(review) })
 }

@@ -1,4 +1,3 @@
-import ImagePlaceholder from '../common/ImagePlaceholder'
 import { aboutHero } from '../../data/aboutContent'
 import './AboutHero.css'
 
@@ -37,7 +36,7 @@ function AboutHero() {
           </p>
         </div>
         <div className="about-hero__photo">
-          <ImagePlaceholder label={aboutHero.photoLabel} />
+          <img className="about-hero__image" src={aboutHero.photo} alt={aboutHero.photoAlt} />
         </div>
       </div>
     </section>

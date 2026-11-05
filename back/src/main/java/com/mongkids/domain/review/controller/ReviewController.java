@@ -22,7 +22,6 @@ import com.mongkids.domain.review.dto.ReviewImageUploadUrlResponse;
 import com.mongkids.domain.review.dto.ReviewReplyRequest;
 import com.mongkids.domain.review.dto.ReviewResponse;
 import com.mongkids.domain.review.dto.ReviewSaveRequest;
-import com.mongkids.domain.review.entity.ReviewType;
 import com.mongkids.domain.review.service.ReviewService;
 import com.mongkids.global.common.ApiResponse;
 import com.mongkids.global.common.PageResponse;
@@ -58,10 +57,9 @@ public class ReviewController {
 	@GetMapping
 	public ApiResponse<PageResponse<ReviewResponse>> getReviews(
 		@AuthenticationPrincipal Long memberId,
-		@RequestParam(required = false) ReviewType type,
 		@PageableDefault(size = 10) Pageable pageable
 	) {
-		return ApiResponse.success(reviewService.getReviews(memberId, type, pageable));
+		return ApiResponse.success(reviewService.getReviews(memberId, pageable));
 	}
 
 	@PutMapping("/{reviewId}")

@@ -147,18 +147,18 @@ class PostIntegrationTest {
 		mockMvc.perform(put("/api/v1/posts/{postId}", postId).cookie(writer)
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
-					{"category": "EVENT", "title": "수정한 제목",
+					{"category": "GENERAL", "title": "수정한 제목",
 					 "content": "<p>수정한 본문</p><figure class=\\"post-photos\\"><img data-image-key=\\"posts/b.jpg\\"></figure>"}
 					"""))
 			.andExpect(status().isOk());
 
 		// then
 		mockMvc.perform(get("/api/v1/posts/{postId}", postId))
-			.andExpect(jsonPath("$.data.category").value("EVENT"))
+			.andExpect(jsonPath("$.data.category").value("GENERAL"))
 			.andExpect(jsonPath("$.data.title").value("수정한 제목"))
 			.andExpect(jsonPath("$.data.content").value(startsWith("<p>수정한 본문</p>")));
 
-		mockMvc.perform(get("/api/v1/posts").param("category", "EVENT"))
+		mockMvc.perform(get("/api/v1/posts").param("category", "GENERAL"))
 			.andExpect(jsonPath("$.data.content[0].thumbnailUrl").value("https://cdn.test/posts/b.jpg"));
 	}
 
@@ -172,6 +172,17 @@ class PostIntegrationTest {
 					"""))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.error.code").value("P004"));
+	}
+
+	@Test
+	@DisplayName("삭제한 현장 사진(EVENT) 분류로는 게시물을 저장할 수 없다")
+	void createPost_removedEventCategory_badRequest() throws Exception {
+		mockMvc.perform(post("/api/v1/posts").cookie(tokenCookie(registerStaff("1")))
+				.contentType(MediaType.APPLICATION_JSON)
+				.content("""
+					{"category": "EVENT", "title": "제목", "content": "<p>글</p>"}
+					"""))
+			.andExpect(status().isBadRequest());
 	}
 
 	private Cookie tokenCookie(LoginMemberResponse member) {

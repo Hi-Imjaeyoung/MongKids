@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { reviewList, reviewTypes } from '../../data/reviewContent'
+import { reviewList } from '../../data/reviewContent'
 import { formatDate } from '../news/postFormat'
 import BananaRating from './BananaRating'
 import ReviewContent from './ReviewContent'
@@ -12,7 +12,6 @@ import './ReviewCard.css'
 // 내 후기에는 "내 후기" 표시와 수정·삭제 (FR-025). canReply: 관리자면 답글을 쓰고 고친다 (FR-017)
 function ReviewCard({ review, mine, canReply, onEdit, onDelete, onReplySaved }) {
   const [expanded, setExpanded] = useState(false)
-  const type = reviewTypes.find((item) => item.id === review.type)
   const hasPhotos = review.images.length > 0
 
   return (
@@ -21,9 +20,6 @@ function ReviewCard({ review, mine, canReply, onEdit, onDelete, onReplySaved }) 
         {hasPhotos && <ReviewPhotos images={review.images} />}
         <div className={`review-card-item__body ${hasPhotos && !expanded ? 'review-card-item__body--fit' : ''}`}>
           <div className="review-card-item__meta">
-            <span className={`review-card-item__type review-card-item__type--${type?.tone ?? 'blue'}`}>
-              {type?.label ?? review.type}
-            </span>
             <BananaRating value={review.satisfaction} />
           </div>
           <ReviewContent

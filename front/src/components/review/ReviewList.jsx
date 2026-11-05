@@ -1,18 +1,15 @@
 import { useEffect, useRef } from 'react'
-import { reviewGate, reviewList, reviewTypes, reviewWriteBox } from '../../data/reviewContent'
-import NewsTabs from '../news/NewsTabs'
+import { reviewGate, reviewList, reviewWriteBox } from '../../data/reviewContent'
 import ReviewCard from './ReviewCard'
 import './ReviewList.css'
 
 // 화면 아래에 닿기 이만큼 전에 다음 후기를 불러온다
 const PRELOAD_MARGIN = '400px'
 
-// 수업 후기 목록 (SCR-012): 회원 후기 쓰기 칸, 유형 탭, 카드 목록(무한 스크롤), 비로그인 안내 (FR-012)
+// 수업 후기 목록 (SCR-012): 회원 후기 쓰기 칸, 최신순 표시, 카드 목록(무한 스크롤), 비로그인 안내 (FR-012)
 // reviews: null이면 불러오는 중. member: undefined면 로그인 상태 확인 중, null이면 비로그인
 function ReviewList({
   member,
-  type,
-  onTypeChange,
   reviews,
   total,
   hasNext,
@@ -66,7 +63,6 @@ function ReviewList({
       )}
 
       <div className="review-list__toolbar">
-        <NewsTabs active={type} onChange={onTypeChange} categories={reviewTypes} />
         <p className="review-list__sort">{reviewList.sort}</p>
       </div>
 

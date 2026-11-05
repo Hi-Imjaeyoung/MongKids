@@ -28,6 +28,15 @@ function FloatingMenu() {
           )
         }
 
+        // tel이 있는 항목(전화 문의)은 같은 창에서 전화 앱을 연다
+        if (action.tel) {
+          return (
+            <a key={action.id} href={action.tel} className={className}>
+              {content}
+            </a>
+          )
+        }
+
         // href가 있는 항목(인스타그램)은 외부 링크로 새 창에서 연다
         return action.href ? (
           <a

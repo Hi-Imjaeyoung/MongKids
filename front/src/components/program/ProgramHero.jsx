@@ -1,11 +1,9 @@
 import Button from '../common/Button'
 import PageHero from '../common/PageHero'
-import { ctaButtons } from '../../data/homeContent'
 import { programDetail } from '../../data/programContent'
 
-// 프로그램 상세 소개: 상담 버튼
-// 1:1 가정 방문체육만 개인 상담(SCR-010), 나머지는 기관 문의(SCR-009)
-function ProgramHero({ program, onInstitutionConsultClick, onPersonalConsultClick }) {
+// 프로그램 상세 소개. 상담 버튼은 두지 않고, 운동회·체육대회만 견적 신청(SCR-011) 버튼을 둔다 (2026-11-05)
+function ProgramHero({ program, onQuoteClick }) {
   return (
     <PageHero
       eyebrow={programDetail.eyebrow}
@@ -14,13 +12,9 @@ function ProgramHero({ program, onInstitutionConsultClick, onPersonalConsultClic
       description={program.blurb}
       titleId="program-title"
     >
-      {program.consult === 'personal' ? (
-        <Button variant="blue" size="lg" onClick={onPersonalConsultClick}>
-          {ctaButtons.private.label}
-        </Button>
-      ) : (
-        <Button variant="yellow" size="lg" onClick={onInstitutionConsultClick}>
-          {ctaButtons.institution.label}
+      {program.quote && (
+        <Button variant="yellow" size="lg" onClick={onQuoteClick}>
+          {programDetail.quoteButton}
         </Button>
       )}
     </PageHero>

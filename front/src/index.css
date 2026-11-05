@@ -38,7 +38,7 @@
   --shadow-sm: 0 4px 16px rgba(31, 36, 48, 0.06);
   --shadow-md: 0 8px 24px rgba(31, 36, 48, 0.12);
 
-  --header-height: 80px;
+  --header-height: 96px;
   --container: 1200px;
   /* 모바일 하단 고정 상담 바 높이 (640px 이하에서만 사용) */
   --mobile-cta-height: 0px;
@@ -157,7 +157,7 @@ button {
 
 @media (max-width: 768px) {
   :root {
-    --header-height: 64px;
+    --header-height: 80px;
   }
 
   .container {

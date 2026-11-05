@@ -29,9 +29,10 @@
   transform: rotate(-3deg);
 }
 
+/* 2026-11-05 회의: 약 50% 키워 시험 적용 (56px → 84px, 모바일 48px → 72px). 크기 확정 전 */
 .logo__image {
   display: block;
-  height: 56px;
+  height: 84px;
   width: auto;
 }
 
@@ -260,6 +261,6 @@
 
 @media (max-width: 768px) {
   .logo__image {
-    height: 48px;
+    height: 72px;
   }
 }

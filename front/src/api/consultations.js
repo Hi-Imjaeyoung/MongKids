@@ -19,3 +19,15 @@ export function createPersonalConsultation(consultation) {
     body: JSON.stringify(consultation),
   })
 }
+
+// 견적 신청 (SCR-011, FR-031). 백엔드는 이 형태로 구현 예정
+// quote: { institutionName, scheduleUndecided, eventDate('YYYY-MM-DD'), eventTime('HH:mm'),
+//   venueType(INDOOR|OUTDOOR|UNDECIDED), address, participantGroups[], childCount, guardianCount,
+//   programs[], phone, note, privacyAgreed }. 일정 미정이면 날짜·시간, 장소 미정이면 주소, 적지 않은 인원은 null
+export function createQuoteConsultation(quote) {
+  return request('/api/v1/quote-consultations', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(quote),
+  })
+}

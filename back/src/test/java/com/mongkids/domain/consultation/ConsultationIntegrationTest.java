@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mongkids.domain.consultation.entity.Gender;
 import com.mongkids.domain.consultation.entity.InstitutionConsultation;
+import com.mongkids.domain.consultation.entity.ParticipantGroup;
 import com.mongkids.domain.consultation.entity.PersonalConsultation;
+import com.mongkids.domain.consultation.entity.QuoteConsultation;
 import com.mongkids.domain.consultation.repository.ConsultationRepository;
 import com.mongkids.global.storage.FileStorage;
 
@@ -33,6 +35,7 @@ class ConsultationIntegrationTest {
 
 	private static final String URL = "/api/v1/institution-consultations";
 	private static final String PERSONAL_URL = "/api/v1/personal-consultations";
+	private static final String QUOTE_URL = "/api/v1/quote-consultations";
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -147,6 +150,50 @@ class ConsultationIntegrationTest {
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.error.code").value("C001"))
 			.andExpect(jsonPath("$.error.fieldErrors.length()").value(4));
+	}
+
+	@Test
+	@DisplayName("로그인하지 않아도 운동회 견적을 신청할 수 있고, 여러 개 고른 선택지를 그대로 저장한다 (FR-031)")
+	void createQuote_withoutLogin_created() throws Exception {
+		// when
+		String body = mockMvc.perform(post(QUOTE_URL).contentType(MediaType.APPLICATION_JSON)
+				.content(quoteRequestBody(LocalDate.now().plusDays(20).toString(), true)))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.success").value(true))
+			.andReturn().getResponse().getContentAsString();
+
+		// then
+		long id = objectMapper.readTree(body).path("data").path("id").asLong();
+		QuoteConsultation saved = (QuoteConsultation)consultationRepository.findById(id).orElseThrow();
+		assertThat(saved.getParticipantGroups()).containsExactly(ParticipantGroup.PRESCHOOL, ParticipantGroup.ELEMENTARY);
+		assertThat(saved.getPrograms()).isEmpty();
+		assertThat(saved.getEventTime()).hasToString("14:30");
+		assertThat(saved.getPhone()).isEqualTo("021234567");
+	}
+
+	@Test
+	@DisplayName("견적 신청에서 개인정보 수집에 동의하지 않거나 참여 대상을 고르지 않으면 400을 응답한다")
+	void createQuote_invalidInput_badRequest() throws Exception {
+		mockMvc.perform(post(QUOTE_URL).contentType(MediaType.APPLICATION_JSON)
+				.content(quoteRequestBody(LocalDate.now().plusDays(20).toString(), false)))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.error.fieldErrors[0].field").value("privacyAgreed"));
+
+		mockMvc.perform(post(QUOTE_URL).contentType(MediaType.APPLICATION_JSON)
+				.content(quoteRequestBody(LocalDate.now().plusDays(20).toString(), true)
+					.replace("[\"ELEMENTARY\", \"PRESCHOOL\"]", "[]")))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.error.fieldErrors[0].field").value("participantGroups"));
+		assertThat(consultationRepository.count()).isZero();
+	}
+
+	private String quoteRequestBody(String eventDate, boolean privacyAgreed) {
+		return """
+			{"institutionName": "햇살어린이집", "scheduleUndecided": false, "eventDate": "%s", "eventTime": "14:30",
+			 "venueType": "INDOOR", "address": "서울시 마포구 강당", "participantGroups": ["ELEMENTARY", "PRESCHOOL"],
+			 "childCount": 40, "guardianCount": null, "programs": [], "phone": "02-123-4567",
+			 "privacyAgreed": %s}
+			""".formatted(eventDate, privacyAgreed);
 	}
 
 	private String personalRequestBody(String phone, boolean privacyAgreed) {

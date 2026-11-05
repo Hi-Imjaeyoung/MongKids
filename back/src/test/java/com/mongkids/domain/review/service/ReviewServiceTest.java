@@ -32,7 +32,6 @@ import com.mongkids.domain.review.dto.ReviewResponse;
 import com.mongkids.domain.review.dto.ReviewSaveRequest;
 import com.mongkids.domain.review.entity.Review;
 import com.mongkids.domain.review.entity.ReviewImage;
-import com.mongkids.domain.review.entity.ReviewType;
 import com.mongkids.domain.review.repository.ReviewRepository;
 import com.mongkids.global.common.PageResponse;
 import com.mongkids.global.exception.ErrorCode;
@@ -76,11 +75,10 @@ class ReviewServiceTest {
 
 		// when
 		ReviewResponse response = reviewService.createReview(AUTHOR_ID,
-			request(ReviewType.FREE_TRIAL, 5, List.of(IMAGE_KEY, secondKey)));
+			request(5, List.of(IMAGE_KEY, secondKey)));
 
 		// then
 		assertThat(response.id()).isEqualTo(REVIEW_ID);
-		assertThat(response.type()).isEqualTo(ReviewType.FREE_TRIAL);
 		assertThat(response.satisfaction()).isEqualTo(5);
 		assertThat(response.authorId()).isEqualTo(AUTHOR_ID);
 		assertThat(response.authorName()).isEqualTo("홍**");
@@ -99,7 +97,7 @@ class ReviewServiceTest {
 
 		// when
 		ReviewResponse response = reviewService.createReview(AUTHOR_ID,
-			new ReviewSaveRequest(ReviewType.CLASS, 4, "좋았어요", null));
+			new ReviewSaveRequest(4, "좋았어요", null));
 
 		// then
 		assertThat(response.images()).isEmpty();
@@ -115,7 +113,7 @@ class ReviewServiceTest {
 			"reviews/5.jpg", "reviews/6.jpg");
 
 		// when & then
-		assertThatThrownBy(() -> reviewService.createReview(AUTHOR_ID, request(ReviewType.CLASS, 5, keys)))
+		assertThatThrownBy(() -> reviewService.createReview(AUTHOR_ID, request(5, keys)))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.REVIEW_IMAGE_LIMIT_EXCEEDED);
 		then(reviewRepository).should(never()).save(any());
@@ -176,14 +174,14 @@ class ReviewServiceTest {
 	@DisplayName("로그인한 회원은 요청한 페이지를 최신순으로 받고 크기는 최대 100으로 맞춘다")
 	void getReviews_member_latestPage() {
 		// given
-		given(reviewRepository.findByTypeAndDeletedAtIsNullAndHiddenAtIsNull(eq(ReviewType.CLASS), any(Pageable.class)))
+		given(reviewRepository.findByDeletedAtIsNullAndHiddenAtIsNull(any(Pageable.class)))
 			.willReturn(Page.empty());
 
 		// when
-		reviewService.getReviews(AUTHOR_ID, ReviewType.CLASS, PageRequest.of(2, 500));
+		reviewService.getReviews(AUTHOR_ID, PageRequest.of(2, 500));
 
 		// then
-		then(reviewRepository).should().findByTypeAndDeletedAtIsNullAndHiddenAtIsNull(eq(ReviewType.CLASS),
+		then(reviewRepository).should().findByDeletedAtIsNullAndHiddenAtIsNull(
 			argThat(pageable -> pageable.getPageNumber() == 2
 				&& pageable.getPageSize() == ReviewService.MAX_PAGE_SIZE
 				&& pageable.getSort().equals(ReviewService.LATEST)));
@@ -198,7 +196,7 @@ class ReviewServiceTest {
 			.willReturn(new PageImpl<>(latestFour, PageRequest.of(0, ReviewService.GUEST_PREVIEW_SIZE), 9));
 
 		// when
-		PageResponse<ReviewResponse> response = reviewService.getReviews(null, null, PageRequest.of(3, 20));
+		PageResponse<ReviewResponse> response = reviewService.getReviews(null, PageRequest.of(3, 20));
 
 		// then
 		then(reviewRepository).should().findByDeletedAtIsNullAndHiddenAtIsNull(argThat(pageable ->
@@ -219,10 +217,9 @@ class ReviewServiceTest {
 		given(fileStorage.findSize(IMAGE_KEY)).willReturn(Optional.of(1024L));
 
 		// when
-		reviewService.updateReview(AUTHOR_ID, REVIEW_ID, request(ReviewType.FREE_TRIAL, 3, List.of(IMAGE_KEY)));
+		reviewService.updateReview(AUTHOR_ID, REVIEW_ID, request(3, List.of(IMAGE_KEY)));
 
 		// then
-		assertThat(review.getType()).isEqualTo(ReviewType.FREE_TRIAL);
 		assertThat(review.getSatisfaction()).isEqualTo(3);
 		assertThat(review.getImages()).extracting(ReviewImage::getImageKey).containsExactly(IMAGE_KEY);
 	}
@@ -238,7 +235,7 @@ class ReviewServiceTest {
 
 		// when & then
 		assertThatThrownBy(() -> reviewService.updateReview(OTHER_MEMBER_ID, REVIEW_ID,
-			request(ReviewType.CLASS, 1, List.of())))
+			request(1, List.of())))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.FORBIDDEN);
 		assertThatThrownBy(() -> reviewService.deleteReview(ADMIN_ID, REVIEW_ID))
@@ -313,13 +310,13 @@ class ReviewServiceTest {
 	}
 
 	private void assertInvalidImage(List<String> imageKeys) {
-		assertThatThrownBy(() -> reviewService.createReview(AUTHOR_ID, request(ReviewType.CLASS, 5, imageKeys)))
+		assertThatThrownBy(() -> reviewService.createReview(AUTHOR_ID, request(5, imageKeys)))
 			.extracting("errorCode")
 			.isEqualTo(ErrorCode.INVALID_REVIEW_IMAGE);
 	}
 
-	private static ReviewSaveRequest request(ReviewType type, int satisfaction, List<String> imageKeys) {
-		return new ReviewSaveRequest(type, satisfaction, "아이가 정말 즐거워했어요", imageKeys);
+	private static ReviewSaveRequest request(int satisfaction, List<String> imageKeys) {
+		return new ReviewSaveRequest(satisfaction, "아이가 정말 즐거워했어요", imageKeys);
 	}
 
 	private static Member member(Long id, MemberRole role) {
@@ -332,7 +329,6 @@ class ReviewServiceTest {
 	private static Review review(Long authorId) {
 		Review review = Review.builder()
 			.member(member(authorId, MemberRole.MEMBER))
-			.type(ReviewType.CLASS)
 			.satisfaction(5)
 			.content("후기")
 			.build();

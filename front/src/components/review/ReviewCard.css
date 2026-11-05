@@ -36,23 +36,6 @@
   gap: 10px 14px;
 }
 
-.review-card-item__type {
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.review-card-item__type--green {
-  background: var(--green-soft);
-  color: var(--green-text);
-}
-
-.review-card-item__type--blue {
-  background: var(--blue-soft);
-  color: var(--blue-text);
-}
-
 .review-card-item__footer {
   display: flex;
   flex-wrap: wrap;
@@ -120,11 +103,6 @@
   .review-card-item__body--fit {
     height: auto;
     min-height: 0;
-  }
-
-  .review-card-item__type {
-    padding: 3px 10px;
-    font-size: 12px;
   }
 
   .review-card-item__author {

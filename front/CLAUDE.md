@@ -6,7 +6,7 @@
 ## 프로젝트 개요
 
 - Mongkids 웹 프론트엔드 (Vite + React SPA)
-- 현재 상태: 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현 (공통 푸터·모바일 하단 상담 바 포함). 소셜 로그인 모달(SCR-013, FR-018), 수업 현장(SCR-006, FR-008) 목록·상세·작성·수정·댓글(FR-010)·공감(FR-011) API 연동, 몽키즈 연구소(SCR-024) 목록·검색·상세·작성·수정·공감 API 연동(상세·작성은 수업 현장 화면 재사용), 기관 상담 신청 모달(SCR-009, FR-001), 개인 상담 신청 2단계 모달(SCR-010, FR-002), ABOUT 몽키즈(SCR-002)·체육/행사 프로그램 전체 안내·상세(SCR-003, SCR-016~020)·자주 묻는 질문(SCR-022) 정적 화면, 수업 후기(SCR-012) `/reviews` 목록(무한 스크롤)·작성·수정·삭제·관리자 답글(FR-017) API 연동, 관리자 화면(SCR-014) `/admin` 상담 신청·후기 숨김·직원 권한 API 연동, 신규 상담 건수 배지(FR-005, `EventSource` SSE 구독). react-router-dom 라우팅. 근태 관리 수업 시작·종료 체크(EMP-SCR-001) `/attendance`: 오늘 수업 목록, Geolocation 위치 확인·실패·권한 안내, 수동 등록, 수업 종료·정정(공용 `common/PhotoUploader`), 날짜별 수업 기록(헤더 시계 버튼 → 주간 날짜 띠·월 달력, 지난 기록 읽기 전용·앞으로 `예정`, EMP-FR-015). 직원·관리자에게만 헤더 "수업 체크" 링크, 고객용 푸터·빠른 상담 버튼 숨김. 근태 관리자 화면(EMP-SCR-006) `/admin` "근태 관리" 메뉴(지연 로딩): 수업 시작 승인·수업 기록·수업 할당·기관 위치(카카오맵 SDK, `VITE_KAKAO_MAP_KEY`). 내 정보(SCR-025) `/me`: 헤더 "[이름]님"에서 진입, 정보 카드·SNS 수신 동의 스위치(FR-019, FR-027), 회원 탈퇴 확인 창(데스크톱 모달·모바일 전체 화면) → `/oauth2/authorization/{provider}-withdraw` 재로그인, 성공하면 홈 `/?withdrawn=true`에서 완료 모달, 실패하면 `/me?withdrawError=코드` 안내(FR-028). 개인정보처리방침(SCR-023) `/privacy`: 푸터 링크에서 진입, 정적 데이터(`privacyContent.js`, 시행일 `effectiveDate`), 목차·조항 10개.
+- 현재 상태: 홈 화면(SCR-001)을 기획 v4 구성으로 정적 데이터 구현 (공통 푸터·모바일 하단 상담 바 포함). 소셜 로그인 모달(SCR-013, FR-018), 수업 현장(SCR-006, FR-008) 목록·상세·작성·수정·댓글(FR-010)·공감(FR-011) API 연동, 몽키즈 연구소(SCR-024) 목록·검색·상세·작성·수정·공감 API 연동(상세·작성은 수업 현장 화면 재사용), 기관 상담 신청 모달(SCR-009, FR-001), 개인 상담 신청 2단계 모달(SCR-010, FR-002), 운동회 견적 요청 모달(SCR-011, FR-031, 운동회·체육대회 상세에서 열림, 백엔드 API 구현 전), ABOUT 몽키즈(SCR-002)·체육/행사 프로그램 전체 안내·상세(SCR-003, SCR-016~020, 특수 체육 SCR-026)·자주 묻는 질문(SCR-022) 정적 화면, 수업 후기(SCR-012) `/reviews` 목록(무한 스크롤)·작성·수정·삭제·관리자 답글(FR-017) API 연동, 관리자 화면(SCR-014) `/admin` 상담 신청·후기 숨김·직원 권한 API 연동, 신규 상담 건수 배지(FR-005, `EventSource` SSE 구독). react-router-dom 라우팅. 근태 관리 수업 시작·종료 체크(EMP-SCR-001) `/attendance`: 오늘 수업 목록, Geolocation 위치 확인·실패·권한 안내, 수동 등록, 수업 종료·정정(공용 `common/PhotoUploader`), 날짜별 수업 기록(헤더 시계 버튼 → 주간 날짜 띠·월 달력, 지난 기록 읽기 전용·앞으로 `예정`, EMP-FR-015). 직원·관리자에게만 헤더 "수업 체크" 링크, 고객용 푸터·빠른 상담 버튼 숨김. 근태 관리자 화면(EMP-SCR-006) `/admin` "근태 관리" 메뉴(지연 로딩): 수업 시작 승인·수업 기록·수업 할당·기관 위치(카카오맵 SDK, `VITE_KAKAO_MAP_KEY`). 내 정보(SCR-025) `/me`: 헤더 "[이름]님"에서 진입, 정보 카드·SNS 수신 동의 스위치(FR-019, FR-027), 회원 탈퇴 확인 창(데스크톱 모달·모바일 전체 화면) → `/oauth2/authorization/{provider}-withdraw` 재로그인, 성공하면 홈 `/?withdrawn=true`에서 완료 모달, 실패하면 `/me?withdrawError=코드` 안내(FR-028). 개인정보처리방침(SCR-023) `/privacy`: 푸터 링크에서 진입, 정적 데이터(`privacyContent.js`, 시행일 `effectiveDate`), 목차·조항 10개.
 - 요구사항 (백엔드와 공유) → [../docs/requirements/requirement_homepage.md](../docs/requirements/requirement_homepage.md)
 - 진행 사항 (백엔드와 공유) → [../docs/progress.md](../docs/progress.md)
 - 디자인 시안 → [../docs/design/](../docs/design/)
@@ -61,7 +61,7 @@ npm run preview    # 빌드 결과 미리보기
 
 ## 알려진 이슈 / TODO
 
-- [ ] 소개 대표 사진, 운동회·공공기관 상세 사진 리소스 없음 → `ImagePlaceholder` 유지 (나머지 사진·아이콘은 `src/assets/` 적용, #64)
+- [x] 소개 대표 사진, 운동회·공공기관 상세 사진 적용 (2026-11-05, 사용자 제공 그림. 나머지 사진·아이콘은 #64)
 - [x] 라우팅 도입. 화면이 없는 메뉴는 아직 `#` 앵커
 - [x] 운영 배포 시 SPA 딥링크 폴백: CloudFront Function `mongkiz-spa-router`로 적용 (2026-10-22) → [../docs/deploy-checklist.md](../docs/deploy-checklist.md) A
 - [x] `vite.config.js`에 `/api`, `/oauth2`, `/login/oauth2` 프록시 설정 (`changeOrigin: false` 유지: OAuth redirect_uri가 프론트 주소로 만들어져야 함)

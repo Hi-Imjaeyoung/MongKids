@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getReviews } from '../../api/reviews'
 import { reviewsCopy } from '../../data/homeContent'
-import { reviewTypes } from '../../data/reviewContent'
 import Button from '../common/Button'
 import { formatDate } from '../news/postFormat'
 import BananaRating from '../review/BananaRating'
@@ -77,15 +76,11 @@ function Reviews() {
           <>
             <ul className="reviews__track" ref={trackRef} onScroll={updateEdges}>
               {reviews.map((review) => {
-                const type = reviewTypes.find((item) => item.id === review.type)
                 const thumbnail = review.images[0]?.url
                 return (
                   <li key={review.id} className="reviews__slide">
                     <Link to={reviewsCopy.more.to} className="review-card">
                       <div className="review-card__meta">
-                        <span className={`review-card__type review-card__type--${type?.tone ?? 'blue'}`}>
-                          {type?.label}
-                        </span>
                         <BananaRating value={review.satisfaction} size="sm" />
                       </div>
                       <div className="review-card__main">
