@@ -4,40 +4,18 @@
 }
 
 .banana {
+  display: block;
   width: 22px;
   height: 22px;
-  fill: none;
-  stroke: #c4c8d0;
-  stroke-width: 1.4;
-}
-
-.banana__body {
-  fill: #eef0f4;
-}
-
-.banana__ridge {
-  stroke-width: 1;
-}
-
-.banana__stem {
-  fill: #dfe2e8;
+  object-fit: contain;
+  /* 채우지 않은 칸 */
+  filter: grayscale(1);
+  opacity: 0.3;
 }
 
 .banana--filled {
-  stroke: #9a7400;
-}
-
-.banana--filled .banana__body {
-  fill: var(--yellow);
-}
-
-.banana--filled .banana__ridge {
-  stroke: #d6a400;
-}
-
-.banana--filled .banana__stem {
-  fill: #8a5a2b;
-  stroke: #5e3b18;
+  filter: none;
+  opacity: 1;
 }
 
 .banana-rating--sm .banana {
@@ -69,11 +47,6 @@
 .banana-rating__button .banana {
   width: 40px;
   height: 40px;
-  stroke-width: 1.2;
-}
-
-.banana-rating__button .banana:not(.banana--filled) {
-  stroke: #a9b0bc;
 }
 
 @media (max-width: 768px) {
