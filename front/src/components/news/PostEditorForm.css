@@ -149,3 +149,16 @@
     flex: 1;
   }
 }
+
+/* 사진만 형식 (SCR-015) */
+.post-editor__photos-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.post-editor__count {
+  font-size: 14px;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}

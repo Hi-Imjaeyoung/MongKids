@@ -4,8 +4,9 @@ import './PhotoUploader.css'
 
 // 사진 썸네일 격자 + 추가 칸. 업로드는 하지 않고 고른 사진 목록(photos)만 관리한다.
 // rules: { maxCount, maxSize, types }, labels: { add, remove(index), countError, fileError }
+// reorderable이면 사진마다 앞으로·뒤로 버튼을 둔다 (labels.moveBefore(index), labels.moveAfter(index))
 // onChange(photos), onError(message | null)
-function PhotoUploader({ photos, rules, labels, disabled = false, onChange, onError }) {
+function PhotoUploader({ photos, rules, labels, disabled = false, reorderable = false, onChange, onError }) {
   const fileInputRef = useRef(null)
   const objectUrlsRef = useRef([])
 
@@ -44,6 +45,12 @@ function PhotoUploader({ photos, rules, labels, disabled = false, onChange, onEr
     onError(null)
   }
 
+  const movePhoto = (index, step) => {
+    const next = [...photos]
+    ;[next[index], next[index + step]] = [next[index + step], next[index]]
+    onChange(next)
+  }
+
   return (
     <div className="photo-uploader">
       {photos.length < rules.maxCount && (
@@ -74,6 +81,28 @@ function PhotoUploader({ photos, rules, labels, disabled = false, onChange, onEr
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
+          {reorderable && (
+            <div className="photo-uploader__order">
+              <button
+                type="button"
+                className="photo-uploader__move"
+                aria-label={labels.moveBefore(index + 1)}
+                disabled={disabled || index === 0}
+                onClick={() => movePhoto(index, -1)}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="photo-uploader__move"
+                aria-label={labels.moveAfter(index + 1)}
+                disabled={disabled || index === photos.length - 1}
+                onClick={() => movePhoto(index, 1)}
+              >
+                ›
+              </button>
+            </div>
+          )}
         </div>
       ))}
       <input ref={fileInputRef} type="file" accept={rules.types.join(',')} multiple hidden onChange={addFiles} />

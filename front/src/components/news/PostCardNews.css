@@ -1,0 +1,141 @@
+/* 사진만 게시물 카드뉴스 (SCR-006). 상세 폭(880px)보다 좁게 가운데 둔다 */
+.post-card-news {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.post-card-news__viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--bg-soft);
+}
+
+.post-card-news__track {
+  display: flex;
+  aspect-ratio: 1;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.post-card-news__track::-webkit-scrollbar {
+  display: none;
+}
+
+.post-card-news__track:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+.post-card-news__slide {
+  flex: 0 0 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  cursor: zoom-in;
+}
+
+.post-card-news__slide:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+.post-card-news__slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.post-card-news__count {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(31, 36, 48, 0.72);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.post-card-news__arrow {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--text);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.post-card-news__arrow--prev {
+  left: 12px;
+}
+
+.post-card-news__arrow--prev svg {
+  transform: rotate(180deg);
+}
+
+.post-card-news__arrow--next {
+  right: 12px;
+}
+
+.post-card-news__arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.post-card-news__dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 14px;
+}
+
+.post-card-news__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--border-strong);
+  cursor: pointer;
+  transition: width 0.2s, background 0.2s;
+}
+
+.post-card-news__dot--active {
+  width: 20px;
+  background: var(--blue);
+}
+
+/* 터치 기기는 손으로 넘긴다 */
+@media (hover: none) {
+  .post-card-news__arrow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card-news__arrow,
+  .post-card-news__dot {
+    transition: none;
+  }
+}

@@ -73,6 +73,7 @@ function NewsEditorPage({ member, onLoginClick, board = newsBoard }) {
       categories={board.categories}
       notice={board.editorNotice}
       uploadImages={board.uploadImages}
+      allowPhotoOnly={board.allowPhotoOnly}
     />
   )
 }
