@@ -46,9 +46,8 @@
   gap: 24px;
 }
 
-/* 2026-11-05: 글씨 확대 (15px → 18px) */
 .gnb__link {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;
@@ -180,11 +179,11 @@
 @media (max-width: 1280px) {
   .gnb,
   .gnb__list {
-    gap: 16px;
+    gap: 20px;
   }
 
   .gnb__link {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
