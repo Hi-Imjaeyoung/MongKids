@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,12 +23,17 @@ import com.mongkids.domain.consultation.dto.ChildAgeGroup;
 import com.mongkids.domain.consultation.dto.ConsultationStatusRequest;
 import com.mongkids.domain.consultation.dto.InstitutionConsultationRequest;
 import com.mongkids.domain.consultation.dto.PersonalConsultationRequest;
+import com.mongkids.domain.consultation.dto.QuoteConsultationRequest;
 import com.mongkids.domain.consultation.entity.Consultation;
 import com.mongkids.domain.consultation.entity.ConsultationStatus;
 import com.mongkids.domain.consultation.entity.ConsultationType;
 import com.mongkids.domain.consultation.entity.Gender;
 import com.mongkids.domain.consultation.entity.InstitutionConsultation;
+import com.mongkids.domain.consultation.entity.ParticipantGroup;
 import com.mongkids.domain.consultation.entity.PersonalConsultation;
+import com.mongkids.domain.consultation.entity.QuoteConsultation;
+import com.mongkids.domain.consultation.entity.QuoteProgram;
+import com.mongkids.domain.consultation.entity.VenueType;
 import com.mongkids.domain.consultation.repository.ConsultationRepository;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.global.exception.BusinessException;
@@ -210,6 +216,85 @@ class ConsultationServiceTest {
 			" 김몽키 ", "010-1234-5678", "김하늘", Gender.FEMALE, birthDate, ageMonths,
 			" 서울시 마포구 몽키로 12 ", true, "  ", "공놀이", null, healthNote, "운동을 좋아해요",
 			true, healthAgreed
+		);
+	}
+
+	@Test
+	@DisplayName("견적 신청은 선택지를 순서대로 정리하고 전화번호는 숫자만 남겨 견적 유형으로 저장한다 (FR-031)")
+	void createQuoteConsultation_savesValues() {
+		// given
+		given(consultationRepository.save(any(Consultation.class))).willAnswer(invocation -> invocation.getArgument(0));
+		LocalDate eventDate = LocalDate.now().plusDays(30);
+
+		// when
+		consultationService.createQuoteConsultation(quoteRequest(false, eventDate, LocalTime.of(10, 0),
+			VenueType.OUTDOOR, " 수원시 운동장 ", 80, null));
+
+		// then
+		ArgumentCaptor<Consultation> captor = ArgumentCaptor.forClass(Consultation.class);
+		then(consultationRepository).should().save(captor.capture());
+		QuoteConsultation saved = (QuoteConsultation)captor.getValue();
+		assertThat(saved.getType()).isEqualTo(ConsultationType.QUOTE);
+		assertThat(saved.getStatus()).isEqualTo(ConsultationStatus.RECEIVED);
+		assertThat(saved.getInstitutionName()).isEqualTo("몽키즈 어린이집");
+		assertThat(saved.getEventDate()).isEqualTo(eventDate);
+		assertThat(saved.getEventTime()).isEqualTo(LocalTime.of(10, 0));
+		assertThat(saved.getAddress()).isEqualTo("수원시 운동장");
+		assertThat(saved.getParticipantGroups()).containsExactly(ParticipantGroup.PRESCHOOL, ParticipantGroup.ADULT);
+		assertThat(saved.getPrograms()).containsExactly(QuoteProgram.SPORTS_DAY);
+		assertThat(saved.getChildCount()).isEqualTo(80);
+		assertThat(saved.getGuardianCount()).isNull();
+		assertThat(saved.getPhone()).isEqualTo("0311234567");
+		assertThat(saved.getNote()).isNull();
+		then(eventPublisher).should().publishEvent(any(NewConsultationCountChangedEvent.class));
+	}
+
+	@Test
+	@DisplayName("일정 미정이면 날짜·시간을, 장소 미정이면 주소를 보내도 저장하지 않는다")
+	void createQuoteConsultation_undecided_dropsValues() {
+		// given
+		given(consultationRepository.save(any(Consultation.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+		// when
+		consultationService.createQuoteConsultation(quoteRequest(true, LocalDate.now().minusDays(1),
+			LocalTime.of(10, 0), VenueType.UNDECIDED, "주소", null, 30));
+
+		// then
+		ArgumentCaptor<Consultation> captor = ArgumentCaptor.forClass(Consultation.class);
+		then(consultationRepository).should().save(captor.capture());
+		QuoteConsultation saved = (QuoteConsultation)captor.getValue();
+		assertThat(saved.isScheduleUndecided()).isTrue();
+		assertThat(saved.getEventDate()).isNull();
+		assertThat(saved.getEventTime()).isNull();
+		assertThat(saved.getAddress()).isNull();
+		assertThat(saved.getGuardianCount()).isEqualTo(30);
+	}
+
+	@Test
+	@DisplayName("일정이 정해졌는데 날짜·시간이 없거나 지난 날짜, 실내·실외인데 주소 없음, 인원이 모두 없으면 신청할 수 없다")
+	void createQuoteConsultation_invalidCombination_invalidInput() {
+		LocalDate future = LocalDate.now().plusDays(7);
+		List<QuoteConsultationRequest> requests = List.of(
+			quoteRequest(false, null, LocalTime.of(10, 0), VenueType.INDOOR, "강당", 10, null),
+			quoteRequest(false, future, null, VenueType.INDOOR, "강당", 10, null),
+			quoteRequest(false, LocalDate.now().minusDays(1), LocalTime.of(10, 0), VenueType.INDOOR, "강당", 10, null),
+			quoteRequest(true, null, null, VenueType.INDOOR, "  ", 10, null),
+			quoteRequest(true, null, null, VenueType.UNDECIDED, null, null, null)
+		);
+
+		requests.forEach(request -> assertThatThrownBy(() -> consultationService.createQuoteConsultation(request))
+			.isInstanceOf(BusinessException.class)
+			.extracting("errorCode")
+			.isEqualTo(ErrorCode.INVALID_INPUT));
+		then(consultationRepository).should(never()).save(any());
+	}
+
+	private QuoteConsultationRequest quoteRequest(boolean scheduleUndecided, LocalDate eventDate, LocalTime eventTime,
+		VenueType venueType, String address, Integer childCount, Integer guardianCount) {
+		return new QuoteConsultationRequest(
+			" 몽키즈 어린이집 ", scheduleUndecided, eventDate, eventTime, venueType, address,
+			List.of(ParticipantGroup.ADULT, ParticipantGroup.PRESCHOOL, ParticipantGroup.ADULT),
+			childCount, guardianCount, List.of(QuoteProgram.SPORTS_DAY), "031-123-4567", " ", true
 		);
 	}
 }

@@ -26,7 +26,6 @@ import com.mongkids.domain.member.entity.Provider;
 import com.mongkids.domain.member.repository.MemberRepository;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.domain.review.entity.Review;
-import com.mongkids.domain.review.entity.ReviewType;
 import com.mongkids.domain.review.repository.ReviewRepository;
 import com.mongkids.global.security.JwtProvider;
 import com.mongkids.global.security.TokenCookieManager;
@@ -42,7 +41,7 @@ import tools.jackson.databind.ObjectMapper;
 class ReviewIntegrationTest {
 
 	private static final String REVIEW_BODY = """
-		{"type": "FREE_TRIAL", "satisfaction": 5, "content": "아이가 정말 즐거워했어요",
+		{"satisfaction": 5, "content": "아이가 정말 즐거워했어요",
 		 "imageKeys": ["reviews/2026/10/a.jpg"]}
 		""";
 
@@ -92,7 +91,7 @@ class ReviewIntegrationTest {
 
 		mockMvc.perform(post("/api/v1/reviews").cookie(member).contentType(MediaType.APPLICATION_JSON)
 				.content("""
-					{"type": "CLASS", "satisfaction": 6, "content": "좋아요"}
+					{"satisfaction": 6, "content": "좋아요"}
 					"""))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.error.code").value("C001"))
@@ -100,16 +99,9 @@ class ReviewIntegrationTest {
 
 		mockMvc.perform(post("/api/v1/reviews").cookie(member).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(Map.of(
-					"type", "CLASS", "satisfaction", 3, "content", "가".repeat(1001)))))
+					"satisfaction", 3, "content", "가".repeat(1001)))))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.error.fieldErrors[0].field").value("content"));
-
-		mockMvc.perform(post("/api/v1/reviews").cookie(member).contentType(MediaType.APPLICATION_JSON)
-				.content("""
-					{"satisfaction": 3, "content": "좋아요"}
-					"""))
-			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.error.fieldErrors[0].field").value("type"));
 	}
 
 	@Test
@@ -132,13 +124,12 @@ class ReviewIntegrationTest {
 		long reviewId = objectMapper.readTree(body).path("data").path("id").asLong();
 
 		// then
-		mockMvc.perform(get("/api/v1/reviews").param("type", "FREE_TRIAL").cookie(author))
+		mockMvc.perform(get("/api/v1/reviews").cookie(author))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.content[0].id").value(reviewId))
 			.andExpect(jsonPath("$.data.content[0].satisfaction").value(5))
+			.andExpect(jsonPath("$.data.content[0].type").doesNotExist())
 			.andExpect(jsonPath("$.data.totalElements").value(1));
-		mockMvc.perform(get("/api/v1/reviews").param("type", "CLASS").cookie(author))
-			.andExpect(jsonPath("$.data.totalElements").value(0));
 
 		// 다른 회원은 고칠 수 없다
 		mockMvc.perform(put("/api/v1/reviews/{reviewId}", reviewId).cookie(tokenCookie(registerMember("2", "김철")))
@@ -146,12 +137,13 @@ class ReviewIntegrationTest {
 			.andExpect(status().isForbidden())
 			.andExpect(jsonPath("$.error.code").value("A002"));
 
+		// 유형 삭제(2026-11-05) 전 화면이 보내던 type은 무시한다
 		mockMvc.perform(put("/api/v1/reviews/{reviewId}", reviewId).cookie(author)
 				.contentType(MediaType.APPLICATION_JSON).content("""
-					{"type": "CLASS", "satisfaction": 4, "content": "수업 후기로 바꿨어요"}
+					{"type": "CLASS", "satisfaction": 4, "content": "본문을 고쳤어요"}
 					"""))
 			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.type").value("CLASS"))
+			.andExpect(jsonPath("$.data.content").value("본문을 고쳤어요"))
 			.andExpect(jsonPath("$.data.images").isEmpty());
 
 		mockMvc.perform(delete("/api/v1/reviews/{reviewId}", reviewId).cookie(author))
@@ -227,7 +219,6 @@ class ReviewIntegrationTest {
 	private Review saveReview(LoginMemberResponse writer, String content) {
 		return reviewRepository.save(Review.builder()
 			.member(memberRepository.findById(writer.id()).orElseThrow())
-			.type(ReviewType.CLASS)
 			.satisfaction(5)
 			.content(content)
 			.build());

@@ -47,7 +47,7 @@ class PostRepositoryTest {
 		// given
 		Post first = persistPost(PostCategory.GENERAL, "첫 글");
 		Post deleted = persistPost(PostCategory.NEWS, "삭제된 글");
-		Post last = persistPost(PostCategory.EVENT, "마지막 글");
+		Post last = persistPost(PostCategory.GENERAL, "마지막 글");
 		deleted.delete();
 		em.flush();
 		em.clear();

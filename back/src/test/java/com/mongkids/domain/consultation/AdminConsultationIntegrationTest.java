@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mongkids.domain.consultation.entity.Gender;
 import com.mongkids.domain.consultation.entity.InstitutionConsultation;
+import com.mongkids.domain.consultation.entity.ParticipantGroup;
 import com.mongkids.domain.consultation.entity.PersonalConsultation;
+import com.mongkids.domain.consultation.entity.QuoteConsultation;
+import com.mongkids.domain.consultation.entity.QuoteProgram;
+import com.mongkids.domain.consultation.entity.VenueType;
 import com.mongkids.domain.consultation.repository.ConsultationRepository;
 import com.mongkids.domain.member.dto.LoginMemberResponse;
 import com.mongkids.domain.member.dto.SocialLoginRequest;
@@ -157,6 +162,40 @@ class AdminConsultationIntegrationTest {
 			.childAgeRange("만 4세, 만 5세")
 			.childCount(20)
 			.build()).getId();
+	}
+
+	@Test
+	@DisplayName("견적 신청은 견적 유형으로 거르고, 상세에 행사 정보를 보여 준다 (FR-031)")
+	void quoteListAndDetail() throws Exception {
+		// given
+		Cookie admin = tokenCookie(registerMember("admin", MemberRole.ADMIN));
+		saveInstitution("햇살어린이집");
+		long quoteId = consultationRepository.save(QuoteConsultation.builder()
+			.phone("0311234567")
+			.privacyAgreedAt(LocalDateTime.now())
+			.institutionName("수원시 복지관")
+			.scheduleUndecided(true)
+			.venueType(VenueType.UNDECIDED)
+			.participantGroups(List.of(ParticipantGroup.PRESCHOOL, ParticipantGroup.ADULT))
+			.guardianCount(30)
+			.programs(List.of(QuoteProgram.SPORTS_DAY))
+			.build()).getId();
+
+		// when & then
+		mockMvc.perform(get(URL).param("type", "QUOTE").cookie(admin))
+			.andExpect(jsonPath("$.data.totalElements").value(1))
+			.andExpect(jsonPath("$.data.content[0].id").value(quoteId))
+			.andExpect(jsonPath("$.data.content[0].title").value("수원시 복지관"));
+
+		mockMvc.perform(get(URL + "/{id}", quoteId).cookie(admin))
+			.andExpect(jsonPath("$.data.type").value("QUOTE"))
+			.andExpect(jsonPath("$.data.quote.scheduleUndecided").value(true))
+			.andExpect(jsonPath("$.data.quote.eventDate").doesNotExist())
+			.andExpect(jsonPath("$.data.quote.venueType").value("UNDECIDED"))
+			.andExpect(jsonPath("$.data.quote.participantGroups[1]").value("ADULT"))
+			.andExpect(jsonPath("$.data.quote.programs[0]").value("SPORTS_DAY"))
+			.andExpect(jsonPath("$.data.quote.guardianCount").value(30))
+			.andExpect(jsonPath("$.data.institution").doesNotExist());
 	}
 
 	private long savePersonal(String guardianName) {

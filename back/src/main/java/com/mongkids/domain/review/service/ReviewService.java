@@ -23,7 +23,6 @@ import com.mongkids.domain.review.dto.ReviewReplyRequest;
 import com.mongkids.domain.review.dto.ReviewResponse;
 import com.mongkids.domain.review.dto.ReviewSaveRequest;
 import com.mongkids.domain.review.entity.Review;
-import com.mongkids.domain.review.entity.ReviewType;
 import com.mongkids.domain.review.repository.ReviewRepository;
 import com.mongkids.global.common.PageResponse;
 import com.mongkids.global.exception.BusinessException;
@@ -86,7 +85,6 @@ public class ReviewService {
 
 		Review review = Review.builder()
 			.member(member)
-			.type(request.type())
 			.satisfaction(request.satisfaction())
 			.content(request.content())
 			.build();
@@ -95,20 +93,21 @@ public class ReviewService {
 	}
 
 	/**
-	 * 최신순 목록. 유형이 없으면 전체 탭이다.
+	 * 최신순 목록. 후기 유형은 두지 않는다 (2026-11-05).
 	 * 비로그인이면 요청한 페이지와 상관없이 최신 4개만 주고 다음 페이지는 없다고 알린다 (FR-012).
 	 * 이때도 {@code totalElements}는 실제 건수라 화면이 로그인 안내를 띄울지 판단할 수 있다.
 	 */
-	public PageResponse<ReviewResponse> getReviews(Long memberId, ReviewType type, Pageable pageable) {
+	public PageResponse<ReviewResponse> getReviews(Long memberId, Pageable pageable) {
 		if (memberId == null) {
-			Page<Review> preview = findVisible(type, PageRequest.of(0, GUEST_PREVIEW_SIZE, LATEST));
+			Page<Review> preview = reviewRepository.findByDeletedAtIsNullAndHiddenAtIsNull(
+				PageRequest.of(0, GUEST_PREVIEW_SIZE, LATEST));
 			List<ReviewResponse> content = preview.getContent().stream().map(this::toResponse).toList();
 			return new PageResponse<>(content, 0, GUEST_PREVIEW_SIZE, preview.getTotalElements(),
 				content.isEmpty() ? 0 : 1, false);
 		}
 		Pageable latest = PageRequest.of(pageable.getPageNumber(), Math.min(pageable.getPageSize(), MAX_PAGE_SIZE),
 			LATEST);
-		return PageResponse.from(findVisible(type, latest), this::toResponse);
+		return PageResponse.from(reviewRepository.findByDeletedAtIsNullAndHiddenAtIsNull(latest), this::toResponse);
 	}
 
 	/**
@@ -120,7 +119,7 @@ public class ReviewService {
 		List<String> imageKeys = request.imageKeysOrEmpty();
 		validateImageKeys(imageKeys);
 
-		review.update(request.type(), request.satisfaction(), request.content());
+		review.update(request.satisfaction(), request.content());
 		review.clearImages();
 		imageKeys.forEach(review::addImage);
 		return toResponse(review);
@@ -151,12 +150,11 @@ public class ReviewService {
 	/**
 	 * 관리자 후기 목록 (FR-021). 숨긴 후기도 숨김 여부와 함께 최신순으로 주고, 숨긴 것만 거를 수 있다.
 	 */
-	public PageResponse<AdminReviewResponse> getAdminReviews(Long adminId, ReviewType type, boolean hiddenOnly,
-		Pageable pageable) {
+	public PageResponse<AdminReviewResponse> getAdminReviews(Long adminId, boolean hiddenOnly, Pageable pageable) {
 		memberService.validateAdmin(adminId);
 		Pageable latest = PageRequest.of(pageable.getPageNumber(), Math.min(pageable.getPageSize(), MAX_PAGE_SIZE),
 			LATEST);
-		return PageResponse.from(reviewRepository.searchForAdmin(type, hiddenOnly, latest),
+		return PageResponse.from(reviewRepository.searchForAdmin(hiddenOnly, latest),
 			review -> AdminReviewResponse.of(review, fileStorage::getUrl));
 	}
 
@@ -174,12 +172,6 @@ public class ReviewService {
 			review.unhide();
 		}
 		return AdminReviewResponse.of(review, fileStorage::getUrl);
-	}
-
-	private Page<Review> findVisible(ReviewType type, Pageable pageable) {
-		return type == null
-			? reviewRepository.findByDeletedAtIsNullAndHiddenAtIsNull(pageable)
-			: reviewRepository.findByTypeAndDeletedAtIsNullAndHiddenAtIsNull(type, pageable);
 	}
 
 	/**

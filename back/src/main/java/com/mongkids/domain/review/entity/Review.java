@@ -13,8 +13,6 @@ import com.mongkids.global.common.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(
 	name = "review",
-	indexes = @Index(name = "idx_review_type_created_at", columnList = "type, created_at")
+	indexes = @Index(name = "idx_review_created_at", columnList = "created_at")
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,10 +44,6 @@ public class Review extends BaseTimeEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "member_id", nullable = false)
 	private Member member;
-
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, columnDefinition = "varchar(20)")
-	private ReviewType type;
 
 	// 바나나 만족도 1~5
 	@JdbcTypeCode(SqlTypes.TINYINT)
@@ -73,15 +67,13 @@ public class Review extends BaseTimeEntity {
 	private List<ReviewImage> images = new ArrayList<>();
 
 	@Builder
-	private Review(Member member, ReviewType type, int satisfaction, String content) {
+	private Review(Member member, int satisfaction, String content) {
 		this.member = member;
-		this.type = type;
 		this.satisfaction = satisfaction;
 		this.content = content;
 	}
 
-	public void update(ReviewType type, int satisfaction, String content) {
-		this.type = type;
+	public void update(int satisfaction, String content) {
 		this.satisfaction = satisfaction;
 		this.content = content;
 	}

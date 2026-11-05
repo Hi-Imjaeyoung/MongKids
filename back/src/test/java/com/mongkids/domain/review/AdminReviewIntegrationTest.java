@@ -22,7 +22,6 @@ import com.mongkids.domain.member.entity.Provider;
 import com.mongkids.domain.member.repository.MemberRepository;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.domain.review.entity.Review;
-import com.mongkids.domain.review.entity.ReviewType;
 import com.mongkids.domain.review.repository.ReviewRepository;
 import com.mongkids.global.security.JwtProvider;
 import com.mongkids.global.security.TokenCookieManager;
@@ -60,7 +59,7 @@ class AdminReviewIntegrationTest {
 	@DisplayName("관리자가 아니면 관리자 후기 목록을 보거나 후기를 숨길 수 없다")
 	void notAdmin_forbidden() throws Exception {
 		LoginMemberResponse writer = registerMember("writer", "홍길동", MemberRole.MEMBER);
-		long reviewId = saveReview(writer, ReviewType.CLASS, "좋았어요").getId();
+		long reviewId = saveReview(writer, "좋았어요").getId();
 
 		mockMvc.perform(get(URL).cookie(tokenCookie(writer)))
 			.andExpect(status().isForbidden())
@@ -79,8 +78,8 @@ class AdminReviewIntegrationTest {
 		// given
 		Cookie admin = tokenCookie(registerMember("admin", "대표", MemberRole.ADMIN));
 		LoginMemberResponse writer = registerMember("writer", "홍길동", MemberRole.MEMBER);
-		long hiddenId = saveReview(writer, ReviewType.CLASS, "광고 문구").getId();
-		saveReview(writer, ReviewType.FREE_TRIAL, "좋았어요");
+		long hiddenId = saveReview(writer, "광고 문구").getId();
+		saveReview(writer, "좋았어요");
 
 		// when
 		mockMvc.perform(put(URL + "/{id}/hidden", hiddenId).cookie(admin)
@@ -105,10 +104,6 @@ class AdminReviewIntegrationTest {
 			.andExpect(jsonPath("$.data.content[0].review.id").value(hiddenId))
 			.andExpect(jsonPath("$.data.content[0].hidden").value(true));
 
-		mockMvc.perform(get(URL).param("type", "FREE_TRIAL").cookie(admin))
-			.andExpect(jsonPath("$.data.totalElements").value(1))
-			.andExpect(jsonPath("$.data.content[0].hidden").value(false));
-
 		mockMvc.perform(put(URL + "/{id}/hidden", hiddenId).cookie(admin)
 				.contentType(MediaType.APPLICATION_JSON).content("""
 					{"hidden": false}
@@ -127,10 +122,9 @@ class AdminReviewIntegrationTest {
 			.andExpect(jsonPath("$.error.code").value("R001"));
 	}
 
-	private Review saveReview(LoginMemberResponse writer, ReviewType type, String content) {
+	private Review saveReview(LoginMemberResponse writer, String content) {
 		return reviewRepository.save(Review.builder()
 			.member(memberRepository.findById(writer.id()).orElseThrow())
-			.type(type)
 			.satisfaction(5)
 			.content(content)
 			.build());

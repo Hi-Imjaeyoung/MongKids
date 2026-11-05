@@ -7,14 +7,12 @@ import java.util.function.UnaryOperator;
 import com.mongkids.domain.member.entity.Member;
 import com.mongkids.domain.review.entity.Review;
 import com.mongkids.domain.review.entity.ReviewImage;
-import com.mongkids.domain.review.entity.ReviewType;
 
 /**
  * 후기 목록 항목. 작성자 이름은 첫 글자만 남기고 가린다 (FR-014).
  */
 public record ReviewResponse(
 	Long id,
-	ReviewType type,
 	int satisfaction,
 	String content,
 	Long authorId,
@@ -51,7 +49,6 @@ public record ReviewResponse(
 			: new Reply(review.getReplyContent(), review.getRepliedAt());
 		return new ReviewResponse(
 			review.getId(),
-			review.getType(),
 			review.getSatisfaction(),
 			review.getContent(),
 			review.getMember().getId(),

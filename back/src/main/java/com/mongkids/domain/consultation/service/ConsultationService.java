@@ -1,6 +1,7 @@
 package com.mongkids.domain.consultation.service;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,11 +21,13 @@ import com.mongkids.domain.consultation.dto.ConsultationStatusRequest;
 import com.mongkids.domain.consultation.dto.ConsultationSummaryResponse;
 import com.mongkids.domain.consultation.dto.InstitutionConsultationRequest;
 import com.mongkids.domain.consultation.dto.PersonalConsultationRequest;
+import com.mongkids.domain.consultation.dto.QuoteConsultationRequest;
 import com.mongkids.domain.consultation.entity.Consultation;
 import com.mongkids.domain.consultation.entity.ConsultationStatus;
 import com.mongkids.domain.consultation.entity.ConsultationType;
 import com.mongkids.domain.consultation.entity.InstitutionConsultation;
 import com.mongkids.domain.consultation.entity.PersonalConsultation;
+import com.mongkids.domain.consultation.entity.QuoteConsultation;
 import com.mongkids.domain.consultation.repository.ConsultationRepository;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.global.common.PageResponse;
@@ -105,6 +108,44 @@ public class ConsultationService {
 			.healthAgreedAt(healthNote != null ? now : null)
 			.motivation(stripToNull(request.motivation()))
 			.privacyAgreedAt(now)
+			.build();
+		return save(consultation);
+	}
+
+	/**
+	 * 운동회 견적 신청을 저장한다 (FR-031). 인증 없이 호출된다 (FR-003).
+	 * 일정 미정이 아니면 오늘 이후 날짜와 시작 시간, 실내·실외면 행사 주소, 아동·보호자 인원 중 하나 이상이 필요하다.
+	 * 일정 미정이면 날짜·시간, 장소 미정이면 주소는 보내도 저장하지 않는다.
+	 */
+	@Transactional
+	public ConsultationCreateResponse createQuoteConsultation(QuoteConsultationRequest request) {
+		boolean undecided = request.scheduleUndecided();
+		if (!undecided && (request.eventDate() == null || request.eventTime() == null
+			|| request.eventDate().isBefore(LocalDate.now()))) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+		String address = request.venueType().needsAddress() ? stripToNull(request.address()) : null;
+		if (request.venueType().needsAddress() && address == null) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+		if (request.childCount() == null && request.guardianCount() == null) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+
+		QuoteConsultation consultation = QuoteConsultation.builder()
+			.institutionName(request.institutionName().strip())
+			.scheduleUndecided(undecided)
+			.eventDate(undecided ? null : request.eventDate())
+			.eventTime(undecided ? null : request.eventTime())
+			.venueType(request.venueType())
+			.address(address)
+			.participantGroups(request.participantGroups().stream().distinct().sorted().toList())
+			.childCount(request.childCount())
+			.guardianCount(request.guardianCount())
+			.programs(request.programs() == null ? null : request.programs().stream().distinct().sorted().toList())
+			.phone(normalizePhone(request.phone()))
+			.note(stripToNull(request.note()))
+			.privacyAgreedAt(LocalDateTime.now())
 			.build();
 		return save(consultation);
 	}
