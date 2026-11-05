@@ -149,7 +149,7 @@ function App() {
             <Route path="/about" element={<AboutPage {...consultHandlers} />} />
             <Route path="/programs" element={<ProgramsPage {...consultHandlers} />} />
             <Route path="/programs/:programId" element={<ProgramDetailPage onQuoteClick={openQuote} />} />
-            <Route path="/faq" element={<FaqPage {...consultHandlers} />} />
+            <Route path="/faq" element={<FaqPage {...consultHandlers} onQuoteClick={openQuote} />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/news" element={<NewsListPage member={member} />} />
             <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
