@@ -27,6 +27,8 @@ export const newsBoard = {
   categories: newsCategories,
   // 댓글(FR-010)은 수업 현장 게시물에만 있다
   hasComments: true,
+  // 사진만 형식(카드뉴스, SCR-015)은 수업 현장 작성에서만 고를 수 있다
+  allowPhotoOnly: true,
   getPost,
   createPost,
   updatePost,

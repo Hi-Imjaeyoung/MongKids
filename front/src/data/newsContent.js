@@ -34,6 +34,11 @@ export const newsDetail = {
   notFound: '게시물을 찾을 수 없어요.',
   photoAlt: (index, total) => `현장 사진 ${index}/${total}`,
   photoOpen: (index, total) => `현장 사진 ${index}/${total} 크게 보기`,
+  // 사진만 게시물 카드뉴스 (2026-11-05)
+  cardNews: '현장 사진 넘겨 보기',
+  cardPrev: '이전 사진',
+  cardNext: '다음 사진',
+  cardGoTo: (index) => `${index}번째 사진 보기`,
 }
 
 // 게시물 공감 (FR-011). 수업 현장·몽키즈 연구소 상세에서 함께 쓴다
@@ -69,6 +74,22 @@ export const newsEditor = {
   category: '분류',
   title: '제목',
   titlePlaceholder: '제목을 입력해 주세요 (100자 이내)',
+  // 형식: 글과 사진(본문 편집기) / 사진만(상세에서 카드뉴스로 넘겨 봄). 수업 현장만 고를 수 있다
+  format: '형식',
+  formats: [
+    { id: 'text', label: '글과 사진' },
+    { id: 'photos', label: '사진만' },
+  ],
+  photosLabel: '사진',
+  photosHint: '글 없이 사진만 올려요. 상세 화면에서 카드뉴스처럼 넘겨 볼 수 있어요. 최대 10장, 장당 10MB 이하 (JPG·PNG·WEBP). 첫 사진이 대표 사진이에요.',
+  photoUploader: {
+    add: '사진 추가',
+    remove: (index) => `${index}번 사진 빼기`,
+    moveBefore: (index) => `${index}번 사진 앞으로`,
+    moveAfter: (index) => `${index}번 사진 뒤로`,
+    countError: '사진만 형식은 최대 10장까지 올릴 수 있어요.',
+    fileError: 'JPG·PNG·WEBP 형식의 10MB 이하 사진만 올릴 수 있어요.',
+  },
   content: '본문',
   contentHint: '사진은 본문 원하는 위치에 1~3장씩 나란히 넣을 수 있어요. 게시물당 최대 20장, 장당 10MB 이하 (JPG·PNG·WEBP). 처음 나오는 사진이 대표 사진이에요.',
   toolbar: {
@@ -104,6 +125,7 @@ export const newsEditor = {
   loading: '불러오는 중이에요.',
   errors: {
     required: '제목과 본문을 입력해 주세요.',
+    photosRequired: '제목을 입력하고 사진을 1장 이상 올려 주세요.',
     tooMany: '사진은 게시물당 최대 20장까지 올릴 수 있어요.',
     tooManyInGroup: '사진은 한 묶음에 최대 3장까지 넣을 수 있어요.',
     invalidFile: 'JPG·PNG·WEBP 형식의 10MB 이하 사진만 올릴 수 있어요.',
