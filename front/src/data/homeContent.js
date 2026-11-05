@@ -225,5 +225,5 @@ export const mobileCta = {
 export const floatingActions = [
   { id: 'reviews', icon: '🍌', label: '후기\n보러가기', theme: 'yellow', to: '/reviews' },
   { id: 'phone', icon: '📞', label: '전화 문의', theme: 'blue', tel: contactPhone.href },
-  { id: 'instagram', label: '인스타그램', theme: 'green', href: instagram.href },
+  { id: 'instagram', label: '인스타그램', theme: 'white', href: instagram.href },
 ]

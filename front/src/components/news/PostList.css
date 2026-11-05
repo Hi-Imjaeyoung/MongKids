@@ -30,6 +30,7 @@
 .post-list__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
   gap: 36px 24px;
 }
 

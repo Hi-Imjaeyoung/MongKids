@@ -9,7 +9,7 @@ import './PostCard.css'
 function PostCard({ post }) {
   return (
     <Link to={`/news/${post.id}`} className="post-card">
-      <div className="post-card__thumb">
+      <div className={`post-card__thumb ${post.thumbnailUrl ? 'post-card__thumb--photo' : ''}`}>
         {post.thumbnailUrl ? (
           <img className="post-card__image" src={post.thumbnailUrl} alt="" loading="lazy" />
         ) : (
