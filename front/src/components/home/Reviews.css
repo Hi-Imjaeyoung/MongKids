@@ -102,23 +102,6 @@
   gap: 6px 10px;
 }
 
-.review-card__type {
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.review-card__type--green {
-  background: var(--green-soft);
-  color: var(--green-text);
-}
-
-.review-card__type--blue {
-  background: var(--blue-soft);
-  color: var(--blue-text);
-}
-
 .review-card__main {
   flex: 1;
   display: flex;

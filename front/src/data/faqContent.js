@@ -13,6 +13,7 @@ export const faqCategories = [
   { id: 'school', label: '어린이집·유치원' },
   { id: 'home', label: '1:1 가정 방문' },
   { id: 'taekwondo', label: '태권도장' },
+  { id: 'adaptive', label: '특수 체육' },
   { id: 'sportsday', label: '운동회·체육대회' },
   { id: 'public', label: '복지센터·공공기관' },
 ]
@@ -23,7 +24,7 @@ export const faqs = [
     id: 'region',
     category: 'common',
     question: '어느 지역에서 수업하나요?',
-    answer: '현재 용인·수원·경기광주를 중심으로 활동합니다. 세부 방문 가능 여부는 위치와 일정에 따라 상담으로 안내합니다.',
+    answer: '용인 · 수원 · 성남 · 동탄 · 오산 · 평택 · 광주와 그 외 경기 남부지역에서 수업합니다. 세부 방문 가능 여부는 위치와 일정에 따라 상담으로 안내합니다.',
   },
   {
     id: 'age',
@@ -66,6 +67,19 @@ export const faqs = [
     category: 'taekwondo',
     question: '태권도 기술을 가르치는 수업인가요?',
     answer: '아닙니다. 태권도장 공간에서 진행하는 일반 유아체육 프로그램입니다.',
+  },
+  // 특수 체육(2026-11-05 추가) 질문은 대표 확인 전 초안이다
+  {
+    id: 'adaptive-target',
+    category: 'adaptive',
+    question: '특수 체육은 어떤 아이가 받을 수 있나요?',
+    answer: '발달이 느리거나 도움이 필요한 아이도 참여할 수 있습니다. 아이의 상태와 필요한 도움을 상담으로 먼저 확인합니다.',
+  },
+  {
+    id: 'adaptive-place',
+    category: 'adaptive',
+    question: '기관과 가정 중 어디에서 수업하나요?',
+    answer: '기관 방문과 가정 방문 모두 상담할 수 있습니다. 아이에게 맞는 장소와 형태는 상담 후 안내합니다.',
   },
   {
     id: 'event-oneoff',

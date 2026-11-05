@@ -12,11 +12,12 @@
   background: var(--bg-soft);
 }
 
+/* 대표 사진은 자르지 않고 원본 비율 그대로 칸 안에 맞춘다. 남는 곳은 칸 배경색으로 둔다 */
 .post-card__image {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.25s ease;
 }
 

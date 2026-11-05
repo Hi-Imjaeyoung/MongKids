@@ -4,6 +4,7 @@ import { fetchMyInfo, logout } from './api/auth'
 import LoginModal from './components/auth/LoginModal'
 import InstitutionConsultationModal from './components/consultation/InstitutionConsultationModal'
 import PersonalConsultationModal from './components/consultation/PersonalConsultationModal'
+import QuoteConsultationModal from './components/consultation/QuoteConsultationModal'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import FloatingMenu from './components/layout/FloatingMenu'
@@ -33,7 +34,7 @@ const NewsEditorPage = lazy(() => import('./pages/NewsEditorPage'))
 // SCR-024 몽키즈 연구소 목록, SCR-003 프로그램 전체 안내, SCR-022 자주 묻는 질문, SCR-012 수업 후기, SCR-014 관리자,
 // 근태 EMP-SCR-001 수업 시작·종료 체크, SCR-025 내 정보, SCR-023 개인정보처리방침
 const NO_MOBILE_CTA_PATHS = ['/lab', '/programs', '/faq', '/reviews', '/admin', '/attendance', '/me', '/privacy']
-// SCR-016~020 프로그램 상세 (/programs/:programId)
+// SCR-016~020, SCR-026 프로그램 상세 (/programs/:programId)
 const NO_MOBILE_CTA_PREFIXES = ['/programs/']
 // 고객용 푸터와 빠른 상담 버튼(후기·전화·인스타그램)을 두지 않는 직원용 화면 (근태 EMP-SCR-001)
 const STAFF_TOOL_PATHS = ['/attendance']
@@ -72,6 +73,7 @@ function App() {
   const [withdrawDoneOpen, setWithdrawDoneOpen] = useState(hasWithdrawn)
   const [consultOpen, setConsultOpen] = useState(false)
   const [personalConsultOpen, setPersonalConsultOpen] = useState(false)
+  const [quoteOpen, setQuoteOpen] = useState(false)
   // 관리자로 로그인해 있는 동안만 구독한다 (FR-005). 로그아웃하면 member가 null이 되어 연결을 닫는다
   const newConsultationCount = useNewConsultationCount(isAdmin(member))
 
@@ -116,6 +118,9 @@ function App() {
   const closeConsult = useCallback(() => setConsultOpen(false), [])
   const openPersonalConsult = () => setPersonalConsultOpen(true)
   const closePersonalConsult = useCallback(() => setPersonalConsultOpen(false), [])
+  // 운동회 견적 요청 (SCR-011). 운동회·체육대회 상세(SCR-019)에서만 연다
+  const openQuote = () => setQuoteOpen(true)
+  const closeQuote = useCallback(() => setQuoteOpen(false), [])
   const consultHandlers = { onInstitutionConsultClick: openConsult, onPersonalConsultClick: openPersonalConsult }
   const homePage = <HomePage {...consultHandlers} />
 
@@ -143,7 +148,7 @@ function App() {
             <Route path="/" element={homePage} />
             <Route path="/about" element={<AboutPage {...consultHandlers} />} />
             <Route path="/programs" element={<ProgramsPage {...consultHandlers} />} />
-            <Route path="/programs/:programId" element={<ProgramDetailPage {...consultHandlers} />} />
+            <Route path="/programs/:programId" element={<ProgramDetailPage onQuoteClick={openQuote} />} />
             <Route path="/faq" element={<FaqPage {...consultHandlers} />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/news" element={<NewsListPage member={member} />} />
@@ -183,6 +188,7 @@ function App() {
       {withdrawDoneOpen && <WithdrawDone onClose={closeWithdrawDone} />}
       {consultOpen && <InstitutionConsultationModal onClose={closeConsult} />}
       {personalConsultOpen && <PersonalConsultationModal onClose={closePersonalConsult} />}
+      {quoteOpen && <QuoteConsultationModal onClose={closeQuote} />}
     </>
   )
 }

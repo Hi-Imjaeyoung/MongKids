@@ -1,11 +1,15 @@
-// 체육/행사 프로그램 전체 안내(SCR-003)와 프로그램 상세(SCR-016~020) 정적 데이터
+// 체육/행사 프로그램 전체 안내(SCR-003)와 프로그램 상세(SCR-016~020, SCR-026) 정적 데이터
 
 import classSchoolImage from '../assets/class-school.jpg'
 import classHomeImage from '../assets/class-home-2.jpg'
 import classTaekwondoImage from '../assets/class-taekwondo.jpg'
+import sportsdayImage from '../assets/program-sportsday.jpg'
+import publicImage from '../assets/program-public.jpg'
+import adaptiveImage from '../assets/program-adaptive.jpg'
 import schoolIcon from '../assets/program-icon-school.png'
 import homeIcon from '../assets/program-icon-home.png'
 import taekwondoIcon from '../assets/program-icon-taekwondo.png'
+import adaptiveIcon from '../assets/program-icon-adaptive.png'
 import sportsdayIcon from '../assets/program-icon-sportsday.png'
 import publicIcon from '../assets/program-icon-public.png'
 
@@ -27,7 +31,7 @@ export const programGroups = [
   },
 ]
 
-// consult: 상담 버튼 종류 (institution: 기관 프로그램 문의 SCR-009, personal: 1:1 방문체육 상담 SCR-010)
+// quote: 상세 소개에 견적 신청(SCR-011) 버튼을 둔다 (운동회·체육대회만). 그 밖의 상세 소개에는 상담 버튼이 없다 (2026-11-05)
 export const programs = [
   {
     id: 'school',
@@ -45,7 +49,6 @@ export const programs = [
     icon: schoolIcon,
     photo: classSchoolImage,
     photoLabel: '기관 수업 사진',
-    consult: 'institution',
   },
   {
     id: 'home',
@@ -63,7 +66,6 @@ export const programs = [
     icon: homeIcon,
     photo: classHomeImage,
     photoLabel: '가정 방문 수업 사진',
-    consult: 'personal',
   },
   {
     id: 'taekwondo',
@@ -81,7 +83,24 @@ export const programs = [
     icon: taekwondoIcon,
     photo: classTaekwondoImage,
     photoLabel: '태권도장 수업 사진',
-    consult: 'institution',
+  },
+  // 특수 체육(SCR-026, 2026-11-05 추가). 소개·안내 문구는 대표 확인 전 초안이다
+  {
+    id: 'adaptive',
+    group: 'regular',
+    theme: 'blue',
+    tag: '운영 중',
+    name: '특수 체육',
+    summary: '아이 한 명 한 명에게 맞춘 체육',
+    blurb: '발달 특성과 신체 상태를 살펴 아이에게 맞는 속도와 방식으로 진행하는 체육수업',
+    details: [
+      '아이의 발달 특성과 신체 상태를 먼저 확인합니다.',
+      '무리하지 않는 범위에서 활동 난이도와 진행 속도를 조정합니다.',
+      '수업 장소·형태(기관·가정)·일정은 상담 후 안내합니다.',
+    ],
+    icon: adaptiveIcon,
+    photo: adaptiveImage,
+    photoLabel: '특수 체육 수업 사진',
   },
   {
     id: 'sportsday',
@@ -97,8 +116,9 @@ export const programs = [
       '행사 일정과 운영 방식에 따라 별도 견적을 안내합니다.',
     ],
     icon: sportsdayIcon,
+    photo: sportsdayImage,
     photoLabel: '운동회 사진',
-    consult: 'institution',
+    quote: true,
   },
   {
     id: 'public',
@@ -114,8 +134,8 @@ export const programs = [
       '프로그램 내용·장소·인원에 따라 구성과 비용을 제안합니다.',
     ],
     icon: publicIcon,
+    photo: publicImage,
     photoLabel: '공공기관 프로그램 사진',
-    consult: 'institution',
   },
 ]
 
@@ -131,7 +151,7 @@ export function programPath(programId) {
 export const programsHero = {
   eyebrow: 'PROGRAMS',
   title: '필요한 장소로 찾아가는 유아체육',
-  description: '기관, 가정, 태권도장까지 상황에 맞는 프로그램을 선택하세요.',
+  description: '기관, 가정, 태권도장, 특수 체육까지 상황에 맞는 프로그램을 선택하세요.',
 }
 
 export const programsProcess = {
@@ -154,12 +174,14 @@ export const programsCta = {
 
 export const programCardMore = '자세히 보기'
 
-// 상세 (SCR-016~020)
+// 상세 (SCR-016~020, SCR-026)
 export const programDetail = {
   breadcrumbRoot: '체육/행사프로그램',
   eyebrow: 'MONGKIDS PROGRAM',
   guide: { eyebrow: 'PROGRAM GUIDE', accent: 'GUIDE', title: '프로그램 안내' },
   photoPending: '실제 사진 등록 예정',
+  // 운동회·체육대회(SCR-019)의 견적 신청(SCR-011) 버튼
+  quoteButton: '운동회 견적 요청',
   process: {
     eyebrow: 'PROCESS',
     accent: 'PROCESS',

@@ -8,11 +8,11 @@ export const newsHero = {
 }
 
 // id는 백엔드 PostCategory 값. ALL은 분류 없이 전체 조회
+// 현장 사진(EVENT) 분류는 삭제했다 (2026-11-05, 기존 게시물은 백엔드에서 게시글로 옮김 FR-008)
 export const newsCategories = [
   { id: 'ALL', label: '전체' },
   { id: 'GENERAL', label: '게시글', tone: 'yellow' },
   { id: 'NEWS', label: '소식', tone: 'blue' },
-  { id: 'EVENT', label: '현장 사진', tone: 'green' },
 ]
 
 export const newsList = {
@@ -33,6 +33,7 @@ export const newsDetail = {
   loading: '게시물을 불러오는 중이에요.',
   notFound: '게시물을 찾을 수 없어요.',
   photoAlt: (index, total) => `현장 사진 ${index}/${total}`,
+  photoOpen: (index, total) => `현장 사진 ${index}/${total} 크게 보기`,
 }
 
 // 게시물 공감 (FR-011). 수업 현장·몽키즈 연구소 상세에서 함께 쓴다

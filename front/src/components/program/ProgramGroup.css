@@ -5,7 +5,8 @@
 
 .program-group__list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* 정기 방문체육 4종은 2개씩 두 줄(2×2) */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
 

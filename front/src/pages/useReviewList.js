@@ -13,15 +13,15 @@ function appendNew(list, items) {
 // 다음 페이지 번호는 불러온 개수로 계산한다. 새 후기는 맨 앞에, 지운 후기는 빼므로 서버 순서와 어긋나지 않고,
 // 겹쳐 받은 후기는 id로 걸러 낸다.
 // enabled: 로그인 상태를 확인한 뒤에만 불러온다 (비로그인은 서버가 최신 4개만 준다, FR-012)
-function useReviewList(type, loggedIn, enabled) {
-  const key = `${type ?? 'ALL'}|${loggedIn}`
+function useReviewList(loggedIn, enabled) {
+  const key = String(loggedIn)
   const [result, setResult] = useState(null)
   const [loadingMore, setLoadingMore] = useState(false)
 
   useEffect(() => {
     if (!enabled) return undefined
     let ignore = false
-    getReviews({ type, size: PAGE_SIZE })
+    getReviews({ size: PAGE_SIZE })
       .then((page) => {
         if (!ignore) setResult({ key, reviews: page.content, total: page.totalElements, hasNext: page.hasNext })
       })
@@ -31,7 +31,7 @@ function useReviewList(type, loggedIn, enabled) {
     return () => {
       ignore = true
     }
-  }, [key, type, enabled])
+  }, [key, enabled])
 
   const current = result?.key === key ? result : null
 
@@ -40,7 +40,6 @@ function useReviewList(type, loggedIn, enabled) {
     setLoadingMore(true)
     try {
       const page = await getReviews({
-        type,
         page: Math.floor(current.reviews.length / PAGE_SIZE),
         size: PAGE_SIZE,
       })
@@ -54,22 +53,15 @@ function useReviewList(type, loggedIn, enabled) {
     } finally {
       setLoadingMore(false)
     }
-  }, [current, loadingMore, type, key])
+  }, [current, loadingMore, key])
 
-  // 지금 탭에 맞는 새 후기만 맨 앞에 넣는다
+  // 새 후기는 맨 앞에 넣는다
   const addReview = (review) => {
-    if (type && review.type !== type) return
     setResult((prev) => ({ ...prev, reviews: [review, ...prev.reviews], total: prev.total + 1 }))
   }
 
-  // 유형을 바꿔 지금 탭에서 빠지면 목록에서 뺀다
   const replaceReview = (review) => {
-    setResult((prev) => {
-      if (type && review.type !== type) {
-        return { ...prev, reviews: prev.reviews.filter((item) => item.id !== review.id), total: prev.total - 1 }
-      }
-      return { ...prev, reviews: prev.reviews.map((item) => (item.id === review.id ? review : item)) }
-    })
+    setResult((prev) => ({ ...prev, reviews: prev.reviews.map((item) => (item.id === review.id ? review : item)) }))
   }
 
   const removeReview = async (reviewId) => {

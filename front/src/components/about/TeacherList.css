@@ -50,14 +50,16 @@
   font-weight: 800;
 }
 
-.teacher-card__meta {
-  margin: 2px 0 0;
-  font-size: 15px;
-  color: var(--text-sub);
-}
-
-.teacher-card__name + .teacher-card__meta {
-  margin-top: 6px;
+/* 전담 분야 (예: 이벤트·행사 전문, 영아 전담). 학력·경력은 두지 않는다 (2026-11-05) */
+.teacher-card__specialty {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-text);
 }
 
 @media (max-width: 768px) {
@@ -102,11 +104,8 @@
     font-size: 17px;
   }
 
-  .teacher-card__meta {
-    font-size: 14px;
-  }
-
-  .teacher-card__name + .teacher-card__meta {
-    margin-top: 4px;
+  .teacher-card__specialty {
+    margin-top: 6px;
+    font-size: 13px;
   }
 }

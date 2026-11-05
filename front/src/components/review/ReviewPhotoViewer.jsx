@@ -8,7 +8,8 @@ const SWIPE_DISTANCE = 50
 
 // 후기 사진 크게 보기 (SCR-012). 화살표 버튼·키보드(←, →)·손으로 밀어 넘기고 Esc·배경·닫기 버튼으로 닫는다.
 // 처음과 끝에서 이어 돌지 않고, 자동으로 넘어가지 않는다 (NFR-003)
-function ReviewPhotoViewer({ images, startIndex, onClose }) {
+// 수업 현장 게시물 상세(SCR-006)의 본문 사진도 이 화면으로 연다. photoLabel: 사진 대체 텍스트 (1부터 세는 번호)
+function ReviewPhotoViewer({ images, startIndex, photoLabel = reviewList.photoLabel, onClose }) {
   const [index, setIndex] = useState(startIndex)
   const closeRef = useRef(null)
   const touchStartRef = useRef(null)
@@ -62,7 +63,7 @@ function ReviewPhotoViewer({ images, startIndex, onClose }) {
         </svg>
       </button>
 
-      <img className="photo-viewer__image" src={images[index].url} alt={reviewList.photoLabel(index + 1)} />
+      <img className="photo-viewer__image" src={images[index].url} alt={photoLabel(index + 1)} />
 
       {images.length > 1 && (
         <>

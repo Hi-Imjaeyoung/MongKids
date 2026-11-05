@@ -1,6 +1,7 @@
 // ABOUT 몽키즈(SCR-002) 정적 데이터.
 // [대괄호] 문구는 대표 확인 전 빈칸이다. 확인되면 이 파일만 바꾼다.
 
+import aboutMainImage from '../assets/about-main.jpg'
 import trainingImage from '../assets/about-training.jpg'
 import themeClassImage from '../assets/about-theme-class.jpg'
 import teacherImage1 from '../assets/teacher-1.jpg'
@@ -11,8 +12,9 @@ export const aboutHero = {
   eyebrow: 'ABOUT MONGKIDS',
   title: '즐거움과 체계적인 수업을 함께',
   descriptionLines: ['아이들에게는 기다려지는 체육시간,', '기관에는 신뢰할 수 있는 방문체육 파트너.'],
-  area: '용인 · 수원 · 경기광주 중심 운영',
-  photoLabel: '대표 사진 (게시 동의 사진)',
+  area: '용인 · 수원 · 성남 · 동탄 · 오산 · 평택 · 광주 · 그 외 경기 남부지역',
+  photo: aboutMainImage,
+  photoAlt: '몽키즈 캐릭터를 따라 평균대 위를 걷는 아이와 응원하는 친구들 그림',
 }
 
 export const aboutStandards = {
@@ -94,9 +96,9 @@ export const aboutTeachers = {
   recruit: { label: '함께할 강사를 찾습니다 · 강사 채용', href: '#recruit' },
   photoLabel: '강사 사진',
   items: [
-    { id: 1, photo: teacherImage1, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
-    { id: 2, photo: teacherImage2, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
-    { id: 3, photo: teacherImage3, name: '[강사 이름]', school: '[출신 학교 · 전공]', career: '[주요 경력 · 수업 횟수]' },
+    { id: 1, photo: teacherImage1, name: '[강사 이름]', specialty: '[전담 분야]' },
+    { id: 2, photo: teacherImage2, name: '[강사 이름]', specialty: '[전담 분야]' },
+    { id: 3, photo: teacherImage3, name: '[강사 이름]', specialty: '[전담 분야]' },
   ],
 }
 

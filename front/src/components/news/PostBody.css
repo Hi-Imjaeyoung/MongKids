@@ -95,3 +95,13 @@
     flex-basis: 100%;
   }
 }
+
+/* 본문 사진은 눌러서 크게 본다 (SCR-006) */
+.post-body img {
+  cursor: zoom-in;
+}
+
+.post-body img:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}

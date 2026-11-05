@@ -91,7 +91,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   margin-bottom: 28px;
 }
@@ -233,22 +233,9 @@
     display: none;
   }
 
-  /* 탭은 줄바꿈 대신 가로로 넘긴다 */
-  .review-list__toolbar .news-tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-  }
-
-  .review-list__toolbar .news-tabs__tab {
-    flex-shrink: 0;
-  }
-
-  .review-list__sort {
-    display: none;
-  }
-
+  /* 모바일은 정렬 표시(최신순)를 숨기므로 줄 전체를 감춘다 */
   .review-list__toolbar {
-    margin-bottom: 20px;
+    display: none;
   }
 
   .review-list__items {

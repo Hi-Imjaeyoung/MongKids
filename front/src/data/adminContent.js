@@ -1,5 +1,7 @@
 // 관리자 화면(SCR-014) 문구
 
+import { participantGroups, quotePrograms, venueTypes } from './consultationContent'
+
 export const adminPage = {
   eyebrow: 'MONGKIDS ADMIN',
   title: '관리자',
@@ -34,6 +36,8 @@ export const consultationTypes = [
   { id: 'ALL', label: '전체' },
   { id: 'INSTITUTION', label: '기관', tone: 'blue' },
   { id: 'PERSONAL', label: '개인', tone: 'yellow' },
+  // 견적 신청 (FR-031, 2026-11-05). 백엔드 구현 전이라 이 유형으로 거르면 아직 결과가 없다
+  { id: 'QUOTE', label: '견적', tone: 'green' },
 ]
 
 export const consultationStatuses = [
@@ -44,7 +48,7 @@ export const consultationStatuses = [
 
 export const consultationAdmin = {
   title: '상담 신청',
-  description: '홈페이지로 들어온 기관·개인 상담 신청이에요. 최근 접수 순으로 보여요.',
+  description: '홈페이지로 들어온 기관·개인 상담과 견적 신청이에요. 최근 접수 순으로 보여요.',
   allStatuses: '모든 상태',
   listLabel: '상담 신청 목록',
   columns: { createdAt: '접수일', type: '유형', title: '신청자', phone: '연락처', status: '상태' },
@@ -82,6 +86,25 @@ export const personalFields = [
   { key: 'favoriteCharacter', label: '좋아하는 캐릭터' },
   { key: 'healthNote', label: '건강 · 주의사항' },
   { key: 'motivation', label: '신청 이유' },
+]
+
+// 견적 신청 (FR-031). 응답은 견적 신청 요청(createQuoteConsultation)과 같은 이름으로 받는다
+const labelsOf = (options) => (values) =>
+  values.map((value) => options.find((option) => option.value === value)?.label ?? value).join(', ')
+
+export const quoteFields = [
+  { key: 'institutionName', label: '기관·단체명' },
+  { key: 'eventDate', label: '행사 날짜' },
+  // 서버는 'HH:mm:ss'로 준다
+  { key: 'eventTime', label: '시작 시간', format: (time) => time.slice(0, 5) },
+  { key: 'scheduleUndecided', label: '행사 일정', format: (undecided) => (undecided ? '일정 미정' : null) },
+  { key: 'venueType', label: '행사 장소', format: (value) => labelsOf(venueTypes)([value]) },
+  { key: 'address', label: '행사 주소' },
+  { key: 'participantGroups', label: '참여 대상', format: labelsOf(participantGroups) },
+  { key: 'childCount', label: '아동 인원', format: (count) => `${count}명` },
+  { key: 'guardianCount', label: '보호자 인원', format: (count) => `${count}명` },
+  { key: 'programs', label: '희망 프로그램', format: labelsOf(quotePrograms) },
+  { key: 'note', label: '추가 요청사항' },
 ]
 
 // 후기 관리 (FR-021)

@@ -19,6 +19,9 @@ export const navItems = [
 // 플로팅 메뉴·푸터 링크가 함께 쓰는 공식 인스타그램
 export const instagram = { label: '@m0ngkids_', href: 'https://www.instagram.com/m0ngkids_/' }
 
+// 플로팅 전화 문의·푸터가 함께 쓰는 대표 연락처
+export const contactPhone = { label: '010-3923-0124', href: 'tel:010-3923-0124' }
+
 export const ctaButtons = {
   institution: { label: '기관 프로그램 문의', icon: '🏫' },
   private: { label: '1:1 방문체육 상담', icon: '💬' },
@@ -35,7 +38,7 @@ export const hero = {
   highlight: '몽키즈 유아체육!',
   description: ['몽키즈와 함께 성장하는 아이들!'],
   visualAlt: '체육관에서 장애물을 넘으며 웃는 아이와 응원하는 강사',
-  area: ['용인 · 수원 · 동탄 · 오산 · 평택 · 광주', '그 외 경기 남부지역'],
+  area: ['용인 · 수원 · 성남 · 동탄 · 오산 · 평택 · 광주', '그 외 경기 남부지역'],
 }
 
 // 섹션 공통 제목. eyebrow 중 accent 부분만 파란색으로 강조한다.
@@ -207,9 +210,9 @@ export const reviewsCopy = {
 export const footer = {
   brand: '몽키즈유아체육',
   slogan: '놀이는 신나게! 성장은 알차게!',
-  area: '용인 · 수원 · 경기광주 중심 운영 / 정확한 수업 가능 여부는 상담으로 안내합니다.',
+  area: '용인 · 수원 · 성남 · 동탄 · 오산 · 평택 · 광주 · 그 외 경기 남부지역 / 정확한 수업 가능 여부는 상담으로 안내합니다.',
   instagram,
-  business: '대표 오재혁 · 사업자등록번호 130-51-00905 · 연락처 010-5176-4225',
+  business: `대표 오재혁 · 사업자등록번호 130-51-00905 · 연락처 ${contactPhone.label}`,
   // 개인정보처리방침 (SCR-023)
   privacy: { label: '개인정보처리방침', to: '/privacy' },
 }
@@ -221,6 +224,6 @@ export const mobileCta = {
 
 export const floatingActions = [
   { id: 'reviews', icon: '🍌', label: '후기\n보러가기', theme: 'yellow', to: '/reviews' },
-  { id: 'phone', icon: '📞', label: '전화 문의', theme: 'blue' },
+  { id: 'phone', icon: '📞', label: '전화 문의', theme: 'blue', tel: contactPhone.href },
   { id: 'instagram', label: '인스타그램', theme: 'green', href: instagram.href },
 ]

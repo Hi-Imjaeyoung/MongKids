@@ -5,21 +5,31 @@ import {
   consultationTypes,
   institutionFields,
   personalFields,
+  quoteFields,
 } from '../../data/adminContent'
 import AdminBadge from './AdminBadge'
 import { formatDateTime, formatPhone } from './adminFormat'
 import './ConsultationDetail.css'
 
-// 유형에 맞는 항목만 골라 보여 준다. 비어 있는 선택 항목은 뺀다
+const FIELDS_BY_TYPE = {
+  INSTITUTION: [institutionFields, 'institution'],
+  PERSONAL: [personalFields, 'personal'],
+  QUOTE: [quoteFields, 'quote'],
+}
+
+const isEmpty = (value) => value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0)
+
+// 유형에 맞는 항목만 골라 보여 준다. 비어 있는 선택 항목(형식을 바꾼 값이 비는 경우 포함)은 뺀다
 function toRows(detail) {
-  const [fields, values] =
-    detail.type === 'INSTITUTION' ? [institutionFields, detail.institution] : [personalFields, detail.personal]
+  const [fields, valuesKey] = FIELDS_BY_TYPE[detail.type]
+  const values = detail[valuesKey] ?? {}
   return fields
-    .filter((field) => values[field.key] !== null && values[field.key] !== undefined && values[field.key] !== '')
+    .filter((field) => !isEmpty(values[field.key]))
     .map((field) => ({
       label: field.label,
       value: field.format ? field.format(values[field.key]) : values[field.key],
     }))
+    .filter((row) => !isEmpty(row.value))
 }
 
 // 상담 신청 상세 (FR-004)와 처리 상태 버튼 (FR-026). saving이면 상태 버튼을 잠근다
@@ -43,7 +53,7 @@ function ConsultationDetail({ detail, saving, onStatusChange }) {
             {consultationAdmin.typeSuffix}
           </AdminBadge>
           <h2 className="consultation-detail__title">
-            {detail.institution?.institutionName ?? detail.personal?.guardianName}
+            {detail.institution?.institutionName ?? detail.personal?.guardianName ?? detail.quote?.institutionName}
           </h2>
           <p className="consultation-detail__meta">
             {consultationAdmin.receivedAt} {formatDateTime(detail.createdAt)}

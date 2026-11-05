@@ -37,8 +37,8 @@ export function subscribeNewConsultationCount(onCount) {
 }
 
 // 후기 (FR-021). 숨긴 후기도 포함한다. 항목은 { review, hidden, hiddenAt }
-export function getAdminReviews({ type, hiddenOnly = false, page = 0, size = 20 } = {}) {
-  return request(`/api/v1/admin/reviews?${query({ type, hiddenOnly, page, size })}`)
+export function getAdminReviews({ hiddenOnly = false, page = 0, size = 20 } = {}) {
+  return request(`/api/v1/admin/reviews?${query({ hiddenOnly, page, size })}`)
 }
 
 export function changeReviewHidden(reviewId, hidden) {
