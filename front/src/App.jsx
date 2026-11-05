@@ -122,7 +122,7 @@ function App() {
   const openQuote = () => setQuoteOpen(true)
   const closeQuote = useCallback(() => setQuoteOpen(false), [])
   const consultHandlers = { onInstitutionConsultClick: openConsult, onPersonalConsultClick: openPersonalConsult }
-  const homePage = <HomePage {...consultHandlers} />
+  const homePage = <HomePage {...consultHandlers} onQuoteClick={openQuote} />
 
   const handleLogout = async () => {
     try {

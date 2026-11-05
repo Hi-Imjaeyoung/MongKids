@@ -62,6 +62,22 @@
   color: var(--blue-text);
 }
 
+/* 전담 분야 배경: 각 강사 사진의 배경색(사진에서 추출)에 맞춘다 */
+.teacher-card__specialty--mint {
+  background: #e1fdf1;
+  color: var(--green-text);
+}
+
+.teacher-card__specialty--yellow {
+  background: #fefde1;
+  color: var(--yellow-text);
+}
+
+.teacher-card__specialty--sky {
+  background: #c9ebfd;
+  color: var(--blue-text);
+}
+
 @media (max-width: 768px) {
   .teacher-list {
     margin-top: 64px;

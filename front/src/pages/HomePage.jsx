@@ -9,7 +9,7 @@ import SpecialPrograms from '../components/home/SpecialPrograms'
 import FaqPreview from '../components/home/FaqPreview'
 import ContactCta from '../components/home/ContactCta'
 
-function HomePage({ onInstitutionConsultClick, onPersonalConsultClick }) {
+function HomePage({ onInstitutionConsultClick, onPersonalConsultClick, onQuoteClick }) {
   return (
     <>
       <Hero />
@@ -25,6 +25,7 @@ function HomePage({ onInstitutionConsultClick, onPersonalConsultClick }) {
       <ContactCta
         onInstitutionConsultClick={onInstitutionConsultClick}
         onPersonalConsultClick={onPersonalConsultClick}
+        onQuoteClick={onQuoteClick}
       />
     </>
   )

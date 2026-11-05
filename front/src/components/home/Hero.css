@@ -75,6 +75,15 @@
   color: var(--text-sub);
 }
 
+.hero__area-icon {
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 4px;
+  vertical-align: -0.25em;
+  object-fit: contain;
+}
+
 .hero__deco {
   position: absolute;
   pointer-events: none;

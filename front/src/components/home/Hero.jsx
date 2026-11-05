@@ -1,5 +1,6 @@
 import Highlight from '../common/Highlight'
 import heroImage from '../../assets/hero-main.jpg'
+import bananaBunchIcon from '../../assets/area-banana.png'
 import { hero } from '../../data/homeContent'
 import './Hero.css'
 
@@ -26,7 +27,10 @@ function Hero() {
           </p>
           <p className="hero__area">
             {hero.area.map((line, index) => (
-              <span key={line}>{index === 0 ? `📍 ${line}` : line}</span>
+              <span key={line}>
+                {index === 0 && <img className="hero__area-icon" src={bananaBunchIcon} alt="" />}
+                {line}
+              </span>
             ))}
           </p>
         </div>

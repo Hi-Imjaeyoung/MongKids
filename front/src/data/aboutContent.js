@@ -68,8 +68,8 @@ export const aboutPrinciples = [
     photo: themeClassImage,
     photoLabel: '테마수업 · 교구 사진',
     examples: [
-      { label: '테마 예시', value: '[테마 이름]' },
-      { label: '사용 교구', value: '[교구 종류]' },
+      { label: '테마 예시', value: '폴짝! 개구리' },
+      { label: '사용 교구', value: '포트리스, 연잎, 개구리' },
     ],
   },
 ]
@@ -95,10 +95,11 @@ export const aboutTeachers = {
   title: '강사를 소개합니다',
   recruit: { label: '함께할 강사를 찾습니다 · 강사 채용', href: '#recruit' },
   photoLabel: '강사 사진',
+  specialtyLabel: '전담 분야',
   items: [
-    { id: 1, photo: teacherImage1, name: '[강사 이름]', specialty: '[전담 분야]' },
-    { id: 2, photo: teacherImage2, name: '[강사 이름]', specialty: '[전담 분야]' },
-    { id: 3, photo: teacherImage3, name: '[강사 이름]', specialty: '[전담 분야]' },
+    { id: 1, theme: 'mint', photo: teacherImage1, name: '몽키쌤', specialty: '이벤트 및 레크레이션 행사' },
+    { id: 2, theme: 'yellow', photo: teacherImage2, name: '상어쌤', specialty: '0~3세' },
+    { id: 3, theme: 'sky', photo: teacherImage3, name: '악어쌤', specialty: '3~7세' },
   ],
 }
 

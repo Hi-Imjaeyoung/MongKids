@@ -41,15 +41,11 @@
 }
 
 .login-modal__mascot {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 64px;
   height: 64px;
-  margin-bottom: 12px;
-  background: var(--yellow);
-  border-radius: 999px;
-  font-size: 34px;
+  margin: 0 auto 12px;
+  object-fit: contain;
 }
 
 .login-modal__title {

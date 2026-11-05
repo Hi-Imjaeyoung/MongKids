@@ -1,13 +1,15 @@
+/* 바나나 그림(rating-banana.png)은 좌우에 투명 여백이 약 16%씩 있다.
+   너비를 높이의 약 68%로 줄이고 object-fit: cover로 여백만 잘라 바나나끼리 붙인다 */
 .banana-rating {
   display: inline-flex;
-  gap: 2px;
+  gap: 0;
 }
 
 .banana {
   display: block;
-  width: 22px;
+  width: 15px;
   height: 22px;
-  object-fit: contain;
+  object-fit: cover;
   /* 채우지 않은 칸 */
   filter: grayscale(1);
   opacity: 0.3;
@@ -19,19 +21,15 @@
 }
 
 .banana-rating--sm .banana {
-  width: 20px;
+  width: 14px;
   height: 20px;
-}
-
-.banana-rating--input {
-  gap: 4px;
 }
 
 .banana-rating__button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
+  width: 27px;
   height: 52px;
   padding: 0;
   border: 0;
@@ -45,18 +43,18 @@
 }
 
 .banana-rating__button .banana {
-  width: 40px;
+  width: 27px;
   height: 40px;
 }
 
 @media (max-width: 768px) {
   .banana-rating__button {
-    width: 48px;
+    width: 25px;
     height: 48px;
   }
 
   .banana-rating__button .banana {
-    width: 36px;
+    width: 25px;
     height: 36px;
   }
 }
