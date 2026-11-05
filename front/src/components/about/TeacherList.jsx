@@ -28,7 +28,9 @@ function TeacherList() {
             </div>
             <div>
               <h3 className="teacher-card__name">{teacher.name}</h3>
-              <p className="teacher-card__specialty">{teacher.specialty}</p>
+              <p className={`teacher-card__specialty teacher-card__specialty--${teacher.theme}`}>
+                {aboutTeachers.specialtyLabel}: {teacher.specialty}
+              </p>
             </div>
           </article>
         ))}

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { getSocialLoginUrl } from '../../api/auth'
 import { loginModal, socialProviders } from '../../data/authContent'
+import loginIcon from '../../assets/login-mascot.png'
 import './LoginModal.css'
 
 // 로그인·회원가입 모달 (SCR-013, FR-018)
@@ -30,7 +31,7 @@ function LoginModal({ hasError = false, onClose }) {
           ✕
         </button>
 
-        <span className="login-modal__mascot" aria-hidden="true">🐵</span>
+        <img src={loginIcon} alt="" className="login-modal__mascot" aria-hidden="true" />
         <h2 id="login-modal-title" className="login-modal__title">{loginModal.title}</h2>
         <p className="login-modal__description">
           {loginModal.description.map((line) => (

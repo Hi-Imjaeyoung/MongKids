@@ -37,7 +37,7 @@ export const programs = [
     id: 'school',
     group: 'regular',
     theme: 'yellow',
-    tag: '현재 주력 사업',
+    tag: '운영 중',
     name: '어린이집·유치원',
     summary: '연령별 맞춤 정기 방문체육',
     blurb: '같은 교구도 연령과 활동 수준에 맞춰 다르게 구성하는 정기 체육수업',

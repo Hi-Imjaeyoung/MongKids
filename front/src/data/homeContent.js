@@ -25,6 +25,7 @@ export const contactPhone = { label: '010-3923-0124', href: 'tel:010-3923-0124' 
 export const ctaButtons = {
   institution: { label: '기관 프로그램 문의', icon: '🏫' },
   private: { label: '1:1 방문체육 상담', icon: '💬' },
+  quote: { label: '운동회 견적 요청', icon: '🏆' },
 }
 
 // 하위 화면 하단 상담 CTA(common/ConsultCta) 버튼 문구
@@ -82,7 +83,7 @@ export const services = [
   {
     id: 'school',
     theme: 'yellow',
-    tag: '현재 주력 사업',
+    tag: '운영 중',
     title: '어린이집·유치원',
     description: '같은 교구도 연령과 활동 수준에 맞춰 다르게 구성하는 정기 방문체육',
     image: classSchoolImage,

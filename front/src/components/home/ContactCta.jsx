@@ -3,7 +3,8 @@ import Button from '../common/Button'
 import { contactCta, ctaButtons } from '../../data/homeContent'
 import './ContactCta.css'
 
-function ContactCta({ onInstitutionConsultClick, onPersonalConsultClick }) {
+// 하단 상담 CTA. 운동회 견적 요청(SCR-011) 버튼도 둔다 (2026-11-05)
+function ContactCta({ onInstitutionConsultClick, onPersonalConsultClick, onQuoteClick }) {
   return (
     <section className="contact-cta container" aria-labelledby="contact-cta-title">
       <div className="contact-cta__panel">
@@ -16,6 +17,9 @@ function ContactCta({ onInstitutionConsultClick, onPersonalConsultClick }) {
           </Button>
           <Button variant="blue" size="lg" icon={ctaButtons.private.icon} onClick={onPersonalConsultClick}>
             {ctaButtons.private.label}
+          </Button>
+          <Button variant="ghost" size="lg" icon={ctaButtons.quote.icon} onClick={onQuoteClick}>
+            {ctaButtons.quote.label}
           </Button>
         </div>
       </div>
