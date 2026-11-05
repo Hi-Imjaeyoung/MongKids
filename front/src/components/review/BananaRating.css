@@ -6,14 +6,38 @@
 .banana {
   width: 22px;
   height: 22px;
-  fill: #eef0f4;
+  fill: none;
   stroke: #c4c8d0;
   stroke-width: 1.4;
 }
 
+.banana__body {
+  fill: #eef0f4;
+}
+
+.banana__ridge {
+  stroke-width: 1;
+}
+
+.banana__stem {
+  fill: #dfe2e8;
+}
+
 .banana--filled {
-  fill: var(--yellow);
   stroke: #9a7400;
+}
+
+.banana--filled .banana__body {
+  fill: var(--yellow);
+}
+
+.banana--filled .banana__ridge {
+  stroke: #d6a400;
+}
+
+.banana--filled .banana__stem {
+  fill: #8a5a2b;
+  stroke: #5e3b18;
 }
 
 .banana-rating--sm .banana {
