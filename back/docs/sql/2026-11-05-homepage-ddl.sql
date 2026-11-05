@@ -35,6 +35,7 @@ alter table review alter column type set default 'CLASS';
 -- ===== 2단계: 새 jar 배포 확인 후 =====
 
 -- 쓰지 않는 type 컬럼과 그 인덱스를 지우고, 최신순 목록용 인덱스를 둔다.
+-- 운영(2026-11-05 적용)에는 idx_review_type_created_at가 원래 없어서 첫 줄은 1091 오류가 났다. 없으면 건너뛴다.
 -- alter table review drop index idx_review_type_created_at;
 -- alter table review drop column type;
 -- create index idx_review_created_at on review (created_at);

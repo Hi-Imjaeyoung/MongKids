@@ -292,7 +292,7 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 배포 후
 - [ ] `/programs/sportsday` → "운동회 견적 요청" 제출 → 접수 완료, 관리자 화면 신규 배지 +1
 - [ ] `/admin` 상담 신청 "견적" 필터 → 상세에 행사 일정·장소·참여 대상·인원·희망 프로그램
-- [ ] `/reviews` 후기 작성·수정 (화면은 아직 `type: CLASS`를 보내고 서버는 무시한다)
+- [ ] `/reviews` 후기 작성·수정 (`type` 없이 저장)
 - [ ] `/news` 탭에 "현장 사진" 없음, 옮긴 게시물이 "게시글"로 보임
-- [ ] 2단계 실행: `review.type` 컬럼·`idx_review_type_created_at` 삭제, `idx_review_created_at` 생성
-- [ ] 프론트 후기 저장 요청에서 `type: 'CLASS'`(`DEFAULT_REVIEW_TYPE`) 제거 후 배포
+- [x] (2026-11-05 적용, 사용자) 2단계 실행: `review.type` 컬럼 삭제, `idx_review_created_at` 생성. 운영에는 `idx_review_type_created_at` 인덱스가 원래 없었다
+- [x] 프론트 후기 저장 요청에서 `type: 'CLASS'`(`DEFAULT_REVIEW_TYPE`) 제거 (2026-11-05, `feature/remove-review-type`). 서버가 `type`을 무시하므로 2단계 전후 언제 배포해도 된다
