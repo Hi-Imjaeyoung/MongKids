@@ -7,10 +7,6 @@ export const reviewHero = {
   loginToWrite: '로그인하고 후기 쓰기',
 }
 
-// 후기 유형(무료체험 후기 / 수업 후기)은 삭제하고 모두 수업 후기로 받는다 (2026-11-05).
-// 백엔드가 아직 유형을 필수로 받으므로 유형 삭제(FR-013)가 배포될 때까지 저장 요청에 CLASS를 함께 보낸다
-export const DEFAULT_REVIEW_TYPE = 'CLASS'
-
 export const reviewList = {
   sort: '최신순',
   loading: '후기를 불러오는 중',

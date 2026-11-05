@@ -18,7 +18,7 @@ export function getReviews({ page = 0, size = 10 } = {}) {
   return request(`/api/v1/reviews?${params}`)
 }
 
-// review: { type(유형 삭제 배포 전까지 CLASS 고정), satisfaction, content, imageKeys }. 저장된 후기(ReviewResponse)를 돌려준다
+// review: { satisfaction, content, imageKeys }. 후기 유형은 없다 (2026-11-05, FR-013). 저장된 후기(ReviewResponse)를 돌려준다
 export function createReview(review) {
   return request('/api/v1/reviews', { method: 'POST', ...jsonBody(review) })
 }

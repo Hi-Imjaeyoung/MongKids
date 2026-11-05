@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createReview, reviewImageRules, updateReview, uploadReviewImages } from '../../api/reviews'
-import { DEFAULT_REVIEW_TYPE, reviewForm } from '../../data/reviewContent'
+import { reviewForm } from '../../data/reviewContent'
 import BananaRating from './BananaRating'
 import './ReviewFormModal.css'
 
@@ -87,7 +87,6 @@ function ReviewFormModal({ review, onSaved, onClose }) {
       const uploadedKeys = await uploadReviewImages(newPhotos.map((photo) => photo.file))
       const keyByPhotoId = new Map(newPhotos.map((photo, index) => [photo.id, uploadedKeys[index]]))
       const body = {
-        type: DEFAULT_REVIEW_TYPE,
         satisfaction,
         content: content.trim(),
         imageKeys: photos.map((photo) => photo.imageKey ?? keyByPhotoId.get(photo.id)),
