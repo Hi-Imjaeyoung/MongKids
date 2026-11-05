@@ -11,11 +11,12 @@
   text-align: center;
 }
 
+/* 몽키즈 원숭이 (이모지 크기 그대로 높이 40px) */
 .contact-cta__mascot {
   display: block;
-  margin-bottom: 8px;
-  font-size: 40px;
-  line-height: 1;
+  height: 40px;
+  width: auto;
+  margin: 0 auto 8px;
 }
 
 .contact-cta__title {
