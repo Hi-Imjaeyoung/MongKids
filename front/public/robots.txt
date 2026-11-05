@@ -1,0 +1,14 @@
+# 몽키즈 (https://mongkiz.com)
+# 공개 화면은 모두 수집을 허용하고, 로그인이 필요한 화면·직원 도구·API만 막는다.
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /attendance
+Disallow: /me
+Disallow: /news/write
+Disallow: /lab/write
+Disallow: /news/*/edit
+Disallow: /lab/*/edit
+Disallow: /api/
+Disallow: /oauth2/
+Disallow: /login/
