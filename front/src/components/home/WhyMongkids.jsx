@@ -5,7 +5,7 @@ import './WhyMongkids.css'
 
 function WhyMongkids() {
   return (
-    <section className="why container" id="about">
+    <section className="why container section-panel" id="about">
       <SectionHeading {...sectionHeadings.why} />
 
       <ul className="why__list">
