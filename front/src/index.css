@@ -5,6 +5,7 @@
   --cream: #fffaf0;
   --blue: #3a6fd8;
   --blue-soft: #e9f0fd;
+  --sky-soft: #eaf6fd;
   --green: #74b944;
   --green-soft: #eef6e8;
 
@@ -148,6 +149,14 @@ button {
   font-size: 16px;
 }
 
+/* 홈 섹션 구분용 연한 하늘색 배경 판 */
+.section-panel {
+  width: calc(100% - 40px);
+  padding: 56px 40px;
+  background: var(--sky-soft);
+  border-radius: var(--radius-lg);
+}
+
 /* 섹션 하단 보조 CTA 줄 */
 .section-actions {
   display: flex;
@@ -162,6 +171,11 @@ button {
 
   .container {
     padding: 0 16px;
+  }
+
+  .section-panel {
+    width: calc(100% - 24px);
+    padding: 36px 16px;
   }
 
   .section-heading--left .section-heading__eyebrow {
