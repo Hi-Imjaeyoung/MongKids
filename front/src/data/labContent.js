@@ -7,6 +7,8 @@ export const labHero = {
   searchLabel: '연구소 콘텐츠 검색',
   searchInputLabel: '검색어',
   searchPlaceholder: '궁금한 내용을 검색해 보세요 (예: 편식, 균형감각)',
+  // 모바일(768px 이하)은 입력칸이 좁아 예시를 뺀 짧은 문구 (2026-11-12)
+  searchPlaceholderShort: '궁금한 내용 검색해 보세요',
   searchButton: '검색',
 }
 

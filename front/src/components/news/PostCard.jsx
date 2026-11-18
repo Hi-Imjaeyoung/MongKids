@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import ImagePlaceholder from '../common/ImagePlaceholder'
 import CategoryChip from './CategoryChip'
+import LikeBanana from './LikeBanana'
 import { formatDate } from './postFormat'
 import { newsLike, newsList } from '../../data/newsContent'
 import './PostCard.css'
@@ -20,7 +21,7 @@ function PostCard({ post }) {
         <div className="post-card__top">
           <CategoryChip category={post.category} />
           <span className="post-card__like">
-            <span aria-hidden="true">♥</span> {newsLike.label} {post.likeCount}
+            <LikeBanana /> {newsLike.label} {post.likeCount}
           </span>
         </div>
         <strong className="post-card__title">{post.title}</strong>

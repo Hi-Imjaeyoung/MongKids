@@ -118,12 +118,22 @@
   .lab-search {
     gap: 6px;
     margin-top: 24px;
-    padding: 4px 4px 4px 16px;
+    padding: 4px 4px 4px 14px;
+  }
+
+  /* 입력 글자는 16px(iOS 확대 방지)로 두고 안내 문구만 줄여 좁은 폭에서도 잘리지 않게 한다 */
+  .lab-search__input::placeholder {
+    font-size: 15px;
+  }
+
+  .lab-search__icon {
+    width: 18px;
+    height: 18px;
   }
 
   .lab-search__button {
     min-height: 44px;
-    padding: 0 18px;
+    padding: 0 16px;
     font-size: 14px;
   }
 }

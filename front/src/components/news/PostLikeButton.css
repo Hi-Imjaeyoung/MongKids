@@ -20,23 +20,19 @@
 }
 
 .post-like__button:hover {
-  border-color: var(--danger);
-  color: var(--danger);
+  border-color: var(--yellow);
+  background: var(--yellow-soft);
 }
 
 .post-like__button--on {
-  border-color: var(--danger);
-  color: var(--danger);
+  border-color: var(--yellow);
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
 }
 
 .post-like__button:disabled {
   opacity: 0.6;
   cursor: default;
-}
-
-.post-like__icon {
-  font-size: 20px;
-  line-height: 1;
 }
 
 .post-like__count {

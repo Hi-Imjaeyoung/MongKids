@@ -1,3 +1,4 @@
+import LikeBanana from './LikeBanana'
 import { newsLike } from '../../data/newsContent'
 import './PostLikeButton.css'
 
@@ -13,9 +14,7 @@ function PostLikeButton({ member, liked, likeCount, disabled, onToggle, onLoginC
         onClick={member ? onToggle : onLoginClick}
         disabled={disabled}
       >
-        <span className="post-like__icon" aria-hidden="true">
-          {liked ? '♥' : '♡'}
-        </span>
+        <LikeBanana filled={liked} size="lg" />
         {newsLike.label} <span className="post-like__count">{likeCount}</span>
       </button>
     </div>

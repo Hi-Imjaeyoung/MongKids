@@ -220,11 +220,12 @@ export const footer = {
 
 export const mobileCta = {
   institution: '기관 문의',
-  private: '1:1 상담',
+  private: '1:1 방문체육 상담',
 }
 
 export const floatingActions = [
   { id: 'reviews', icon: '🍌', label: '후기\n보러가기', theme: 'yellow', to: '/reviews' },
-  { id: 'phone', icon: '📞', label: '전화 문의', theme: 'blue', tel: contactPhone.href },
+  // 전화 아이콘은 이모지 대신 그림(assets/phoneIcon.png)을 빨간색으로 칠해 쓴다 (OS마다 모양이 달라지지 않게, 2026-11-18)
+  { id: 'phone', label: '전화 문의', theme: 'blue', tel: contactPhone.href },
   { id: 'instagram', label: '인스타그램', theme: 'white', href: instagram.href },
 ]

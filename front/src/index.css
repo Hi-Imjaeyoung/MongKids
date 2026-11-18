@@ -61,9 +61,12 @@
   box-sizing: border-box;
 }
 
+/* NFR-005: 단어 중간에서 끊지 않고 띄어쓰기 단위로 줄바꿈. 칸보다 긴 단어(URL 등)만 예외로 끊는다 */
 body {
   margin: 0;
   background: var(--bg);
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 a {

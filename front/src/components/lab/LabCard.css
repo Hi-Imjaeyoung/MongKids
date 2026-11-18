@@ -67,10 +67,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.lab-card__like > span {
-  color: var(--danger);
-}
-
 /* 모바일: 썸네일 + 제목 목록 */
 @media (max-width: 768px) {
   .lab-card {

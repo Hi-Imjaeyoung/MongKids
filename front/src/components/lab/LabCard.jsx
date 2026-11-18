@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import ImagePlaceholder from '../common/ImagePlaceholder'
 import CategoryChip from '../news/CategoryChip'
+import LikeBanana from '../news/LikeBanana'
 import { formatDate } from '../news/postFormat'
 import { labCategories, labList } from '../../data/labContent'
 import { newsLike } from '../../data/newsContent'
@@ -22,7 +23,7 @@ function LabCard({ labPost }) {
         <div className="lab-card__top">
           <CategoryChip category={labPost.category} categories={labCategories} />
           <span className="lab-card__like">
-            <span aria-hidden="true">♥</span> {newsLike.label} {labPost.likeCount}
+            <LikeBanana /> {newsLike.label} {labPost.likeCount}
           </span>
         </div>
         <strong className="lab-card__title">{labPost.title}</strong>
