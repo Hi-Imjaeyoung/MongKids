@@ -19,6 +19,13 @@
     box-shadow: 0 -6px 24px rgba(31, 36, 48, 0.08);
   }
 
+  /* "1:1 방문체육 상담"(2026-11-12)이 좁은 폭(320px)에서도 한 줄에 들어가도록 좌우 여백을 줄인다 */
+  .mobile-cta .btn {
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
   .mobile-cta .btn:hover {
     transform: none;
   }

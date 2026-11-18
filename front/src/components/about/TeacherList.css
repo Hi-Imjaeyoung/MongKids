@@ -25,10 +25,12 @@
   text-decoration: underline;
 }
 
+/* 3열 격자(3×3). 카드 크기를 줄여 폭을 제한하고, 9명이 넘으면 같은 3열로 줄이 늘어난다 (SCR-002, 2026-11-12) */
 .teacher-list__items {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 20px;
+  max-width: 760px;
 }
 
 .teacher-card__photo {
@@ -45,8 +47,8 @@
 }
 
 .teacher-card__name {
-  margin: 18px 0 0;
-  font-size: 20px;
+  margin: 14px 0 0;
+  font-size: 18px;
   font-weight: 800;
 }
 
@@ -97,31 +99,23 @@
     margin-bottom: 12px;
   }
 
+  /* 모바일도 3열. 사진 아래 이름·전담 분야를 작게 */
   .teacher-list__items {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  /* 모바일: 작은 사진 옆에 정보 */
-  .teacher-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    gap: 16px 10px;
   }
 
   .teacher-card__photo {
-    flex-shrink: 0;
-    width: 112px;
-    border-radius: 16px;
+    border-radius: 12px;
   }
 
   .teacher-card__name {
-    margin-top: 0;
-    font-size: 17px;
+    margin-top: 8px;
+    font-size: 14px;
   }
 
   .teacher-card__specialty {
-    margin-top: 6px;
-    font-size: 13px;
+    margin-top: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
   }
 }

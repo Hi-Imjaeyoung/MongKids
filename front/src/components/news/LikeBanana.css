@@ -1,0 +1,19 @@
+/* 바나나 그림(rating-banana.png)은 좌우 투명 여백이 있어 BananaRating처럼 너비를 줄이고 cover로 자른다 */
+.like-banana {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 14px;
+  height: 20px;
+  object-fit: cover;
+  vertical-align: -4px;
+}
+
+.like-banana--lg {
+  width: 20px;
+  height: 28px;
+}
+
+.like-banana--off {
+  filter: grayscale(1);
+  opacity: 0.4;
+}

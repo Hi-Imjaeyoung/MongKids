@@ -51,19 +51,11 @@
   white-space: pre-line;
 }
 
+/* 모바일도 데스크톱과 같은 크기·글자로 보여 준다 (SCR-001, 2026-11-12). 화면 끝 여백만 줄인다 */
 @media (max-width: 768px) {
   .floating-menu {
     right: 12px;
     bottom: 16px;
-  }
-
-  .floating-menu__item {
-    width: 52px;
-    min-height: 52px;
-  }
-
-  .floating-menu__label {
-    display: none;
   }
 }
 

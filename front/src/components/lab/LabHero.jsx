@@ -1,8 +1,23 @@
+import { useSyncExternalStore } from 'react'
 import { labHero } from '../../data/labContent'
 import './LabHero.css'
 
+// 모바일 폭이면 검색 안내 문구를 짧게 바꿔 잘리지 않게 한다 (SCR-024, 2026-11-12)
+const MOBILE_QUERY = '(max-width: 768px)'
+
+function subscribeMobile(onChange) {
+  const media = window.matchMedia(MOBILE_QUERY)
+  media.addEventListener('change', onChange)
+  return () => media.removeEventListener('change', onChange)
+}
+
+function isMobile() {
+  return window.matchMedia(MOBILE_QUERY).matches
+}
+
 // keyword: 현재 검색어, onSearch(keyword). 검색어가 바뀌면(지우기 포함) 입력칸을 새로 그린다
 function LabHero({ keyword, onSearch }) {
+  const mobile = useSyncExternalStore(subscribeMobile, isMobile)
   const handleSubmit = (event) => {
     event.preventDefault()
     onSearch(new FormData(event.currentTarget).get('keyword').trim())
@@ -42,7 +57,7 @@ function LabHero({ keyword, onSearch }) {
             name="keyword"
             defaultValue={keyword}
             maxLength={100}
-            placeholder={labHero.searchPlaceholder}
+            placeholder={mobile ? labHero.searchPlaceholderShort : labHero.searchPlaceholder}
           />
           <button type="submit" className="lab-search__button">
             {labHero.searchButton}

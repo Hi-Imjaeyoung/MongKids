@@ -70,7 +70,3 @@
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
-
-.post-card__like > span {
-  color: var(--danger);
-}

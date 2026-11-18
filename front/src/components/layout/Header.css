@@ -151,21 +151,31 @@
   color: var(--blue);
 }
 
+/* 햄버거 버튼. 헤더 줄이 좁아도(로그인 영역이 길거나 로고가 커도) 줄어들거나 가려지지 않게
+   크기를 고정하고 선 너비를 직접 준다 (SCR-001, 2026-11-12 아이폰 15·갤럭시 S에서 간헐적으로 안 보임) */
 .header__toggle {
+  position: relative;
+  z-index: 1;
   display: none;
+  flex: 0 0 40px;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   gap: 5px;
   width: 40px;
   height: 40px;
-  padding: 8px;
+  padding: 0;
   border: 0;
   background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
 }
 
 .header__toggle span {
   display: block;
+  flex-shrink: 0;
+  width: 24px;
   height: 3px;
   background: var(--text);
   border-radius: 3px;
@@ -188,6 +198,13 @@
 }
 
 @media (max-width: 1100px) {
+  /* iOS Safari에서 sticky + backdrop-filter 헤더 안 요소가 가끔 그려지지 않는 문제를 피하려고 모바일은 흰 배경만 쓴다 */
+  .header {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
   .header__inner {
     display: flex;
     justify-content: space-between;
@@ -198,10 +215,15 @@
     display: flex;
   }
 
+  /* 로그인 영역이 길면 이 칸 안에서 가로로만 잘리고, 햄버거 자리는 침범하지 않는다.
+     세로는 잘지 않아 관리자 링크의 신규 상담 건수 배지(위로 8px)가 보인다 */
   .header__auth-bar {
     display: flex;
+    flex: 0 1 auto;
     min-width: 0;
     margin-left: auto;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   .header__auth-bar .header__member {

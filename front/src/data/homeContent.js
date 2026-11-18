@@ -220,7 +220,7 @@ export const footer = {
 
 export const mobileCta = {
   institution: '기관 문의',
-  private: '1:1 상담',
+  private: '1:1 방문체육 상담',
 }
 
 export const floatingActions = [
