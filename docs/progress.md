@@ -140,5 +140,6 @@
 - [x] 플로팅 메뉴 카카오톡 상담 → 후기 보러가기 (SCR-001, #50)
   - [ ] 플로팅 메뉴 추가 변경: 2026-10-29 회의 결과 반영
 - [x] 검색 노출 화면별 탭 제목·sitemap·JSON-LD (NFR-006, #90), 영문 표기 MONGKIZ (NFR-008, #90)
-  - [ ] 배포 후 네이버 서치어드바이저·Google Search Console 사이트맵 제출 (사용자, [front/docs/seo.md](../front/docs/seo.md))
+  - [x] 배포 후 네이버 서치어드바이저 사이트맵 제출 (2026-11-18, 사용자)
+  - [ ] Google Search Console 속성 등록·사이트맵 제출 (사용자, [front/docs/seo.md](../front/docs/seo.md))
   - [ ] 대상 검색어 최종 목록 대표 확인 후 `seoContent.js`·`index.html` 문구 조정
