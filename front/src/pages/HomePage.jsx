@@ -8,8 +8,10 @@ import ProcessSteps from '../components/home/ProcessSteps'
 import SpecialPrograms from '../components/home/SpecialPrograms'
 import FaqPreview from '../components/home/FaqPreview'
 import ContactCta from '../components/home/ContactCta'
+import usePageMeta from './usePageMeta'
 
 function HomePage({ onInstitutionConsultClick, onPersonalConsultClick, onQuoteClick }) {
+  usePageMeta()
   return (
     <>
       <Hero />

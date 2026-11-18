@@ -4,9 +4,12 @@ import ProgramProcess from '../components/program/ProgramProcess'
 import ProgramsHero from '../components/program/ProgramsHero'
 import { consultLabels } from '../data/homeContent'
 import { programGroups, programs, programsCta, programsProcess } from '../data/programContent'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 // 체육/행사 프로그램 전체 안내 (SCR-003). 운동회·특별 프로그램은 #special 앵커로도 들어온다
 function ProgramsPage({ onInstitutionConsultClick, onPersonalConsultClick }) {
+  usePageMeta(pageMeta.programs.title, pageMeta.programs.description)
   return (
     <>
       <ProgramsHero />

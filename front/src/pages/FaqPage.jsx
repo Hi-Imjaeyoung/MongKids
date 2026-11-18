@@ -5,10 +5,13 @@ import FaqList from '../components/faq/FaqList'
 import { faqCta, faqHero } from '../data/faqContent'
 import { consultLabels } from '../data/homeContent'
 import { programDetail } from '../data/programContent'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 // 자주 묻는 질문 (SCR-022). 서비스 분류 탭으로 거르고 질문을 펼쳐 본다. 서버 기능 없이 정적 데이터만 쓴다
 // 하단 상담 CTA에는 운동회 견적 요청(SCR-011) 버튼도 둔다 (2026-11-05)
 function FaqPage({ onInstitutionConsultClick, onPersonalConsultClick, onQuoteClick }) {
+  usePageMeta(pageMeta.faq.title, pageMeta.faq.description)
   const [category, setCategory] = useState('all')
 
   return (

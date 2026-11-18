@@ -1,7 +1,7 @@
 // 몽키즈 연구소(SCR-024) 화면 문구. 상세·작성 화면은 수업 현장(newsContent.js) 문구를 함께 쓴다
 
 export const labHero = {
-  eyebrow: 'MONGKIDS LAB',
+  eyebrow: 'MONGKIZ LAB',
   title: '아이의 움직임과 성장을 함께 알아가요',
   description: '부모님의 궁금증, 교구 이야기, 움직임과 성장에 대한 정보를 전합니다.',
   searchLabel: '연구소 콘텐츠 검색',

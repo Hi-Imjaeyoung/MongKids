@@ -177,7 +177,7 @@ export const programCardMore = '자세히 보기'
 // 상세 (SCR-016~020, SCR-026)
 export const programDetail = {
   breadcrumbRoot: '체육/행사프로그램',
-  eyebrow: 'MONGKIDS PROGRAM',
+  eyebrow: 'MONGKIZ PROGRAM',
   guide: { eyebrow: 'PROGRAM GUIDE', accent: 'GUIDE', title: '프로그램 안내' },
   photoPending: '실제 사진 등록 예정',
   // 운동회·체육대회(SCR-019)의 견적 신청(SCR-011) 버튼

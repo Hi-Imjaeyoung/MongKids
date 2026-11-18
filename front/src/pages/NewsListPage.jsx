@@ -5,11 +5,14 @@ import NewsHero from '../components/news/NewsHero'
 import PostList from '../components/news/PostList'
 import { findCategory } from '../components/news/postFormat'
 import { canWritePost } from '../components/news/postPermission'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 const PAGE_SIZE = 12
 
 // 수업 현장 목록 (SCR-006). 분류 탭은 주소(?category=)에 남겨 새로고침·공유해도 유지한다
 function NewsListPage({ member }) {
+  usePageMeta(pageMeta.news.title, pageMeta.news.description)
   const [searchParams, setSearchParams] = useSearchParams()
   const category = findCategory(searchParams.get('category')).id
   const apiCategory = category === 'ALL' ? undefined : category

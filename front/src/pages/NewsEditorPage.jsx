@@ -6,12 +6,15 @@ import PostEditorForm from '../components/news/PostEditorForm'
 import { canManagePost, canWritePost } from '../components/news/postPermission'
 import { newsEditor } from '../data/newsContent'
 import { newsBoard } from './boards'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 // 게시물 작성·수정 (SCR-015, FR-008). 직원만 작성, 작성자·관리자만 수정 (FR-009).
 // member가 undefined면 로그인 상태 확인 중. board: 수업 현장(newsBoard) 또는 몽키즈 연구소(labBoard)
 function NewsEditorPage({ member, onLoginClick, board = newsBoard }) {
   const { getPost, createPost, updatePost, basePath } = board
   const { postId } = useParams()
+  usePageMeta(postId ? pageMeta.edit.title : pageMeta.write.title)
   const navigate = useNavigate()
   const [result, setResult] = useState(null)
 

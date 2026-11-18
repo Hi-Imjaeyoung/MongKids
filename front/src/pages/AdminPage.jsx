@@ -10,6 +10,8 @@ import { pendingStartCountLabel } from '../data/attendanceAdminContent'
 import ConsultationsTab from './admin/ConsultationsTab'
 import MembersTab from './admin/MembersTab'
 import ReviewsTab from './admin/ReviewsTab'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 // 근태 관리 메뉴(EMP-SCR-006)는 들어갈 때 불러온다 (첫 화면 번들 크기)
 const ClassStartsTab = lazy(() => import('./admin/ClassStartsTab'))
@@ -45,6 +47,7 @@ function withBadges(tabs, newConsultationCount, pendingStartCount) {
 // newConsultationCount: 신규 상담 건수 (FR-005). 상담 신청 메뉴에 배지로 보여 준다.
 // 수업 시작 승인 대기 건수(EMP-FR-011)는 들어올 때 한 번 불러오고, 승인 메뉴에서 처리하면 그 메뉴가 알려 준다
 function AdminPage({ member, newConsultationCount = null, onLoginClick }) {
+  usePageMeta(pageMeta.admin.title)
   const [searchParams, setSearchParams] = useSearchParams()
   const tab = adminTabs.find((item) => item.id === searchParams.get('tab'))?.id ?? adminTabs[0].id
   const [pendingStartCount, setPendingStartCount] = useState(null)

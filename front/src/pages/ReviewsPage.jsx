@@ -5,10 +5,13 @@ import ReviewFormModal from '../components/review/ReviewFormModal'
 import ReviewList from '../components/review/ReviewList'
 import { reviewHero, reviewList } from '../data/reviewContent'
 import useReviewList from './useReviewList'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 // 수업 후기 (SCR-012). 유형 탭은 두지 않는다 (2026-11-05).
 // member: undefined면 로그인 상태 확인 중, null이면 비로그인 (최신 4개만, FR-012)
 function ReviewsPage({ member, onLoginClick }) {
+  usePageMeta(pageMeta.reviews.title, pageMeta.reviews.description)
   const list = useReviewList(Boolean(member), member !== undefined)
 
   // null: 닫힘, { review: null }: 작성, { review }: 수정
