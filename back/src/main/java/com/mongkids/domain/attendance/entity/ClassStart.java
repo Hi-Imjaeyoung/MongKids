@@ -113,10 +113,6 @@ public class ClassStart extends BaseTimeEntity {
 		this.processedAt = now;
 	}
 
-	public void saveNote(String note) {
-		this.note = note;
-	}
-
 	public boolean isRejected() {
 		return status == ClassStartStatus.REJECTED;
 	}

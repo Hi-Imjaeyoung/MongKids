@@ -1,32 +1,34 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ClassHistory from '../components/attendance/ClassHistory'
 import ClassRecordView from '../components/attendance/ClassRecordView'
+import DayRecordView from '../components/attendance/DayRecordView'
 import HistoryCalendar from '../components/attendance/HistoryCalendar'
 import WeekStrip from '../components/attendance/WeekStrip'
 import { addDays, summarizeByDate, toDateKey, weekStartOf } from '../components/attendance/attendanceFormat'
-import useMyClasses from './useMyClasses'
+import useMyDays from './useMyDays'
 
-// 날짜별 수업 기록 (EMP-SCR-001 ⑧~⑪, EMP-FR-015). 오늘 수업 화면(①)의 "내 수업 기록"에서 들어온다.
-// 오늘은 오늘 수업 화면에서 보므로 오늘을 고르면 onGoToday로 돌아간다. 처음 고른 날은 어제
+// 날짜별 수업 기록 (EMP-SCR-001 ⑧~⑪, EMP-FR-015). 오늘 하루 화면(①)의 "내 수업 기록"에서 들어온다.
+// 오늘은 오늘 하루 화면에서 보므로 오늘을 고르면 onGoToday로 돌아간다. 처음 고른 날은 어제
 function AttendanceHistory({ today, onGoToday }) {
   const todayKey = toDateKey(today)
   const [selected, setSelected] = useState(() => addDays(today, -1))
-  const [recordId, setRecordId] = useState(null)
+  // record: 보고 있는 기록. { legacyId: 수업 id }면 하루 단위 적용 전 수업 기록, {}면 그날 하루 기록, null이면 목록
+  const [record, setRecord] = useState(null)
   // calendar: 열린 달력의 { month: 그 달 1일, picked: 고른 날 키 } | null
   const [calendar, setCalendar] = useState(null)
 
   const weekStart = weekStartOf(selected)
-  const week = useMyClasses(toDateKey(weekStart), toDateKey(addDays(weekStart, 6)))
+  const week = useMyDays(toDateKey(weekStart), toDateKey(addDays(weekStart, 6)))
   const monthStart = calendar?.month ?? weekStart
   const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0)
-  const month = useMyClasses(toDateKey(monthStart), toDateKey(monthEnd), calendar != null)
+  const month = useMyDays(toDateKey(monthStart), toDateKey(monthEnd), calendar != null)
 
-  const weekSummary = useMemo(() => summarizeByDate(week.classes), [week.classes])
-  const monthSummary = useMemo(() => summarizeByDate(month.classes), [month.classes])
+  const weekSummary = useMemo(() => summarizeByDate(week.days), [week.days])
+  const monthSummary = useMemo(() => summarizeByDate(month.days), [month.days])
 
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [recordId])
+  }, [record])
 
   const select = useCallback(
     (date) => {
@@ -42,10 +44,14 @@ function AttendanceHistory({ today, onGoToday }) {
   const closeCalendar = useCallback(() => setCalendar(null), [])
 
   const selectedKey = toDateKey(selected)
-  const dayClasses = week.classes?.filter((classSession) => classSession.classDate === selectedKey) ?? null
-  const record = recordId != null ? week.classes?.find((classSession) => classSession.id === recordId) : null
+  // 불러오는 중이면 undefined, 수업이 없는 날이면 null
+  const day = week.days ? (week.days.find((item) => item.date === selectedKey) ?? null) : undefined
 
-  if (record) return <ClassRecordView classSession={record} onBack={() => setRecordId(null)} />
+  if (record && day) {
+    const legacy = record.legacyId != null ? day.legacyClasses.find((item) => item.id === record.legacyId) : null
+    if (legacy) return <ClassRecordView classSession={legacy} onBack={() => setRecord(null)} />
+    return <DayRecordView day={day} onBack={() => setRecord(null)} />
+  }
 
   const shiftMonth = (months) =>
     setCalendar((current) => ({
@@ -57,7 +63,7 @@ function AttendanceHistory({ today, onGoToday }) {
     <>
       <ClassHistory
         date={selected}
-        classes={dayClasses}
+        day={day}
         error={week.error}
         future={selectedKey > todayKey}
         strip={
@@ -77,7 +83,8 @@ function AttendanceHistory({ today, onGoToday }) {
           setCalendar({ month: new Date(selected.getFullYear(), selected.getMonth(), 1), picked: selectedKey })
         }
         onReload={week.reload}
-        onView={(classSession) => setRecordId(classSession.id)}
+        onViewDay={() => setRecord({})}
+        onViewLegacy={(classSession) => setRecord({ legacyId: classSession.id })}
       />
       {calendar && (
         <HistoryCalendar

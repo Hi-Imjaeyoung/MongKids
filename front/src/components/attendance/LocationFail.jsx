@@ -4,14 +4,15 @@ import AttendanceScreen from './AttendanceScreen'
 import './LocationResult.css'
 
 // ② 위치 확인 실패. reason: 'outOfRange'(반경 밖, distance·radius 있음) | 'unavailable' | 'timeout'
-function LocationFail({ classSession, reason, distance, radius, retrying, onRetry, onManual, onGuide, onBack }) {
+// mode: 'start'(첫 기관) | 'end'(마지막 기관). institutionName: 대조한 기관
+function LocationFail({ mode, institutionName, reason, distance, radius, retrying, onRetry, onManual, onGuide, onBack }) {
   const copy = locationFail[reason]
   const message =
-    reason === 'outOfRange' ? copy.message(classSession.institutionName, distance, radius) : copy.message
+    reason === 'outOfRange' ? copy.message(institutionName, distance, radius) : copy.message
 
   return (
     <AttendanceScreen
-      title={locationFail.title}
+      title={locationFail.titles[mode]}
       onBack={onBack}
       footer={
         <>

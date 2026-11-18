@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { manualStart } from '../../data/attendanceContent'
 import AttendanceAction from './AttendanceAction'
 import AttendanceScreen from './AttendanceScreen'
-import ClassSummary from './ClassSummary'
+import './ClassSummary.css'
 import './ManualStartForm.css'
 
-// ④ 수업 시작 수동 등록 (EMP-FR-011). measured: 위치를 받았으면 { distance, accuracy }
-function ManualStartForm({ classSession, measured, submitting, error, onSubmit, onBack }) {
+// ④ 하루 시작 수동 등록 (EMP-FR-020, EMP-FR-011 방식). institutionName: 첫 수업 기관, measured: 위치를 받았으면 { distance, accuracy }
+function ManualStartForm({ institutionName, measured, submitting, error, onSubmit, onBack }) {
   const [reason, setReason] = useState('')
   const canSubmit = reason.trim().length > 0 && !submitting
 
@@ -26,11 +26,13 @@ function ManualStartForm({ classSession, measured, submitting, error, onSubmit, 
           </AttendanceAction>
         }
       >
-        <ClassSummary classSession={classSession} label={manualStart.classLabel}>
+        <section className="class-summary">
+          <span className="class-summary__label">{manualStart.institutionLabel}</span>
+          <strong className="class-summary__name">{institutionName}</strong>
           <span className="class-summary__extra">
             {measured ? manualStart.measured(measured.distance, measured.accuracy) : manualStart.notMeasured}
           </span>
-        </ClassSummary>
+        </section>
 
         <div className="attendance-field">
           <label htmlFor="manual-reason" className="attendance-field__label">

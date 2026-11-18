@@ -1,51 +1,53 @@
 import { useCallback, useState } from 'react'
-import { getClassRecords, registerStart } from '../../api/admin'
+import { approveDay, getAdminDays, registerDay, rejectDay } from '../../api/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import AdminNotice from '../../components/admin/AdminNotice'
 import AdminQueryBody from '../../components/admin/AdminQueryBody'
 import AdminSection from '../../components/admin/AdminSection'
 import ClassFilters from '../../components/admin/ClassFilters'
-import ClassRecordDetail from '../../components/admin/ClassRecordDetail'
-import ClassSessionTable from '../../components/admin/ClassSessionTable'
+import DayDetail from '../../components/admin/DayDetail'
+import DayRecordTable from '../../components/admin/DayRecordTable'
 import DirectStartDialog from '../../components/admin/DirectStartDialog'
 import FilterChips from '../../components/admin/FilterChips'
-import { addDays, toIsoDate } from '../../components/admin/attendanceAdminFormat'
-import { classFilters, classRecordAdmin } from '../../data/attendanceAdminContent'
-import { classStatuses } from '../../data/attendanceContent'
+import { addDays, dayKey, toIsoDate } from '../../components/admin/attendanceAdminFormat'
+import { formatRoute } from '../../components/attendance/attendanceFormat'
+import { classFilters, dayRecordAdmin } from '../../data/attendanceAdminContent'
+import { dayStatuses } from '../../data/attendanceContent'
 import useAdminQuery from '../useAdminQuery'
 import useAttendanceOptions from './useAttendanceOptions'
 import { isValidPeriod } from './attendancePeriod'
 
 const STATUS_FILTERS = [
-  { id: 'ALL', label: classRecordAdmin.allStatuses },
-  ...Object.entries(classStatuses).map(([id, status]) => ({ id, label: status.label })),
+  { id: 'ALL', label: dayRecordAdmin.allStatuses },
+  ...Object.entries(dayStatuses).map(([id, status]) => ({ id, label: status.label })),
 ]
 
-// 수업 기록 (EMP-FR-003, 007)과 관리자 직접 등록 (EMP-FR-011). 기본은 오늘까지 최근 7일.
-// 수업을 누르면 모달로 상세를 보여 주고, 상세에서 직접 등록하면 등록 창을 닫은 뒤 바뀐 상세로 돌아온다
+// 하루 기록 (EMP-FR-003, 007, 020)과 관리자 승인·반려·직접 등록. 기본은 오늘까지 최근 7일.
+// 하루를 누르면 모달로 하루 근무 상세(④)를 보여 주고, 직접 등록하면 등록 창을 닫은 뒤 바뀐 상세로 돌아온다
 function ClassRecordsTab() {
   const today = toIsoDate(new Date())
   const { staffs } = useAttendanceOptions()
   const [filters, setFilters] = useState({ from: addDays(today, -6), to: today, staffId: null })
   const [status, setStatus] = useState('ALL')
   const validPeriod = isValidPeriod(filters.from, filters.to)
-  const records = useAdminQuery(getClassRecords, validPeriod ? filters : null)
-  const [selectedId, setSelectedId] = useState(null)
+  const records = useAdminQuery(getAdminDays, validPeriod ? filters : null)
+  const [selectedKey, setSelectedKey] = useState(null)
+  // registering: 직접 등록할 'start' | 'end'
   const [registering, setRegistering] = useState(null)
   const [busy, setBusy] = useState(false)
 
-  const items = (records.data ?? []).filter((item) => status === 'ALL' || item.classSession.status === status)
-  const selected = records.data?.find((item) => item.classSession.id === selectedId)
-  const closeDetail = useCallback(() => setSelectedId(null), [])
+  const items = (records.data ?? []).filter(
+    (item) => status === 'ALL' || (item.day.legacyClasses.length === 0 && item.day.status === status),
+  )
+  const selected = records.data?.find((item) => dayKey(item) === selectedKey)
+  const closeDetail = useCallback(() => setSelectedKey(null), [])
   const closeRegister = useCallback(() => setRegistering(null), [])
 
-  const register = async (reason) => {
+  const process = async (task) => {
     setBusy(true)
     try {
-      const updated = await registerStart(registering.classSession.id, reason)
-      records.setData((current) =>
-        current.map((item) => (item.classSession.id === updated.classSession.id ? updated : item)),
-      )
+      const updated = await task()
+      records.setData((current) => current.map((item) => (dayKey(item) === dayKey(updated) ? updated : item)))
       setRegistering(null)
     } catch (error) {
       window.alert(error.message)
@@ -56,8 +58,8 @@ function ClassRecordsTab() {
 
   return (
     <AdminSection
-      title={classRecordAdmin.title}
-      description={classRecordAdmin.description}
+      title={dayRecordAdmin.title}
+      description={dayRecordAdmin.description}
       toolbar={
         <ClassFilters
           value={filters}
@@ -66,29 +68,35 @@ function ClassRecordsTab() {
         />
       }
     >
-      <FilterChips label={classRecordAdmin.statusLabel} options={STATUS_FILTERS} value={status} onChange={setStatus} />
+      <FilterChips label={dayRecordAdmin.statusLabel} options={STATUS_FILTERS} value={status} onChange={setStatus} />
       {validPeriod ? (
-        <AdminQueryBody query={records} items={items} empty={classRecordAdmin.empty}>
-          {(rows) => (
-            <ClassSessionTable
-              mode="records"
-              items={rows}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onRegister={setRegistering}
-            />
-          )}
+        <AdminQueryBody query={records} items={items} empty={dayRecordAdmin.empty}>
+          {(rows) => <DayRecordTable items={rows} selectedKey={selectedKey} onSelect={setSelectedKey} />}
         </AdminQueryBody>
       ) : (
         <AdminNotice inline error message={classFilters.periodHint} />
       )}
       {selected && !registering && (
-        <AdminModal label={classRecordAdmin.detailLabel} closeLabel={classRecordAdmin.close} onClose={closeDetail}>
-          <ClassRecordDetail item={selected} onRegister={() => setRegistering(selected)} />
+        <AdminModal label={dayRecordAdmin.detailLabel} closeLabel={dayRecordAdmin.close} onClose={closeDetail}>
+          <DayDetail
+            key={`${selectedKey}-${selected.day.status}`}
+            item={selected}
+            busy={busy}
+            onApprove={(type) => process(() => approveDay(selected.staffId, selected.day.date, type))}
+            onReject={(type, reason) => process(() => rejectDay(selected.staffId, selected.day.date, type, reason))}
+            onRegister={setRegistering}
+          />
         </AdminModal>
       )}
-      {registering && (
-        <DirectStartDialog item={registering} busy={busy} onSubmit={register} onClose={closeRegister} />
+      {selected && registering && (
+        <DirectStartDialog
+          type={registering}
+          item={selected}
+          summary={dayRecordAdmin.route(formatRoute(selected.day), selected.day.classes.length)}
+          busy={busy}
+          onSubmit={(reason) => process(() => registerDay(selected.staffId, selected.day.date, registering, reason))}
+          onClose={closeRegister}
+        />
       )}
     </AdminSection>
   )

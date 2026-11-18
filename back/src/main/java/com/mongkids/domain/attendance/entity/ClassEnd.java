@@ -70,16 +70,6 @@ public class ClassEnd extends BaseTimeEntity {
 		images.add(new ClassEndImage(this, imageKey, images.size()));
 	}
 
-	/**
-	 * 사진과 특이사항을 통째로 바꾼다. 수업 종료 시각은 그대로 둔다.
-	 */
-	public void correct(String note, List<String> imageKeys, LocalDateTime now) {
-		this.note = note;
-		images.clear();
-		imageKeys.forEach(this::addImage);
-		this.correctedAt = now;
-	}
-
 	public boolean isWrittenBy(Long memberId) {
 		return writer.getId().equals(memberId);
 	}

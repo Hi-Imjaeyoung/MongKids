@@ -40,6 +40,13 @@ erDiagram
 	class_session ||--o{ class_start_attempt : 시도
 	class_session ||--o| class_end : 기록
 	class_end ||--o{ class_end_image : 포함
+	member ||--o{ day_start : "하루 시작(직원·날짜당 1)"
+	member ||--o{ day_end : "하루 종료(직원·날짜당 1)"
+	member ||--o{ day_check_attempt : 시도
+	institution ||--o{ day_start : "첫 기관"
+	institution ||--o{ day_end : "마지막 기관"
+	day_end ||--o{ day_end_image : 포함
+	day_end ||--o{ day_end_note : "기관별"
 ```
 
 | 도메인 | 테이블 | 요구사항 |
@@ -48,7 +55,7 @@ erDiagram
 | consultation | `consultation`, `institution_consultation`, `personal_consultation`, `quote_consultation` | FR-001~004, FR-023, FR-031 |
 | post | `post`, `post_image`, `post_comment`, `post_like` (수업 현장), `lab_post`, `lab_post_image`, `lab_post_like` (몽키즈 연구소) | FR-008~012 |
 | review | `review`, `review_image` | FR-012~017, FR-021 |
-| attendance | `institution`, `class_session`, `class_start`, `class_start_attempt`, `class_end`, `class_end_image` (근태 관리) | EMP-FR-001~004, 010~014 |
+| attendance | `institution`, `class_session`, `day_start`, `day_end`, `day_end_image`, `day_end_note`, `day_check_attempt` (근태 관리, 하루 단위), `class_start`, `class_start_attempt`, `class_end`, `class_end_image` (수업 단위, 보관만) | EMP-FR-001~004, 010~015, 020 |
 
 ## 3. 테이블 정의
 
@@ -266,8 +273,72 @@ erDiagram
 | end_time | TIME | NOT NULL | |
 | target | VARCHAR(50) | NULL | 대상(반) |
 
-- 수업 1행 = 한 날짜의 한 회. 반복 일정은 테이블로 두지 않고, 관리자가 기간·요일로 반복 등록하면 날짜마다 행을 만든다(EMP-FR-004). 수업 시작·종료 기록이나 시도 로그가 있는 행은 수정·삭제하지 않는다.
+- 수업 1행 = 한 날짜의 한 회. 반복 일정은 테이블로 두지 않고, 관리자가 기간·요일로 반복 등록하면 날짜마다 행을 만든다(EMP-FR-004). 수업 단위 시작·종료 기록이나 시도 로그가 있는 행은 수정·삭제하지 않고, 그 직원·날짜에 `day_start`가 있으면 그날 수업은 추가·수정·삭제하지 않는다(첫·마지막 기관이 바뀌지 않게).
 - INDEX (`staff_id`, `class_date`)
+
+### day_start, day_end — 하루 시작·종료 기록 (EMP-FR-020)
+
+두 테이블은 같은 컬럼을 쓰고(`DayCheck` 공통 부모), `day_end`에만 `corrected_at`이 있다.
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| staff_id | BIGINT | NOT NULL, FK → member.id | 직원 |
+| work_date | DATE | NOT NULL | 한국 시간 그날. UNIQUE (`staff_id`, `work_date`) |
+| institution_id | BIGINT | NOT NULL, FK → institution.id | 대조한 기관(시작: 그날 첫 수업 기관, 종료: 마지막 수업 기관) |
+| method | VARCHAR(20) | NOT NULL | `LOCATION`(자동 확정), `MANUAL`(수동 등록), `ADMIN`(관리자 직접 등록) |
+| status | VARCHAR(20) | NOT NULL | `CONFIRMED`, `PENDING`, `REJECTED` |
+| latitude, longitude, accuracy | DOUBLE | NULL | 기기가 보낸 위치 원본·정확도(m). 위치를 못 받았으면 NULL |
+| distance_meters | INT | NULL | 기관 좌표까지 거리(m) |
+| checked_at | DATETIME(6) | NOT NULL | 서버 시각. 정정해도 바뀌지 않는다 |
+| reason | VARCHAR(200) | NULL | 수동·관리자 등록 사유 |
+| reject_reason | VARCHAR(200) | NULL | |
+| processed_by | BIGINT | NULL, FK → member.id | 승인·반려·직접 등록한 관리자 |
+| processed_at | DATETIME(6) | NULL | |
+| corrected_at | DATETIME(6) | NULL | (`day_end`만) 사진·특이사항 마지막 정정 시각. 이력은 두지 않는다 |
+
+- 반려된 기록만 다시 확인해 덮어쓴다(처리 값도 지운다). `day_end`는 `day_start`가 확정·승인 대기일 때만 만들고, `day_start`가 나중에 반려돼도 지우지 않는다.
+- `day_start`가 있는 직원·날짜의 `class_session`은 잠긴다.
+
+### day_end_image — 하루 수업 사진 (EMP-FR-020)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| day_end_id | BIGINT | NOT NULL, FK → day_end.id | |
+| image_key | VARCHAR(255) | NOT NULL | S3 객체 키 (`attendance/`) |
+| sort_order | INT | NOT NULL | 표시 순서 |
+
+### day_end_note — 기관별 특이사항 (EMP-FR-020)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| day_end_id | BIGINT | NOT NULL, FK → day_end.id | |
+| institution_id | BIGINT | NOT NULL, FK → institution.id | 그날 수업한 기관 |
+| note | TEXT | NOT NULL | 비어 있으면 행을 두지 않는다 |
+
+- UNIQUE (`day_end_id`, `institution_id`): 기관마다 1건.
+
+### day_check_attempt — 하루 시작·종료 위치 확인 시도 로그 (EMP-FR-020)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| staff_id | BIGINT | NOT NULL, FK → member.id | |
+| work_date | DATE | NOT NULL | |
+| type | VARCHAR(20) | NOT NULL | `START`, `END` |
+| institution_id | BIGINT | NOT NULL, FK → institution.id | 대조한 기관 |
+| latitude, longitude, accuracy | DOUBLE | NULL | |
+| distance_meters | INT | NULL | |
+| within_radius | BIT(1) | NOT NULL | 반경 안이면 1 |
+| attempted_at | DATETIME(6) | NOT NULL | |
+
+- 반경 재측정용(ADR-006). 하루 종료 전 위치 확인(저장 안 함)도 남긴다. 덮어쓰지 않는다. 보관 기간은 미정.
+- INDEX (`staff_id`, `work_date`)
+- 운영 DDL: `back/docs/sql/2026-11-day-attendance-ddl.sql`.
+
+아래 수업 단위 기록(`class_start`·`class_start_attempt`·`class_end`·`class_end_image`)은 하루 단위 적용(#94) 전 기록이다. 새로 만들지 않고 보관·조회만 하며, 남은 승인 대기는 관리자가 처리할 수 있다.
 
 ### class_start — 수업 시작 기록 (EMP-FR-001, 002, 011)
 

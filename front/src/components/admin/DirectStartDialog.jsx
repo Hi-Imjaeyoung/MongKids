@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { directStartDialog, longDateLabel } from '../../data/attendanceAdminContent'
-import { formatTimeRange } from '../attendance/attendanceFormat'
 import './AdminForm.css'
 import './DirectStartDialog.css'
 
-// 관리자 수업 시작 직접 등록 (EMP-FR-011). 사유를 적어 onSubmit(reason). busy면 버튼을 잠근다
-function DirectStartDialog({ item, busy, onSubmit, onClose }) {
-  const { classSession } = item
+// 관리자 하루 시작·종료 직접 등록 (EMP-FR-020). type: 'start' | 'end', item: AdminWorkDayResponse.
+// 사유를 적어 onSubmit(reason). busy면 버튼을 잠근다
+function DirectStartDialog({ type, item, summary, busy, onSubmit, onClose }) {
   const [reason, setReason] = useState('')
   const [error, setError] = useState('')
 
@@ -42,16 +41,16 @@ function DirectStartDialog({ item, busy, onSubmit, onClose }) {
         onSubmit={submit}
       >
         <h2 id="direct-start-title" className="direct-start-dialog__title">
-          {directStartDialog.title}
+          {directStartDialog.titles[type]}
         </h2>
         <dl className="admin-fields">
           <dt>{directStartDialog.staff}</dt>
           <dd>{item.staffName}</dd>
-          <dt>{directStartDialog.classTime}</dt>
+          <dt>{directStartDialog.day}</dt>
           <dd>
-            {[classSession.institutionName, classSession.target].filter(Boolean).join(' ')}
+            {longDateLabel(item.day.date)}
             <br />
-            {longDateLabel(classSession.classDate)} {formatTimeRange(classSession)}
+            {summary}
           </dd>
         </dl>
         <div className="admin-form__field">

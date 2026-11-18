@@ -1,4 +1,4 @@
-import { classCard, classHistory } from '../../data/attendanceContent'
+import { checkLine, classHistory } from '../../data/attendanceContent'
 import AttendanceAction from './AttendanceAction'
 import ClassStatusBadge from './ClassStatusBadge'
 import { formatClassMeta, formatClock, formatStart } from './attendanceFormat'
@@ -9,9 +9,9 @@ function detailLines(classSession, future) {
   const meta = formatClassMeta(classSession)
   if (future || !start) return [meta, classSession.institutionAddress]
   const startLine = [formatStart(start)]
-  if (end) startLine.push(classCard.ended(formatClock(end.endedAt)), classCard.photoCount(end.images.length))
+  if (end) startLine.push(checkLine.ended(formatClock(end.endedAt)), checkLine.photoCount(end.images.length))
   const lines = [meta, startLine.join(' · ')]
-  if (status === 'REJECTED') lines.push(classCard.rejectReason(start.rejectReason))
+  if (status === 'REJECTED') lines.push(checkLine.rejectReason(start.rejectReason))
   else if (end?.note) lines.push(classHistory.note(end.note.split('\n')[0]))
   return lines
 }

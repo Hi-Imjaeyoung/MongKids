@@ -46,13 +46,17 @@ export const startMethods = {
   ADMIN: '관리자 직접 등록',
 }
 
-// 수업 시작 승인 (EMP-FR-011)
+// 수업 시작·종료 승인 (EMP-FR-020). 하루 단위 적용 전 수업 단위 승인 대기(EMP-FR-011)도 함께 보여 준다
 export const classStartAdmin = {
-  title: '수업 시작 승인',
-  description: '위치로 확인하지 못해 직원이 수동 등록한 수업 시작이에요. 거리·정확도·사유를 보고 승인하거나 반려해 주세요.',
+  title: '수업 시작·종료 승인',
+  description: '위치로 확인하지 못해 직원이 수동 등록한 하루 시작·종료예요. 거리·정확도·사유를 보고 승인하거나 반려해 주세요.',
   count: (count) => `승인 대기 ${count}건 · 오래된 순`,
-  empty: '승인을 기다리는 수업 시작이 없어요.',
+  empty: '승인을 기다리는 수업 시작·종료가 없어요.',
   listLabel: '승인 대기 목록',
+  legacyTitle: '하루 단위로 바뀌기 전 수업 시작 승인 대기',
+  dayCard: (staffName, date) => `${staffName} · ${date}`,
+  pendingParts: { start: '시작', end: '종료' },
+  pendingOf: (parts) => `${parts.join('·')} 승인 대기`,
   close: '닫기',
   registeredAt: (time) => `등록 ${time}`,
   fields: { institution: '기관', classTime: '수업', registeredAt: '등록 시각', distance: '기관까지', accuracy: '정확도' },
@@ -65,17 +69,56 @@ export const classStartAdmin = {
   rejectRequired: '반려 사유를 적어 주세요.',
 }
 
-// 수업 기록 (EMP-FR-003, 007)
-export const classRecordAdmin = {
+// 하루 기록 표 (EMP-FR-003, 007, 020)
+export const dayRecordAdmin = {
   title: '수업 기록',
-  description: '직원별 수업 시작·종료 기록과 수업 사진·특이사항을 확인해요. 시작 전 수업은 관리자가 직접 수업 시작을 등록할 수 있어요.',
+  description:
+    '직원별 하루 시작·종료 기록과 하루 사진·기관별 특이사항을 확인해요. 기록이 없거나 반려된 하루는 관리자가 직접 등록할 수 있어요.',
   statusLabel: '상태',
   allStatuses: '전체',
-  listLabel: '수업 기록 목록',
-  columns: { date: '날짜 · 시간', institution: '기관 · 대상', staff: '직원', status: '상태', start: '시작', end: '종료' },
-  empty: '조건에 맞는 수업이 없어요.',
+  listLabel: '하루 기록 목록',
+  columns: { date: '날짜', staff: '직원', route: '기관', status: '상태', start: '시작', end: '종료' },
+  route: (route, count) => `${route} · 수업 ${count}개`,
+  legacy: '이전 방식 기록',
+  empty: '조건에 맞는 하루 기록이 없어요.',
   close: '닫기',
-  detailLabel: '선택한 수업 기록',
+  detailLabel: '선택한 하루 기록',
+}
+
+// 하루 근무 상세 ④ (EMP-SCR-006, EMP-FR-020). 근무 시간은 계산하지 않는다(EMP-FR-017)
+export const dayDetailAdmin = {
+  label: '하루 근무 상세',
+  kicker: '근무 상세',
+  title: (staffName, date) => `${staffName} · ${date}`,
+  summary: (classCount, institutionCount) => `수업 ${classCount}개 · 기관 ${institutionCount}곳`,
+  sections: { start: '수업 시작', end: '수업 종료' },
+  classesTitle: (count) => `수업 ${count}개`,
+  fields: { time: '시각', institution: '확인 기관', location: '위치', reason: '사유', rejectReason: '반려 사유', processedAt: '처리' },
+  first: '(첫 기관)',
+  last: '(마지막 기관)',
+  none: '아직 기록이 없어요.',
+  methodStatus: (method, status) => `${method} · ${status}`,
+  checkStatuses: { CONFIRMED: '확정', PENDING: '승인 대기', REJECTED: '반려' },
+  approve: { start: '시작 승인', end: '종료 승인' },
+  reject: '반려',
+  rejectLabel: (section) => `${section} 반려 사유 (직원 화면에 보여요)`,
+  rejectPlaceholder: '예: 마지막 기관 정문 앞에서 다시 수업 종료를 해 주세요.',
+  rejectHint: '반려하면 직원이 그날 다시 확인할 수 있어요. 지난 날짜는 관리자가 직접 등록해 주세요. 최대 200자',
+  rejectRequired: '반려 사유를 적어 주세요.',
+  register: { start: '시작 직접 등록', end: '종료 직접 등록' },
+  endNeedsStart: '수업 시작이 확정되거나 승인 대기여야 종료를 등록할 수 있어요.',
+  photos: (count) => `수업 사진 ${count}장`,
+  photosSub: '하루 묶음',
+  photoAlt: (index) => `수업 사진 ${index}`,
+  notes: '기관별 특이사항',
+  corrected: (dateTime) => `마지막 정정 ${dateTime}`,
+  noNote: '-',
+  legacyTitle: '하루 단위로 바뀌기 전 수업별 기록',
+}
+
+// 하루 단위 적용 전 수업 기록 상세 (EMP-FR-003, 007). 하루 근무 상세 안에서 읽기 전용으로 보여 준다
+export const classRecordAdmin = {
+  detailLabel: '하루 단위 적용 전 수업 기록',
   fields: {
     institution: '기관',
     classTime: '수업',
@@ -87,22 +130,21 @@ export const classRecordAdmin = {
   },
   corrected: (dateTime) => `정정 ${dateTime}`,
   photos: (count) => `수업 사진 ${count}장`,
-  photoCount: (count) => `사진 ${count}`,
   photoAlt: (index) => `수업 사진 ${index}`,
   note: '특이사항',
   noNote: '-',
-  directRegister: '직접 등록',
   noEnd: '-',
 }
 
-// 관리자 직접 등록 대화상자 (EMP-FR-011)
+// 관리자 직접 등록 대화상자 (EMP-FR-020). 하루 시작·종료 공용
 export const directStartDialog = {
-  title: '수업 시작 직접 등록',
+  titles: { start: '수업 시작 직접 등록', end: '수업 종료 직접 등록' },
+  day: '날짜',
   staff: '직원',
   classTime: '수업',
   reason: '등록 사유',
   placeholder: '예: 직원 휴대폰 고장으로 전화로 도착 확인',
-  hint: '관리자가 등록하면 바로 시작 확정돼요. 위치·거리 없이 저장되고 사유와 처리한 관리자가 기록에 남아요. 최대 200자',
+  hint: '관리자가 등록하면 바로 확정돼요. 위치·거리 없이 저장되고 사유와 처리한 관리자가 기록에 남아요. 종료 등록은 사진·특이사항 없이 저장돼요. 최대 200자',
   cancel: '취소',
   close: '닫기',
   submit: '등록',
@@ -116,7 +158,7 @@ export const classSessionAdmin = {
   listLabel: '할당된 수업 목록',
   columns: { date: '날짜', time: '시간', institution: '기관 · 대상', staff: '직원', status: '상태', actions: '관리' },
   empty: '이 기간에 할당된 수업이 없어요.',
-  lockedHint: '수업 시작이나 종료 기록이 있는 수업은 고치거나 지울 수 없어요.',
+  lockedHint: '수업 시작·종료 기록이 있는 날의 수업은 고치거나 지울 수 없어요.',
   edit: '수정',
   delete: '삭제',
   lockedTitle: '수업 시작·종료 기록이 있어 고치거나 지울 수 없어요',

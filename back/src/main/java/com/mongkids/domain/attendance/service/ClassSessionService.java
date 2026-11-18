@@ -16,6 +16,7 @@ import com.mongkids.domain.attendance.repository.ClassEndRepository;
 import com.mongkids.domain.attendance.repository.ClassSessionRepository;
 import com.mongkids.domain.attendance.repository.ClassStartAttemptRepository;
 import com.mongkids.domain.attendance.repository.ClassStartRepository;
+import com.mongkids.domain.attendance.repository.DayStartRepository;
 import com.mongkids.domain.member.entity.Member;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.global.exception.BusinessException;
@@ -26,7 +27,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * 기관 수업 할당 (EMP-FR-004). 관리자만 쓴다.
  * 기간·요일로 반복 등록하면 날짜별 수업을 한꺼번에 만들고, 이후 수정·삭제는 수업 한 회 단위다.
- * 수업 시작·종료 기록이나 수업 시작 시도 로그가 있는 수업은 기록을 지키기 위해 수정·삭제할 수 없다.
+ * 수업 시작·종료 기록이나 수업 시작 시도 로그가 있는 수업, 하루 시작 기록(EMP-FR-020)이 있는 직원·날짜의 수업은
+ * 기록을 지키기 위해 수정·삭제할 수 없고, 그날에는 수업을 더 추가할 수도 없다 (첫·마지막 기관이 바뀌지 않게).
  */
 @Service
 @Transactional(readOnly = true)
@@ -40,6 +42,7 @@ public class ClassSessionService {
 	private final ClassStartRepository classStartRepository;
 	private final ClassStartAttemptRepository classStartAttemptRepository;
 	private final ClassEndRepository classEndRepository;
+	private final DayStartRepository dayStartRepository;
 	private final InstitutionService institutionService;
 	private final AttendanceService attendanceService;
 	private final MemberService memberService;
@@ -63,6 +66,9 @@ public class ClassSessionService {
 			.toList();
 		if (dates.isEmpty()) {
 			throw new BusinessException(ErrorCode.NO_CLASS_SESSION_CREATED);
+		}
+		if (dayStartRepository.existsByStaffIdAndWorkDateIn(staff.getId(), dates)) {
+			throw new BusinessException(ErrorCode.CLASS_SESSION_LOCKED);
 		}
 		List<ClassSession> existing = classSessionRepository
 			.findByStaffIdAndClassDateBetweenOrderByClassDateAscStartTimeAscIdAsc(staff.getId(), request.firstDate(),
@@ -97,6 +103,7 @@ public class ClassSessionService {
 		validateTime(request.startTime(), request.endTime());
 		Institution institution = institutionService.getInstitution(request.institutionId());
 		Member staff = getAssignableStaff(request.staffId());
+		validateDayUnlocked(staff.getId(), request.classDate());
 
 		boolean overlapped = classSessionRepository
 			.findByStaffIdAndClassDateBetweenOrderByClassDateAscStartTimeAscIdAsc(staff.getId(), request.classDate(),
@@ -127,7 +134,15 @@ public class ClassSessionService {
 			|| classStartAttemptRepository.existsByClassSessionId(id)) {
 			throw new BusinessException(ErrorCode.CLASS_SESSION_LOCKED);
 		}
+		validateDayUnlocked(session.getStaff().getId(), session.getClassDate());
 		return session;
+	}
+
+	// 하루 시작 기록이 있는 날 (EMP-FR-020)
+	private void validateDayUnlocked(Long staffId, LocalDate date) {
+		if (dayStartRepository.existsByStaffIdAndWorkDate(staffId, date)) {
+			throw new BusinessException(ErrorCode.CLASS_SESSION_LOCKED);
+		}
 	}
 
 	/**

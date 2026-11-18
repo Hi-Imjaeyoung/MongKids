@@ -1,95 +1,33 @@
-import { classRecordAdmin, classSessionAdmin, locationText, shortDateLabel } from '../../data/attendanceAdminContent'
-import { formatClock, formatTime, formatTimeRange } from '../attendance/attendanceFormat'
+import { classSessionAdmin, shortDateLabel } from '../../data/attendanceAdminContent'
+import { formatTimeRange } from '../attendance/attendanceFormat'
 import ClassStatusBadge from '../attendance/ClassStatusBadge'
-import { canRegisterStart, isEditableSession } from './attendanceAdminFormat'
+import { isEditableSession } from './attendanceAdminFormat'
 import './AdminForm.css'
 import './ClassSessionTable.css'
 
-function startText(start) {
-  const distance = start.distanceMeters === null ? locationText.none : `${start.distanceMeters}m`
-  return `${formatClock(start.startedAt)} · ${distance}`
-}
-
-function endText(end) {
-  return `${formatClock(end.endedAt)} · ${classRecordAdmin.photoCount(end.images.length)}`
-}
-
-// 근태 관리자 수업 표. items는 AdminClassSessionResponse[].
-// mode 'records'(EMP-FR-003): 수업을 고르면 onSelect(id), 시작 전·반려 수업에 직접 등록 onRegister(item).
-// mode 'sessions'(EMP-FR-004): 수업마다 수정 onEdit(item)·삭제 onDelete(item). busyId인 줄은 버튼을 잠근다
-function ClassSessionTable({ mode, items, selectedId, busyId, onSelect, onRegister, onEdit, onDelete }) {
-  const records = mode === 'records'
-  const text = records ? classRecordAdmin : classSessionAdmin
-  const { columns } = text
+// 수업 할당 표 (EMP-FR-004). items는 AdminClassSessionResponse[].
+// 수업마다 수정 onEdit(item)·삭제 onDelete(item). busyId인 줄은 버튼을 잠근다.
+// 상태는 하루 단위 적용 전 수업 단위 기록이 있을 때만 보여 준다 (하루 기록은 수업 기록 메뉴에서)
+function ClassSessionTable({ items, busyId, onEdit, onDelete }) {
+  const { columns } = classSessionAdmin
 
   return (
-    <div className="class-session-table" role="region" aria-label={text.listLabel} tabIndex={0}>
+    <div className="class-session-table" role="region" aria-label={classSessionAdmin.listLabel} tabIndex={0}>
       <table>
         <thead>
           <tr>
-            {records ? (
-              <>
-                <th scope="col">{columns.date}</th>
-                <th scope="col">{columns.institution}</th>
-                <th scope="col">{columns.staff}</th>
-                <th scope="col">{columns.status}</th>
-                <th scope="col">{columns.start}</th>
-                <th scope="col">{columns.end}</th>
-              </>
-            ) : (
-              <>
-                <th scope="col">{columns.date}</th>
-                <th scope="col">{columns.time}</th>
-                <th scope="col">{columns.institution}</th>
-                <th scope="col">{columns.staff}</th>
-                <th scope="col">{columns.status}</th>
-                <th scope="col">{columns.actions}</th>
-              </>
-            )}
+            <th scope="col">{columns.date}</th>
+            <th scope="col">{columns.time}</th>
+            <th scope="col">{columns.institution}</th>
+            <th scope="col">{columns.staff}</th>
+            <th scope="col">{columns.status}</th>
+            <th scope="col">{columns.actions}</th>
           </tr>
         </thead>
         <tbody>
           {items.map((item) => {
             const { classSession } = item
-            const selected = classSession.id === selectedId
             const title = [classSession.institutionName, classSession.target].filter(Boolean).join(' ')
-            if (records) {
-              return (
-                <tr key={classSession.id} className={selected ? 'class-session-table__row--selected' : undefined}>
-                  <td>
-                    {shortDateLabel(classSession.classDate)} {formatTime(classSession.startTime)}
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className="class-session-table__title"
-                      aria-pressed={selected}
-                      onClick={() => onSelect(classSession.id)}
-                    >
-                      {title}
-                    </button>
-                  </td>
-                  <td>{item.staffName}</td>
-                  <td>
-                    <ClassStatusBadge status={classSession.status} />
-                  </td>
-                  <td>
-                    {canRegisterStart(classSession) ? (
-                      <button
-                        type="button"
-                        className="admin-form__button admin-form__button--ghost admin-form__button--sm"
-                        onClick={() => onRegister(item)}
-                      >
-                        {classRecordAdmin.directRegister}
-                      </button>
-                    ) : (
-                      startText(classSession.start)
-                    )}
-                  </td>
-                  <td>{classSession.end ? endText(classSession.end) : classRecordAdmin.noEnd}</td>
-                </tr>
-              )
-            }
             const editable = isEditableSession(classSession)
             const busy = busyId === classSession.id
             return (
@@ -98,9 +36,7 @@ function ClassSessionTable({ mode, items, selectedId, busyId, onSelect, onRegist
                 <td>{formatTimeRange(classSession)}</td>
                 <td>{title}</td>
                 <td>{item.staffName}</td>
-                <td>
-                  <ClassStatusBadge status={classSession.status} />
-                </td>
+                <td>{classSession.status === 'NOT_STARTED' ? '-' : <ClassStatusBadge status={classSession.status} />}</td>
                 <td>
                   <div className="class-session-table__actions">
                     <button

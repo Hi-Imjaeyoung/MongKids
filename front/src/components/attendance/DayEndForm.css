@@ -1,0 +1,64 @@
+.day-end__photo-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+/* 마지막 기관 반경 안 확인 결과 */
+.day-end__in-range {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
+.day-end__in-range svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.day-end__in-range-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.day-end__in-range-text strong {
+  font-size: 15px;
+}
+
+.day-end__notes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.day-end__notes legend {
+  margin-bottom: 4px;
+  padding: 0;
+}
+
+.day-end__note-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.day-end__note-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.day-end__note-targets {
+  font-size: 12px;
+  color: var(--text-sub);
+}

@@ -93,7 +93,7 @@ function ClassSessionsTab() {
       {validPeriod ? (
         <AdminQueryBody query={sessions} empty={classSessionAdmin.empty}>
           {(rows) => (
-            <ClassSessionTable mode="sessions" items={rows} busyId={busyId} onEdit={openForm} onDelete={remove} />
+            <ClassSessionTable items={rows} busyId={busyId} onEdit={openForm} onDelete={remove} />
           )}
         </AdminQueryBody>
       ) : (
