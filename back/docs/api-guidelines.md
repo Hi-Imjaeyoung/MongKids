@@ -262,30 +262,35 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - `AdminMemberResponse`: `{id, name, phone, provider, role, createdAt}`. `keyword`는 이름 부분 일치, 숫자가 있으면 전화번호(하이픈 무시) 부분 일치로도 찾는다.
 - 권한 변경: 대상이 `ADMIN`이거나 `role`이 `ADMIN`이면 400 `M003`. 없는 회원 404 `M001`, 탈퇴 회원 403 `M002`. 회수해도 작성한 게시물은 남고 새 글 작성·자기 글 수정·삭제만 막힌다(FR-009).
 
-## 11. 근태 수업 시작·종료 API (EMP-SCR-001, EMP-SCR-006, EMP-FR-001·002·003·004·010·011·012·013·014)
+## 11. 근태 수업 시작·종료 API (EMP-SCR-001, EMP-SCR-006, EMP-FR-003·004·007·011·012·014·015·020)
 
-근태 관리(직원용) 수업 체크. 판정 규칙은 [ADR-006](../../docs/adr/ADR-006-attendance-location-verification.md)을 따른다. 직원 API는 DB의 현재 역할이 `STAFF`·`ADMIN`인 회원만(그 외 403 `A002`), 자기에게 할당된 수업만 쓴다. 남의 수업은 없는 수업처럼 404 `E001`.
+근태 관리(직원용) 수업 체크. 2026-11-18(#94)부터 수업마다가 아니라 직원별 **하루 한 번** 시작·종료한다(EMP-FR-020). 판정 규칙은 [ADR-006](../../docs/adr/ADR-006-attendance-location-verification.md)을 따른다. 직원 API는 DB의 현재 역할이 `STAFF`·`ADMIN`인 회원만(그 외 403 `A002`), 자기 하루만 쓴다. `{date}`는 `yyyy-MM-dd`(한국 시간 그날).
 
 | 메서드 | URL | 설명 | 인증 |
 |---|---|---|---|
-| GET | `/api/v1/attendance/classes?from=&to=` | 내 수업 할당과 날짜별 기록, 기간(최대 31일, 지난·앞으로 날짜 모두) 안 시간순 → `ClassSessionResponse[]`. 31일을 넘거나 끝 < 시작이면 400 `C001` (EMP-FR-004, 015) | 직원 |
-| GET | `/api/v1/attendance/classes/today` | 오늘 수업 + 수업 시작이 반려된 채 남은 지난 수업, 시간순 → `ClassSessionResponse[]` (EMP-FR-013) | 직원 |
-| POST | `/api/v1/attendance/classes/{id}/start` | 위치로 수업 시작 확인 `{latitude, longitude, accuracy}` → `{confirmed, distanceMeters, radiusMeters, classSession}` (EMP-FR-001) | 직원 |
-| POST | `/api/v1/attendance/classes/{id}/start/manual` | 수동 등록 `{reason, latitude?, longitude?, accuracy?}` → 승인 대기 `ClassSessionResponse` (EMP-FR-011) | 직원 |
-| PATCH | `/api/v1/attendance/classes/{id}/start/note` | 수업 시작 특이사항 `{note}` (1,000자 이내, 비우면 지움) (EMP-FR-002) | 직원 |
+| GET | `/api/v1/attendance/days/today` | 오늘 하루 → `WorkDayResponse`. 오늘 수업이 없으면 `classes: []`, `NOT_STARTED` | 직원 |
+| GET | `/api/v1/attendance/days?from=&to=` | 날짜별 내 하루 기록, 기간(최대 31일, 지난·앞으로 날짜 모두) 안 수업 있는 날만 날짜순 → `WorkDayResponse[]`. 31일을 넘거나 끝 < 시작이면 400 `C001` (EMP-FR-015) | 직원 |
+| POST | `/api/v1/attendance/days/{date}/start` | 위치로 하루 시작 `{latitude, longitude, accuracy}` → `DayCheckResultResponse` | 직원 |
+| POST | `/api/v1/attendance/days/{date}/start/manual` | 하루 시작 수동 등록 `{reason, latitude?, longitude?, accuracy?}` → 승인 대기 `WorkDayResponse` | 직원 |
+| POST | `/api/v1/attendance/days/{date}/end/location-checks` | 하루 종료 화면 전 위치 확인 `{latitude, longitude, accuracy}` → `DayCheckResultResponse`. 기록은 저장하지 않고 시도 로그만 남긴다 | 직원 |
+| POST | `/api/v1/attendance/days/{date}/end` | 위치로 하루 종료 + 제출 `{latitude, longitude, accuracy, imageKeys, notes: [{institutionId, note}]}` → `DayCheckResultResponse`. 반경 밖이면 아무것도 저장하지 않는다. 위치가 없으면 400 `C001` | 직원 |
+| POST | `/api/v1/attendance/days/{date}/end/manual` | 하루 종료 수동 등록 + 제출 `{reason, latitude?, longitude?, accuracy?, imageKeys, notes}` → 승인 대기 `WorkDayResponse`. 사유가 없으면 400 `C001` | 직원 |
+| PUT | `/api/v1/attendance/days/{date}/end` | 하루 사진·기관별 특이사항 정정 `{imageKeys, notes}` → `WorkDayResponse`. 통째로 바꾼다 (EMP-FR-014 규칙) | 작성자 |
 | POST | `/api/v1/attendance/image-upload-urls` | 수업 사진 업로드 URL 발급 `{files: [{contentType, size}]}` → `[{imageKey, uploadUrl}]` | 직원 |
-| POST | `/api/v1/attendance/classes/{id}/end` | 수업 종료 `{note, imageKeys}` → 201 `ClassSessionResponse` (EMP-FR-010) | 직원 |
-| PUT | `/api/v1/attendance/classes/{id}/end` | 수업 기록 정정 `{note, imageKeys}` → `ClassSessionResponse`. 사진·특이사항을 통째로 바꾼다 (EMP-FR-014) | 작성자 |
 
-관리자 API (`/api/v1/admin/attendance`, `/api/v1/admin/institutions`, §10과 같은 권한 규칙). 화면은 EMP-SCR-006.
+관리자 API (`/api/v1/admin/attendance`, `/api/v1/admin/institutions`, §10과 같은 권한 규칙). 화면은 EMP-SCR-006. `{type}`은 `start`·`end`(그 외 404).
 
 | 메서드 | URL | 설명 |
 |---|---|---|
-| GET | `/api/v1/admin/attendance/pending-starts` | 승인 대기 수업 시작, 먼저 등록한 순 → `AdminClassSessionResponse[]` |
-| POST | `/api/v1/admin/attendance/classes/{id}/start/approve` | 승인 → `AdminClassSessionResponse` |
-| POST | `/api/v1/admin/attendance/classes/{id}/start/reject` | 반려 `{reason}` (200자 이내) |
-| POST | `/api/v1/admin/attendance/classes/{id}/start` | 관리자 직접 등록 `{reason}`. 기록이 없거나 반려된 수업만 |
-| GET | `/api/v1/admin/attendance/classes?from=&to=&staffId=&institutionId=` | 기간(최대 31일)·직원·기관별 수업과 시작·종료 기록. 조건이 없으면 전체. 수업 할당 목록도 이것으로 본다 (EMP-FR-003, 004, 007) |
+| GET | `/api/v1/admin/attendance/pending-days` | 하루 시작이나 종료가 승인 대기인 하루, 먼저 등록한 순 → `AdminWorkDayResponse[]` |
+| GET | `/api/v1/admin/attendance/days?from=&to=&staffId=&institutionId=` | 기간(최대 31일)·직원별 하루 기록. 기관을 고르면 그 기관 수업이 있는 하루만(그날 수업은 모두 담는다) → `AdminWorkDayResponse[]` (EMP-FR-003, 007) |
+| POST | `/api/v1/admin/attendance/staff/{staffId}/days/{date}/{type}/approve` | 승인 → `AdminWorkDayResponse` |
+| POST | `/api/v1/admin/attendance/staff/{staffId}/days/{date}/{type}/reject` | 반려 `{reason}` (200자 이내) |
+| POST | `/api/v1/admin/attendance/staff/{staffId}/days/{date}/{type}` | 관리자 직접 등록 `{reason}`. 기록이 없거나 반려된 경우만, 지난 날짜도 가능(앞으로 날짜 409 `E017`) |
+| GET | `/api/v1/admin/attendance/pending-starts` | 하루 단위 적용 전 수업 단위 기록의 남은 승인 대기 → `AdminClassSessionResponse[]` |
+| POST | `/api/v1/admin/attendance/classes/{id}/start/approve` | 수업 단위 승인 대기 승인 → `AdminClassSessionResponse` (승인 대기가 아니면 409 `E004`) |
+| POST | `/api/v1/admin/attendance/classes/{id}/start/reject` | 수업 단위 승인 대기 반려 `{reason}` |
+| GET | `/api/v1/admin/attendance/classes?from=&to=&staffId=&institutionId=` | 기간(최대 31일)·직원·기관별 수업. 수업 할당 목록으로 쓴다 (EMP-FR-004) |
 | POST | `/api/v1/admin/attendance/classes` | 수업 반복 등록 `{institutionId, staffId, firstDate, lastDate, daysOfWeek: ["MONDAY", …], startTime, endTime, target?}` → 201 만든 `AdminClassSessionResponse[]` (EMP-FR-004) |
 | PUT | `/api/v1/admin/attendance/classes/{id}` | 수업 한 회 수정 `{institutionId, staffId, classDate, startTime, endTime, target?}` → `AdminClassSessionResponse` |
 | DELETE | `/api/v1/admin/attendance/classes/{id}` | 수업 한 회 삭제 |
@@ -294,21 +299,26 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | PUT | `/api/v1/admin/institutions/{id}` | 기관 수정 (같은 본문) → `InstitutionResponse` |
 | DELETE | `/api/v1/admin/institutions/{id}` | 기관 삭제. 할당된 수업이 있으면 409 `E012` |
 
-- `ClassSessionResponse`: `{id, classDate, startTime, endTime, target, institutionName, institutionAddress, status, start, end}`.
-  - `status`: `NOT_STARTED`(시작 전)·`STARTED`(시작 확정: 자동 확정·승인·관리자 등록)·`PENDING`(승인 대기)·`REJECTED`(반려)·`ENDED`(종료 완료). 저장하지 않고 기록에서 계산한다. 수업 종료 기록이 있어도 수업 시작이 반려되면 `REJECTED`.
-  - `start`: `{method, status, startedAt, distanceMeters, accuracy, reason, rejectReason, note, processedAt}` | `null`. `method`: `LOCATION`·`MANUAL`·`ADMIN`. 좌표 원본은 응답에 넣지 않는다.
-  - `end`: `{endedAt, correctedAt, note, images: [{imageKey, url}], correctable}` | `null`. `correctable`은 요청한 직원이 작성자이고 수업 당일(서버 시각 기준)인지.
-- `AdminClassSessionResponse`: `{staffId, staffName, institutionId, classSession}`.
-- `InstitutionResponse`: `{id, name, address, latitude, longitude, classSessionCount}`. 위도 -90~90·경도 -180~180(그 외 400 `C001`). 없는 기관은 404 `E011`. 좌표를 바꾸면 이후 수업 시작부터 새 좌표로 판정하고, 이미 저장된 수업 시작 기록의 거리는 그대로 둔다.
+- `WorkDayResponse`: `{date, status, classes, start, end, images, notes, correctedAt, correctable, legacyClasses}`.
+  - `status`: `NOT_STARTED`(시작 전, 앞으로 날짜는 화면에서 `예정`)·`STARTED`(수업 중)·`PENDING`(시작 승인 대기)·`REJECTED`(시작 반려)·`END_PENDING`(종료 승인 대기)·`END_REJECTED`(종료 반려)·`ENDED`(수업 종료). 저장하지 않고 기록에서 계산한다. 종료 기록이 있어도 시작이 반려되면 `REJECTED`, 시작 승인 대기 중 종료가 확정되면 `ENDED`.
+  - `classes`: 그날 수업 시간순 `[{id, startTime, endTime, target, institutionId, institutionName, institutionAddress}]`. 첫 수업 기관이 하루 시작, 마지막 수업 기관이 하루 종료 위치다.
+  - `start`·`end`: `{method, status, checkedAt, institutionId, institutionName, distanceMeters, accuracy, reason, rejectReason, processedAt}` | `null`. `method`: `LOCATION`·`MANUAL`·`ADMIN`, `status`: `CONFIRMED`·`PENDING`·`REJECTED`. 좌표 원본은 응답에 넣지 않는다.
+  - `images`: 하루 사진 `[{imageKey, url}]`. `notes`: 하루 종료 기록이 있으면 그날 기관마다 `[{institutionId, institutionName, note}]`(안 썼으면 `note: null`), 없으면 `[]`.
+  - `correctable`: 요청한 직원이 작성자이고 그날(서버 시각 기준)인지. 관리자 응답은 항상 `false`.
+  - `legacyClasses`: 하루 기록이 없고 수업 단위 기록(`class_start`·`class_end`)이 남은 날만 그날 수업의 `ClassSessionResponse[]`(읽기 전용, `end.correctable` 항상 `false`). 그 밖에는 `[]`.
+- `DayCheckResultResponse`: `{confirmed, distanceMeters, radiusMeters, institutionName, day}`. `institutionName`은 대조한 기관(시작: 첫 기관, 종료: 마지막 기관).
+- `AdminWorkDayResponse`: `{staffId, staffName, day}`. `ClassSessionResponse`·`AdminClassSessionResponse`는 수업 할당·수업 단위 기록용으로 남는다: `{id, classDate, startTime, endTime, target, institutionName, institutionAddress, status, start, end}`, `{staffId, staffName, institutionId, classSession}`.
+- `InstitutionResponse`: `{id, name, address, latitude, longitude, classSessionCount}`. 위도 -90~90·경도 -180~180(그 외 400 `C001`). 없는 기관은 404 `E011`. 좌표를 바꾸면 이후 확인부터 새 좌표로 판정하고, 이미 저장된 기록의 거리는 그대로 둔다.
 - 수업 반복 등록: `firstDate`~`lastDate`(최대 6개월) 안에서 `daysOfWeek`에 든 날짜마다 수업을 하나씩 만든다. 기간·시간이 잘못되면(끝 ≤ 시작) 400 `C001`, 만들 날짜가 없으면 400 `E016`. 담당은 `STAFF`·`ADMIN`만(그 외 400 `E015`). 같은 직원의 같은 날 수업과 시간이 겹치면(끝 시각 = 다음 시작 시각은 허용) 409 `E014`이고 하나도 만들지 않는다. 수정도 같은 규칙.
-- 수업 수정·삭제: 수업 시작·종료 기록이나 수업 시작 시도 로그가 있으면 409 `E013`.
-- 수업 시작 판정: 서버가 하버사인 거리(m, 반올림)로 기관 좌표 반경 100m 안이면 `confirmed=true`로 확정, 밖이면 저장하지 않고 `confirmed=false`(200)와 거리·기준 반경을 준다. 정확도로는 거절하지 않는다. 결과와 상관없이 시도마다 `class_start_attempt`에 남긴다. 시작 시각은 서버 시각이고 시간 제한은 없다.
-- 수업 시작은 수업 날짜(서버 시각 기준)가 오늘이거나 지난 수업만. 앞으로 날짜 수업은 위치·수동 등록·관리자 직접 등록 모두 409 `E017`이고 시도 로그도 남기지 않는다 (EMP-FR-001, 015).
-- 수업 시작 기록은 수업당 1건. 기록이 없거나 반려된 수업만 다시 확인할 수 있고(반려 기록을 덮어씀), 확정·승인 대기면 409 `E002`. 승인·반려는 승인 대기만(그 외 409 `E004`), 기록이 없으면 404 `E003`.
-- 수업 종료: 수업 시작이 확정·승인 대기인 수업만(그 외 409 `E005`), 수업당 1건(409 `E006`). 위치는 받지 않는다. 승인 대기 중 종료한 뒤 반려돼도 종료 기록은 지우지 않는다.
+- 수업 잠금(409 `E013`): 그 직원·날짜에 하루 시작 기록이 있으면 그날 수업은 추가·수정·삭제할 수 없다(다른 날·직원에서 그날로 옮기는 수정도). 수업 단위 시작·종료 기록이나 시작 시도 로그가 있는 수업도 수정·삭제할 수 없다.
+- 위치 판정: 서버가 하버사인 거리(m, 반올림)로 대조 기관 좌표 반경 100m 안이면 `confirmed=true`로 확정, 밖이면 저장하지 않고 `confirmed=false`(200)와 거리·기준 반경을 준다. 정확도로는 거절하지 않는다. 위치를 받은 시도마다 `day_check_attempt`에 남긴다. 시각은 서버 시각이고 시간 제한은 없다. 수업 사이 기관 이동은 확인하지 않는다.
+- 직원은 오늘(서버 시각 기준) 하루만 시작·종료한다. 앞으로 날짜 409 `E017`, 지난 날짜 409 `E018`(관리자 직접 등록으로 처리), 그날 수업이 없으면 409 `E019`. 이때는 시도 로그도 남기지 않는다.
+- 하루 시작은 직원·날짜당 1건. 기록이 없거나 반려된 경우만 다시 확인할 수 있고(반려 기록을 덮어씀), 확정·승인 대기면 409 `E002`.
+- 하루 종료: 하루 시작이 확정·승인 대기일 때만(그 외 409 `E005`), 직원·날짜당 1건(확정·승인 대기면 409 `E006`, 반려면 다시 제출해 사진·특이사항까지 새로 저장). 시작 승인 대기 중 종료한 뒤 시작이 반려돼도 종료 기록은 지우지 않는다.
+- 승인·반려는 승인 대기만(그 외 409 `E020`), 기록이 없으면 시작 404 `E003`·종료 404 `E007`. 관리자 직접 종료 등록은 사진·특이사항 없이 확인 기록만 남긴다.
 - 사진: 흐름은 §7과 같다. 1장 이상 20장 이하(400 `E009`), jpeg·png·webp, 장당 10MB. 형식·크기 위반, 업로드되지 않은 키, `attendance/` 밖의 키, 중복 키는 400 `E010`. 정정할 때 남길 사진은 응답의 `imageKey`를 다시 보낸다.
-- 정정: 작성자 본인만(남의 수업은 404 `E001`), 수업 날짜 당일까지(지나면 409 `E008`). 수업 시작·종료 시각은 바뀌지 않고 `correctedAt`만 남긴다. 이력은 보관하지 않는다. 종료 기록이 없으면 404 `E007`.
-- 수업 시작 특이사항은 확정·승인 대기 기록에만(없거나 반려면 404 `E003`).
+- 기관별 특이사항: 그날 수업한 기관만, 기관마다 한 번(다른 기관·중복은 400 `C001`), 2,000자 이내. 비우면 저장하지 않는다.
+- 정정: 작성자 본인만, 그날 당일까지(지나면 409 `E008`). 시작·종료 시각은 바뀌지 않고 `correctedAt`만 남긴다. 이력은 보관하지 않는다. 하루 종료 기록이 없으면 404 `E007`.
 
 ## 12. 기타
 
