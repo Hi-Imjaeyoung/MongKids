@@ -248,7 +248,7 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 
 병합하면 백엔드가 `validate`로 기동하고 새 테이블이 없으면 기동에 실패하므로 1을 **병합 전에** 끝낸다. 기존 수업 단위 테이블은 그대로 둔다.
 
-- [ ] 1. 운영 RDS에 `back/docs/sql/2026-11-day-attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 5개(`day_start`, `day_end`, `day_end_image`, `day_end_note`, `day_check_attempt`) 확인
+- [x] 1. 운영 RDS에 `back/docs/sql/2026-11-day-attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 5개(`day_start`, `day_end`, `day_end_image`, `day_end_note`, `day_check_attempt`) — 2026-11-18 적용(사용자)
 - [ ] 2. 배포 후 직원 계정: 오늘 하루 카드에 첫·마지막 기관이 보이고, 첫 기관에서 "현재 위치로 수업 시작" → 수업 중
 - [ ] 3. 마지막 기관에서 "현재 위치로 수업 종료" → 반경 안 안내 → 사진 여러 장·기관별 특이사항 제출 → 수업 종료 → 당일 정정
 - [ ] 4. 반경 밖 종료 → 사유 적어 수동 등록 → 관리자 "승인 대기"에서 종료 승인·반려, 반려되면 직원이 다시 제출
