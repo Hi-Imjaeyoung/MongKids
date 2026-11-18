@@ -73,7 +73,7 @@ docs: 요구사항에 문의 기능 추가
 
 | 워크플로 | 실행 조건 | PR (→ `main`) | `main` 반영 |
 |---|---|---|---|
-| `.github/workflows/front.yml` | `front/**` 변경 | `npm ci` → lint → build | 같은 검증 후 S3 업로드·CloudFront `/index.html` 무효화 |
+| `.github/workflows/front.yml` | `front/**` 변경 | `npm ci` → lint → build | 같은 검증 후 S3 업로드·CloudFront `/index.html`·`/robots.txt`·`/sitemap.xml` 무효화 |
 | `.github/workflows/back.yml` | `back/**` 변경 | `gradlew build` (H2 테스트) | 같은 검증 후 jar S3 업로드 → SSM으로 EC2 `deploy.sh` 실행 (헬스 체크 실패 시 직전 jar로 롤백, 워크플로도 실패) |
 
 - 두 워크플로 모두 Actions 탭에서 수동 실행(`workflow_dispatch`)할 수 있다.
