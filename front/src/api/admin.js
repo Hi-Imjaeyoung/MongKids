@@ -58,7 +58,7 @@ export function changeMemberRole(memberId, role) {
 // 근태 관리 (EMP-SCR-006) ---------------------------------------------------------
 // 수업 항목은 AdminClassSessionResponse { staffId, staffName, institutionId, classSession }
 
-// 수업 시작 승인 대기, 먼저 등록한 순 (EMP-FR-011)
+// 하루 단위 적용 전 수업 단위 기록의 남은 승인 대기, 먼저 등록한 순 (EMP-FR-011)
 export function getPendingStarts() {
   return request('/api/v1/admin/attendance/pending-starts')
 }
@@ -74,12 +74,36 @@ export function rejectStart(classSessionId, reason) {
   })
 }
 
-// 관리자 직접 등록. 기록이 없거나 반려된 수업만
-export function registerStart(classSessionId, reason) {
-  return request(`/api/v1/admin/attendance/classes/${classSessionId}/start`, { method: 'POST', ...jsonBody({ reason }) })
+// 하루 단위(EMP-FR-020) 항목은 AdminWorkDayResponse { staffId, staffName, day }. type은 'start' | 'end'
+
+// 하루 시작이나 종료가 승인 대기인 하루, 먼저 등록한 순
+export function getPendingDays() {
+  return request('/api/v1/admin/attendance/pending-days')
 }
 
-// 기간(최대 31일)·직원·기관별 수업과 시작·종료 기록 (EMP-FR-003, 004, 007). 날짜는 'YYYY-MM-DD'
+// 기간(최대 31일)·직원·기관별 하루 기록 (EMP-FR-003, 007). 날짜는 'YYYY-MM-DD'
+export function getAdminDays({ from, to, staffId, institutionId }) {
+  return request(`/api/v1/admin/attendance/days?${query({ from, to, staffId, institutionId })}`)
+}
+
+function dayPath(staffId, date, type) {
+  return `/api/v1/admin/attendance/staff/${staffId}/days/${date}/${type}`
+}
+
+export function approveDay(staffId, date, type) {
+  return request(`${dayPath(staffId, date, type)}/approve`, { method: 'POST' })
+}
+
+export function rejectDay(staffId, date, type, reason) {
+  return request(`${dayPath(staffId, date, type)}/reject`, { method: 'POST', ...jsonBody({ reason }) })
+}
+
+// 관리자 직접 등록. 기록이 없거나 반려된 경우만, 지난 날짜도 가능
+export function registerDay(staffId, date, type, reason) {
+  return request(dayPath(staffId, date, type), { method: 'POST', ...jsonBody({ reason }) })
+}
+
+// 기간(최대 31일)·직원·기관별 수업 (수업 할당 EMP-FR-004). 날짜는 'YYYY-MM-DD'
 export function getClassRecords({ from, to, staffId, institutionId }) {
   return request(`/api/v1/admin/attendance/classes?${query({ from, to, staffId, institutionId })}`)
 }

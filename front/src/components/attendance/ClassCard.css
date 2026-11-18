@@ -70,3 +70,15 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* 날짜별 기록의 하루 카드: 기관마다 한 묶음, 아래에 하루 시작·종료 기록 */
+.class-card__group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.class-card__details--record {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}

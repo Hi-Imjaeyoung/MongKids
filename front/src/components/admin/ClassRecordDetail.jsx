@@ -2,13 +2,13 @@ import { classRecordAdmin, longDateLabel, startMethods } from '../../data/attend
 import { formatClock, formatTimeRange } from '../attendance/attendanceFormat'
 import ClassStatusBadge from '../attendance/ClassStatusBadge'
 import { formatDateTime } from './adminFormat'
-import { canRegisterStart } from './attendanceAdminFormat'
 import StartLocation from './StartLocation'
 import './AdminForm.css'
 import './ClassRecordDetail.css'
 
-// 수업 한 회의 시작·종료 기록 (EMP-FR-003, 007). 시작 전·반려 수업이면 직접 등록 onRegister()
-function ClassRecordDetail({ item, onRegister }) {
+// 하루 단위 적용 전 수업 한 회의 시작·종료 기록 (EMP-FR-003, 007). 읽기 전용, 하루 상세(DayDetail)에서 보여 준다.
+// item: { staffName, classSession }
+function ClassRecordDetail({ item }) {
   const { classSession } = item
   const { start, end } = classSession
   const { fields } = classRecordAdmin
@@ -86,11 +86,6 @@ function ClassRecordDetail({ item, onRegister }) {
         </>
       )}
 
-      {canRegisterStart(classSession) && (
-        <button type="button" className="admin-form__button admin-form__button--dark" onClick={onRegister}>
-          {classRecordAdmin.directRegister}
-        </button>
-      )}
     </section>
   )
 }

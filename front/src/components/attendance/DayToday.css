@@ -1,4 +1,10 @@
-.class-list__head {
+.day-today {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.day-today__head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -7,13 +13,13 @@
   background: var(--yellow);
 }
 
-.class-list__heading {
+.day-today__heading {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.class-list__history {
+.day-today__history {
   display: flex;
   flex: none;
   align-items: center;
@@ -28,40 +34,177 @@
   cursor: pointer;
 }
 
-.class-list__date {
+.day-today__date {
   font-size: 13px;
   font-weight: 500;
   color: var(--yellow-text);
 }
 
-.class-list__title {
+.day-today__title {
   margin: 0;
   font-size: 22px;
   font-weight: 800;
+  word-break: keep-all;
 }
 
-.class-list__body {
+.day-today__body {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 12px;
   padding: 16px;
 }
 
-.class-list__notice {
+.day-today__notice {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.class-list__notice-text {
+.day-today__notice-text {
   margin: 0;
   padding: 40px 0;
   text-align: center;
   color: var(--text-sub);
 }
 
-.class-list__action-error {
+.day-today__action-error {
   padding: 12px 14px;
   border-radius: var(--radius-md);
   background: var(--danger-soft);
+}
+
+/* 버튼이 화면 아래에 붙어 있도록 한다 (모바일에서 엄지로 누르기 쉬운 자리) */
+.day-today__foot {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 20px 28px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.day-today__hint {
+  font-size: 12px;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.day-today__strong {
+  color: var(--text);
+}
+
+/* 오늘 하루 카드: 해야 할 일에 따라 테두리 색이 바뀐다 */
+.day-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.day-card--not-started {
+  border-color: var(--blue);
+}
+
+.day-card--started,
+.day-card--pending,
+.day-card--ended {
+  border-color: var(--green-text);
+}
+
+.day-card--rejected,
+.day-card--end-rejected {
+  border-color: var(--danger-border);
+}
+
+.day-card--end-pending {
+  border-color: var(--yellow);
+}
+
+.day-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.day-card__title {
+  font-size: 16px;
+}
+
+.day-card__line,
+.day-card__guide {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.day-today__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.day-today__move {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.day-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.day-group__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.day-group__name {
+  font-size: 15px;
+  word-break: keep-all;
+}
+
+.day-group__badge {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.day-group__badge--first {
+  color: var(--blue-text);
+}
+
+.day-group__badge--last {
+  color: var(--green-text);
+}
+
+.day-group__classes {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
 }

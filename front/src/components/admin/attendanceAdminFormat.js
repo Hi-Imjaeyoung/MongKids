@@ -28,12 +28,23 @@ export function repeatDates(first, last, dayIndexes) {
   return dates
 }
 
-// 직접 등록할 수 있는 수업: 시작 기록이 없거나 반려 (EMP-FR-011)
-export function canRegisterStart(classSession) {
-  return !classSession.start || classSession.start.status === 'REJECTED'
+// 하루 항목(AdminWorkDayResponse)의 키: 직원·날짜
+export function dayKey(item) {
+  return `${item.staffId}-${item.day.date}`
 }
 
-// 고치거나 지울 수 있는 수업: 시작·종료 기록이 없음 (시작 시도 로그는 서버가 다시 확인한다)
+// 하루 시작·종료를 직접 등록할 수 있는지 (EMP-FR-020): 기록이 없거나 반려.
+// 종료는 하루 시작이 확정·승인 대기여야 한다. 하루 단위 적용 전 날짜(legacyClasses)는 등록하지 않는다
+export function canRegisterDay(day, type) {
+  if (day.legacyClasses.length > 0) return false
+  const check = day[type]
+  const open = !check || check.status === 'REJECTED'
+  if (type === 'end') return open && day.start != null && day.start.status !== 'REJECTED'
+  return open
+}
+
+// 고치거나 지울 수 있는 수업: 수업 단위 시작·종료 기록이 없음.
+// 하루 시작 기록이 있는 날(EMP-FR-020)과 시작 시도 로그는 서버가 다시 확인한다
 export function isEditableSession(classSession) {
   return !classSession.start && !classSession.end
 }

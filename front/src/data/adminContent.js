@@ -25,7 +25,7 @@ export const adminTabs = [
   { id: 'consultations', label: '상담 신청' },
   { id: 'reviews', label: '후기 관리' },
   { id: 'members', label: '회원 · 직원 권한' },
-  { id: 'class-starts', label: '수업 시작 승인', group: '근태 관리' },
+  { id: 'class-starts', label: '수업 시작·종료 승인', group: '근태 관리' },
   { id: 'class-records', label: '수업 기록', group: '근태 관리' },
   { id: 'class-sessions', label: '수업 할당', group: '근태 관리' },
   { id: 'institutions', label: '기관 위치', group: '근태 관리' },

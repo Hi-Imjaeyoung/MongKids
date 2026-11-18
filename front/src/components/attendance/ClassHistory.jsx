@@ -1,11 +1,13 @@
 import { attendancePage, classHistory } from '../../data/attendanceContent'
 import AttendanceAction from './AttendanceAction'
+import DayHistoryCard from './DayHistoryCard'
 import HistoryClassCard from './HistoryClassCard'
 import './ClassHistory.css'
 
-// 날짜별 수업 기록 화면 (EMP-SCR-001 ⑧·⑩). 위쪽 날짜 띠(strip)는 바깥에서 넣고, 고른 날짜의 수업 카드를 보여 준다
-// classes: 고른 날짜의 수업. null이면 불러오는 중. future: 고른 날짜가 오늘보다 뒤인지
-function ClassHistory({ date, classes, error, future, strip, onBack, onCalendar, onReload, onView }) {
+// 날짜별 수업 기록 화면 (EMP-SCR-001 ⑧·⑩). 위쪽 날짜 띠(strip)는 바깥에서 넣고, 고른 날짜의 하루를 보여 준다
+// day: 고른 날짜의 하루. undefined면 불러오는 중, null이면 수업 없는 날. future: 고른 날짜가 오늘보다 뒤인지
+// 하루 단위 적용 전 날짜(legacyClasses가 있음)는 수업마다 카드를 보여 준다
+function ClassHistory({ date, day, error, future, strip, onBack, onCalendar, onReload, onViewDay, onViewLegacy }) {
   let body
   if (error) {
     body = (
@@ -16,21 +18,28 @@ function ClassHistory({ date, classes, error, future, strip, onBack, onCalendar,
         </AttendanceAction>
       </div>
     )
-  } else if (!classes) {
+  } else if (day === undefined) {
     body = <p className="class-history__notice-text">{classHistory.loading}</p>
-  } else if (classes.length === 0) {
+  } else if (day === null) {
     body = <p className="class-history__notice-text">{classHistory.empty}</p>
-  } else {
+  } else if (day.legacyClasses.length > 0) {
     body = (
       <>
-        {classes.map((classSession) => (
+        {day.legacyClasses.map((classSession) => (
           <HistoryClassCard
             key={classSession.id}
             classSession={classSession}
             future={future}
-            onView={() => onView(classSession)}
+            onView={() => onViewLegacy(classSession)}
           />
         ))}
+        <p className="attendance-hint">{classHistory.legacyNotice}</p>
+      </>
+    )
+  } else {
+    body = (
+      <>
+        <DayHistoryCard day={day} future={future} onView={onViewDay} />
         <p className="attendance-hint">{future ? classHistory.futureNotice : classHistory.pastNotice}</p>
       </>
     )
@@ -58,7 +67,7 @@ function ClassHistory({ date, classes, error, future, strip, onBack, onCalendar,
       </header>
       {strip}
       <div className="class-history__body">
-        <h2 className="class-history__date">{classHistory.dateTitle(date, classes?.length ?? 0)}</h2>
+        <h2 className="class-history__date">{classHistory.dateTitle(date, day?.classes.length ?? 0)}</h2>
         {body}
       </div>
     </section>

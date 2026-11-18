@@ -6,13 +6,13 @@ import './LocationGuide.css'
 
 // ③ 위치 권한 거부·위치 꺼짐 안내. 기기·브라우저별 위치 켜는 방법을 탭으로 보여 준다
 // unsupported: 브라우저가 위치 확인을 지원하지 않음. 다시 시도 대신 수동 등록을 권한다
-function LocationGuide({ unsupported = false, retrying, onRetry, onManual, onBack }) {
+function LocationGuide({ mode, unsupported = false, retrying, onRetry, onManual, onBack }) {
   const [deviceId, setDeviceId] = useState(locationGuide.devices[0].id)
   const device = locationGuide.devices.find((item) => item.id === deviceId)
 
   return (
     <AttendanceScreen
-      title={locationGuide.title}
+      title={locationGuide.titles[mode]}
       onBack={onBack}
       footer={
         <>

@@ -1,0 +1,43 @@
+.day-detail__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-detail__section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.day-detail__section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.day-detail__section-title {
+  margin: 0;
+  font-size: 16px;
+}
+
+.day-detail__institution {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 하루 단위 적용 전 수업별 기록은 상세 카드 안에 다시 카드로 들어가므로 테두리를 줄인다 */
+.day-detail .admin-card {
+  padding: 16px;
+  box-shadow: none;
+}
