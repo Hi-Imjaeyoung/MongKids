@@ -244,6 +244,17 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 정리
 - [ ] 12. 결과(기기, 장소, 화면 거리 vs 지도 거리, 정확도)를 진행 로그(`docs/progress/` 그 주 파일)에 남기고, 테스트 기관·수업·기록을 지운다 (`class_end_image` → `class_end` → `class_start` → `class_start_attempt` → `class_session` → `institution` 순서, S3 `attendance/` 테스트 사진도 삭제). 테스트 계정 직원 권한이 필요 없으면 회수
 
+### K-2. 하루 단위 수업 시작·종료 (EMP-FR-020, #94)
+
+병합하면 백엔드가 `validate`로 기동하고 새 테이블이 없으면 기동에 실패하므로 1을 **병합 전에** 끝낸다. 기존 수업 단위 테이블은 그대로 둔다.
+
+- [ ] 1. 운영 RDS에 `back/docs/sql/2026-11-day-attendance-ddl.sql` 실행 (위 "운영 DB 조회"의 터널). 테이블 5개(`day_start`, `day_end`, `day_end_image`, `day_end_note`, `day_check_attempt`) 확인
+- [ ] 2. 배포 후 직원 계정: 오늘 하루 카드에 첫·마지막 기관이 보이고, 첫 기관에서 "현재 위치로 수업 시작" → 수업 중
+- [ ] 3. 마지막 기관에서 "현재 위치로 수업 종료" → 반경 안 안내 → 사진 여러 장·기관별 특이사항 제출 → 수업 종료 → 당일 정정
+- [ ] 4. 반경 밖 종료 → 사유 적어 수동 등록 → 관리자 "승인 대기"에서 종료 승인·반려, 반려되면 직원이 다시 제출
+- [ ] 5. 하루 단위 적용 전 날짜는 내 수업 기록·관리자 수업 기록에서 기존 기록이 읽기 전용으로 보인다
+- [ ] 6. 테스트 기록 정리: `day_end_note`·`day_end_image` → `day_end` → `day_start` → `day_check_attempt` 순서, S3 `attendance/` 테스트 사진도 삭제
+
 
 ## L. 회원 탈퇴 (SCR-025, FR-028, #54)
 
