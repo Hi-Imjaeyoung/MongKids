@@ -21,6 +21,19 @@
   transition: transform 0.25s ease;
 }
 
+/* 데스크톱: 수업 현장 카드(PostCard)처럼 대표 사진을 양옆 여백 없이 원본 비율 그대로 카드 폭에 맞춘다.
+   사진마다 높이가 달라지고, 사진이 없을 때만 4:3 자리를 둔다 (SCR-024, 2026-11-18). 모바일 목록은 위 4:3 칸 그대로 */
+@media (min-width: 769px) {
+  .lab-card__thumb--photo {
+    aspect-ratio: auto;
+    background: none;
+  }
+
+  .lab-card__thumb--photo .lab-card__image {
+    height: auto;
+  }
+}
+
 .lab-card:hover .lab-card__image {
   transform: scale(1.04);
 }
