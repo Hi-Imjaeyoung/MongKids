@@ -139,3 +139,10 @@ export function updateInstitution(institutionId, body) {
 export function deleteInstitution(institutionId) {
   return request(`/api/v1/admin/institutions/${institutionId}`, { method: 'DELETE' })
 }
+
+// 근무 캘린더 (EMP-FR-017). 기간(최대 31일) 안 수업 있는 직원별 하루 상태·수업 수와 기간 합계 → WorkCalendarResponse
+// { from, to, staffs: [{ staffId, staffName, days: [{ date, status, legacy, classCount, firstClassTime, start, end,
+// institutionNames }], summary: { assignedClasses, completedClasses, pendingChecks, rejectedChecks } }] }
+export function getWorkCalendar({ from, to, staffId }) {
+  return request(`/api/v1/admin/attendance/calendar?${query({ from, to, staffId })}`)
+}

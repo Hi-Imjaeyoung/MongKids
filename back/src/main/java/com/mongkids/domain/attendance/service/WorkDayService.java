@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,11 @@ import com.mongkids.domain.attendance.dto.DayEndSaveRequest;
 import com.mongkids.domain.attendance.dto.DayNoteRequest;
 import com.mongkids.domain.attendance.dto.DayNoteResponse;
 import com.mongkids.domain.attendance.dto.DayStatus;
+import com.mongkids.domain.attendance.dto.WorkCalendarResponse;
+import com.mongkids.domain.attendance.dto.WorkCalendarResponse.CalendarCheckResponse;
+import com.mongkids.domain.attendance.dto.WorkCalendarResponse.CalendarDayResponse;
+import com.mongkids.domain.attendance.dto.WorkCalendarResponse.CalendarSummaryResponse;
+import com.mongkids.domain.attendance.dto.WorkCalendarResponse.StaffCalendarResponse;
 import com.mongkids.domain.attendance.dto.WorkDayResponse;
 import com.mongkids.domain.attendance.entity.ClassSession;
 import com.mongkids.domain.attendance.entity.ClassStartStatus;
@@ -258,6 +264,71 @@ public class WorkDayService {
 			.filter(response -> institutionId == null || response.day().classes().stream()
 				.anyMatch(dayClass -> dayClass.institutionId().equals(institutionId)))
 			.toList();
+	}
+
+	/**
+	 * 관리자 근무 캘린더 (EMP-FR-017). 기간은 최대 31일(주·월 단위), 직원을 고르면 그 직원만.
+	 * 근무 시간은 계산하지 않고 직원별 수업 수와 하루 시작·종료 상태만 모은다.
+	 */
+	public WorkCalendarResponse getCalendar(Long adminId, LocalDate from, LocalDate to, Long staffId) {
+		attendanceService.getAdmin(adminId);
+		attendanceService.validateSearchPeriod(from, to);
+		Map<Long, List<AdminWorkDayResponse>> byStaff = toResponses(
+			classSessionRepository.searchForAdmin(from, to, staffId, null), null).stream()
+			.collect(Collectors.groupingBy(AdminWorkDayResponse::staffId, LinkedHashMap::new, Collectors.toList()));
+		List<StaffCalendarResponse> staffs = byStaff.values().stream()
+			.map(WorkDayService::toStaffCalendar)
+			.sorted(Comparator.comparing(StaffCalendarResponse::staffName).thenComparing(StaffCalendarResponse::staffId))
+			.toList();
+		return new WorkCalendarResponse(from, to, staffs);
+	}
+
+	private static StaffCalendarResponse toStaffCalendar(List<AdminWorkDayResponse> days) {
+		List<WorkDayResponse> sorted = days.stream()
+			.map(AdminWorkDayResponse::day)
+			.sorted(Comparator.comparing(WorkDayResponse::date))
+			.toList();
+		int assigned = 0;
+		int completed = 0;
+		int pending = 0;
+		int rejected = 0;
+		for (WorkDayResponse day : sorted) {
+			assigned += day.classes().size();
+			if (!day.legacyClasses().isEmpty()) {
+				completed += countLegacy(day, ClassStatus.ENDED);
+				pending += countLegacy(day, ClassStatus.PENDING);
+				rejected += countLegacy(day, ClassStatus.REJECTED);
+				continue;
+			}
+			if (day.status() == DayStatus.ENDED) {
+				completed += day.classes().size();
+			}
+			pending += countChecks(day, ClassStartStatus.PENDING);
+			rejected += countChecks(day, ClassStartStatus.REJECTED);
+		}
+		AdminWorkDayResponse first = days.get(0);
+		return new StaffCalendarResponse(first.staffId(), first.staffName(),
+			sorted.stream().map(WorkDayService::toCalendarDay).toList(),
+			new CalendarSummaryResponse(assigned, completed, pending, rejected));
+	}
+
+	private static CalendarDayResponse toCalendarDay(WorkDayResponse day) {
+		List<String> institutionNames = day.classes().stream().map(DayClassResponse::institutionName).distinct()
+			.toList();
+		return new CalendarDayResponse(day.date(), day.status(), !day.legacyClasses().isEmpty(), day.classes().size(),
+			day.classes().get(0).startTime(), CalendarCheckResponse.from(day.start()),
+			CalendarCheckResponse.from(day.end()), institutionNames);
+	}
+
+	private static int countLegacy(WorkDayResponse day, ClassStatus status) {
+		return (int)day.legacyClasses().stream().filter(dayClass -> dayClass.status() == status).count();
+	}
+
+	// 하루 시작·종료 기록 가운데 그 상태인 건수
+	private static int countChecks(WorkDayResponse day, ClassStartStatus status) {
+		return (int)Stream.of(day.start(), day.end())
+			.filter(check -> check != null && check.status() == status)
+			.count();
 	}
 
 	@Transactional

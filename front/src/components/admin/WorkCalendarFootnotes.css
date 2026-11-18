@@ -1,0 +1,10 @@
+.work-calendar-footnotes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  color: var(--text-sub);
+  font-size: 13px;
+  list-style: none;
+}

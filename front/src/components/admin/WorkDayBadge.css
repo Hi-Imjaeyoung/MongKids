@@ -1,0 +1,34 @@
+.work-day-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.work-day-badge--gray {
+  background: var(--bg-soft);
+  color: var(--text-sub);
+}
+
+.work-day-badge--blue {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.work-day-badge--yellow {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.work-day-badge--red {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.work-day-badge--green {
+  background: var(--green-soft);
+  color: var(--green-text);
+}
