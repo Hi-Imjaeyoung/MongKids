@@ -262,7 +262,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - `AdminMemberResponse`: `{id, name, phone, provider, role, createdAt}`. `keyword`는 이름 부분 일치, 숫자가 있으면 전화번호(하이픈 무시) 부분 일치로도 찾는다.
 - 권한 변경: 대상이 `ADMIN`이거나 `role`이 `ADMIN`이면 400 `M003`. 없는 회원 404 `M001`, 탈퇴 회원 403 `M002`. 회수해도 작성한 게시물은 남고 새 글 작성·자기 글 수정·삭제만 막힌다(FR-009).
 
-## 11. 근태 수업 시작·종료 API (EMP-SCR-001, EMP-SCR-006, EMP-FR-003·004·007·011·012·014·015·020)
+## 11. 근태 수업 시작·종료 API (EMP-SCR-001, EMP-SCR-006, EMP-FR-003·004·007·011·012·014·015·017·020)
 
 근태 관리(직원용) 수업 체크. 2026-11-18(#94)부터 수업마다가 아니라 직원별 **하루 한 번** 시작·종료한다(EMP-FR-020). 판정 규칙은 [ADR-006](../../docs/adr/ADR-006-attendance-location-verification.md)을 따른다. 직원 API는 DB의 현재 역할이 `STAFF`·`ADMIN`인 회원만(그 외 403 `A002`), 자기 하루만 쓴다. `{date}`는 `yyyy-MM-dd`(한국 시간 그날).
 
@@ -284,6 +284,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 |---|---|---|
 | GET | `/api/v1/admin/attendance/pending-days` | 하루 시작이나 종료가 승인 대기인 하루, 먼저 등록한 순 → `AdminWorkDayResponse[]` |
 | GET | `/api/v1/admin/attendance/days?from=&to=&staffId=&institutionId=` | 기간(최대 31일)·직원별 하루 기록. 기관을 고르면 그 기관 수업이 있는 하루만(그날 수업은 모두 담는다) → `AdminWorkDayResponse[]` (EMP-FR-003, 007) |
+| GET | `/api/v1/admin/attendance/calendar?from=&to=&staffId=` | 근무 캘린더(EMP-FR-017). 기간(최대 31일, 화면은 주 7일·한 달) 안 수업 있는 직원별 하루 칸과 기간 합계 → `WorkCalendarResponse`. 근무 시간은 계산하지 않는다 |
 | POST | `/api/v1/admin/attendance/staff/{staffId}/days/{date}/{type}/approve` | 승인 → `AdminWorkDayResponse` |
 | POST | `/api/v1/admin/attendance/staff/{staffId}/days/{date}/{type}/reject` | 반려 `{reason}` (200자 이내) |
 | POST | `/api/v1/admin/attendance/staff/{staffId}/days/{date}/{type}` | 관리자 직접 등록 `{reason}`. 기록이 없거나 반려된 경우만, 지난 날짜도 가능(앞으로 날짜 409 `E017`) |
@@ -306,6 +307,9 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
   - `images`: 하루 사진 `[{imageKey, url}]`. `notes`: 하루 종료 기록이 있으면 그날 기관마다 `[{institutionId, institutionName, note}]`(안 썼으면 `note: null`), 없으면 `[]`.
   - `correctable`: 요청한 직원이 작성자이고 그날(서버 시각 기준)인지. 관리자 응답은 항상 `false`.
   - `legacyClasses`: 하루 기록이 없고 수업 단위 기록(`class_start`·`class_end`)이 남은 날만 그날 수업의 `ClassSessionResponse[]`(읽기 전용, `end.correctable` 항상 `false`). 그 밖에는 `[]`.
+- `WorkCalendarResponse`: `{from, to, staffs: [{staffId, staffName, days, summary}]}`. 기간 안에 수업이 있는 직원만 이름순.
+  - `days`: 수업 있는 날만 날짜순 `[{date, status, legacy, classCount, firstClassTime, start, end, institutionNames}]`. `status`는 `WorkDayResponse.status`와 같고, `legacy`면 하루 단위 적용 전 날짜(수업 단위 기록이 남은 날)다. `start`·`end`: `{method, status, checkedAt}` | `null`(실제 하루 시작·종료 시각). `institutionNames`: 그날 수업한 기관을 수업 순서대로 한 번씩.
+  - `summary`: `{assignedClasses, completedClasses, pendingChecks, rejectedChecks}`. 할당은 앞으로 예정 포함 전체 수업 수, 완료는 `ENDED`인 날의 수업 수, 승인 대기·반려는 하루 시작·종료 기록 건수(시작·종료 각 1건). `legacy` 날은 수업 단위 기록의 상태(`ENDED`·`PENDING`·`REJECTED`)를 수업마다 센다.
 - `DayCheckResultResponse`: `{confirmed, distanceMeters, radiusMeters, institutionName, day}`. `institutionName`은 대조한 기관(시작: 첫 기관, 종료: 마지막 기관).
 - `AdminWorkDayResponse`: `{staffId, staffName, day}`. `ClassSessionResponse`·`AdminClassSessionResponse`는 수업 할당·수업 단위 기록용으로 남는다: `{id, classDate, startTime, endTime, target, institutionName, institutionAddress, status, start, end}`, `{staffId, staffName, institutionId, classSession}`.
 - `InstitutionResponse`: `{id, name, address, latitude, longitude, classSessionCount}`. 위도 -90~90·경도 -180~180(그 외 400 `C001`). 없는 기관은 404 `E011`. 좌표를 바꾸면 이후 확인부터 새 좌표로 판정하고, 이미 저장된 기록의 거리는 그대로 둔다.
