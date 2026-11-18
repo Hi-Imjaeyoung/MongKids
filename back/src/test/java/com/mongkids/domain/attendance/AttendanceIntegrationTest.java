@@ -479,6 +479,64 @@ class AttendanceIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("근무 캘린더: 기간 안 수업 있는 직원만 이름순으로, 날짜별 상태·수업 수와 할당·완료 수업, 승인 대기·반려 건수를 준다")
+	void calendar() throws Exception {
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		LoginMemberResponse other = register("2", MemberRole.STAFF);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		legacyEnded(session(staff, institution, TODAY.minusDays(2), 10));
+		session(staff, institution, TODAY.minusDays(1), 10);
+		session(staff, lastInstitution, TODAY.minusDays(1), 14);
+		session(staff, institution, TODAY, 10);
+		session(staff, institution, TODAY.plusDays(2), 13);
+		session(other, institution, TODAY, 11);
+		adminAction(staff, TODAY.minusDays(1), "start", "직원 휴대폰 고장");
+		adminAction(staff, TODAY.minusDays(1), "end", "직원 휴대폰 고장");
+		startManually(tokenCookie(staff), TODAY);
+		startManually(tokenCookie(other), TODAY);
+		adminAction(other, TODAY, "start/reject", "기관 밖에서 등록됐어요");
+
+		mockMvc.perform(calendar(admin, TODAY.minusDays(7), TODAY.plusDays(6)))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.from").value("2026-10-26"))
+			.andExpect(jsonPath("$.data.staffs.length()").value(2))
+			.andExpect(jsonPath("$.data.staffs[0].staffName").value("직원1"))
+			.andExpect(jsonPath("$.data.staffs[0].days.length()").value(4))
+			.andExpect(jsonPath("$.data.staffs[0].days[0].date").value("2026-10-31"))
+			.andExpect(jsonPath("$.data.staffs[0].days[0].legacy").value(true))
+			.andExpect(jsonPath("$.data.staffs[0].days[1].status").value("ENDED"))
+			.andExpect(jsonPath("$.data.staffs[0].days[1].classCount").value(2))
+			.andExpect(jsonPath("$.data.staffs[0].days[1].institutionNames.length()").value(2))
+			.andExpect(jsonPath("$.data.staffs[0].days[1].institutionNames[1]").value("별빛유치원"))
+			.andExpect(jsonPath("$.data.staffs[0].days[1].start.method").value("ADMIN"))
+			.andExpect(jsonPath("$.data.staffs[0].days[1].end.checkedAt").exists())
+			.andExpect(jsonPath("$.data.staffs[0].days[2].status").value("PENDING"))
+			.andExpect(jsonPath("$.data.staffs[0].days[2].end").doesNotExist())
+			.andExpect(jsonPath("$.data.staffs[0].days[3].status").value("NOT_STARTED"))
+			.andExpect(jsonPath("$.data.staffs[0].days[3].legacy").value(false))
+			.andExpect(jsonPath("$.data.staffs[0].summary.assignedClasses").value(5))
+			.andExpect(jsonPath("$.data.staffs[0].summary.completedClasses").value(3))
+			.andExpect(jsonPath("$.data.staffs[0].summary.pendingChecks").value(1))
+			.andExpect(jsonPath("$.data.staffs[0].summary.rejectedChecks").value(0))
+			.andExpect(jsonPath("$.data.staffs[1].staffName").value("직원2"))
+			.andExpect(jsonPath("$.data.staffs[1].days[0].status").value("REJECTED"))
+			.andExpect(jsonPath("$.data.staffs[1].summary.assignedClasses").value(1))
+			.andExpect(jsonPath("$.data.staffs[1].summary.completedClasses").value(0))
+			.andExpect(jsonPath("$.data.staffs[1].summary.rejectedChecks").value(1));
+
+		mockMvc.perform(calendar(admin, TODAY, TODAY).param("staffId", other.id().toString()))
+			.andExpect(jsonPath("$.data.staffs.length()").value(1))
+			.andExpect(jsonPath("$.data.staffs[0].staffId").value(other.id()));
+		mockMvc.perform(calendar(admin, TODAY.plusDays(10), TODAY.plusDays(16)))
+			.andExpect(jsonPath("$.data.staffs.length()").value(0));
+		mockMvc.perform(calendar(admin, TODAY.minusDays(32), TODAY))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.error.code").value("C001"));
+		mockMvc.perform(calendar(tokenCookie(staff), TODAY, TODAY))
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
 	@DisplayName("하루 단위 적용 전 수업 단위 승인 대기는 관리자가 계속 승인·반려한다")
 	void legacyPendingStart() throws Exception {
 		LoginMemberResponse staff = register("1", MemberRole.STAFF);
@@ -691,6 +749,11 @@ class AttendanceIntegrationTest {
 			.cookie(admin)
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(objectMapper.writeValueAsString(Map.of("reason", reason))));
+	}
+
+	private MockHttpServletRequestBuilder calendar(Cookie cookie, LocalDate from, LocalDate to) {
+		return get("/api/v1/admin/attendance/calendar").cookie(cookie)
+			.param("from", from.toString()).param("to", to.toString());
 	}
 
 	private long countAttempts() {

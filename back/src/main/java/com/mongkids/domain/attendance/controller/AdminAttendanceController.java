@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mongkids.domain.attendance.dto.AdminClassSessionResponse;
 import com.mongkids.domain.attendance.dto.AdminWorkDayResponse;
 import com.mongkids.domain.attendance.dto.ClassStartReasonRequest;
+import com.mongkids.domain.attendance.dto.WorkCalendarResponse;
 import com.mongkids.domain.attendance.entity.DayCheckType;
 import com.mongkids.domain.attendance.service.AttendanceService;
 import com.mongkids.domain.attendance.service.WorkDayService;
@@ -24,7 +25,7 @@ import com.mongkids.global.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-// 근태 관리자 기능 (EMP-FR-003, EMP-FR-011, EMP-FR-020, EMP-SCR-006)
+// 근태 관리자 기능 (EMP-FR-003, EMP-FR-011, EMP-FR-017, EMP-FR-020, EMP-SCR-006)
 @RestController
 @RequestMapping("/api/v1/admin/attendance")
 @RequiredArgsConstructor
@@ -48,6 +49,17 @@ public class AdminAttendanceController {
 		@RequestParam(required = false) Long institutionId
 	) {
 		return ApiResponse.success(workDayService.getDays(memberId, from, to, staffId, institutionId));
+	}
+
+	// 근무 캘린더: 기간(주·월)별 직원 하루 상태와 수업 수 (EMP-FR-017)
+	@GetMapping("/calendar")
+	public ApiResponse<WorkCalendarResponse> getCalendar(
+		@AuthenticationPrincipal Long memberId,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+		@RequestParam(required = false) Long staffId
+	) {
+		return ApiResponse.success(workDayService.getCalendar(memberId, from, to, staffId));
 	}
 
 	@PostMapping("/staff/{staffId}/days/{date}/{type:start|end}/approve")
