@@ -37,4 +37,4 @@
 3. URL 검사 → 홈 주소 색인 생성 요청
 
 - 검색 결과 반영에는 며칠~몇 주가 걸린다.
-- `robots.txt`는 배포 때 CloudFront 무효화 대상(`/index.html`)이 아니라 바뀐 내용이 캐시 만료 후 보일 수 있다. 바로 확인하려면 `/robots.txt`도 무효화한다.
+- `robots.txt`·`sitemap.xml`은 배포 때 `no-cache`로 올리고 CloudFront 무효화도 함께 한다 (`.github/workflows/front.yml`).

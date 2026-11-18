@@ -78,9 +78,9 @@ unset MYSQL_PWD
 프론트 배포는 `main`에 `front/**` 변경이 반영되면 GitHub Actions(`.github/workflows/front.yml`)가 아래와 같은 순서로 실행한다. 직접 배포해야 할 때(`front/`에서 `npm run build` 후):
 
 ```bash
-aws s3 sync dist/ s3://mongkiz-front-prod --delete --exclude index.html --cache-control "public,max-age=31536000,immutable"
-aws s3 cp dist/index.html s3://mongkiz-front-prod/index.html --cache-control "no-cache"
-aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/index.html"
+aws s3 sync dist/ s3://mongkiz-front-prod --delete --exclude index.html --exclude robots.txt --exclude sitemap.xml --cache-control "public,max-age=31536000,immutable"
+for file in index.html robots.txt sitemap.xml; do aws s3 cp "dist/$file" "s3://mongkiz-front-prod/$file" --cache-control "no-cache"; done
+aws cloudfront create-invalidation --distribution-id E1AWEJNTIYBX5U --paths "/index.html" "/robots.txt" "/sitemap.xml"
 ```
 
 백엔드 배포는 `main`에 `back/**` 변경이 반영되면 GitHub Actions(`.github/workflows/back.yml`)가 jar를 S3에 올리고, SSM으로 서버의 `/opt/mongkiz/deploy.sh {sha}`를 실행한다. `deploy.sh`는 jar 교체 → 재시작 → `/actuator/health` 확인 순서로 진행하고, 실패하면 직전 jar로 되돌린다. 직접 배포해야 할 때(`back/`에서 `./gradlew build` 후):
@@ -157,8 +157,9 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 ## F. 정적 파일 캐시
 
 - [x] `index.html`은 `Cache-Control: no-cache`
+- [x] `robots.txt`·`sitemap.xml`도 `no-cache` (파일 이름이 그대로라 장기 캐시하면 수정이 반영되지 않음, NFR-006)
 - [x] 해시가 붙은 `assets/*`는 장기 캐시 (`max-age=31536000, immutable`)
-- [ ] 배포 후 `/index.html` 무효화(invalidation) (첫 배포는 캐시가 없어 생략, 재배포부터 매번)
+- [ ] 배포 후 `/index.html`·`/robots.txt`·`/sitemap.xml` 무효화(invalidation) (첫 배포는 캐시가 없어 생략, 재배포부터 매번)
 
 ## G. 기능 점검 시나리오 (FR-018)
 

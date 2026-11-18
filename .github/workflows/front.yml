@@ -63,11 +63,17 @@ jobs:
 
       - name: S3 업로드
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        # 파일 이름이 바뀌지 않는 index.html·robots.txt·sitemap.xml은 매번 새로 확인하게(no-cache) 올린다 (NFR-006)
         run: |
-          aws s3 sync dist/ "s3://$S3_BUCKET" --delete --exclude index.html \
+          aws s3 sync dist/ "s3://$S3_BUCKET" --delete \
+            --exclude index.html --exclude robots.txt --exclude sitemap.xml \
             --cache-control "public,max-age=31536000,immutable"
-          aws s3 cp dist/index.html "s3://$S3_BUCKET/index.html" --cache-control "no-cache"
+          for file in index.html robots.txt sitemap.xml; do
+            aws s3 cp "dist/$file" "s3://$S3_BUCKET/$file" --cache-control "no-cache"
+          done
 
       - name: CloudFront 무효화
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        run: aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" --paths "/index.html"
+        run: >-
+          aws cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID"
+          --paths "/index.html" "/robots.txt" "/sitemap.xml"
