@@ -12,7 +12,7 @@ import './LabCard.css'
 function LabCard({ labPost }) {
   return (
     <Link to={`/lab/${labPost.id}`} className="lab-card">
-      <div className="lab-card__thumb">
+      <div className={`lab-card__thumb ${labPost.thumbnailUrl ? 'lab-card__thumb--photo' : ''}`}>
         {labPost.thumbnailUrl ? (
           <img className="lab-card__image" src={labPost.thumbnailUrl} alt="" loading="lazy" />
         ) : (

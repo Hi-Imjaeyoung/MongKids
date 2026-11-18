@@ -33,8 +33,11 @@
 .review-photos__main {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  /* 데스크톱 큰 사진도 모바일처럼 잘라 내지 않고 원본 비율로 보여 준다 (SCR-012, 2026-11-18).
+     아주 긴 세로 사진만 화면 높이 70%에서 멈추고 남는 좌우는 배경색으로 둔다 */
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
   border-radius: var(--radius-md);
   background: var(--blue-soft);
 }
