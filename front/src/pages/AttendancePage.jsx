@@ -21,6 +21,8 @@ import { attendancePage } from '../data/attendanceContent'
 import AttendanceHistory from './AttendanceHistory'
 import useCurrentPosition from './useCurrentPosition'
 import useTodayClasses from './useTodayClasses'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 const LIST = { name: 'list' }
 
@@ -35,6 +37,7 @@ async function toImageKeys(photos) {
 // 수업 시작·종료 체크 (EMP-SCR-001). 오늘 수업 목록(①)에서 하위 화면(②~⑦)과 날짜별 수업 기록(⑧~⑪)으로 바꿔 가며 보여 준다.
 // member: undefined면 로그인 상태 확인 중, null이면 비로그인. 직원(STAFF·ADMIN)이 아니면 API를 부르지 않는다
 function AttendancePage({ member, onLoginClick }) {
+  usePageMeta(pageMeta.attendance.title)
   const allowed = canUseAttendance(member)
   const { classes, error, reload, replaceClass } = useTodayClasses(allowed)
   const { locate } = useCurrentPosition()

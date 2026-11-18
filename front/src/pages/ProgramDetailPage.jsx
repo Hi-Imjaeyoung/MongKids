@@ -5,11 +5,14 @@ import ProgramGuide from '../components/program/ProgramGuide'
 import ProgramHero from '../components/program/ProgramHero'
 import ProgramProcess from '../components/program/ProgramProcess'
 import { findProgram, programDetail } from '../data/programContent'
+import { programMetaDescription } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 // 프로그램 상세 (SCR-016~020, SCR-026). 여섯 화면이 같은 구성이고 내용만 다르다. 없는 id는 전체 안내로 보낸다
 function ProgramDetailPage({ onQuoteClick }) {
   const { programId } = useParams()
   const program = findProgram(programId)
+  usePageMeta(program?.name, program ? programMetaDescription(program) : undefined)
 
   if (!program) return <Navigate to="/programs" replace />
 

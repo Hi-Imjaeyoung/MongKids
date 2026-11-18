@@ -3,7 +3,7 @@
 import { participantGroups, quotePrograms, venueTypes } from './consultationContent'
 
 export const adminPage = {
-  eyebrow: 'MONGKIDS ADMIN',
+  eyebrow: 'MONGKIZ ADMIN',
   title: '관리자',
   menuLabel: '관리 메뉴',
   checking: '로그인 상태를 확인하는 중이에요.',

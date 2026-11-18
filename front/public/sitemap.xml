@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 검색 엔진에 알리는 공개 화면 목록 (NFR-006). 게시글 상세는 넣지 않는다. 화면을 추가·삭제하면 함께 고친다 -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mongkiz.com/</loc></url>
+  <url><loc>https://mongkiz.com/about</loc></url>
+  <url><loc>https://mongkiz.com/programs</loc></url>
+  <url><loc>https://mongkiz.com/programs/school</loc></url>
+  <url><loc>https://mongkiz.com/programs/home</loc></url>
+  <url><loc>https://mongkiz.com/programs/taekwondo</loc></url>
+  <url><loc>https://mongkiz.com/programs/adaptive</loc></url>
+  <url><loc>https://mongkiz.com/programs/sportsday</loc></url>
+  <url><loc>https://mongkiz.com/programs/public</loc></url>
+  <url><loc>https://mongkiz.com/faq</loc></url>
+  <url><loc>https://mongkiz.com/news</loc></url>
+  <url><loc>https://mongkiz.com/lab</loc></url>
+  <url><loc>https://mongkiz.com/reviews</loc></url>
+  <url><loc>https://mongkiz.com/privacy</loc></url>
+</urlset>

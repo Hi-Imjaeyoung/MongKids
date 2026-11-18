@@ -50,7 +50,7 @@ export const sectionHeadings = {
     title: '우리 아이에게 맞는 체육 프로그램',
     description: '정기 방문수업 3종과 행사·단기 프로그램을 만나보세요.',
   },
-  why: { eyebrow: 'WHY MONGKIDS?', accent: 'MONGKIDS?', title: '몽키즈가 특별한 이유' },
+  why: { eyebrow: 'WHY MONGKIZ?', accent: 'MONGKIZ?', title: '몽키즈가 특별한 이유' },
   gallery: {
     eyebrow: 'CLASSROOM STORIES',
     accent: 'STORIES',

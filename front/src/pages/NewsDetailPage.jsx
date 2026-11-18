@@ -8,6 +8,7 @@ import { canManagePost } from '../components/news/postPermission'
 import { newsDetail } from '../data/newsContent'
 import { newsBoard } from './boards'
 import usePostComments from './usePostComments'
+import usePageMeta from './usePageMeta'
 import usePostLike from './usePostLike'
 
 // 게시물 상세 (SCR-006). 작성자에게만 수정·삭제를 보여 준다.
@@ -35,6 +36,8 @@ function NewsDetailPage({ member, onLoginClick, board = newsBoard }) {
   }, [postId, getPost])
 
   const current = result?.key === postId ? result : null
+  // 탭 제목은 글 제목. 불러오는 중·오류일 때는 게시판 이름
+  usePageMeta(current?.post?.title ?? board.meta.title, board.meta.description)
   const like = usePostLike(postId, member?.id, board, current?.post?.likeCount ?? 0)
 
   const handleDelete = async () => {

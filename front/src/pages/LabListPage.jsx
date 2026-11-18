@@ -6,6 +6,8 @@ import LabList from '../components/lab/LabList'
 import { findCategory } from '../components/news/postFormat'
 import { canWritePost } from '../components/news/postPermission'
 import { labCategories } from '../data/labContent'
+import { pageMeta } from '../data/seoContent'
+import usePageMeta from './usePageMeta'
 
 // 3열 × 3줄
 const PAGE_SIZE = 9
@@ -13,6 +15,7 @@ const PAGE_SIZE = 9
 // 몽키즈 연구소 목록 (SCR-024). 분류·검색어·페이지는 주소(?category=&keyword=&page=)에 남겨 새로고침·공유해도 유지한다.
 // 비로그인도 전체를 본다 (FR-012 제한 없음)
 function LabListPage({ member }) {
+  usePageMeta(pageMeta.lab.title, pageMeta.lab.description)
   const [searchParams, setSearchParams] = useSearchParams()
   const category = findCategory(searchParams.get('category'), labCategories).id
   const keyword = searchParams.get('keyword')?.trim() ?? ''

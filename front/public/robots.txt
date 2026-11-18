@@ -12,3 +12,5 @@ Disallow: /lab/*/edit
 Disallow: /api/
 Disallow: /oauth2/
 Disallow: /login/
+
+Sitemap: https://mongkiz.com/sitemap.xml
