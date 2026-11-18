@@ -1,7 +1,17 @@
 import { Link } from 'react-router-dom'
+import phoneIcon from '../../assets/phoneIcon.png'
 import InstagramIcon from '../common/InstagramIcon'
 import { floatingActions } from '../../data/homeContent'
 import './FloatingMenu.css'
+
+// 검은 전화기 그림(투명 배경)을 마스크로 써서 CSS 색(빨간색)으로 칠한다
+const phoneMaskStyle = { WebkitMaskImage: `url(${phoneIcon})`, maskImage: `url(${phoneIcon})` }
+
+function renderIcon(action) {
+  if (action.id === 'instagram') return <InstagramIcon />
+  if (action.id === 'phone') return <span className="floating-menu__phone" style={phoneMaskStyle} />
+  return action.icon
+}
 
 function FloatingMenu() {
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -13,7 +23,7 @@ function FloatingMenu() {
         const content = (
           <>
             <span className="floating-menu__icon" aria-hidden="true">
-              {action.id === 'instagram' ? <InstagramIcon /> : action.icon}
+              {renderIcon(action)}
             </span>
             <span className="floating-menu__label">{action.label}</span>
           </>
