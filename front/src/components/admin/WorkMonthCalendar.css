@@ -1,0 +1,106 @@
+.work-month-calendar {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.work-month-calendar__grid {
+  min-width: 1080px;
+}
+
+.work-month-calendar__row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-bottom: 1px solid var(--border);
+}
+
+.work-month-calendar__row:last-child {
+  border-bottom: 0;
+}
+
+.work-month-calendar__head {
+  background: var(--bg-soft);
+}
+
+.work-month-calendar__head span {
+  padding: 10px 12px;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.work-month-calendar__day {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  min-height: 112px;
+  padding: 8px 10px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+.work-month-calendar__day:first-child {
+  border-left: 0;
+}
+
+button.work-month-calendar__day {
+  cursor: pointer;
+}
+
+button.work-month-calendar__day:hover {
+  background: var(--sky-soft);
+}
+
+.work-month-calendar__day--out {
+  background: var(--bg-soft);
+  color: var(--text-muted);
+}
+
+.work-month-calendar__day--weekend {
+  background: var(--bg-soft);
+}
+
+.work-month-calendar__day--attention {
+  background: var(--cream);
+}
+
+.work-month-calendar__day--today {
+  background: var(--sky-soft);
+  box-shadow: inset 0 0 0 2px var(--blue);
+}
+
+.work-month-calendar__date {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.work-month-calendar__day--today .work-month-calendar__date {
+  color: var(--blue-text);
+}
+
+.work-month-calendar__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  font-size: 12px;
+}
+
+.work-month-calendar__name {
+  overflow: hidden;
+  max-width: 56px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-month-calendar__count {
+  color: var(--text-sub);
+}

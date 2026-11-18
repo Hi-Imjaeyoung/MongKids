@@ -1,0 +1,27 @@
+.work-calendar-totals table {
+  min-width: 480px;
+  font-variant-numeric: tabular-nums;
+}
+
+.work-calendar-totals .work-calendar-totals__num {
+  text-align: right;
+}
+
+.work-calendar-totals__staff {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.work-calendar-totals tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.work-calendar-totals td {
+  padding: 12px 14px;
+}
+
+.work-calendar-totals__title {
+  margin: 8px 0 0;
+  font-size: 18px;
+}

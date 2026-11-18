@@ -1,4 +1,6 @@
 // 근태 관리자 화면(EMP-SCR-006) 날짜 계산. 날짜는 서버와 같은 'YYYY-MM-DD' 문자열로 다룬다
+import { workCalendarAdmin } from '../../data/attendanceAdminContent'
+
 
 // Date → '2026-10-30' (브라우저 현지 날짜)
 export function toIsoDate(date) {
@@ -52,4 +54,34 @@ export function isEditableSession(classSession) {
 // "10:00:00" → "10:00"
 export function toTimeInput(time) {
   return time?.slice(0, 5) ?? ''
+}
+
+// 근무 캘린더(EMP-FR-017)는 월요일부터 7일. 그 주 월요일
+export function startOfWeek(isoDate) {
+  const offset = (parseIsoDate(isoDate).getDay() + 6) % 7
+  return addDays(isoDate, -offset)
+}
+
+export function startOfMonth(isoDate) {
+  return `${isoDate.slice(0, 7)}-01`
+}
+
+export function endOfMonth(isoDate) {
+  const date = parseIsoDate(startOfMonth(isoDate))
+  date.setMonth(date.getMonth() + 1, 0)
+  return toIsoDate(date)
+}
+
+// 그 달 1일에서 months달 옮긴 달의 1일
+export function addMonths(isoDate, months) {
+  const date = parseIsoDate(startOfMonth(isoDate))
+  date.setMonth(date.getMonth() + months)
+  return toIsoDate(date)
+}
+
+// 근무 캘린더 칸의 상태 표시 { label, short, tone }. 하루 단위 적용 전 날짜는 `이전 방식`, 앞으로 날짜의 시작 전은 `예정`
+export function calendarStatus(day, today) {
+  if (day.legacy) return workCalendarAdmin.legacy
+  if (day.status === 'NOT_STARTED' && day.date > today) return workCalendarAdmin.scheduled
+  return workCalendarAdmin.statuses[day.status]
 }

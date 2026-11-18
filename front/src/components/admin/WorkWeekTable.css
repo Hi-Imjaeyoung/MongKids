@@ -1,0 +1,141 @@
+/* 데스크톱 캘린더. 좁은 화면에서는 상자 안에서 가로로 스크롤한다 */
+.work-week-table {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.work-week-table table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 13px;
+}
+
+.work-week-table thead th {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.work-week-table thead th.work-week-table__today {
+  color: var(--blue-text);
+}
+
+.work-week-table__staff-col {
+  width: 104px;
+}
+
+.work-week-table__sum-col {
+  width: 128px;
+}
+
+.work-week-table td,
+.work-week-table__staff {
+  padding: 6px;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.work-week-table tbody tr:last-child td,
+.work-week-table tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+.work-week-table__staff {
+  padding: 12px;
+  border-left: 0;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.work-week-table__today-col {
+  background: var(--sky-soft);
+}
+
+.work-week-table__weekend {
+  background: var(--bg-soft);
+}
+
+.work-week-table__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  min-height: 96px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+button.work-week-table__cell {
+  cursor: pointer;
+}
+
+button.work-week-table__cell:hover {
+  border-color: var(--border-strong);
+  background: var(--bg);
+}
+
+.work-week-table__cell--attention {
+  border-color: var(--yellow);
+  background: var(--cream);
+}
+
+.work-week-table__cell--rejected {
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
+}
+
+.work-week-table__cell--empty {
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.work-week-table__count {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.work-week-table__sub,
+.work-week-table__route {
+  color: var(--text-sub);
+  font-size: 12px;
+}
+
+.work-week-table__route {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.work-week-table__sum {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.work-week-table__sum-main {
+  font-size: 15px;
+  font-weight: 800;
+}

@@ -247,3 +247,90 @@ export const classFilters = {
   allInstitutions: '전체 기관',
   periodHint: '한 번에 최대 31일까지 볼 수 있어요.',
 }
+
+// 근무 캘린더 주간·월간 (EMP-SCR-006, EMP-FR-017). 근무 시간은 계산하지 않고 수업 수만 보여 준다. 주말 포함 항상 7일
+export const workCalendarAdmin = {
+  title: '근무 캘린더',
+  descriptions: {
+    week: '직원별 하루 수업 수, 시작·종료 시각, 다녀온 기관을 한눈에 봐요. 칸을 누르면 그날 시작·종료 기록과 사진·특이사항을 볼 수 있어요.',
+    month: '한 달 동안 직원별 수업 수와 시작·종료 상태를 봐요. 날짜를 누르면 그 주 주간 보기로 이동해요.',
+  },
+  viewLabel: '보기',
+  views: [
+    { id: 'week', label: '주' },
+    { id: 'month', label: '월' },
+  ],
+  prev: { week: '지난주', month: '지난달' },
+  next: { week: '다음 주', month: '다음 달' },
+  current: { week: '이번 주', month: '이번 달' },
+  weekRange: (from, to) => {
+    const [, fromMonth, fromDay] = from.split('-').map(Number)
+    const [, toMonth, toDay] = to.split('-').map(Number)
+    return fromMonth === toMonth
+      ? `${fromMonth}월 ${fromDay}일 – ${toDay}일`
+      : `${fromMonth}월 ${fromDay}일 – ${toMonth}월 ${toDay}일`
+  },
+  monthLabel: (isoDate) => {
+    const [year, month] = isoDate.split('-').map(Number)
+    return `${year}년 ${month}월`
+  },
+  weekdays: ['월', '화', '수', '목', '금', '토', '일'],
+  legendLabel: '상태 색',
+  legend: [
+    { label: '예정 · 시작 전', tone: 'gray' },
+    { label: '수업 중', tone: 'blue' },
+    { label: '승인 대기', tone: 'yellow' },
+    { label: '반려', tone: 'red' },
+    { label: '수업 종료', tone: 'green' },
+  ],
+  // 칸 배지. 월간은 칸이 좁아 짧은 이름을 쓴다. 앞으로 날짜의 시작 전은 `예정`
+  statuses: {
+    NOT_STARTED: { label: '시작 전', short: '시작 전', tone: 'gray' },
+    STARTED: { label: '수업 중', short: '수업 중', tone: 'blue' },
+    PENDING: { label: '시작 승인 대기', short: '시작 대기', tone: 'yellow' },
+    REJECTED: { label: '시작 반려', short: '시작 반려', tone: 'red' },
+    END_PENDING: { label: '종료 승인 대기', short: '종료 대기', tone: 'yellow' },
+    END_REJECTED: { label: '종료 반려', short: '종료 반려', tone: 'red' },
+    ENDED: { label: '수업 종료', short: '수업 종료', tone: 'green' },
+  },
+  scheduled: { label: '예정', short: '예정', tone: 'gray' },
+  legacy: { label: '이전 방식 기록', short: '이전 방식', tone: 'gray' },
+  weekListLabel: '직원별 주간 근무 표',
+  staffColumn: '직원',
+  dayColumn: (dateLabel, today) => (today ? `${dateLabel} 오늘` : dateLabel),
+  weekTotalColumn: '이번 주',
+  classCount: (count) => `수업 ${count}개`,
+  noClass: '수업 없음',
+  firstClass: (time) => `${time} 첫 수업`,
+  // 실제 하루 시작 – 하루 종료. 수동·관리자 등록이면 표시
+  timeRange: (start, end, mark) => `${start} – ${end}${mark ? ` (${mark})` : ''}`,
+  methodMarks: { MANUAL: '수동', ADMIN: '관리자' },
+  weekSum: (completed, assigned) => `${completed} / ${assigned} 수업`,
+  weekSumSub: '수업 종료 기준',
+  checks: (pending, rejected) => (rejected > 0 ? `승인 대기 ${pending}건 · 반려 ${rejected}건` : `승인 대기 ${pending}건`),
+  cellLabel: (staffName, dateLabel) => `${staffName} ${dateLabel} 하루 근무 상세 보기`,
+  monthListLabel: '월간 근무 달력',
+  monthDayLabel: (dateLabel) => `${dateLabel} 주간 보기`,
+  today: '오늘',
+  monthCount: (count) => `${count}개`,
+  totalsTitle: (isoDate) => `${Number(isoDate.slice(5, 7))}월 직원별 합계`,
+  totalsLabel: '직원별 합계',
+  totalsColumns: { staff: '직원', assigned: '할당 수업', completed: '수업 종료', pending: '승인 대기', rejected: '반려' },
+  classes: (count) => `${count}개`,
+  cases: (count) => `${count}건`,
+  footnotes: {
+    week: [
+      '수업: 그날 할당된 수업 수',
+      '시각: 실제 하루 시작 – 하루 종료 (예정 날짜는 첫 수업 시각)',
+      '이번 주: 수업 종료가 확정된 수업 수 / 이번 주 할당 수업 수',
+    ],
+    month: [
+      '할당 수업: 이달 전체 (앞으로 예정 포함)',
+      '수업 종료: 하루 종료가 확정된 날의 수업 수',
+      '승인 대기 · 반려: 하루 시작·종료 건수',
+    ],
+  },
+  empty: '이 기간에 할당된 수업이 없어요.',
+  detailLabel: '하루 근무 상세',
+  close: '닫기',
+}

@@ -1,0 +1,58 @@
+.work-calendar-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.work-calendar-nav__group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.work-calendar-nav__period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.work-calendar-nav__label {
+  min-width: 136px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.work-calendar-nav__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.work-calendar-nav__icon:hover {
+  border-color: var(--text-sub);
+}
+
+.work-calendar-nav__select {
+  width: 168px;
+}
+
+@media (max-width: 640px) {
+  .work-calendar-nav > .admin-form__field,
+  .work-calendar-nav__select {
+    width: 100%;
+  }
+}

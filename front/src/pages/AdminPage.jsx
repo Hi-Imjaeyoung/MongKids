@@ -14,6 +14,7 @@ import { pageMeta } from '../data/seoContent'
 import usePageMeta from './usePageMeta'
 
 // 근태 관리 메뉴(EMP-SCR-006)는 들어갈 때 불러온다 (첫 화면 번들 크기)
+const WorkCalendarTab = lazy(() => import('./admin/WorkCalendarTab'))
 const ClassStartsTab = lazy(() => import('./admin/ClassStartsTab'))
 const ClassRecordsTab = lazy(() => import('./admin/ClassRecordsTab'))
 const ClassSessionsTab = lazy(() => import('./admin/ClassSessionsTab'))
@@ -23,6 +24,7 @@ const TAB_COMPONENTS = {
   consultations: ConsultationsTab,
   reviews: ReviewsTab,
   members: MembersTab,
+  'work-calendar': WorkCalendarTab,
   'class-starts': ClassStartsTab,
   'class-records': ClassRecordsTab,
   'class-sessions': ClassSessionsTab,
