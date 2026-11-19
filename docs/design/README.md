@@ -26,7 +26,7 @@
 | SCR-006 수업 현장 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-009 기관 상담 신청 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-010 개인 상담 신청 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
-| SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
+| SCR-007 강사 채용 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 간소화안 초안 승인 (2026-11-19, 페이지 `SCR-007 강사 채용`의 "간소화안" 데스크톱·모바일, 양식 내려받기·지원서 올리기·동의·접수 완료). 같은 페이지의 기존 초안은 참고용. `/recruit`로 구현(#103). 확정 PNG 내보내기 필요 |
 | SCR-015 게시물 작성·수정 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (확정 필요) |
 | SCR-023 개인정보처리방침 | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 초안 (2026-11-03, 페이지 `SCR-023 개인정보처리방침`, 데스크톱·모바일). 확인 항목·시행일 사용자 결정 반영(2026-11-03), 첫 판은 최종 개정일·이전 방침 보기 없음. `/privacy`로 구현. 법률 검토 후 확정 필요 |
 | EMP-SCR-001 수업 시작·종료 체크 (근태 관리) | - | [아티팩트](https://claude.ai/artifact/JDRpMgxehzpa1g9cRtztPy) | 시안 확정 (2026-10-29, 페이지 `EMP-SCR-001 수업 시작·종료 체크`, 모바일 390, 7화면: 오늘 수업·위치 확인 실패·위치 권한 안내·수동 등록·시작 확정·수업 종료·기록 정정). 확정 PNG 내보내기 필요. 날짜별 수업 기록 4화면 추가 초안 승인(2026-11-02, ⑧ 지난 날짜·⑨ 기록 보기·⑩ 앞으로 날짜·⑪ 달력, 구현 #71) |
