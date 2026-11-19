@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { classPlanFileUrl, classPlanOriginalFileUrl } from '../../api/classPlans'
 import { plansText } from '../../data/plansContent'
 import Button from '../common/Button'
-import ImagePlaceholder from '../common/ImagePlaceholder'
+import PdfPages from './PdfPages'
 import { LockIcon } from './PlanList'
 import './PlanViewer.css'
 
@@ -9,16 +10,17 @@ const ZOOM_MIN = 50
 const ZOOM_MAX = 200
 const ZOOM_STEP = 25
 
-// 이미지 저장 메뉴·끌어 놓기를 막는다. 화면 캡처까지 막을 수는 없다
-const blockSave = (event) => event.preventDefault()
-
-// 수업 계획안 보기 (SCR-027). 연간은 이미지를 확대·축소해 보고,
-// 월간은 블러 처리한 미리보기 위에 잠김 안내를 띄운다 (원본은 인증 후 서버가 내려줌, FR-032)
-// 부모가 key={plan.id}로 렌더링해 계획안을 바꾸면 확대 비율이 처음으로 돌아간다
-function PlanViewer({ plan, member, onLoginClick, onShowAnnual }) {
+// 수업 계획안 보기 (SCR-027). PDF를 쪽마다 그려 확대·축소해 본다.
+// 월간은 관리자가 올린 블러본 위에 잠김 안내를 띄운다 (원본은 서버가 권한을 확인한 뒤에만 내려줌, FR-032).
+// canManage(관리자)이면 잠김 안내 대신 블러본을 그대로 보여 주고, 원본 보기·수정·삭제 버튼을 둔다.
+// 부모가 key={plan.id}로 렌더링해 계획안을 바꾸면 확대 비율·보기 선택이 처음으로 돌아간다
+function PlanViewer({ plan, member, canManage, onLoginClick, onShowAnnual, onEdit, onDelete }) {
   const [zoom, setZoom] = useState(100)
-  const locked = plan.kind === 'monthly'
-  const src = locked ? plan.preview : plan.image
+  const [showOriginal, setShowOriginal] = useState(false)
+  const monthly = plan.kind === 'monthly'
+  const locked = monthly && !canManage
+  const original = monthly && canManage && showOriginal
+  const url = original ? classPlanOriginalFileUrl(plan) : classPlanFileUrl(plan)
   const { lock } = plansText
 
   return (
@@ -59,23 +61,49 @@ function PlanViewer({ plan, member, onLoginClick, onShowAnnual }) {
         )}
       </div>
 
-      <div className={`plan-viewer__stage ${locked ? 'plan-viewer__stage--locked' : ''}`}>
-        <div
-          className={`plan-viewer__page ${plan.portrait ? 'plan-viewer__page--portrait' : ''}`}
-          style={locked ? undefined : { '--zoom': zoom / 100 }}
-        >
-          {src ? (
-            <img
-              className="plan-viewer__image"
-              src={src}
-              alt={locked ? plansText.previewAlt(plan.title) : plan.title}
-              draggable={false}
-              onContextMenu={blockSave}
-              onDragStart={blockSave}
-            />
-          ) : (
-            <ImagePlaceholder label={plansText.imagePlaceholder(plan.title)} className="plan-viewer__placeholder" />
+      {canManage && (
+        <div className="plan-viewer__admin">
+          {monthly && (
+            <div className="plan-viewer__versions" role="group" aria-label={plansText.admin.versionLabel}>
+              <button
+                type="button"
+                className={`plan-viewer__version ${!showOriginal ? 'plan-viewer__version--selected' : ''}`}
+                aria-pressed={!showOriginal}
+                onClick={() => setShowOriginal(false)}
+              >
+                {plansText.admin.previewVersion}
+              </button>
+              <button
+                type="button"
+                className={`plan-viewer__version ${showOriginal ? 'plan-viewer__version--selected' : ''}`}
+                aria-pressed={showOriginal}
+                onClick={() => setShowOriginal(true)}
+              >
+                {plansText.admin.originalVersion}
+              </button>
+            </div>
           )}
+          <div className="plan-viewer__admin-buttons">
+            <button type="button" className="plan-viewer__admin-button" onClick={onEdit}>
+              {plansText.admin.edit}
+            </button>
+            <button type="button" className="plan-viewer__admin-button plan-viewer__admin-button--danger" onClick={onDelete}>
+              {plansText.admin.delete}
+            </button>
+          </div>
+          {monthly && (
+            <p className="plan-viewer__admin-note">{showOriginal ? plansText.admin.originalNote : plansText.admin.previewNote}</p>
+          )}
+        </div>
+      )}
+
+      <div className={`plan-viewer__stage ${locked ? 'plan-viewer__stage--locked' : ''}`}>
+        <div className="plan-viewer__page" style={locked ? undefined : { '--zoom': zoom / 100 }}>
+          <PdfPages
+            key={url}
+            url={url}
+            label={original || !monthly ? plan.title : plansText.previewAlt(plan.title)}
+          />
         </div>
 
         {locked && (
@@ -90,9 +118,11 @@ function PlanViewer({ plan, member, onLoginClick, onShowAnnual }) {
                 {lock.login}
               </Button>
             )}
-            <Button variant="ghost" size="lg" className="plan-viewer__lock-button" onClick={onShowAnnual}>
-              {lock.showAnnual}
-            </Button>
+            {onShowAnnual && (
+              <Button variant="ghost" size="lg" className="plan-viewer__lock-button" onClick={onShowAnnual}>
+                {lock.showAnnual}
+              </Button>
+            )}
           </div>
         )}
       </div>

@@ -1,0 +1,134 @@
+/* 수업 계획안 등록·수정 (관리자) */
+.plan-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+}
+
+.plan-form__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.plan-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.plan-form__label {
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.plan-form__hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.plan-form__input {
+  height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.plan-form__input:focus {
+  outline: 2px solid var(--blue);
+  outline-offset: -1px;
+}
+
+.plan-form__kinds {
+  flex-flow: row wrap;
+  gap: 8px;
+}
+
+.plan-form__kinds .plan-form__label {
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.plan-form__kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.plan-form__kind--selected {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.plan-form__kinds:disabled .plan-form__kind {
+  cursor: not-allowed;
+}
+
+.plan-form__kinds .plan-form__hint {
+  width: 100%;
+}
+
+.plan-form__file {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+}
+
+.plan-form__file--original {
+  background: var(--yellow-soft);
+}
+
+.plan-form__file input[type='file'] {
+  max-width: 100%;
+  font: inherit;
+  font-size: 14px;
+}
+
+.plan-form__error {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.plan-form__buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .plan-form {
+    padding: 20px 16px;
+  }
+
+  .plan-form__title {
+    font-size: 20px;
+  }
+
+  .plan-form__buttons > * {
+    flex: 1;
+  }
+}

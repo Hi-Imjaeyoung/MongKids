@@ -2,8 +2,12 @@ package com.mongkids.global.storage;
 
 import java.util.Optional;
 
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -60,5 +64,18 @@ public class S3FileStorage implements FileStorage {
 	public String getUrl(String key) {
 		String baseUrl = properties.publicBaseUrl();
 		return baseUrl.endsWith("/") ? baseUrl + key : baseUrl + "/" + key;
+	}
+
+	@Override
+	public Optional<StoredFile> open(String key) {
+		try {
+			ResponseInputStream<GetObjectResponse> object = s3Client.getObject(GetObjectRequest.builder()
+				.bucket(properties.bucket())
+				.key(key)
+				.build());
+			return Optional.of(new StoredFile(object, object.response().contentLength()));
+		} catch (NoSuchKeyException e) {
+			return Optional.empty();
+		}
 	}
 }

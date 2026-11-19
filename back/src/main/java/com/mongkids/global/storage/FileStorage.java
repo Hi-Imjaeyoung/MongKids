@@ -21,4 +21,10 @@ public interface FileStorage {
 	 * 파일을 내려받을 공개 URL.
 	 */
 	String getUrl(String key);
+
+	/**
+	 * 서버가 직접 읽어 전달할 파일 (수업 계획안 PDF, FR-032). 파일이 없으면 빈 값.
+	 * 받은 쪽이 {@link StoredFile#content()}를 닫아야 한다.
+	 */
+	Optional<StoredFile> open(String key);
 }

@@ -81,31 +81,9 @@
 .plan-viewer__page {
   --zoom: 1;
 
-  width: calc(100% * var(--zoom));
+  /* 세로 A4도 한눈에 들어오도록 기본 폭을 제한하고, 확대하면 판 안에서 스크롤한다 */
+  width: calc(min(100%, 820px) * var(--zoom));
   margin: 0 auto;
-  box-shadow: var(--shadow-md);
-  background: var(--bg);
-}
-
-.plan-viewer__page--portrait {
-  width: calc(64% * var(--zoom));
-}
-
-.plan-viewer__image {
-  display: block;
-  width: 100%;
-  height: auto;
-  user-select: none;
-  -webkit-user-drag: none;
-  -webkit-touch-callout: none;
-}
-
-.plan-viewer__placeholder {
-  aspect-ratio: 1.414 / 1;
-}
-
-.plan-viewer__page--portrait .plan-viewer__placeholder {
-  aspect-ratio: 1 / 1.414;
 }
 
 /* 월간(잠김): 미리보기는 판 크기에 맞추고, 그 위에 안내 카드를 띄운다 */
@@ -122,14 +100,6 @@
   width: auto;
   overflow: hidden;
   box-shadow: none;
-}
-
-.plan-viewer__stage--locked .plan-viewer__image,
-.plan-viewer__stage--locked .plan-viewer__placeholder {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  aspect-ratio: auto;
 }
 
 .plan-viewer__lock {
@@ -180,6 +150,56 @@
   width: 100%;
 }
 
+/* 관리자: 블러본·원본 고르기, 수정·삭제 */
+.plan-viewer__admin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--blue-soft);
+}
+
+.plan-viewer__versions,
+.plan-viewer__admin-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.plan-viewer__version,
+.plan-viewer__admin-button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--bg);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.plan-viewer__version--selected {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: var(--bg);
+}
+
+.plan-viewer__admin-button--danger {
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.plan-viewer__admin-note {
+  width: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--blue-text);
+}
+
 .plan-viewer__note {
   margin: 0;
   font-size: 14px;
@@ -199,10 +219,6 @@
     min-height: 340px;
     padding: 16px 12px;
     border-radius: var(--radius-md);
-  }
-
-  .plan-viewer__page--portrait {
-    width: calc(80% * var(--zoom));
   }
 
   .plan-viewer__stage--locked .plan-viewer__page {

@@ -308,3 +308,17 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 - [x] (2026-11-05, 사용자) `/news` 탭에 "현장 사진" 없음, 옮긴 게시물이 "게시글"로 보임
 - [x] (2026-11-05 적용, 사용자) 2단계 실행: `review.type` 컬럼 삭제, `idx_review_created_at` 생성. 운영에는 `idx_review_type_created_at` 인덱스가 원래 없었다
 - [x] 프론트 후기 저장 요청에서 `type: 'CLASS'`(`DEFAULT_REVIEW_TYPE`) 제거 (2026-11-05, `feature/remove-review-type`). 서버가 `type`을 무시하므로 2단계 전후 언제 배포해도 된다
+
+## O. 수업 계획안 PDF (SCR-027, FR-032, #107, [ADR-009](adr/ADR-009-monthly-plan-restricted-preview.md))
+
+관리자가 `/plans`에서 PDF를 Presigned URL로 사진 버킷 `plans/*`에 올리고, 화면은 서버가 S3에서 읽어 주는 PDF(`/api/v1/class-plans/{id}/file`, 원본은 `/api/v1/admin/class-plans/{id}/original-file`)를 pdf.js로 그린다. 공개 CloudFront 주소는 쓰지 않는다.
+
+병합 전 (백엔드가 `validate`로 기동한다)
+- [ ] 1. 운영 RDS에 [`back/docs/sql/2026-11-class-plan-ddl.sql`](../back/docs/sql/2026-11-class-plan-ddl.sql) 실행 (`class_plan` 생성)
+- [ ] 2. 백엔드 IAM 권한에 사진 버킷 `plans/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 업로드가 S3에서 403(`L002`), PDF 보기가 500
+
+배포 후
+- [ ] 3. 관리자 로그인 → `/plans` "계획안 추가" → 연간 PDF 1개 등록 → 목록·보기·확대/축소
+- [ ] 4. 월간: 블러 PDF + 원본 PDF 등록 → 관리자 화면에서 "블러본/원본" 전환. 로그아웃·일반 회원으로는 블러본 위 잠김 안내만 보이고, 원본 주소는 401/403
+- [ ] 5. 수정(제목만, 파일 하나만 교체)·삭제
+- [ ] 6. (선택) 사진 CloudFront `E21JTPP1GUA4UD`가 `plans/original/*`를 내주지 않도록 막기. 키는 응답에 나가지 않고 UUID라 추측은 어렵지만, 원본 경로는 공개할 이유가 없다

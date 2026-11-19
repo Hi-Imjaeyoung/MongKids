@@ -43,6 +43,12 @@ public enum ErrorCode {
 	REVIEW_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "R002", "후기 사진은 최대 5장까지 올릴 수 있습니다."),
 	INVALID_REVIEW_IMAGE(HttpStatus.BAD_REQUEST, "R003", "올바르지 않은 사진입니다."),
 
+	// 수업 계획안
+	CLASS_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "L001", "수업 계획안을 찾을 수 없습니다."),
+	INVALID_CLASS_PLAN_FILE(HttpStatus.BAD_REQUEST, "L002", "올바르지 않은 PDF 파일입니다."),
+	CLASS_PLAN_ORIGINAL_MISMATCH(HttpStatus.BAD_REQUEST, "L003", "월간 계획안은 원본 PDF가 필요하고, 연간 계획안에는 원본을 올리지 않습니다."),
+	CLASS_PLAN_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "L004", "계획안 파일을 찾을 수 없습니다."),
+
 	// 근태 관리
 	CLASS_SESSION_NOT_FOUND(HttpStatus.NOT_FOUND, "E001", "수업을 찾을 수 없습니다."),
 	CLASS_START_NOT_ALLOWED(HttpStatus.CONFLICT, "E002", "이미 수업 시작이 확정됐거나 승인 대기 중입니다."),

@@ -19,6 +19,36 @@
   min-width: 0;
 }
 
+/* 관리자만: 계획안 추가 버튼 */
+.plans-page__add {
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 16px;
+  border: 1px dashed var(--blue);
+  border-radius: var(--radius-md);
+  background: var(--blue-soft);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--blue-text);
+  cursor: pointer;
+}
+
+.plans-page__add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.plans-page__status {
+  margin: 0;
+  padding: 80px 16px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-soft);
+  font-size: 15px;
+  color: var(--text-sub);
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .plans-page {
     flex-direction: column;
