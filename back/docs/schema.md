@@ -1,7 +1,7 @@
 # DB 스키마
 
 > 기준: [docs/requirements/requirement_homepage.md](../../docs/requirements/requirement_homepage.md) (2026-10-14 시점, FR-001~023).
-> 네이밍·JPA 규칙은 [database.md](database.md)를 따른다. Entity는 `com.mongkids.domain.{member,consultation,post,review,attendance}.entity`에 있고, 스키마를 바꾸면 이 문서를 함께 갱신한다.
+> 네이밍·JPA 규칙은 [database.md](database.md)를 따른다. Entity는 `com.mongkids.domain.{member,consultation,post,review,attendance,content}.entity`에 있고, 스키마를 바꾸면 이 문서를 함께 갱신한다.
 
 ## 1. 공통 규칙
 
@@ -395,6 +395,18 @@ erDiagram
 | sort_order | INT | NOT NULL | 표시 순서 |
 
 - 운영 DDL: `back/docs/sql/attendance-ddl.sql` (로컬에서 Hibernate가 만든 DDL과 같다).
+
+### about_curriculum_month — ABOUT 월별 커리큘럼 (FR-034)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| sort_order | INT | NOT NULL, UNIQUE | 줄 순서 1~3 |
+| month_label | VARCHAR(10) | NOT NULL | 월 (`month`는 H2 예약어라 이름을 바꿈) |
+| topic | VARCHAR(40) | NOT NULL | 활동 주제·목표 |
+
+- 관리자가 저장한 값만 둔다(행 0개 또는 3개). 행이 없으면 화면은 `aboutContent.js`의 기본 문구를 쓴다 ([ADR-008](../../docs/adr/ADR-008-admin-static-content-editing.md)).
+- 운영 DDL: `back/docs/sql/2026-11-about-curriculum-ddl.sql`.
 
 ## 4. 테이블을 두지 않는 기능
 
