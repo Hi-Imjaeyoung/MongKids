@@ -36,6 +36,10 @@ export const pageMeta = {
     description: '몽키즈 방문 유아체육 수업을 함께한 아이들과 보호자·선생님의 후기입니다.',
   },
   privacy: { title: '개인정보처리방침' },
+  recruit: {
+    title: '강사 채용',
+    description: '몽키즈 방문 유아체육 강사를 모집합니다. 지원서 양식을 내려받아 작성한 뒤 올려 주시면 지원이 끝납니다.',
+  },
   // 검색에 노출하지 않는 화면 (robots.txt에서 막음). 탭 제목만 구분한다
   write: { title: '글쓰기' },
   edit: { title: '글 수정' },

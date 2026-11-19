@@ -29,6 +29,7 @@ front/
    │  ├─ program/             체육/행사 프로그램 전체 안내·상세 (ProgramsHero, ProgramGroup, ProgramCard, ProgramIcon, ProgramProcess, StepList / ProgramBreadcrumb, ProgramHero, ProgramGuide, ProgramFaq, OtherPrograms, SCR-003·016~020)
    │  ├─ faq/                 자주 묻는 질문 (FaqList, FaqTabs, SCR-022)
    │  ├─ privacy/             개인정보처리방침 (PrivacySummary 시행일·요약 카드, PrivacyPolicy 목차+조항, PrivacyToc, PrivacySection 블록 렌더링, SCR-023)
+   │  ├─ recruit/             강사 채용 (RecruitSummary 모집 요강, RecruitApplyForm 양식 내려받기·지원서 올리기·동의·제출, RecruitContact, SCR-007)
    │  ├─ auth/                로그인·회원가입 모달 (LoginModal, SCR-013)
    │  ├─ news/                수업 현장 (목록·카드·상세·본문 출력·작성 폼·HTML 편집기·사진 묶음 노드, SCR-006). 상세·작성 폼·분류 탭·칩은 categories prop으로 연구소도 쓴다
    │  ├─ lab/                 몽키즈 연구소 목록 (LabHero 검색, LabList, LabCard, Pagination, SCR-024)

@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom'
 import SectionHeading from '../common/SectionHeading'
 import ChevronIcon from '../common/ChevronIcon'
 import { aboutTeachers } from '../../data/aboutContent'
 import './TeacherList.css'
 
-// 강사 소개. 강사 채용(SCR-007) 화면 전까지 채용 링크는 앵커로 둔다
+// 강사 소개. 채용 링크는 강사 채용(SCR-007) 화면으로 간다 (GNB에는 채용 메뉴가 없다)
 function TeacherList() {
   return (
     <section className="teacher-list container" aria-labelledby="teacher-list-title">
@@ -15,10 +16,10 @@ function TeacherList() {
           titleId="teacher-list-title"
           align="left"
         />
-        <a href={aboutTeachers.recruit.href} className="teacher-list__recruit">
+        <Link to={aboutTeachers.recruit.to} className="teacher-list__recruit">
           {aboutTeachers.recruit.label}
           <ChevronIcon />
-        </a>
+        </Link>
       </div>
       <div className="teacher-list__items">
         {aboutTeachers.items.map((teacher) => (

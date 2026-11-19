@@ -111,7 +111,7 @@ export const aboutWhy = {
 export const aboutTeachers = {
   eyebrow: 'TEACHER TRAINING',
   title: '강사를 소개합니다',
-  recruit: { label: '함께할 강사를 찾습니다 · 강사 채용', href: '#recruit' },
+  recruit: { label: '함께할 강사를 찾습니다 · 강사 채용', to: '/recruit' },
   photoLabel: '강사 사진',
   specialtyLabel: '전담 분야',
   items: [
