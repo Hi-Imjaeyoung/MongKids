@@ -13,7 +13,7 @@ export const siteMeta = {
 export const pageMeta = {
   about: {
     title: '몽키즈 소개',
-    description: '대표가 직접 교육한 강사, 연령별 월별 커리큘럼, 대체강사 시스템까지. 방문 유아체육 전문 브랜드 몽키즈를 소개합니다.',
+    description: '대표가 직접 확인한 강사, 연령별 월별 커리큘럼, 대체·보강 관리까지. 방문 유아체육 전문 브랜드 몽키즈를 소개합니다.',
   },
   programs: {
     title: '프로그램 안내',

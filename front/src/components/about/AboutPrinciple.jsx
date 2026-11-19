@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import AboutAgeCards from './AboutAgeCards'
 import AboutCurriculum from './AboutCurriculum'
 import './AboutPrinciple.css'
@@ -5,6 +6,21 @@ import './AboutPrinciple.css'
 // 수업 원칙별 상세 섹션 (강사 교육 / 연령별 커리큘럼 / 새로운 활동 경험).
 // 사진(photoLabel)이 있으면 사진 + 글, 없으면 글 + 커리큘럼 예시 패널로 배치한다.
 // curriculumEdit: 커리큘럼 패널 편집 상태 { savedMonths, canEdit, onSavedMonthsChange } (FR-034)
+// 줄을 나눠 보여 준다. mobileFlow면 모바일에서는 줄을 나누지 않고 이어서 흐르게 한다
+// (줄 앞 공백은 줄바꿈 뒤에서는 보이지 않고, 줄바꿈을 숨기면 띄어쓰기가 된다)
+function Lines({ lines, mobileFlow = false }) {
+  return lines.map((line, index) => (
+    <Fragment key={line}>
+      {index > 0 && (
+        <>
+          <br className={mobileFlow ? 'about-principle__break' : undefined} />{' '}
+        </>
+      )}
+      {line}
+    </Fragment>
+  ))
+}
+
 function AboutPrinciple({ principle, curriculumEdit }) {
   const titleId = `${principle.id}-title`
   const hasPhoto = Boolean(principle.photoLabel)
@@ -20,9 +36,11 @@ function AboutPrinciple({ principle, curriculumEdit }) {
           {principle.number} · {principle.label}
         </p>
         <h2 id={titleId} className="about-principle__title">
-          {principle.title}
+          {principle.titleLines ? <Lines lines={principle.titleLines} /> : principle.title}
         </h2>
-        <p className="about-principle__summary">{principle.summary}</p>
+        <p className="about-principle__summary">
+          {principle.detailLines ? <Lines lines={principle.detailLines} mobileFlow /> : principle.summary}
+        </p>
       </div>
 
       <div className="about-principle__media">
@@ -36,28 +54,22 @@ function AboutPrinciple({ principle, curriculumEdit }) {
       </div>
 
       <div className="about-principle__extra">
-        {principle.checks && (
-          <ul className="about-principle__checks">
-            {principle.checks.map((check) => (
-              <li key={check} className="about-principle__check">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M5 12l5 5 9-10" />
-                </svg>
-                {check}
+        {principle.steps && (
+          <ol className="about-principle__steps" aria-label={principle.stepsLabel}>
+            {principle.steps.map((step) => (
+              <li key={step.number} className={`about-principle__step about-principle__step--${step.theme}`}>
+                <span className="about-principle__step-number" aria-hidden="true">
+                  {step.number}
+                </span>
+                <span className="about-principle__step-text">
+                  <strong className="about-principle__step-title">{step.title}</strong>
+                  <span className="about-principle__step-description">{step.description}</span>
+                </span>
               </li>
             ))}
-          </ul>
+          </ol>
         )}
+        {principle.routine && <p className="about-principle__routine">{principle.routine}</p>}
         {principle.ageGroups && (
           <ul className="about-principle__ages">
             {principle.ageGroups.map((age) => (

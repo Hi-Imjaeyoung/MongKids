@@ -32,11 +32,22 @@ export const aboutPrinciples = [
     number: '01',
     name: '대표 직접 강사 교육',
     summary: '대표가 직접 모든 강사를 교육한 후 수업을 진행합니다.',
-    label: '강사 교육',
-    title: '대표가 직접 교육한 강사만 수업합니다',
+    label: '강사 선발과 교육',
+    title: '대표가 직접 확인한 강사만 수업합니다',
+    // 상세 섹션은 줄을 나눠 보여 준다. summary는 위 수업 원칙 카드(OUR STANDARD)에서 쓴다
+    titleLines: ['대표가 직접 확인한', '강사만 수업합니다'],
+    detailLines: ['자격증만 확인하고 바로 배정하지 않습니다.', '수업 태도와 진행력을 확인한 뒤 기관수업에 배정합니다.'],
     photo: trainingImage,
     photoLabel: '강사 교육 사진',
-    checks: ['[교육 과정 · 기간]', '[수업 시연 · 평가 방식]', '[정기 보수 교육 주기]'],
+    // 강사 선발 4단계 (2026-11-19 사용자 디자인 수정)
+    steps: [
+      { number: 1, theme: 'blue', title: '면담·태도 확인', description: '책임감과 아이 소통방식 확인' },
+      { number: 2, theme: 'yellow', title: '기본교육', description: '유아 발달·안전·수업언어' },
+      { number: 3, theme: 'green', title: '모의수업 평가', description: '30분 구성·동선·돌발대응 점검' },
+      { number: 4, theme: 'pink', title: '현장 동행', description: '기관수업 동행 후 최종 배정' },
+    ],
+    stepsLabel: '강사 선발 단계',
+    routine: '월별 프로그램 브리핑 · 교구 안전점검 · 수업 피드백 · 정기 보수교육',
   },
   {
     id: 'curriculum',

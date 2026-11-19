@@ -1,6 +1,7 @@
 /*
  * 데스크톱: 사진 | 글(제목 · 세부 항목). 커리큘럼(--panel)은 글 | 예시 패널로 좌우를 바꾼다.
  * 모바일: 제목 → 사진 → 세부 항목. 커리큘럼은 제목 → 연령 구분 → 예시 패널.
+ * 강사 교육 세부 항목: 선발 4단계(데스크톱 2×2, 모바일 한 줄씩) + 정기 관리 띠.
  */
 .about-principle {
   --accent: var(--yellow-text);
@@ -88,25 +89,83 @@
   object-fit: cover;
 }
 
-/* 강사 교육: 체크 목록 */
-.about-principle__checks {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 24px;
-  font-size: 16px;
-  font-weight: 600;
+/* 강사 교육: 선발 4단계 + 정기 관리 띠 */
+.about-principle__steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.about-principle__check {
+.about-principle__step {
+  --step-bg: var(--blue-soft);
+  --step-fg: var(--blue-text);
+
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
 }
 
-.about-principle__check svg {
-  flex-shrink: 0;
-  color: var(--accent);
+.about-principle__step--yellow {
+  --step-bg: var(--yellow-soft);
+  --step-fg: var(--yellow-text);
+}
+
+.about-principle__step--green {
+  --step-bg: var(--green-soft);
+  --step-fg: var(--green-text);
+}
+
+.about-principle__step--pink {
+  --step-bg: var(--danger-soft);
+  --step-fg: var(--danger);
+}
+
+.about-principle__step-number {
+  display: inline-flex;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--step-bg);
+  color: var(--step-fg);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.about-principle__step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.about-principle__step-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.about-principle__step-description {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.about-principle__routine {
+  margin: 14px 0 0;
+  padding: 14px 20px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
 }
 
 /* 커리큘럼: 연령 구분 칩 + 월별 예시 패널 */
@@ -255,10 +314,36 @@
     border-radius: var(--radius-lg);
   }
 
-  .about-principle__checks {
-    gap: 10px;
+  /* 설명 줄바꿈은 모바일에서 이어서 흐르게 */
+  .about-principle__break {
+    display: none;
+  }
+
+  .about-principle__steps {
+    grid-template-columns: 1fr;
     margin-top: 20px;
+  }
+
+  .about-principle__step {
+    padding: 12px 14px;
+  }
+
+  .about-principle__step-number {
+    flex-basis: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .about-principle__step-title {
     font-size: 15px;
+  }
+
+  .about-principle__routine {
+    margin-top: 12px;
+    padding: 14px 18px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.6;
   }
 
   /* 안드로이드 360px 폭에서도 칩 3개가 한 줄에 들어가도록 같은 너비 3칸으로 나눈다 */
