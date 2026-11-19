@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom'
-import ChevronIcon from '../common/ChevronIcon'
+import AboutCurriculum from './AboutCurriculum'
 import './AboutPrinciple.css'
 
 // 수업 원칙별 상세 섹션 (강사 교육 / 연령별 커리큘럼 / 새로운 활동 경험).
-// 사진(photoLabel)이 있으면 사진 + 글, 없으면 글 + 커리큘럼 예시 패널로 배치한다
-function AboutPrinciple({ principle }) {
+// 사진(photoLabel)이 있으면 사진 + 글, 없으면 글 + 커리큘럼 예시 패널로 배치한다.
+// curriculumEdit: 커리큘럼 패널 편집 상태 { savedMonths, canEdit, onSavedMonthsChange } (FR-034)
+function AboutPrinciple({ principle, curriculumEdit }) {
   const titleId = `${principle.id}-title`
   const hasPhoto = Boolean(principle.photoLabel)
 
@@ -30,21 +30,7 @@ function AboutPrinciple({ principle }) {
             <img src={principle.photo} alt={principle.photoLabel} />
           </div>
         ) : (
-          <div className="about-principle__curriculum">
-            <h3 className="about-principle__curriculum-title">{principle.curriculum.title}</h3>
-            <ul className="about-principle__months">
-              {principle.curriculum.rows.map((row, index) => (
-                <li key={index} className="about-principle__month">
-                  <strong>{row.month}</strong>
-                  <span>{row.topic}</span>
-                </li>
-              ))}
-            </ul>
-            <Link to={principle.curriculum.link.to} className="about-principle__link">
-              {principle.curriculum.link.label}
-              <ChevronIcon />
-            </Link>
-          </div>
+          <AboutCurriculum curriculum={principle.curriculum} {...curriculumEdit} />
         )}
       </div>
 

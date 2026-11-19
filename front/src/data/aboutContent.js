@@ -74,6 +74,24 @@ export const aboutPrinciples = [
   },
 ]
 
+// 월별 커리큘럼 예시 관리자 편집 (FR-034, ADR-008). 위 curriculum.rows가 기본 문구이고,
+// 관리자가 저장한 값이 있으면 그 값을 보여 준다. 줄 수는 3줄 고정, 길이 제한은 백엔드 검증과 같다
+export const aboutCurriculumEdit = {
+  edit: '수정',
+  save: '저장',
+  saving: '저장 중…',
+  cancel: '취소',
+  reset: '기본 문구로 되돌리기',
+  resetConfirm: '관리자가 저장한 월별 커리큘럼을 지우고 기본 문구로 되돌릴까요?',
+  monthLabel: (index) => `${index + 1}번째 줄 월`,
+  topicLabel: (index) => `${index + 1}번째 줄 활동 주제`,
+  monthPlaceholder: '예: 3월',
+  topicPlaceholder: '예: 기본 움직임 · 균형 잡기',
+  monthMaxLength: 10,
+  topicMaxLength: 40,
+  emptyError: '모든 줄의 월과 활동 주제를 입력해 주세요.',
+}
+
 export const aboutWhy = {
   eyebrow: 'WHY MONGKIZ',
   accent: 'MONGKIZ',

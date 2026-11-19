@@ -1,0 +1,110 @@
+/* 월별 커리큘럼 관리자 편집 (FR-034). 패널·줄 모양은 AboutPrinciple.css의 about-principle__* 를 그대로 쓴다 */
+.about-curriculum__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.about-curriculum__edit {
+  flex-shrink: 0;
+  min-height: 44px;
+  margin: -12px -8px 0 0;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: var(--blue-text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.about-curriculum__edit:hover {
+  text-decoration: underline;
+}
+
+.about-curriculum__months--loading {
+  visibility: hidden;
+}
+
+.about-curriculum__row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.about-curriculum__input {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.about-curriculum__input--month {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.about-curriculum__input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.about-curriculum__error {
+  margin: 12px 0 0;
+  color: var(--danger);
+  font-size: 14px;
+}
+
+.about-curriculum__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.about-curriculum__buttons button {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.about-curriculum__reset {
+  margin-right: auto;
+  border: 0;
+  background: transparent;
+  color: var(--danger);
+}
+
+.about-curriculum__cancel {
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.about-curriculum__save {
+  border: 0;
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.about-curriculum__buttons button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .about-curriculum__reset {
+    width: 100%;
+    margin-right: 0;
+    order: 3;
+  }
+}

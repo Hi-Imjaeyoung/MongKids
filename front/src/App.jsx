@@ -146,7 +146,7 @@ function App() {
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={homePage} />
-            <Route path="/about" element={<AboutPage {...consultHandlers} />} />
+            <Route path="/about" element={<AboutPage member={member} {...consultHandlers} />} />
             <Route path="/programs" element={<ProgramsPage {...consultHandlers} onQuoteClick={openQuote} />} />
             <Route path="/programs/:programId" element={<ProgramDetailPage onQuoteClick={openQuote} />} />
             <Route path="/faq" element={<FaqPage {...consultHandlers} onQuoteClick={openQuote} />} />
