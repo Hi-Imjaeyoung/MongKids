@@ -139,7 +139,7 @@
 - [x] 로그인 모달 (SCR-013, FR-018)
 - [x] 기관 상담 신청 모달 (SCR-009, #17)
 - [x] 개인 상담 신청 모달 (SCR-010, #19)
-- [ ] 수업 계획안 화면 (SCR-027): `/plans` 계획안 API·pdf.js 보기·관리자 추가·수정·삭제 구현(#107, [ADR-009](adr/ADR-009-monthly-plan-restricted-preview.md): 월간은 블러 PDF + 원본 PDF). 남은 것: 병합 전 운영 DDL `2026-11-class-plan-ddl.sql`·IAM `plans/*` 권한(사용자, [deploy-checklist O](deploy-checklist.md)), 실제 계획안 PDF 등록(관리자), 기관 인증 방법 결정(그 전까지 원본은 관리자만)
+- [ ] 수업 계획안 화면 (SCR-027): `/plans` 계획안 API·pdf.js 보기·관리자 추가·수정·삭제 구현(#107, [ADR-009](adr/ADR-009-monthly-plan-restricted-preview.md): 월간은 블러 PDF + 원본 PDF). 운영 배포·화면 확인 완료(2026-11-19, [deploy-checklist O](deploy-checklist.md)). 남은 것: 실제 계획안 PDF 등록(관리자), 기관 인증 방법 결정(그 전까지 원본은 관리자만)
 - [ ] 강사 채용 화면 (SCR-007, #103, 간소화안): 프론트 구현(2026-11-19). 남은 것: 화면 확인(사용자), 지원서 양식 파일(`front/public/files/` + `recruitTemplate.href`), 채용 문의 연락처, 접수 API 연동(FR-007), 확정 PNG 내보내기
 - [ ] 나머지 API 연동
 - [x] 플로팅 메뉴 카카오톡 상담 → 후기 보러가기 (SCR-001, #50)
