@@ -34,7 +34,27 @@
   visibility: hidden;
 }
 
+/* 한 줄: 월 | 활동 주제(볼드) | 목표. 칸 사이 공백은 월 칸과 같은 8px(모바일 6px), 넘치면 목표가 아래로 */
+.about-curriculum__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.about-curriculum__topic {
+  font-weight: 700;
+}
+
+.about-curriculum__goal {
+  color: var(--text-sub);
+  font-size: 14px;
+}
+
 .about-curriculum__row {
+  /* 보기 화면은 월 칸을 좁혔지만(56px·모바일 40px) 편집 중에는 월 입력 칸 폭을 확보한다 */
+  grid-template-columns: 88px minmax(0, 1fr);
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -49,6 +69,17 @@
   background: var(--bg);
   color: var(--text);
   font: inherit;
+}
+
+/* 편집 중에는 입력 칸이 좁아지지 않게 주제·목표를 위아래로 둔다 */
+.about-curriculum__row .about-curriculum__body {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.about-curriculum__input--topic {
+  font-weight: 700;
 }
 
 .about-curriculum__input--month {
@@ -109,6 +140,18 @@
 }
 
 @media (max-width: 640px) {
+  .about-curriculum__body {
+    gap: 6px;
+  }
+
+  .about-curriculum__row {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .about-curriculum__goal {
+    font-size: 13px;
+  }
+
   .about-curriculum__reset {
     width: 100%;
     margin-right: 0;

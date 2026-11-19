@@ -86,9 +86,9 @@ export const aboutPrinciples = [
     curriculum: {
       title: '월별 커리큘럼 예시',
       rows: [
-        { month: '[월]', topic: '[활동 주제 · 목표]' },
-        { month: '[월]', topic: '[활동 주제 · 목표]' },
-        { month: '[월]', topic: '[활동 주제 · 목표]' },
+        { month: '[월]', topic: '[활동 주제]', goal: '[목표]' },
+        { month: '[월]', topic: '[활동 주제]', goal: '[목표]' },
+        { month: '[월]', topic: '[활동 주제]', goal: '[목표]' },
       ],
       link: { label: '정규 체육수업 프로그램 보기', to: '/programs/school' },
       // 수업 계획안(SCR-027) 진입
@@ -123,11 +123,14 @@ export const aboutCurriculumEdit = {
   resetConfirm: '관리자가 저장한 월별 커리큘럼을 지우고 기본 문구로 되돌릴까요?',
   monthLabel: (index) => `${index + 1}번째 줄 월`,
   topicLabel: (index) => `${index + 1}번째 줄 활동 주제`,
+  goalLabel: (index) => `${index + 1}번째 줄 목표`,
   monthPlaceholder: '예: 3월',
-  topicPlaceholder: '예: 기본 움직임 · 균형 잡기',
+  topicPlaceholder: '활동 주제 (예: 기본 움직임 · 균형 잡기)',
+  goalPlaceholder: '목표 (예: 몸의 중심 잡기)',
   monthMaxLength: 10,
   topicMaxLength: 40,
-  emptyError: '모든 줄의 월과 활동 주제를 입력해 주세요.',
+  goalMaxLength: 40,
+  emptyError: '모든 줄의 월, 활동 주제, 목표를 입력해 주세요.',
 }
 
 export const aboutWhy = {

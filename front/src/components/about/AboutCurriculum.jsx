@@ -7,7 +7,8 @@ import './AboutCurriculum.css'
 
 // "연령별 맞춤 커리큘럼"의 월별 커리큘럼 예시 패널 (SCR-002, FR-034).
 // savedMonths: undefined면 불러오는 중, null·빈 배열이면 기본 문구(curriculum.rows), 3줄이면 관리자가 저장한 값.
-// canEdit(관리자)이면 그 자리에서 3줄의 월·활동 주제를 고칠 수 있다. 저장·되돌리면 onSavedMonthsChange를 부른다
+// 한 줄에 월 / 활동 주제(볼드) / 목표를 나란히 둔다.
+// canEdit(관리자)이면 그 자리에서 3줄의 월·활동 주제·목표를 고칠 수 있다. 저장·되돌리면 onSavedMonthsChange를 부른다
 function AboutCurriculum({ curriculum, savedMonths, canEdit, onSavedMonthsChange }) {
   const [draft, setDraft] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -19,7 +20,7 @@ function AboutCurriculum({ curriculum, savedMonths, canEdit, onSavedMonthsChange
   const editing = draft !== null
 
   const startEdit = () => {
-    setDraft(rows.map(({ month, topic }) => ({ month, topic })))
+    setDraft(rows.map(({ month, topic, goal }) => ({ month, topic, goal: goal ?? '' })))
     setError(null)
   }
 
@@ -43,8 +44,8 @@ function AboutCurriculum({ curriculum, savedMonths, canEdit, onSavedMonthsChange
   const submit = (event) => {
     event.preventDefault()
     if (saving) return
-    const months = draft.map(({ month, topic }) => ({ month: month.trim(), topic: topic.trim() }))
-    if (months.some(({ month, topic }) => !month || !topic)) {
+    const months = draft.map(({ month, topic, goal }) => ({ month: month.trim(), topic: topic.trim(), goal: goal.trim() }))
+    if (months.some(({ month, topic, goal }) => !month || !topic || !goal)) {
       setError(aboutCurriculumEdit.emptyError)
       return
     }
@@ -83,14 +84,24 @@ function AboutCurriculum({ curriculum, savedMonths, canEdit, onSavedMonthsChange
                   value={row.month}
                   onChange={(event) => changeDraft(index, 'month', event.target.value)}
                 />
-                <input
-                  className="about-curriculum__input"
-                  aria-label={aboutCurriculumEdit.topicLabel(index)}
-                  placeholder={aboutCurriculumEdit.topicPlaceholder}
-                  maxLength={aboutCurriculumEdit.topicMaxLength}
-                  value={row.topic}
-                  onChange={(event) => changeDraft(index, 'topic', event.target.value)}
-                />
+                <div className="about-curriculum__body">
+                  <input
+                    className="about-curriculum__input about-curriculum__input--topic"
+                    aria-label={aboutCurriculumEdit.topicLabel(index)}
+                    placeholder={aboutCurriculumEdit.topicPlaceholder}
+                    maxLength={aboutCurriculumEdit.topicMaxLength}
+                    value={row.topic}
+                    onChange={(event) => changeDraft(index, 'topic', event.target.value)}
+                  />
+                  <input
+                    className="about-curriculum__input"
+                    aria-label={aboutCurriculumEdit.goalLabel(index)}
+                    placeholder={aboutCurriculumEdit.goalPlaceholder}
+                    maxLength={aboutCurriculumEdit.goalMaxLength}
+                    value={row.goal}
+                    onChange={(event) => changeDraft(index, 'goal', event.target.value)}
+                  />
+                </div>
               </li>
             ))}
           </ul>
@@ -119,7 +130,11 @@ function AboutCurriculum({ curriculum, savedMonths, canEdit, onSavedMonthsChange
           {rows.map((row, index) => (
             <li key={index} className="about-principle__month">
               <strong>{row.month}</strong>
-              <span>{row.topic}</span>
+              {/* 목표 컬럼 추가 전에 저장된 줄은 목표가 비어 있어 활동 주제만 보인다 */}
+              <div className="about-curriculum__body">
+                <span className="about-curriculum__topic">{row.topic}</span>
+                {row.goal && <span className="about-curriculum__goal">{row.goal}</span>}
+              </div>
             </li>
           ))}
         </ul>
