@@ -149,18 +149,10 @@
     font-size: 12px;
   }
 
-  /* 특별 프로그램 카드는 모바일에서 태그 없이 이름부터 보여 준다 (시안) */
-  .program-card--special .program-card__tag {
-    display: none;
-  }
-
+  /* 특별 프로그램 카드도 모바일에서 이름 위에 "운영 중" 태그를 보여 준다 (SCR-003, 2026-11-19) */
   .program-card__title {
     margin-top: 6px;
     font-size: 17px;
-  }
-
-  .program-card--special .program-card__title {
-    margin-top: 0;
   }
 
   .program-card__summary {
