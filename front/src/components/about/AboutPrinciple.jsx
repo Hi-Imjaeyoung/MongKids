@@ -1,3 +1,4 @@
+import AboutAgeCards from './AboutAgeCards'
 import AboutCurriculum from './AboutCurriculum'
 import './AboutPrinciple.css'
 
@@ -60,8 +61,8 @@ function AboutPrinciple({ principle, curriculumEdit }) {
         {principle.ageGroups && (
           <ul className="about-principle__ages">
             {principle.ageGroups.map((age) => (
-              <li key={age} className="about-principle__age">
-                {age}
+              <li key={age.id} className={`about-principle__age about-principle__age--${age.theme}`}>
+                {age.label}
               </li>
             ))}
           </ul>
@@ -77,6 +78,12 @@ function AboutPrinciple({ principle, curriculumEdit }) {
           </dl>
         )}
       </div>
+
+      {principle.ageCards && (
+        <div className="about-principle__cards">
+          <AboutAgeCards ageGroups={principle.ageGroups} ageCards={principle.ageCards} />
+        </div>
+      )}
     </section>
   )
 }

@@ -30,7 +30,12 @@
 .about-principle--panel {
   grid-template-areas:
     'head media'
-    'extra media';
+    'extra media'
+    'cards cards';
+}
+
+.about-principle__cards {
+  grid-area: cards;
 }
 
 .about-principle__head {
@@ -121,6 +126,22 @@
   font-weight: 700;
 }
 
+/* 연령마다 색을 나눈다 (연령별 카드 배지와 같은 색) */
+.about-principle__age--yellow {
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.about-principle__age--blue {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+}
+
+.about-principle__age--green {
+  background: var(--green-soft);
+  color: var(--green-text);
+}
+
 .about-principle__curriculum {
   padding: 32px;
   border-radius: 24px;
@@ -209,7 +230,8 @@
     grid-template-areas:
       'head'
       'extra'
-      'media';
+      'media'
+      'cards';
   }
 
   .about-principle__label {

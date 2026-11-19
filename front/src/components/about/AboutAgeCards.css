@@ -1,0 +1,103 @@
+/* 연령별 카드: 데스크톱 3열, 모바일 한 줄씩 */
+.about-age-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 40px 0 0;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--bg-soft);
+  list-style: none;
+}
+
+.about-age-card {
+  --badge-bg: var(--blue-soft);
+  --badge-fg: var(--blue-text);
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  word-break: keep-all;
+}
+
+.about-age-card--yellow {
+  --badge-bg: var(--yellow-soft);
+  --badge-fg: var(--yellow-text);
+}
+
+.about-age-card--green {
+  --badge-bg: var(--green-soft);
+  --badge-fg: var(--green-text);
+}
+
+.about-age-card__badge {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--badge-bg);
+  color: var(--badge-fg);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.about-age-card__title {
+  margin: 6px 0 0;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.about-age-card__keywords {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.about-age-card__description {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+@media (max-width: 1024px) {
+  .about-age-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-age-cards {
+    gap: 10px;
+    margin-top: 20px;
+    padding: 0;
+    background: none;
+  }
+
+  .about-age-card {
+    gap: 8px;
+    padding: 20px;
+    border-radius: var(--radius-md);
+  }
+
+  .about-age-card__badge {
+    padding: 5px 12px;
+    font-size: 13px;
+  }
+
+  .about-age-card__title {
+    margin-top: 4px;
+    font-size: 18px;
+  }
+
+  .about-age-card__keywords {
+    font-size: 14px;
+  }
+
+  .about-age-card__description {
+    font-size: 13px;
+  }
+}
