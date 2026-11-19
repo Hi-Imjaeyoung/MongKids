@@ -43,7 +43,8 @@ public class AboutCurriculumService {
 		List<AboutCurriculumMonth> rows = aboutCurriculumMonthRepository.findAllByOrderBySortOrderAsc();
 		if (rows.size() == months.size()) {
 			for (int i = 0; i < months.size(); i++) {
-				rows.get(i).change(months.get(i).month().strip(), months.get(i).topic().strip());
+				AboutCurriculumMonthRequest month = months.get(i);
+				rows.get(i).change(month.month().strip(), month.topic().strip(), month.goal().strip());
 			}
 		} else {
 			aboutCurriculumMonthRepository.deleteAllInBatch();
@@ -52,11 +53,12 @@ public class AboutCurriculumService {
 					.sortOrder(i + 1)
 					.month(months.get(i).month().strip())
 					.topic(months.get(i).topic().strip())
+					.goal(months.get(i).goal().strip())
 					.build());
 			}
 		}
 		return months.stream()
-			.map(month -> new AboutCurriculumMonthResponse(month.month().strip(), month.topic().strip()))
+			.map(month -> new AboutCurriculumMonthResponse(month.month().strip(), month.topic().strip(), month.goal().strip()))
 			.toList();
 	}
 

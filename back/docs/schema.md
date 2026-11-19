@@ -403,10 +403,11 @@ erDiagram
 | id | BIGINT | PK | |
 | sort_order | INT | NOT NULL, UNIQUE | 줄 순서 1~3 |
 | month_label | VARCHAR(10) | NOT NULL | 월 (`month`는 H2 예약어라 이름을 바꿈) |
-| topic | VARCHAR(40) | NOT NULL | 활동 주제·목표 |
+| topic | VARCHAR(40) | NOT NULL | 활동 주제 |
+| goal | VARCHAR(40) | NOT NULL, DEFAULT '' | 목표 (2026-11-19 추가. 추가 전에 저장된 줄은 빈 값) |
 
 - 관리자가 저장한 값만 둔다(행 0개 또는 3개). 행이 없으면 화면은 `aboutContent.js`의 기본 문구를 쓴다 ([ADR-008](../../docs/adr/ADR-008-admin-static-content-editing.md)).
-- 운영 DDL: `back/docs/sql/2026-11-about-curriculum-ddl.sql`.
+- 운영 DDL: `back/docs/sql/2026-11-about-curriculum-ddl.sql`, 목표 컬럼 추가 `back/docs/sql/2026-11-about-curriculum-goal-ddl.sql`.
 
 ## 4. 테이블을 두지 않는 기능
 

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
  */
 public record AboutCurriculumMonthRequest(
 	@NotBlank @Size(max = 10) String month,
-	@NotBlank @Size(max = 40) String topic
+	@NotBlank @Size(max = 40) String topic,
+	@NotBlank @Size(max = 40) String goal
 ) {
 }

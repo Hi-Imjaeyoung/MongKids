@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 /**
  * ABOUT 몽키즈(SCR-002) 월별 커리큘럼 예시 한 줄 (FR-034, ADR-008).
  * 관리자가 저장한 값만 둔다. 행이 없으면 화면은 코드(aboutContent.js)의 기본 문구를 쓴다.
- * 줄 수는 3줄 고정이고 sortOrder(1~3)가 표시 순서다. month는 H2 예약어라 컬럼명을 month_label로 둔다.
+ * 한 줄은 월·활동 주제·목표 세 칸이다. 줄 수는 3줄 고정이고 sortOrder(1~3)가 표시 순서다. month는 H2 예약어라 컬럼명을 month_label로 둔다.
  */
 @Entity
 @Table(name = "about_curriculum_month",
@@ -39,15 +39,20 @@ public class AboutCurriculumMonth extends BaseTimeEntity {
 	@Column(nullable = false, length = 40)
 	private String topic;
 
+	@Column(nullable = false, length = 40)
+	private String goal;
+
 	@Builder
-	private AboutCurriculumMonth(int sortOrder, String month, String topic) {
+	private AboutCurriculumMonth(int sortOrder, String month, String topic, String goal) {
 		this.sortOrder = sortOrder;
 		this.month = month;
 		this.topic = topic;
+		this.goal = goal;
 	}
 
-	public void change(String month, String topic) {
+	public void change(String month, String topic, String goal) {
 		this.month = month;
 		this.topic = topic;
+		this.goal = goal;
 	}
 }
