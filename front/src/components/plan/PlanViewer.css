@@ -1,0 +1,233 @@
+.plan-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.plan-viewer__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-viewer__heading {
+  min-width: 0;
+}
+
+.plan-viewer__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.plan-viewer__period {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+.plan-viewer__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+}
+
+.plan-viewer__zoom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.plan-viewer__zoom:hover:not(:disabled) {
+  background: var(--bg-soft);
+}
+
+.plan-viewer__zoom:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.plan-viewer__zoom-value {
+  min-width: 52px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* 회색 판 위에 계획안 한 장. 확대하면 판 안에서 스크롤한다 */
+.plan-viewer__stage {
+  position: relative;
+  min-height: 560px;
+  padding: 32px;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  background: #eef0f4;
+}
+
+.plan-viewer__page {
+  --zoom: 1;
+
+  width: calc(100% * var(--zoom));
+  margin: 0 auto;
+  box-shadow: var(--shadow-md);
+  background: var(--bg);
+}
+
+.plan-viewer__page--portrait {
+  width: calc(64% * var(--zoom));
+}
+
+.plan-viewer__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+.plan-viewer__placeholder {
+  aspect-ratio: 1.414 / 1;
+}
+
+.plan-viewer__page--portrait .plan-viewer__placeholder {
+  aspect-ratio: 1 / 1.414;
+}
+
+/* 월간(잠김): 미리보기는 판 크기에 맞추고, 그 위에 안내 카드를 띄운다 */
+.plan-viewer__stage--locked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.plan-viewer__stage--locked .plan-viewer__page {
+  position: absolute;
+  inset: 32px;
+  width: auto;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.plan-viewer__stage--locked .plan-viewer__image,
+.plan-viewer__stage--locked .plan-viewer__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: auto;
+}
+
+.plan-viewer__lock {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 480px;
+  padding: 40px 36px;
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.plan-viewer__lock-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--yellow-soft);
+  color: var(--yellow-text);
+}
+
+.plan-viewer__lock-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.plan-viewer__lock-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.plan-viewer__lock-text {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-sub);
+}
+
+.plan-viewer__lock-button {
+  width: 100%;
+}
+
+.plan-viewer__note {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+@media (max-width: 768px) {
+  .plan-viewer__title {
+    font-size: 20px;
+  }
+
+  .plan-viewer__period {
+    font-size: 13px;
+  }
+
+  .plan-viewer__stage {
+    min-height: 340px;
+    padding: 16px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .plan-viewer__page--portrait {
+    width: calc(80% * var(--zoom));
+  }
+
+  .plan-viewer__stage--locked .plan-viewer__page {
+    inset: 16px 12px;
+  }
+
+  .plan-viewer__lock {
+    gap: 12px;
+    padding: 28px 20px;
+  }
+
+  .plan-viewer__lock-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .plan-viewer__lock-title {
+    font-size: 19px;
+  }
+
+  .plan-viewer__lock-text {
+    font-size: 14px;
+  }
+
+  .plan-viewer__note {
+    font-size: 13px;
+  }
+}

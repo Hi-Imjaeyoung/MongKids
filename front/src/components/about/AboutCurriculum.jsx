@@ -125,10 +125,18 @@ function AboutCurriculum({ curriculum, savedMonths, canEdit, onSavedMonthsChange
         </ul>
       )}
 
-      <Link to={curriculum.link.to} className="about-principle__link">
-        {curriculum.link.label}
-        <ChevronIcon />
-      </Link>
+      <div className="about-curriculum__links">
+        <Link to={curriculum.link.to} className="about-principle__link">
+          {curriculum.link.label}
+          <ChevronIcon />
+        </Link>
+        {curriculum.planLink && (
+          <Link to={curriculum.planLink.to} className="about-principle__link">
+            {curriculum.planLink.label}
+            <ChevronIcon />
+          </Link>
+        )}
+      </div>
     </div>
   )
 }

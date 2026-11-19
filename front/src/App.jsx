@@ -23,6 +23,7 @@ import NewsListPage from './pages/NewsListPage'
 import PrivacyPage from './pages/PrivacyPage'
 import ProgramDetailPage from './pages/ProgramDetailPage'
 import ProgramsPage from './pages/ProgramsPage'
+import PlansPage from './pages/PlansPage'
 import RecruitPage from './pages/RecruitPage'
 import ReviewsPage from './pages/ReviewsPage'
 import { labBoard } from './pages/boards'
@@ -153,6 +154,7 @@ function App() {
             <Route path="/faq" element={<FaqPage {...consultHandlers} onQuoteClick={openQuote} />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/recruit" element={<RecruitPage />} />
+            <Route path="/plans" element={<PlansPage member={member} onLoginClick={openLogin} />} />
             <Route path="/news" element={<NewsListPage member={member} />} />
             <Route path="/news/write" element={<NewsEditorPage member={member} onLoginClick={openLogin} />} />
             <Route path="/news/:postId" element={<NewsDetailPage member={member} onLoginClick={openLogin} />} />

@@ -17,6 +17,13 @@ const icons = {
       <path d="M8.5 12l2.5 2.5 4.5-5" />
     </>
   ),
+  plan: (
+    <>
+      <rect x="4" y="5" width="16" height="16" rx="2" />
+      <path d="M8 3v4M16 3v4M4 10h16" />
+      <path d="M8 14h3M8 17h6" />
+    </>
+  ),
   manage: (
     <>
       <rect x="5" y="4" width="14" height="17" rx="2" />
@@ -30,7 +37,15 @@ function AboutWhy() {
   return (
     <section className="about-why" aria-labelledby="about-why-title">
       <div className="about-why__inner container">
-        <SectionHeading {...aboutWhy} titleId="about-why-title" align="left" />
+        <p className="about-why__label">{aboutWhy.label}</p>
+        <SectionHeading
+          eyebrow={aboutWhy.eyebrow}
+          accent={aboutWhy.accent}
+          title={aboutWhy.title}
+          description={aboutWhy.description}
+          titleId="about-why-title"
+          align="left"
+        />
         <div className="about-why__list">
           {aboutWhy.items.map((item) => (
             <div key={item.id} className={`about-why__item about-why__item--${item.theme}`}>

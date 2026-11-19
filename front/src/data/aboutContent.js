@@ -46,7 +46,32 @@ export const aboutPrinciples = [
     summary: '어린이집과 유치원 아이들의 연령에 맞춰 활동을 구성합니다.',
     label: '연령별 맞춤 커리큘럼',
     title: '아이들 연령에 맞춘 월별 커리큘럼',
-    ageGroups: ['[연령 구분 1]', '[연령 구분 2]', '[연령 구분 3]'],
+    // 연령 구분 칩과 연령별 카드는 같은 순서·색(theme)을 쓴다
+    ageGroups: [
+      { id: 'infant', theme: 'yellow', label: '영아 · 만 1~2세' },
+      { id: 'toddler', theme: 'blue', label: '유아 · 만 3~4세' },
+      { id: 'challenge', theme: 'green', label: '도전 · 만 5~7세' },
+    ],
+    ageCards: [
+      {
+        id: 'infant',
+        title: '탐색하고 성공하는 움직임',
+        keywords: '감각탐색 · 걷기 · 오르기 · 기본균형',
+        description: '짧은 설명과 반복활동으로 안정감을 높입니다.',
+      },
+      {
+        id: 'toddler',
+        title: '규칙을 이해하고 반복하는 활동',
+        keywords: '균형 · 점프 · 던지기 · 차례 지키기',
+        description: '성공경험을 충분히 주고 규칙을 자연스럽게 익힙니다.',
+      },
+      {
+        id: 'challenge',
+        title: '협동하고 도전하는 복합활동',
+        keywords: '민첩성 · 협응 · 팀워크 · 문제해결',
+        description: '여러 동작을 연결하고 팀 미션으로 확장합니다.',
+      },
+    ],
     curriculum: {
       title: '월별 커리큘럼 예시',
       rows: [
@@ -55,6 +80,8 @@ export const aboutPrinciples = [
         { month: '[월]', topic: '[활동 주제 · 목표]' },
       ],
       link: { label: '정규 체육수업 프로그램 보기', to: '/programs/school' },
+      // 수업 계획안(SCR-027) 진입
+      planLink: { label: '세부 수업 보러가기', to: '/plans' },
     },
   },
   {
@@ -93,18 +120,21 @@ export const aboutCurriculumEdit = {
 }
 
 export const aboutWhy = {
+  label: '04 · 기관이 안심하고 맡기는 이유',
   eyebrow: 'WHY MONGKIZ',
   accent: 'MONGKIZ',
-  title: '기관이 안심하고 맡기는 이유',
+  title: '수업만 하고 끝나는 업체가 아닙니다',
+  description: '강사 배정부터 월간 계획, 안전관리, 결강과 보강까지 본사에서 함께 관리합니다.',
   items: [
+    { id: 'safety', theme: 'green', title: '수업 전 안전 점검', description: '공간·교구·인원에 맞춰 동선을 확인합니다.' },
+    { id: 'plan', theme: 'blue', title: '월간 계획안 제공', description: '다음 달 활동 교구와 교육 목표를 미리 안내합니다.' },
     {
       id: 'substitute',
       theme: 'blue',
-      title: '대체강사 시스템',
-      description: '강사 부재 시에도 수업이 빠지지 않도록 [대체강사 배정 방식]을 운영합니다.',
+      title: '대체·보강 관리',
+      description: '기관 현장 학습 등으로 빠진 수업은 보강으로 보장합니다.',
     },
-    { id: 'safety', theme: 'green', title: '안전 관리', description: '[수업 전 안전 점검 · 보험 등 안전 기준]' },
-    { id: 'manage', theme: 'yellow', title: '대표 직접 관리', description: '[수업 점검 · 기관 소통 방식]' },
+    { id: 'manage', theme: 'yellow', title: '대표 직접 관리', description: '대표가 매주 기관 요청과 수업 피드백을 확인합니다.' },
   ],
 }
 
