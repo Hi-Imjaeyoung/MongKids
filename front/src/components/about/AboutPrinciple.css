@@ -261,13 +261,19 @@
     font-size: 15px;
   }
 
+  /* 안드로이드 360px 폭에서도 칩 3개가 한 줄에 들어가도록 같은 너비 3칸으로 나눈다 */
   .about-principle__ages {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
     margin-top: 16px;
   }
 
   .about-principle__age {
-    padding: 6px 14px;
-    font-size: 13px;
+    padding: 6px 4px;
+    font-size: 12px;
+    text-align: center;
+    white-space: nowrap;
   }
 
   .about-principle__curriculum {
@@ -314,5 +320,13 @@
   .about-principle__example dd {
     margin-top: 4px;
     font-size: 15px;
+  }
+}
+
+/* 아주 좁은 폭(320px 안팎)에서 연령 칩 글자가 칸을 넘지 않게 */
+@media (max-width: 340px) {
+  .about-principle__age {
+    font-size: 11px;
+    letter-spacing: -0.3px;
   }
 }
