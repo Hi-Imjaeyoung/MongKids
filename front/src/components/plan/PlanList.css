@@ -1,0 +1,193 @@
+/* 수업 계획안 화면 배치 (SCR-027, PlansPage): 데스크톱은 목록 | 보기, 모바일은 목록(가로 버튼) 아래 보기 */
+.plans-page {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px;
+  padding-top: 40px;
+  padding-bottom: 96px;
+}
+
+.plans-page__list {
+  flex: 1 1 260px;
+  max-width: 300px;
+  min-width: 0;
+}
+
+.plans-page__viewer {
+  flex: 999 1 560px;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .plans-page {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding-top: 24px;
+    padding-bottom: 64px;
+  }
+
+  .plans-page__list {
+    flex: none;
+    max-width: none;
+  }
+
+  .plans-page__viewer {
+    flex: none;
+  }
+}
+
+/* 수업 계획안 목록: 데스크톱은 왼쪽 세로 목록, 모바일은 가로로 넘기는 버튼 줄 */
+.plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.plan-list__group-title {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-sub);
+}
+
+.plan-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plan-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.plan-list__item:hover {
+  border-color: var(--border-strong);
+}
+
+.plan-list__item--selected,
+.plan-list__item--selected:hover {
+  border: 2px solid var(--blue);
+  padding: 11px 15px;
+  background: var(--bg-soft);
+}
+
+.plan-list__text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.plan-list__title {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.plan-list__period {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.plan-list__lock {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.plan-list__public {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green-text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.plan-list__note {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  font-size: 13px;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+  .plan-list {
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .plan-list__group {
+    display: contents;
+  }
+
+  .plan-list__group-title,
+  .plan-list__note,
+  .plan-list__period {
+    display: none;
+  }
+
+  .plan-list__items {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .plan-list__item,
+  .plan-list__item--selected,
+  .plan-list__item--selected:hover {
+    gap: 6px;
+    width: auto;
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .plan-list__item--selected,
+  .plan-list__item--selected:hover {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .plan-list__title {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .plan-list__lock {
+    color: inherit;
+    font-size: 0;
+  }
+
+  .plan-list__public {
+    display: none;
+  }
+}

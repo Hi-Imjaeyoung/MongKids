@@ -80,6 +80,8 @@ export const aboutPrinciples = [
         { month: '[월]', topic: '[활동 주제 · 목표]' },
       ],
       link: { label: '정규 체육수업 프로그램 보기', to: '/programs/school' },
+      // 수업 계획안(SCR-027) 진입
+      planLink: { label: '세부 수업 보러가기', to: '/plans' },
     },
   },
   {

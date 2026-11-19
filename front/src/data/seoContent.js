@@ -36,6 +36,10 @@ export const pageMeta = {
     description: '몽키즈 방문 유아체육 수업을 함께한 아이들과 보호자·선생님의 후기입니다.',
   },
   privacy: { title: '개인정보처리방침' },
+  plans: {
+    title: '수업 계획안',
+    description: '몽키즈 방문 유아체육의 연간 수업 계획안을 확인하세요. 주차별 월간 계획안은 인증된 기관 회원에게 제공합니다.',
+  },
   recruit: {
     title: '강사 채용',
     description: '몽키즈 방문 유아체육 강사를 모집합니다. 지원서 양식을 내려받아 작성한 뒤 올려 주시면 지원이 끝납니다.',
