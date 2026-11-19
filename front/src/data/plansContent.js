@@ -1,9 +1,6 @@
-// 수업 계획안(SCR-027) 정적 데이터. 계획안 등록 API(FR-032) 전까지 목록과 이미지는 이 파일에서 관리한다.
-// 연간 계획안은 누구나 보고, 월간 계획안은 인증된 기관 회원만 원본을 본다(사용자 결정 2026-11-19).
-// - image: 연간 계획안 이미지(공개)
-// - preview: 월간 계획안의 블러 처리한 이미지(비인증 방문자에게 보여 줌)
-// - 월간 원본 PDF는 프론트에 넣지 않는다. 서버가 인증을 확인한 뒤에만 내려준다(FR-032)
-// 파일이 준비되기 전에는 null로 두면 이미지 자리 표시가 나온다. 파일은 src/assets/plans/에 두고 import해서 넣는다
+// 수업 계획안(SCR-027) 화면 문구. 계획안 목록과 PDF는 관리자가 /plans 화면에서 올리고 서버가 내려준다 (FR-032, ADR-009).
+// 연간 계획안은 누구나 보고, 월간 계획안은 관리자가 블러 처리한 PDF만 공개한다. 월간 원본은 서버가 권한을 확인한 뒤에만 내려준다
+// (기관 인증 방법이 정해지기 전까지 관리자만, 사용자 결정 2026-11-19)
 
 export const plansHero = {
   eyebrow: 'CLASS PLAN',
@@ -21,8 +18,54 @@ export const plansText = {
   zoomIn: '확대',
   zoomOut: '축소',
   viewNote: '계획안은 이 화면에서만 볼 수 있어요. 내려받기와 인쇄는 지원하지 않아요.',
-  imagePlaceholder: (title) => `${title} 이미지 준비 중`,
   previewAlt: (title) => `${title} 미리보기 (흐리게 처리됨)`,
+  pageLabel: (label, page, total) => `${label} ${page}/${total}쪽`,
+  pdfLoading: '계획안을 불러오는 중이에요.',
+  pdfError: '계획안을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
+  listLoading: '계획안 목록을 불러오는 중이에요.',
+  listError: '계획안 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.',
+  empty: '아직 올라온 계획안이 없어요.',
+  admin: {
+    add: '계획안 추가',
+    edit: '수정',
+    delete: '삭제',
+    deleteConfirm: (title) => `"${title}"을(를) 삭제할까요? 삭제하면 되돌릴 수 없어요.`,
+    deleteError: '계획안을 삭제하지 못했어요.',
+    versionLabel: '보여 줄 버전',
+    previewVersion: '블러본',
+    originalVersion: '원본',
+    previewNote: '방문자에게는 이 블러본 위에 잠김 안내가 보여요.',
+    originalNote: '원본은 관리자만 볼 수 있어요. 기관 인증 기능이 생기면 인증된 기관 회원에게도 보여요.',
+  },
+  form: {
+    createTitle: '계획안 추가',
+    editTitle: '계획안 수정',
+    kindLabel: '종류',
+    kindFixed: '종류는 바꿀 수 없어요. 바꾸려면 삭제하고 새로 추가해 주세요.',
+    titleLabel: '제목',
+    titleMaxLength: 50,
+    annualTitlePlaceholder: '예: 2027 연간 계획안',
+    monthlyTitlePlaceholder: '예: 3월 계획안',
+    periodLabel: '기간·대상',
+    periodMaxLength: 100,
+    annualPeriodPlaceholder: '예: 2027.03 ~ 2028.02 · 월별 주차 프로그램',
+    monthlyPeriodPlaceholder: '예: 2027.03 · 1~5주차 · 영아/유아',
+    annualFileLabel: '계획안 PDF',
+    annualFileHint: '누구나 볼 수 있어요. PDF 1개, 20MB 이하.',
+    previewFileLabel: '블러 처리한 PDF (공개)',
+    previewFileHint: '가릴 부분을 직접 블러 처리한 PDF예요. 누구나 이 파일을 볼 수 있어요. 20MB 이하.',
+    originalFileLabel: '원본 PDF (비공개)',
+    originalFileHint: '블러 없는 원본이에요. 관리자만 볼 수 있어요. 20MB 이하.',
+    keepFile: '파일을 고르지 않으면 지금 파일을 그대로 써요.',
+    typeError: 'PDF 파일만 올릴 수 있어요.',
+    sizeError: 'PDF는 20MB 이하만 올릴 수 있어요.',
+    emptyError: '제목과 기간·대상을 입력해 주세요.',
+    annualFileError: '계획안 PDF를 골라 주세요.',
+    monthlyFileError: '블러 처리한 PDF와 원본 PDF를 모두 골라 주세요.',
+    cancel: '취소',
+    save: '저장',
+    saving: '저장 중...',
+  },
   lock: {
     title: '월간 계획안은 인증된 기관 회원만 볼 수 있어요',
     guest: '로그인한 뒤 기관 인증을 받으면 월별 상세 계획안을 볼 수 있어요.',
@@ -31,28 +74,3 @@ export const plansText = {
     showAnnual: '연간 계획안 보기',
   },
 }
-
-export const plans = [
-  {
-    id: '2027-annual',
-    kind: 'annual',
-    title: '2027 연간 계획안',
-    period: '2027.03 ~ 2028.02 · 월별 주차 프로그램',
-    portrait: true,
-    image: null,
-  },
-  {
-    id: '2027-03',
-    kind: 'monthly',
-    title: '3월 계획안',
-    period: '2027.03 · 1~5주차 · 영아/유아',
-    preview: null,
-  },
-  {
-    id: '2027-04',
-    kind: 'monthly',
-    title: '4월 계획안',
-    period: '2027.04 · 1~4주차 · 영아/유아',
-    preview: null,
-  },
-]
