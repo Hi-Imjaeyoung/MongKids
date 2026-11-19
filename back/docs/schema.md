@@ -409,6 +409,20 @@ erDiagram
 - 관리자가 저장한 값만 둔다(행 0개 또는 3개). 행이 없으면 화면은 `aboutContent.js`의 기본 문구를 쓴다 ([ADR-008](../../docs/adr/ADR-008-admin-static-content-editing.md)).
 - 운영 DDL: `back/docs/sql/2026-11-about-curriculum-ddl.sql`, 목표 컬럼 추가 `back/docs/sql/2026-11-about-curriculum-goal-ddl.sql`.
 
+### class_plan — 수업 계획안 (SCR-027, FR-032)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| kind | VARCHAR(10) | NOT NULL | `ANNUAL`(연간) / `MONTHLY`(월간) |
+| title | VARCHAR(50) | NOT NULL | 제목 (예: 3월 계획안) |
+| period | VARCHAR(100) | NOT NULL | 기간·대상 설명 (예: 2027.03 · 1~5주차 · 영아/유아) |
+| file_key | VARCHAR(255) | NOT NULL | 공개 PDF S3 키(`plans/public/`). 연간은 계획안 자체, 월간은 관리자가 블러 처리한 PDF |
+| original_file_key | VARCHAR(255) | NULL | 월간 원본 PDF S3 키(`plans/original/`). 연간은 NULL |
+
+- PDF는 서버가 S3에서 읽어 전달하고, 원본은 기관 인증 방법이 정해지기 전까지 관리자만 받는다 ([ADR-009](../../docs/adr/ADR-009-monthly-plan-restricted-preview.md)).
+- 운영 DDL: `back/docs/sql/2026-11-class-plan-ddl.sql`.
+
 ## 4. 테이블을 두지 않는 기능
 
 | 기능 | 이유 |

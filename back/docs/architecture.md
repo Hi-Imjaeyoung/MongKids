@@ -151,3 +151,4 @@ HTTP Response
 | 본문 정화 | `domain/post/service/PostContentSanitizer` (jsoup). 허용 목록·구조 규칙은 [api-guidelines.md](api-guidelines.md#7-게시물-api-fr-008). 프론트는 출력 전에 DOMPurify로 한 번 더 거른다 |
 | 테스트 | S3에 접속하지 않는다. 통합 테스트는 `@MockitoBean FileStorage` |
 | 정리 | 업로드 후 저장하지 않았거나 수정·삭제로 빠진 객체는 지우지 않는다 (후속: S3 수명 주기 규칙 등) |
+| 서버 전달 | 수업 계획안 PDF(`plans/public/`, `plans/original/` → `class_plan`)는 공개 URL을 쓰지 않고 `FileStorage.open`으로 서버가 읽어 API 응답으로 전달한다. 원본 권한을 서버가 확인하고, 같은 출처라 pdf.js가 CORS 없이 읽는다 (FR-032, ADR-009). 운영 IAM 역할에 `s3:GetObject`가 필요하다 |
