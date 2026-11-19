@@ -10,7 +10,13 @@ function Footer() {
           <strong className="footer__name">{footer.brand}</strong>
           <p className="footer__slogan">{footer.slogan}</p>
           <p className="footer__note">{footer.area}</p>
-          <p className="footer__note">{footer.business}</p>
+          <p className="footer__note">
+            {footer.businessLines.map((line) => (
+              <span key={line} className="footer__line">
+                {line}
+              </span>
+            ))}
+          </p>
         </div>
         <div className="footer__info">
           <p className="footer__sns">

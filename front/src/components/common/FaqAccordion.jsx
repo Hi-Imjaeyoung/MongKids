@@ -47,9 +47,10 @@ function FaqAccordion({ items, defaultOpenIds = [] }) {
                 {isOpen ? <path d="M5 12h14" /> : <path d="M12 5v14M5 12h14" />}
               </svg>
             </button>
-            <p id={answerId} className="faq-accordion__answer" hidden={!isOpen}>
-              {item.answer}
-            </p>
+            <div id={answerId} className="faq-accordion__answer" hidden={!isOpen}>
+              <span className="faq-accordion__a" aria-hidden="true">A</span>
+              <p className="faq-accordion__answer-text">{item.answer}</p>
+            </div>
           </li>
         )
       })}

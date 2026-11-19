@@ -8,7 +8,11 @@ function AboutHero() {
         <div>
           <p className="about-hero__eyebrow">{aboutHero.eyebrow}</p>
           <h1 id="about-title" className="about-hero__title">
-            {aboutHero.title}
+            {aboutHero.titleLines.map((line) => (
+              <span key={line} className="about-hero__line">
+                {line}
+              </span>
+            ))}
           </h1>
           <p className="about-hero__description">
             {aboutHero.descriptionLines.map((line) => (

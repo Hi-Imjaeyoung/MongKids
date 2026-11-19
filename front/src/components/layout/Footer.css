@@ -58,6 +58,10 @@
   word-break: keep-all;
 }
 
+.footer__line {
+  display: block;
+}
+
 .footer__info {
   text-align: right;
 }

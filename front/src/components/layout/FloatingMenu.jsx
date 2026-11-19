@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import phoneIcon from '../../assets/phoneIcon.png'
+import bananaIcon from '../../assets/rating-banana.png'
 import InstagramIcon from '../common/InstagramIcon'
 import { floatingActions } from '../../data/homeContent'
 import './FloatingMenu.css'
@@ -10,6 +11,7 @@ const phoneMaskStyle = { WebkitMaskImage: `url(${phoneIcon})`, maskImage: `url($
 function renderIcon(action) {
   if (action.id === 'instagram') return <InstagramIcon />
   if (action.id === 'phone') return <span className="floating-menu__phone" style={phoneMaskStyle} />
+  if (action.id === 'reviews') return <img className="floating-menu__banana" src={bananaIcon} alt="" draggable="false" />
   return action.icon
 }
 
