@@ -213,7 +213,8 @@ export const footer = {
   slogan: '놀이는 신나게! 성장은 알차게!',
   area: '용인 · 수원 · 성남 · 동탄 · 오산 · 평택 · 광주 · 그 외 경기 남부지역 / 정확한 수업 가능 여부는 상담으로 안내합니다.',
   instagram,
-  business: `대표 오재혁 · 사업자등록번호 130-51-00905 · 연락처 ${contactPhone.label}`,
+  // 줄마다 나눠 표시한다 (2026-11-19)
+  businessLines: ['대표 오재혁 · 사업자등록번호 130-51-00905', `연락처 ${contactPhone.label}`],
   // 개인정보처리방침 (SCR-023)
   privacy: { label: '개인정보처리방침', to: '/privacy' },
 }
@@ -224,7 +225,8 @@ export const mobileCta = {
 }
 
 export const floatingActions = [
-  { id: 'reviews', icon: '🍌', label: '후기\n보러가기', theme: 'yellow', to: '/reviews' },
+  // 후기 아이콘은 이모지 대신 후기 만족도와 같은 바나나 그림(assets/rating-banana.png)을 쓴다 (2026-11-19)
+  { id: 'reviews', label: '후기\n보러가기', theme: 'yellow', to: '/reviews' },
   // 전화 아이콘은 이모지 대신 그림(assets/phoneIcon.png)을 빨간색으로 칠해 쓴다 (OS마다 모양이 달라지지 않게, 2026-11-18)
   { id: 'phone', label: '전화 문의', theme: 'blue', tel: contactPhone.href },
   { id: 'instagram', label: '인스타그램', theme: 'white', href: instagram.href },

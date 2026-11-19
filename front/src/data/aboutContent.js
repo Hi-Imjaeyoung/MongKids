@@ -10,7 +10,7 @@ import teacherImage3 from '../assets/teacher-3.jpg'
 
 export const aboutHero = {
   eyebrow: 'ABOUT MONGKIZ',
-  title: '즐거움과 체계적인 수업을 함께',
+  titleLines: ['즐거움과 체계적인', '수업을 함께'],
   descriptionLines: ['아이들에게는 기다려지는 체육시간,', '기관에는 신뢰할 수 있는 방문체육 파트너.'],
   area: '용인 · 수원 · 성남 · 동탄 · 오산 · 평택 · 광주 · 그 외 경기 남부지역',
   photo: aboutMainImage,

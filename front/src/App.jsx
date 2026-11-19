@@ -147,7 +147,7 @@ function App() {
           <Routes>
             <Route path="/" element={homePage} />
             <Route path="/about" element={<AboutPage {...consultHandlers} />} />
-            <Route path="/programs" element={<ProgramsPage {...consultHandlers} />} />
+            <Route path="/programs" element={<ProgramsPage {...consultHandlers} onQuoteClick={openQuote} />} />
             <Route path="/programs/:programId" element={<ProgramDetailPage onQuoteClick={openQuote} />} />
             <Route path="/faq" element={<FaqPage {...consultHandlers} onQuoteClick={openQuote} />} />
             <Route path="/privacy" element={<PrivacyPage />} />

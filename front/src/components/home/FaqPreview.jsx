@@ -29,9 +29,10 @@ function FaqPreview() {
                 <span className="faq__question-text">{item.question}</span>
                 <span className="faq__toggle" aria-hidden="true">{isOpen ? '−' : '+'}</span>
               </button>
-              <p id={answerId} className="faq__answer" hidden={!isOpen}>
-                {item.answer}
-              </p>
+              <div id={answerId} className="faq__answer" hidden={!isOpen}>
+                <span className="faq__a" aria-hidden="true">A</span>
+                <p className="faq__answer-text">{item.answer}</p>
+              </div>
             </li>
           )
         })}
