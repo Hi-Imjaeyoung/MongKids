@@ -21,6 +21,7 @@ front/
    │  ├─ NewsDetailPage.jsx   /news/:postId, /lab/:postId (board 설정으로 재사용)
    │  ├─ NewsEditorPage.jsx   /news/write, /news/:postId/edit, /lab/write, /lab/:postId/edit
    │  ├─ LabListPage.jsx      /lab (SCR-024, ?category=&keyword=&page=)
+   │  ├─ PlansPage.jsx        /plans (SCR-027, 계획안 목록·보기, 관리자 추가·수정·삭제)
    │  └─ boards.js            상세·작성 화면이 쓰는 게시판 설정 (newsBoard, labBoard: 목록 주소·분류·API·안내 문구)
    ├─ components/
    │  ├─ layout/              모든 화면에 공통으로 붙는 영역 (Header, Footer, FloatingMenu, MobileCtaBar: 640px 이하 하단 고정 상담 바)
@@ -29,6 +30,7 @@ front/
    │  ├─ program/             체육/행사 프로그램 전체 안내·상세 (ProgramsHero, ProgramGroup, ProgramCard, ProgramIcon, ProgramProcess, StepList / ProgramBreadcrumb, ProgramHero, ProgramGuide, ProgramFaq, OtherPrograms, SCR-003·016~020)
    │  ├─ faq/                 자주 묻는 질문 (FaqList, FaqTabs, SCR-022)
    │  ├─ privacy/             개인정보처리방침 (PrivacySummary 시행일·요약 카드, PrivacyPolicy 목차+조항, PrivacyToc, PrivacySection 블록 렌더링, SCR-023)
+   │  ├─ plan/                수업 계획안 (PlanList 목록, PlanViewer 보기·확대/축소·관리자 블러본/원본 전환, PdfPages pdf.js 쪽 그리기·지연 로딩, PlanForm 관리자 등록·수정, SCR-027)
    │  ├─ recruit/             강사 채용 (RecruitSummary 모집 요강, RecruitApplyForm 양식 내려받기·지원서 올리기·동의·제출, RecruitContact, SCR-007)
    │  ├─ auth/                로그인·회원가입 모달 (LoginModal, SCR-013)
    │  ├─ news/                수업 현장 (목록·카드·상세·본문 출력·작성 폼·HTML 편집기·사진 묶음 노드, SCR-006). 상세·작성 폼·분류 탭·칩은 categories prop으로 연구소도 쓴다
@@ -36,8 +38,8 @@ front/
    │  ├─ consultation/        상담 신청 모달 (InstitutionConsultationModal SCR-009, PersonalConsultationModal SCR-010, 공용 ConsultationFormParts)
    │  └─ common/              화면과 무관한 재사용 UI (Button: yellow·blue·ghost, to면 링크 / SectionHeading: align left·center, Highlight, ImagePlaceholder, PageHero: 하위 화면 크림 소개 영역, ConsultCta: 하단 상담 띠, FaqAccordion: 여러 개 펼침 질문 목록, ChevronIcon)
    ├─ assets/                 번들에 포함되는 이미지 (logo.png: 원본 로고에서 여백을 잘라낸 버전)
-   ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인, posts.js 게시물, labPosts.js 연구소 글, consultations.js 상담 신청)
-   └─ data/                   화면 콘텐츠 (homeContent.js, aboutContent.js, programContent.js, faqContent.js, privacyContent.js, authContent.js, newsContent.js, labContent.js, consultationContent.js)
+   ├─ api/                    API 호출 (client.js 공통 fetch, auth.js 소셜 로그인, posts.js 게시물, labPosts.js 연구소 글, consultations.js 상담 신청, classPlans.js 수업 계획안·PDF 업로드)
+   └─ data/                   화면 콘텐츠 (homeContent.js, aboutContent.js, programContent.js, faqContent.js, privacyContent.js, authContent.js, newsContent.js, labContent.js, consultationContent.js, plansContent.js)
 ```
 
 - 새 화면이 생기면 `pages/{Name}Page.jsx`와 `components/{화면}/`을 추가한다.

@@ -36,7 +36,7 @@ npm run preview    # 빌드 결과 미리보기
 
 ## 아키텍처 요약 → [docs/architecture.md](docs/architecture.md)
 
-- `pages/`(화면 조립·API 호출) → `components/{layout,home,about,program,faq,auth,member,news,lab,review,consultation,admin,attendance,common}/`(UI) ← `data/`(콘텐츠). 라우트는 `App.jsx`
+- `pages/`(화면 조립·API 호출) → `components/{layout,home,about,program,faq,auth,member,news,lab,review,consultation,admin,attendance,plan,common}/`(UI) ← `data/`(콘텐츠). 라우트는 `App.jsx`
 - API 호출은 `src/api/`(`client.js`의 `request`가 `ApiResponse`를 풀어 `data`만 반환). 인증은 HttpOnly 쿠키라 토큰을 JS에서 다루지 않는다.
 - 화면 문구·수치·목록은 컴포넌트에 하드코딩하지 않고 `src/data/`에 둔다. API 연동 시 이 데이터만 응답값으로 교체한다.
 
