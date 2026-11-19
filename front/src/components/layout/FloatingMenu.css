@@ -85,6 +85,12 @@
     padding: 0;
   }
 
+  /* 글자가 없으니 바나나 그림을 50% 키운다 (26px → 39px, 2026-11-19) */
+  .floating-menu__banana {
+    width: 39px;
+    height: 39px;
+  }
+
   .floating-menu__label {
     position: absolute;
     width: 1px;
