@@ -1,0 +1,35 @@
+.recruit-contact {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px 0;
+  box-sizing: border-box;
+}
+
+.recruit-contact__box {
+  margin: 0;
+  padding: 20px 24px;
+  border-radius: var(--radius-md);
+  background: var(--yellow-soft);
+  font-size: 15px;
+}
+
+.recruit-contact__note {
+  margin-left: 8px;
+  color: var(--text-sub);
+}
+
+@media (max-width: 768px) {
+  .recruit-contact {
+    padding: 24px 16px 0;
+  }
+
+  .recruit-contact__box {
+    padding: 16px 18px;
+    font-size: 14px;
+  }
+
+  .recruit-contact__note {
+    display: block;
+    margin-left: 0;
+  }
+}

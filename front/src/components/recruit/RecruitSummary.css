@@ -1,0 +1,81 @@
+/* 강사 채용 화면 공통: 본문 폭과 섹션 제목 */
+.recruit-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 56px 20px 0;
+  box-sizing: border-box;
+}
+
+.recruit-section-title {
+  margin: 0 0 20px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.recruit-summary__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.recruit-summary__item {
+  display: flex;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.recruit-summary__item:nth-child(odd) {
+  border-right: 1px solid var(--border);
+}
+
+.recruit-summary__item:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.recruit-summary__term {
+  flex: 0 0 80px;
+  font-weight: 700;
+}
+
+.recruit-summary__description {
+  margin: 0;
+  color: var(--text-sub);
+  word-break: keep-all;
+}
+
+@media (max-width: 768px) {
+  .recruit-container {
+    padding: 36px 16px 0;
+  }
+
+  .recruit-section-title {
+    margin-bottom: 14px;
+    font-size: 20px;
+  }
+
+  .recruit-summary__list {
+    grid-template-columns: minmax(0, 1fr);
+    font-size: 15px;
+  }
+
+  .recruit-summary__item {
+    gap: 12px;
+    padding: 16px 18px;
+  }
+
+  .recruit-summary__item:nth-child(odd) {
+    border-right: 0;
+  }
+
+  .recruit-summary__item:nth-last-child(2) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .recruit-summary__term {
+    flex-basis: 68px;
+  }
+}
