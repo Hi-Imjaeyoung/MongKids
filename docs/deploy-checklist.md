@@ -314,8 +314,8 @@ aws ssm send-command --instance-ids i-01a62a936805035e1 --document-name AWS-RunS
 관리자가 `/plans`에서 PDF를 Presigned URL로 사진 버킷 `plans/*`에 올리고, 화면은 서버가 S3에서 읽어 주는 PDF(`/api/v1/class-plans/{id}/file`, 원본은 `/api/v1/admin/class-plans/{id}/original-file`)를 pdf.js로 그린다. 공개 CloudFront 주소는 쓰지 않는다.
 
 병합 전 (백엔드가 `validate`로 기동한다)
-- [ ] 1. 운영 RDS에 [`back/docs/sql/2026-11-class-plan-ddl.sql`](../back/docs/sql/2026-11-class-plan-ddl.sql) 실행 (`class_plan` 생성)
-- [ ] 2. 백엔드 IAM 권한에 사진 버킷 `plans/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 업로드가 S3에서 403(`L002`), PDF 보기가 500
+- [x] 1. 운영 RDS에 [`back/docs/sql/2026-11-class-plan-ddl.sql`](../back/docs/sql/2026-11-class-plan-ddl.sql) 실행 (`class_plan` 생성) — 2026-11-19 적용, 사용자
+- [x] 2. (2026-11-19 적용, 사용자) 백엔드 IAM 권한에 사진 버킷 `plans/*`의 `s3:PutObject`, `s3:GetObject` 추가. 빠지면 업로드가 S3에서 403(`L002`), PDF 보기가 500
 
 배포 후
 - [ ] 3. 관리자 로그인 → `/plans` "계획안 추가" → 연간 PDF 1개 등록 → 목록·보기·확대/축소
