@@ -330,11 +330,11 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 | 메서드 | URL | 설명 |
 |---|---|---|
-| GET | `/api/v1/about-curriculum-months` | ABOUT(SCR-002) 월별 커리큘럼 `[{month, topic}]` 순서대로. 인증 불필요, 저장 값이 없으면 `[]` |
-| PUT | `/api/v1/admin/about-curriculum-months` | 관리자만. `{months: [{month, topic}] × 3}`으로 3줄 전체 교체 → 저장된 3줄 |
+| GET | `/api/v1/about-curriculum-months` | ABOUT(SCR-002) 월별 커리큘럼 `[{month, topic, goal}]` 순서대로. 인증 불필요, 저장 값이 없으면 `[]` |
+| PUT | `/api/v1/admin/about-curriculum-months` | 관리자만. `{months: [{month, topic, goal}] × 3}`으로 3줄 전체 교체 → 저장된 3줄 |
 | DELETE | `/api/v1/admin/about-curriculum-months` | 관리자만. 저장 값을 지워 기본 문구로 되돌림 (`data: null`, 저장 값이 없어도 성공) |
 
-- 검증: 정확히 3줄, `month` 공백 아님·10자 이하, `topic` 공백 아님·40자 이하. 어긋나면 400 `C001`. 앞뒤 공백은 지우고 저장한다.
+- 검증: 정확히 3줄, `month` 공백 아님·10자 이하, `topic` 공백 아님·40자 이하, `goal` 공백 아님·40자 이하. 어긋나면 400 `C001`. 앞뒤 공백은 지우고 저장한다.
 - 권한: 비로그인 401 `A001`, 관리자가 아니면(직원 포함) 403 `A002`.
 
 ## 12. 기타
