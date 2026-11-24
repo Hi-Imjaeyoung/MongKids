@@ -331,6 +331,15 @@ DDL 변경 없음. 사진 S3 삭제에 새 권한이 필요하다.
 - [ ] 3. 미정 수업 고르기 → 직원 골라 "직원 배정" → 그 직원 수업 체크 화면에 보이는지. 겹치는 수업을 고르면 아무것도 배정되지 않는지
 - [ ] 4. "기관" 표의 "미배정 N회", "근무 캘린더" 주간 "미정" 줄 → 칸 → 그날 미정 수업에서 배정, 월간 "미정 N개"
 
+## M-3. 수업 유형 정기 / 행사·특별활동 (EMP-FR-004, #110)
+
+병합 전 (백엔드가 `validate`로 기동한다)
+- [ ] 1. 운영 RDS에 [`back/docs/sql/2026-11-class-type-ddl.sql`](../back/docs/sql/2026-11-class-type-ddl.sql) 실행 (`class_session.class_type` 추가, 기본값 `REGULAR`) — 사용자. 기본값이 있어 지금 운영 중인 jar에도 영향이 없다. 없으면 새 jar가 기동하지 못한다
+
+배포 후
+- [ ] 2. 관리자 "수업 할당" → 수업 등록에서 수업 유형 "행사·특별활동" → 목록에 "행사" 태그. 기존 수업은 정기 수업
+- [ ] 3. "근무 캘린더" 주간 칸 "행사 N", 월간 날짜 줄 "행사 N"·직원별 합계 정기/행사·특별활동 열, 하루 근무 상세 수업 목록 "행사" 태그
+
 ## O. 수업 계획안 PDF (SCR-027, FR-032, #107, [ADR-009](adr/ADR-009-monthly-plan-restricted-preview.md))
 
 관리자가 `/plans`에서 PDF를 Presigned URL로 사진 버킷 `plans/*`에 올리고, 화면은 서버가 S3에서 읽어 주는 PDF(`/api/v1/class-plans/{id}/file`, 원본은 `/api/v1/admin/class-plans/{id}/original-file`)를 pdf.js로 그린다. 공개 CloudFront 주소는 쓰지 않는다.

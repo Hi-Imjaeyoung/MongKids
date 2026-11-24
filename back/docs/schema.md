@@ -273,6 +273,7 @@ erDiagram
 | start_time | TIME | NOT NULL | |
 | end_time | TIME | NOT NULL | |
 | target | VARCHAR(50) | NULL | 대상(반) |
+| class_type | VARCHAR(20) | NOT NULL, DEFAULT 'REGULAR' | `REGULAR`(정기 수업)·`EVENT`(행사·특별활동, EMP-FR-004). 행사 장소는 `institution`에 기관처럼 등록. 운영 DDL `back/docs/sql/2026-11-class-type-ddl.sql` |
 
 - 수업 1행 = 한 날짜의 한 회. 반복 일정은 테이블로 두지 않고, 관리자가 기간·요일로 반복 등록하면 날짜마다 행을 만든다(EMP-FR-004). 수업 단위 시작·종료 기록이나 시도 로그가 있는 행은 수정·삭제하지 않고, 그 직원·날짜에 `day_start`가 있으면 그날 수업은 추가·수정·삭제하지 않는다(첫·마지막 기관이 바뀌지 않게).
 - INDEX (`staff_id`, `class_date`)
