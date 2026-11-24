@@ -798,6 +798,50 @@ class AttendanceIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("수업 유형: 기본은 정기 수업, 행사·특별활동으로 등록·수정하면 목록·하루 기록·근무 캘린더에 유형과 행사 수가 나온다")
+	void classType() throws Exception {
+		// given
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		createSessions(admin, staff.id(), TODAY, TODAY, List.of("MONDAY"), "09:00", "09:50")
+			.andExpect(jsonPath("$.data[0].classSession.classType").value("REGULAR"));
+
+		// when: 같은 날 행사 1회
+		Map<String, Object> event = new HashMap<>(Map.of(
+			"institutionId", lastInstitution.getId(), "staffId", staff.id(), "firstDate", TODAY.toString(),
+			"lastDate", TODAY.toString(), "daysOfWeek", List.of("MONDAY"), "startTime", "13:00",
+			"endTime", "15:00", "classType", "EVENT"));
+		String created = mockMvc.perform(post("/api/v1/admin/attendance/classes").cookie(admin)
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(event)))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.data[0].classSession.classType").value("EVENT"))
+			.andReturn().getResponse().getContentAsString();
+		Long eventId = objectMapper.readTree(created).get("data").get(0).get("classSession").get("id").asLong();
+
+		// then
+		mockMvc.perform(get("/api/v1/admin/attendance/days").cookie(admin)
+				.param("from", TODAY.toString()).param("to", TODAY.toString()))
+			.andExpect(jsonPath("$.data[0].day.classes[0].classType").value("REGULAR"))
+			.andExpect(jsonPath("$.data[0].day.classes[1].classType").value("EVENT"));
+		mockMvc.perform(calendar(admin, TODAY, TODAY.plusDays(6)))
+			.andExpect(jsonPath("$.data.staffs[0].days[0].classCount").value(2))
+			.andExpect(jsonPath("$.data.staffs[0].days[0].eventCount").value(1))
+			.andExpect(jsonPath("$.data.staffs[0].summary.assignedClasses").value(2))
+			.andExpect(jsonPath("$.data.staffs[0].summary.eventClasses").value(1));
+		mockMvc.perform(post("/api/v1/admin/attendance/classes").cookie(admin)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(Map.of("institutionId", institution.getId(),
+					"staffId", staff.id(), "firstDate", TODAY.toString(), "lastDate", TODAY.toString(),
+					"daysOfWeek", List.of("MONDAY"), "startTime", "16:00", "endTime", "16:50",
+					"classType", "PARTY"))))
+			.andExpect(status().isBadRequest());
+
+		// 한 회 수정에서 유형을 빼면 정기 수업으로 돌아간다
+		updateSession(admin, eventId, staff.id(), "13:00", "15:00")
+			.andExpect(jsonPath("$.data.classSession.classType").value("REGULAR"));
+	}
+
+	@Test
 	@DisplayName("수업 반복 등록: 기간 안의 고른 요일마다 만들고, 같은 직원 시간이 겹치면 하나도 만들지 않는다")
 	void createClassSessions() throws Exception {
 		LoginMemberResponse staff = register("1", MemberRole.STAFF);

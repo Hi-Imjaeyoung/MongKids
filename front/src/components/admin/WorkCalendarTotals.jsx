@@ -2,7 +2,7 @@ import { workCalendarAdmin } from '../../data/attendanceAdminContent'
 import './ClassSessionTable.css'
 import './WorkCalendarTotals.css'
 
-// 월간 직원별 합계 표 (EMP-FR-017): 할당·수업 종료 수업 수, 승인 대기·반려 건수. staffs: WorkCalendarResponse.staffs
+// 월간 직원별 합계 표 (EMP-FR-017): 할당(정기 / 행사·특별활동)·수업 종료 수업 수, 승인 대기·반려 건수. staffs: WorkCalendarResponse.staffs
 function WorkCalendarTotals({ title, staffs }) {
   const { totalsColumns: columns } = workCalendarAdmin
   return (
@@ -22,6 +22,12 @@ function WorkCalendarTotals({ title, staffs }) {
                 {columns.assigned}
               </th>
               <th scope="col" className="work-calendar-totals__num">
+                {columns.regular}
+              </th>
+              <th scope="col" className="work-calendar-totals__num">
+                {columns.events}
+              </th>
+              <th scope="col" className="work-calendar-totals__num">
                 {columns.completed}
               </th>
               <th scope="col" className="work-calendar-totals__num">
@@ -39,6 +45,10 @@ function WorkCalendarTotals({ title, staffs }) {
                   {staffName}
                 </th>
                 <td className="work-calendar-totals__num">{workCalendarAdmin.classes(summary.assignedClasses)}</td>
+                <td className="work-calendar-totals__num">
+                  {workCalendarAdmin.classes(summary.assignedClasses - summary.eventClasses)}
+                </td>
+                <td className="work-calendar-totals__num">{workCalendarAdmin.classes(summary.eventClasses)}</td>
                 <td className="work-calendar-totals__num">{workCalendarAdmin.classes(summary.completedClasses)}</td>
                 <td className="work-calendar-totals__num">{workCalendarAdmin.cases(summary.pendingChecks)}</td>
                 <td className="work-calendar-totals__num">{workCalendarAdmin.cases(summary.rejectedChecks)}</td>

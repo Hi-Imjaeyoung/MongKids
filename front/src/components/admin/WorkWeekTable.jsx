@@ -71,7 +71,17 @@ function WorkWeekTable({ dates, staffs, unassigned = [], today, onSelect, onSele
                           onClick={() => onSelect(staff.staffId, date)}
                         >
                           <WorkDayBadge day={day} today={today} />
-                          <span className="work-week-table__count">{workCalendarAdmin.classCount(day.classCount)}</span>
+                          <span className="work-week-table__count">
+                            {workCalendarAdmin.classCount(day.classCount)}
+                            {day.eventCount > 0 && (
+                              <>
+                                {' '}
+                                <AdminBadge tone="purple" shape="tag">
+                                  {workCalendarAdmin.eventCount(day.eventCount)}
+                                </AdminBadge>
+                              </>
+                            )}
+                          </span>
                           <span className="work-week-table__sub">{timeText(day)}</span>
                           <span className="work-week-table__route">{day.institutionNames.join(' → ')}</span>
                         </button>

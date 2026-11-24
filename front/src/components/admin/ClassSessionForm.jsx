@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { classSessionAdmin, daysOfWeek, longDateLabel } from '../../data/attendanceAdminContent'
+import { classSessionAdmin, classTypes, daysOfWeek, longDateLabel } from '../../data/attendanceAdminContent'
 import { repeatDates, toTimeInput } from './attendanceAdminFormat'
 import './AdminForm.css'
 import './ClassSessionForm.css'
@@ -11,6 +11,7 @@ function initialForm(editing, defaultDate, defaultInstitutionId) {
       institutionId: String(editing.institutionId),
       staffId: editing.staffId ? String(editing.staffId) : '',
       target: classSession.target ?? '',
+      classType: classSession.classType ?? 'REGULAR',
       firstDate: classSession.classDate,
       lastDate: classSession.classDate,
       days: [],
@@ -22,6 +23,7 @@ function initialForm(editing, defaultDate, defaultInstitutionId) {
     institutionId: defaultInstitutionId ? String(defaultInstitutionId) : '',
     staffId: '',
     target: '',
+    classType: 'REGULAR',
     firstDate: defaultDate,
     lastDate: defaultDate,
     days: [],
@@ -74,6 +76,7 @@ function ClassSessionForm({
       startTime: form.startTime,
       endTime: form.endTime,
       target: form.target.trim() || null,
+      classType: form.classType,
     }
     if (editing) {
       onUpdate(editing.classSession.id, { ...common, classDate: form.firstDate })
@@ -141,6 +144,24 @@ function ClassSessionForm({
           value={form.target}
           onChange={(event) => change({ target: event.target.value })}
         />
+      </div>
+      <div className="admin-form__field">
+        <label className="admin-form__label" htmlFor="session-type">
+          {text.classType}
+        </label>
+        <select
+          id="session-type"
+          className="admin-form__input"
+          value={form.classType}
+          onChange={(event) => change({ classType: event.target.value })}
+        >
+          {classTypes.map((type) => (
+            <option key={type.id} value={type.id}>
+              {type.label}
+            </option>
+          ))}
+        </select>
+        <span className="admin-form__hint">{text.classTypeHint}</span>
       </div>
 
       {editing ? (

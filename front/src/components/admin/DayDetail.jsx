@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { dayDetailAdmin, longDateLabel, startMethods } from '../../data/attendanceAdminContent'
+import { dayDetailAdmin, eventTag, longDateLabel, startMethods } from '../../data/attendanceAdminContent'
 import ClassStatusBadge from '../attendance/ClassStatusBadge'
 import { countInstitutions, formatClassMeta, formatClock, groupByInstitution } from '../attendance/attendanceFormat'
 import AdminBadge from './AdminBadge'
@@ -171,6 +171,14 @@ function DayDetail({ item, busy, onApprove, onReject, onRegister }) {
                 {group.classes.map((dayClass) => (
                   <span key={dayClass.id} className="admin-card__sub">
                     {formatClassMeta(dayClass)}
+                    {dayClass.classType === 'EVENT' && (
+                      <>
+                        {' '}
+                        <AdminBadge tone="purple" shape="tag">
+                          {eventTag}
+                        </AdminBadge>
+                      </>
+                    )}
                   </span>
                 ))}
               </div>

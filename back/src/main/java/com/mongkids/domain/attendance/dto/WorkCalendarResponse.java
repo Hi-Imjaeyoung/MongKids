@@ -48,6 +48,8 @@ public record WorkCalendarResponse(
 		DayStatus status,
 		boolean legacy,
 		int classCount,
+		// 그 가운데 행사·특별활동 수 (EMP-FR-004)
+		int eventCount,
 		LocalTime firstClassTime,
 		CalendarCheckResponse start,
 		CalendarCheckResponse end,
@@ -75,6 +77,8 @@ public record WorkCalendarResponse(
 	 */
 	public record CalendarSummaryResponse(
 		int assignedClasses,
+		// 할당 수업 가운데 행사·특별활동 수. 정기 수업 수는 할당 - 행사
+		int eventClasses,
 		int completedClasses,
 		int pendingChecks,
 		int rejectedChecks

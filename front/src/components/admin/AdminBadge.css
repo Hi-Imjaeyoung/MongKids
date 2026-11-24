@@ -39,6 +39,11 @@
   color: var(--danger);
 }
 
+.admin-badge--purple {
+  background: var(--purple-soft);
+  color: var(--purple-text);
+}
+
 .admin-badge--dark {
   background: var(--text);
   color: var(--bg);

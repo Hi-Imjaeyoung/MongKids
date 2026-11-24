@@ -8,11 +8,14 @@
   --sky-soft: #eaf6fd;
   --green: #74b944;
   --green-soft: #eef6e8;
+  /* 행사·특별활동 수업 표시 (근태 EMP-FR-004) */
+  --purple-soft: #f1ebfb;
 
   /* -soft 배경 위 글자색 (분류 칩 등) */
   --yellow-text: #6b5200;
   --blue-text: #2a56ad;
   --green-text: #3d6b1f;
+  --purple-text: #5b3a99;
 
   /* 오류 문구 */
   --danger: #c62828;

@@ -1,4 +1,4 @@
-import { classSessionAdmin, shortDateLabel } from '../../data/attendanceAdminContent'
+import { classSessionAdmin, eventTag, shortDateLabel } from '../../data/attendanceAdminContent'
 import { formatTimeRange } from '../attendance/attendanceFormat'
 import ClassStatusBadge from '../attendance/ClassStatusBadge'
 import AdminBadge from './AdminBadge'
@@ -66,7 +66,17 @@ function ClassSessionTable({ items, busyId, today, selectedIds, onToggle, onTogg
                 </td>
                 <td>{shortDateLabel(classSession.classDate)}</td>
                 <td>{formatTimeRange(classSession)}</td>
-                <td>{title}</td>
+                <td>
+                  {title}
+                  {classSession.classType === 'EVENT' && (
+                    <>
+                      {' '}
+                      <AdminBadge tone="purple" shape="tag">
+                        {eventTag}
+                      </AdminBadge>
+                    </>
+                  )}
+                </td>
                 <td>
                   {unassigned ? (
                     <AdminBadge tone={past ? 'red' : 'yellow'}>
