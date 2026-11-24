@@ -324,7 +324,7 @@ DDL 변경 없음. 사진 S3 삭제에 새 권한이 필요하다.
 ## M-2. 직원 미정 수업 (EMP-FR-021, #114)
 
 병합 전 (백엔드가 `validate`로 기동한다. 새 jar는 직원 없이 저장하므로 DDL이 먼저여야 한다)
-- [ ] 1. 운영 RDS에 [`back/docs/sql/2026-11-unassigned-class-session-ddl.sql`](../back/docs/sql/2026-11-unassigned-class-session-ddl.sql) 실행 (`class_session.staff_id` NULL 허용) — 사용자. NULL 허용만 하므로 지금 운영 중인 jar에도 영향이 없다
+- [x] 1. (2026-11-24 적용, 사용자) 운영 RDS에 [`back/docs/sql/2026-11-unassigned-class-session-ddl.sql`](../back/docs/sql/2026-11-unassigned-class-session-ddl.sql) 실행 (`class_session.staff_id` NULL 허용) — 사용자. NULL 허용만 하므로 지금 운영 중인 jar에도 영향이 없다
 
 배포 후
 - [ ] 2. 관리자 "수업 할당" → 수업 등록에서 담당 직원 "나중에 배정 (미정)"으로 등록 → 목록 직원 칸 "미정", 직원 필터 "직원 미정"
