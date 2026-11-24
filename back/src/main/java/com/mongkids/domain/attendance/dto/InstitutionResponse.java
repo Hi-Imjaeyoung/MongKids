@@ -17,6 +17,7 @@ import com.mongkids.domain.attendance.entity.Institution;
  *
  * @param classSessionCount 지난 수업을 포함한 전체 할당 수업
  * @param upcomingClassCount 아직 끝나지 않은 수업 (오늘 남은 수업 포함)
+ * @param unassignedUpcomingCount 그 가운데 직원 미정 수업 (EMP-FR-021)
  * @param nextClass 가장 먼저 다가오는 수업. 없으면 null
  * @param schedules 앞으로 수업을 시간대별로 묶은 요일 (예: 월·수 10:00–11:00)
  */
@@ -28,6 +29,7 @@ public record InstitutionResponse(
 	double longitude,
 	long classSessionCount,
 	long upcomingClassCount,
+	long unassignedUpcomingCount,
 	NextClass nextClass,
 	List<Schedule> schedules
 ) {
@@ -39,8 +41,8 @@ public record InstitutionResponse(
 		NextClass next = upcoming.isEmpty() ? null
 			: new NextClass(upcoming.get(0).classDate(), upcoming.get(0).startTime());
 		return new InstitutionResponse(institution.getId(), institution.getName(), institution.getAddress(),
-			institution.getLatitude(), institution.getLongitude(), classSessionCount, upcoming.size(), next,
-			schedules(upcoming));
+			institution.getLatitude(), institution.getLongitude(), classSessionCount, upcoming.size(),
+			upcoming.stream().filter(UpcomingClass::unassigned).count(), next, schedules(upcoming));
 	}
 
 	// 같은 시작·끝 시각끼리 요일을 모은다. 첫 요일, 시작 시각 순
@@ -56,7 +58,7 @@ public record InstitutionResponse(
 			.toList();
 	}
 
-	public record UpcomingClass(LocalDate classDate, LocalTime startTime, LocalTime endTime) {
+	public record UpcomingClass(LocalDate classDate, LocalTime startTime, LocalTime endTime, boolean unassigned) {
 	}
 
 	public record NextClass(LocalDate classDate, LocalTime startTime) {

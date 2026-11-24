@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -725,6 +727,77 @@ class AttendanceIntegrationTest {
 	}
 
 	@Test
+	@DisplayName("직원 미정 수업: 직원 없이 등록하면 겹침을 보지 않고, 직원 화면·하루 기록에 안 나오며, 일괄 배정은 겹치거나 이미 배정된 수업이 있으면 하나도 배정하지 않는다")
+	void unassignedClassSessions() throws Exception {
+		// given: 박하늘은 수요일(11/4) 10:00 수업이 이미 있다
+		LoginMemberResponse staff = register("1", MemberRole.STAFF);
+		LoginMemberResponse other = register("2", MemberRole.STAFF);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		session(staff, institution, TODAY.plusDays(2), 10);
+
+		// when: 2026-11-02(월) ~ 11-08(일) 월·수 10:30, 직원 미정. 겹침 검사 없이 2회
+		ResultActions created = createSessions(admin, null, TODAY, TODAY.plusDays(6), List.of("MONDAY", "WEDNESDAY"),
+			"10:30", "11:20")
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.data[0].staffId").doesNotExist())
+			.andExpect(jsonPath("$.data[0].staffName").doesNotExist());
+		List<Long> unassignedIds = idsOf(created);
+
+		// then: 목록·미정 필터, 기관 표, 캘린더 미정 줄
+		mockMvc.perform(get("/api/v1/admin/attendance/classes").cookie(admin)
+				.param("from", TODAY.toString()).param("to", TODAY.plusDays(6).toString()))
+			.andExpect(jsonPath("$.data.length()").value(3));
+		mockMvc.perform(get("/api/v1/admin/attendance/classes").cookie(admin).param("unassigned", "true")
+				.param("from", TODAY.toString()).param("to", TODAY.plusDays(6).toString()))
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.data[0].classSession.classDate").value("2026-11-02"));
+		mockMvc.perform(get("/api/v1/admin/institutions").cookie(admin))
+			.andExpect(jsonPath("$.data[1].name").value("해님어린이집"))
+			.andExpect(jsonPath("$.data[1].upcomingClassCount").value(3))
+			.andExpect(jsonPath("$.data[1].unassignedUpcomingCount").value(2));
+		mockMvc.perform(calendar(admin, TODAY, TODAY.plusDays(6)))
+			.andExpect(jsonPath("$.data.staffs.length()").value(1))
+			.andExpect(jsonPath("$.data.unassigned.length()").value(2))
+			.andExpect(jsonPath("$.data.unassigned[0].date").value("2026-11-02"))
+			.andExpect(jsonPath("$.data.unassigned[0].classCount").value(1));
+		mockMvc.perform(calendar(admin, TODAY, TODAY.plusDays(6)).param("staffId", staff.id().toString()))
+			.andExpect(jsonPath("$.data.unassigned.length()").value(0));
+		mockMvc.perform(get("/api/v1/admin/attendance/days").cookie(admin)
+				.param("from", TODAY.toString()).param("to", TODAY.plusDays(6).toString()))
+			.andExpect(jsonPath("$.data.length()").value(1));
+		mockMvc.perform(get("/api/v1/attendance/days/today").cookie(tokenCookie(other)))
+			.andExpect(jsonPath("$.data.classes.length()").value(0));
+
+		// 일괄 배정: 박하늘은 수요일 10:00 수업과 겹쳐 하나도 배정하지 않는다
+		assignStaff(admin, unassignedIds, staff.id())
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.error.code").value("E014"));
+		assignStaff(admin, unassignedIds, other.id())
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.data[0].staffName").value("직원2"))
+			.andExpect(jsonPath("$.data[1].staffId").value(other.id()));
+		assignStaff(admin, unassignedIds, other.id())
+			.andExpect(status().isConflict())
+			.andExpect(jsonPath("$.error.code").value("E021"));
+		mockMvc.perform(get("/api/v1/attendance/days/today").cookie(tokenCookie(other)))
+			.andExpect(jsonPath("$.data.classes.length()").value(1));
+
+		// 한 회 수정으로 다시 미정으로 돌리고, 미정 수업은 고른 수업끼리 겹치면 배정하지 않는다
+		updateSession(admin, unassignedIds.get(0), null, "10:30", "11:20")
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.staffId").doesNotExist());
+		Long twin = idsOf(createSessions(admin, null, TODAY, TODAY, List.of("MONDAY"), "11:00", "11:50")).get(0);
+		assignStaff(admin, List.of(unassignedIds.get(0), twin), other.id())
+			.andExpect(jsonPath("$.error.code").value("E014"));
+		assignStaff(admin, List.of(999_999L), other.id())
+			.andExpect(status().isNotFound());
+		assignStaff(tokenCookie(staff), List.of(twin), other.id())
+			.andExpect(status().isForbidden());
+	}
+
+	@Test
 	@DisplayName("수업 반복 등록: 기간 안의 고른 요일마다 만들고, 같은 직원 시간이 겹치면 하나도 만들지 않는다")
 	void createClassSessions() throws Exception {
 		LoginMemberResponse staff = register("1", MemberRole.STAFF);
@@ -783,19 +856,39 @@ class AttendanceIntegrationTest {
 		List<String> daysOfWeek, String startTime, String endTime) throws Exception {
 		return mockMvc.perform(post("/api/v1/admin/attendance/classes").cookie(cookie)
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(Map.of(
-				"institutionId", institution.getId(), "staffId", staffId, "firstDate", firstDate.toString(),
+			.content(objectMapper.writeValueAsString(withStaff(staffId, Map.of(
+				"institutionId", institution.getId(), "firstDate", firstDate.toString(),
 				"lastDate", lastDate.toString(), "daysOfWeek", daysOfWeek, "startTime", startTime,
-				"endTime", endTime, "target", "햇살반"))));
+				"endTime", endTime, "target", "햇살반")))));
 	}
 
 	private ResultActions updateSession(Cookie cookie, Long classId, Long staffId, String startTime, String endTime)
 		throws Exception {
 		return mockMvc.perform(put("/api/v1/admin/attendance/classes/{id}", classId).cookie(cookie)
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(objectMapper.writeValueAsString(Map.of(
-				"institutionId", institution.getId(), "staffId", staffId, "classDate", TODAY.toString(),
-				"startTime", startTime, "endTime", endTime, "target", "달님반"))));
+			.content(objectMapper.writeValueAsString(withStaff(staffId, Map.of(
+				"institutionId", institution.getId(), "classDate", TODAY.toString(),
+				"startTime", startTime, "endTime", endTime, "target", "달님반")))));
+	}
+
+	// staffId가 null이면 직원 미정 (EMP-FR-021). Map.of는 null 값을 받지 않는다
+	private static Map<String, Object> withStaff(Long staffId, Map<String, Object> body) {
+		Map<String, Object> request = new HashMap<>(body);
+		request.put("staffId", staffId);
+		return request;
+	}
+
+	private ResultActions assignStaff(Cookie cookie, List<Long> classIds, Long staffId) throws Exception {
+		return mockMvc.perform(put("/api/v1/admin/attendance/classes/staff").cookie(cookie)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(objectMapper.writeValueAsString(Map.of("classSessionIds", classIds, "staffId", staffId))));
+	}
+
+	private List<Long> idsOf(ResultActions result) throws Exception {
+		List<Long> ids = new ArrayList<>();
+		objectMapper.readTree(result.andReturn().getResponse().getContentAsString()).get("data")
+			.forEach(item -> ids.add(item.get("classSession").get("id").asLong()));
+		return ids;
 	}
 
 	private ResultActions startDay(Cookie cookie, LocalDate date, double latitude) throws Exception {

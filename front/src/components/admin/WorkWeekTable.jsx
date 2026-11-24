@@ -1,5 +1,6 @@
 import { shortDateLabel, workCalendarAdmin } from '../../data/attendanceAdminContent'
 import { formatClock, formatTime } from '../attendance/attendanceFormat'
+import AdminBadge from './AdminBadge'
 import { calendarStatus } from './attendanceAdminFormat'
 import WorkDayBadge from './WorkDayBadge'
 import './WorkWeekTable.css'
@@ -24,8 +25,11 @@ function timeText(day) {
 }
 
 // 주간 근무 표 (EMP-SCR-006 ③). 직원 × 7일(월~일) 칸과 이번 주 합계. 칸을 누르면 onSelect(staffId, date)
-// dates: 월~일 'YYYY-MM-DD', staffs: WorkCalendarResponse.staffs, today: 오늘 날짜
-function WorkWeekTable({ dates, staffs, today, onSelect }) {
+// dates: 월~일 'YYYY-MM-DD', staffs: WorkCalendarResponse.staffs, today: 오늘 날짜.
+// unassigned(WorkCalendarResponse.unassigned)가 있으면 맨 아래 "미정" 줄을 두고, 칸을 누르면 onSelectUnassigned(date) (EMP-FR-021)
+function WorkWeekTable({ dates, staffs, unassigned = [], today, onSelect, onSelectUnassigned }) {
+  const unassignedByDate = new Map(unassigned.map((day) => [day.date, day.classCount]))
+  const unassignedTotal = dates.reduce((sum, date) => sum + (unassignedByDate.get(date) ?? 0), 0)
   return (
     <div className="work-week-table" role="region" aria-label={workCalendarAdmin.weekListLabel} tabIndex={0}>
       <table>
@@ -93,6 +97,42 @@ function WorkWeekTable({ dates, staffs, today, onSelect }) {
               </tr>
             )
           })}
+          {unassignedTotal > 0 && (
+            <tr className="work-week-table__unassigned">
+              <th scope="row" className="work-week-table__staff">
+                {workCalendarAdmin.unassignedRow}
+              </th>
+              {dates.map((date, index) => {
+                const count = unassignedByDate.get(date)
+                const columnClass = date === today ? 'work-week-table__today-col' : index >= 5 ? 'work-week-table__weekend' : ''
+                const past = date < today
+                return (
+                  <td key={date} className={columnClass || undefined}>
+                    {count ? (
+                      <button
+                        type="button"
+                        className={`work-week-table__cell ${past ? 'work-week-table__cell--rejected' : 'work-week-table__cell--attention'}`}
+                        aria-label={workCalendarAdmin.unassignedCellLabel(shortDateLabel(date))}
+                        onClick={() => onSelectUnassigned(date)}
+                      >
+                        <AdminBadge tone={past ? 'red' : 'yellow'}>{workCalendarAdmin.unassignedRow}</AdminBadge>
+                        <span className="work-week-table__count">{workCalendarAdmin.classCount(count)}</span>
+                        <span className="work-week-table__sub">{workCalendarAdmin.unassignedSub}</span>
+                      </button>
+                    ) : (
+                      <span className="work-week-table__cell work-week-table__cell--empty">-</span>
+                    )}
+                  </td>
+                )
+              })}
+              <td>
+                <div className="work-week-table__sum">
+                  <span className="work-week-table__sum-main">{workCalendarAdmin.unassignedSum(unassignedTotal)}</span>
+                  <span className="work-week-table__sub">{workCalendarAdmin.unassignedSub}</span>
+                </div>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

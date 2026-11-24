@@ -1,6 +1,7 @@
 package com.mongkids.domain.attendance.repository;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,17 +19,24 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 	@EntityGraph(attributePaths = {"institution", "staff"})
 	Optional<ClassSession> findWithInstitutionById(Long id);
 
-	// 관리자 기록 조회 (EMP-FR-003). 직원·기관이 null이면 전체
+	// 관리자 기록 조회 (EMP-FR-003). 직원·기관이 null이면 전체(직원 미정 수업 포함), unassigned면 미정 수업만
 	@EntityGraph(attributePaths = {"institution", "staff"})
 	@Query("""
 		select s from ClassSession s
+		left join s.staff st
 		where s.classDate between :from and :to
-		  and (:staffId is null or s.staff.id = :staffId)
+		  and (:staffId is null or st.id = :staffId)
+		  and (:unassigned = false or s.staff is null)
 		  and (:institutionId is null or s.institution.id = :institutionId)
 		order by s.classDate, s.startTime, s.id
 		""")
 	List<ClassSession> searchForAdmin(@Param("from") LocalDate from, @Param("to") LocalDate to,
-		@Param("staffId") Long staffId, @Param("institutionId") Long institutionId);
+		@Param("staffId") Long staffId, @Param("unassigned") boolean unassigned,
+		@Param("institutionId") Long institutionId);
+
+	// 일괄 배정 (EMP-FR-021)
+	@EntityGraph(attributePaths = {"institution", "staff"})
+	List<ClassSession> findByIdIn(Collection<Long> ids);
 
 	// 직원 본인 할당 조회 (EMP-FR-004), 수업 시간 겹침 확인
 	@EntityGraph(attributePaths = "institution")
@@ -53,8 +61,9 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 	// 기관 표에 보여 줄 앞으로 수업 (EMP-SCR-006). 오늘은 끝 시각이 지나지 않은 수업만. institutionId가 null이면 전체
 	@Query("""
 		select s.institution.id as institutionId, s.classDate as classDate, s.startTime as startTime,
-		       s.endTime as endTime
+		       s.endTime as endTime, st.id as staffId
 		from ClassSession s
+		left join s.staff st
 		where (s.classDate > :today or (s.classDate = :today and s.endTime > :now))
 		  and (:institutionId is null or s.institution.id = :institutionId)
 		order by s.classDate, s.startTime, s.id
@@ -71,6 +80,9 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 		LocalTime getStartTime();
 
 		LocalTime getEndTime();
+
+		// null이면 직원 미정
+		Long getStaffId();
 	}
 
 	interface InstitutionSessionCount {

@@ -87,6 +87,11 @@ function InstitutionList({ institutions, selectedId, onAddClass, onEdit, onDelet
                     <td className="institution-list__number">
                       {text.upcomingCount(institution.upcomingClassCount)}
                       <span className="institution-list__sub">{text.totalCount(institution.classSessionCount)}</span>
+                      {institution.unassignedUpcomingCount > 0 && (
+                        <span className="institution-list__sub institution-list__sub--warn">
+                          {text.unassignedCount(institution.unassignedUpcomingCount)}
+                        </span>
+                      )}
                     </td>
                     <td>
                       <div className="institution-list__actions">

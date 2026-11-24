@@ -69,7 +69,8 @@ public enum ErrorCode {
 	CLASS_START_TOO_EARLY(HttpStatus.CONFLICT, "E017", "수업 당일부터 수업을 시작할 수 있습니다."),
 	DAY_CHECK_PAST(HttpStatus.CONFLICT, "E018", "지난 날짜의 수업 시작·종료는 관리자에게 요청해 주세요."),
 	DAY_NO_CLASSES(HttpStatus.CONFLICT, "E019", "그날 할당된 수업이 없습니다."),
-	DAY_CHECK_NOT_PENDING(HttpStatus.CONFLICT, "E020", "승인 대기 중인 기록이 아닙니다.");
+	DAY_CHECK_NOT_PENDING(HttpStatus.CONFLICT, "E020", "승인 대기 중인 기록이 아닙니다."),
+	CLASS_SESSION_ALREADY_ASSIGNED(HttpStatus.CONFLICT, "E021", "이미 직원이 배정된 수업이 있습니다.");
 
 	private final HttpStatus status;
 	private final String code;

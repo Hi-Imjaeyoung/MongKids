@@ -9,7 +9,7 @@ function initialForm(editing, defaultDate, defaultInstitutionId) {
     const { classSession } = editing
     return {
       institutionId: String(editing.institutionId),
-      staffId: String(editing.staffId),
+      staffId: editing.staffId ? String(editing.staffId) : '',
       target: classSession.target ?? '',
       firstDate: classSession.classDate,
       lastDate: classSession.classDate,
@@ -70,7 +70,7 @@ function ClassSessionForm({
     }
     const common = {
       institutionId: Number(form.institutionId),
-      staffId: Number(form.staffId),
+      staffId: form.staffId ? Number(form.staffId) : null,
       startTime: form.startTime,
       endTime: form.endTime,
       target: form.target.trim() || null,
@@ -118,11 +118,10 @@ function ClassSessionForm({
         <select
           id="session-staff"
           className="admin-form__input"
-          required
           value={form.staffId}
           onChange={(event) => change({ staffId: event.target.value })}
         >
-          <option value="">{text.choose}</option>
+          <option value="">{text.staffNone}</option>
           {staffs.map((staff) => (
             <option key={staff.id} value={staff.id}>
               {staff.name}

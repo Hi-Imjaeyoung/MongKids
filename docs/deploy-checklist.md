@@ -321,6 +321,16 @@ DDL 변경 없음. 사진 S3 삭제에 새 권한이 필요하다.
 - [x] (2026-11-05 적용, 사용자) 2단계 실행: `review.type` 컬럼 삭제, `idx_review_created_at` 생성. 운영에는 `idx_review_type_created_at` 인덱스가 원래 없었다
 - [x] 프론트 후기 저장 요청에서 `type: 'CLASS'`(`DEFAULT_REVIEW_TYPE`) 제거 (2026-11-05, `feature/remove-review-type`). 서버가 `type`을 무시하므로 2단계 전후 언제 배포해도 된다
 
+## M-2. 직원 미정 수업 (EMP-FR-021, #114)
+
+병합 전 (백엔드가 `validate`로 기동한다. 새 jar는 직원 없이 저장하므로 DDL이 먼저여야 한다)
+- [ ] 1. 운영 RDS에 [`back/docs/sql/2026-11-unassigned-class-session-ddl.sql`](../back/docs/sql/2026-11-unassigned-class-session-ddl.sql) 실행 (`class_session.staff_id` NULL 허용) — 사용자. NULL 허용만 하므로 지금 운영 중인 jar에도 영향이 없다
+
+배포 후
+- [ ] 2. 관리자 "수업 할당" → 수업 등록에서 담당 직원 "나중에 배정 (미정)"으로 등록 → 목록 직원 칸 "미정", 직원 필터 "직원 미정"
+- [ ] 3. 미정 수업 고르기 → 직원 골라 "직원 배정" → 그 직원 수업 체크 화면에 보이는지. 겹치는 수업을 고르면 아무것도 배정되지 않는지
+- [ ] 4. "기관" 표의 "미배정 N회", "근무 캘린더" 주간 "미정" 줄 → 칸 → 그날 미정 수업에서 배정, 월간 "미정 N개"
+
 ## O. 수업 계획안 PDF (SCR-027, FR-032, #107, [ADR-009](adr/ADR-009-monthly-plan-restricted-preview.md))
 
 관리자가 `/plans`에서 PDF를 Presigned URL로 사진 버킷 `plans/*`에 올리고, 화면은 서버가 S3에서 읽어 주는 PDF(`/api/v1/class-plans/{id}/file`, 원본은 `/api/v1/admin/class-plans/{id}/original-file`)를 pdf.js로 그린다. 공개 CloudFront 주소는 쓰지 않는다.

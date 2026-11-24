@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 직원에게 할당된 날짜별 수업 한 회 (EMP-FR-004). 수업 시작·종료 기록은 이 수업마다 1건이다.
+ * 담당 직원은 비워 둘 수 있다(미정, EMP-FR-021). 미정 수업은 직원 화면·하루 시작·종료 판정에 들어가지 않는다.
  */
 @Entity
 @Table(
@@ -41,8 +42,9 @@ public class ClassSession extends BaseTimeEntity {
 	@JoinColumn(name = "institution_id", nullable = false)
 	private Institution institution;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "staff_id", nullable = false)
+	// null이면 직원 미정 (EMP-FR-021)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "staff_id")
 	private Member staff;
 
 	@Column(nullable = false)
@@ -70,7 +72,18 @@ public class ClassSession extends BaseTimeEntity {
 	}
 
 	public boolean isAssignedTo(Long memberId) {
-		return staff.getId().equals(memberId);
+		return staff != null && staff.getId().equals(memberId);
+	}
+
+	public boolean isUnassigned() {
+		return staff == null;
+	}
+
+	/**
+	 * 미정 수업에 직원을 배정한다 (EMP-FR-021 일괄 배정).
+	 */
+	public void assignStaff(Member staff) {
+		this.staff = staff;
 	}
 
 	public void update(Institution institution, Member staff, LocalDate classDate, LocalTime startTime,

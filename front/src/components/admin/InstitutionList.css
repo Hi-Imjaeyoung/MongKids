@@ -117,3 +117,9 @@
   color: var(--text-sub);
   font-size: 13px;
 }
+
+/* 직원 미정 수업 (EMP-FR-021) */
+.institution-list__sub--warn {
+  color: var(--yellow-text);
+  font-weight: 700;
+}

@@ -1,13 +1,16 @@
 import { longDateLabel, workCalendarAdmin } from '../../data/attendanceAdminContent'
+import AdminBadge from './AdminBadge'
 import { calendarStatus } from './attendanceAdminFormat'
 import WorkDayBadge from './WorkDayBadge'
 import './WorkMonthCalendar.css'
 
 // 월간 근무 달력 (EMP-SCR-006 ⑤). 월요일부터 7일씩 그 달이 든 주를 모두 보여 주고, 다른 달 날짜는 흐리게 숫자만.
 // 날짜마다 그날 수업이 있는 직원의 상태·수업 수. 날짜를 누르면 onSelectDate(date)로 그 주 주간 보기
-// weeks: [['YYYY-MM-DD' × 7]], month: 그 달 1일, staffs: WorkCalendarResponse.staffs
-function WorkMonthCalendar({ weeks, month, staffs, today, onSelectDate }) {
+// weeks: [['YYYY-MM-DD' × 7]], month: 그 달 1일, staffs: WorkCalendarResponse.staffs.
+// unassigned가 있으면 날짜마다 "미정 N개" 줄을 더한다 (EMP-FR-021)
+function WorkMonthCalendar({ weeks, month, staffs, unassigned = [], today, onSelectDate }) {
   const monthKey = month.slice(0, 7)
+  const unassignedByDate = new Map(unassigned.map((day) => [day.date, day.classCount]))
   const linesByDate = new Map()
   staffs.forEach((staff) => {
     staff.days.forEach((day) => {
@@ -37,7 +40,10 @@ function WorkMonthCalendar({ weeks, month, staffs, today, onSelectDate }) {
                 )
               }
               const lines = linesByDate.get(date) ?? []
-              const attention = lines.some((line) => ['yellow', 'red'].includes(calendarStatus(line.day, today).tone))
+              const unassignedCount = unassignedByDate.get(date)
+              const attention =
+                Boolean(unassignedCount) ||
+                lines.some((line) => ['yellow', 'red'].includes(calendarStatus(line.day, today).tone))
               const classNames = [
                 'work-month-calendar__day',
                 date === today && 'work-month-calendar__day--today',
@@ -64,6 +70,12 @@ function WorkMonthCalendar({ weeks, month, staffs, today, onSelectDate }) {
                       </span>
                     </span>
                   ))}
+                  {unassignedCount && (
+                    <span className="work-month-calendar__line">
+                      <AdminBadge tone={date < today ? 'red' : 'yellow'}>{workCalendarAdmin.unassignedRow}</AdminBadge>
+                      <span className="work-month-calendar__count">{workCalendarAdmin.monthCount(unassignedCount)}</span>
+                    </span>
+                  )}
                 </button>
               )
             })}
