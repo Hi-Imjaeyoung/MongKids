@@ -1,6 +1,8 @@
 package com.mongkids.domain.attendance.service;
 
+import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mongkids.domain.attendance.dto.InstitutionDeletePreviewResponse;
 import com.mongkids.domain.attendance.dto.InstitutionRequest;
 import com.mongkids.domain.attendance.dto.InstitutionResponse;
+import com.mongkids.domain.attendance.dto.InstitutionResponse.UpcomingClass;
 import com.mongkids.domain.attendance.entity.DayCheck;
 import com.mongkids.domain.attendance.entity.DayEnd;
 import com.mongkids.domain.attendance.entity.DayEndImage;
@@ -25,6 +28,7 @@ import com.mongkids.domain.attendance.repository.ClassEndImageRepository;
 import com.mongkids.domain.attendance.repository.ClassEndRepository;
 import com.mongkids.domain.attendance.repository.ClassSessionRepository;
 import com.mongkids.domain.attendance.repository.ClassSessionRepository.InstitutionSessionCount;
+import com.mongkids.domain.attendance.repository.ClassSessionRepository.UpcomingSession;
 import com.mongkids.domain.attendance.repository.ClassStartAttemptRepository;
 import com.mongkids.domain.attendance.repository.ClassStartRepository;
 import com.mongkids.domain.attendance.repository.DayCheckAttemptRepository;
@@ -61,14 +65,19 @@ public class InstitutionService {
 	private final DayCheckAttemptRepository dayCheckAttemptRepository;
 	private final MemberService memberService;
 	private final ApplicationEventPublisher eventPublisher;
+	private final Clock clock;
 
 	public List<InstitutionResponse> getInstitutions(Long adminId) {
 		memberService.validateAdmin(adminId);
 		Map<Long, Long> counts = classSessionRepository.countByInstitution().stream()
 			.collect(Collectors.toMap(InstitutionSessionCount::getInstitutionId,
 				InstitutionSessionCount::getSessionCount));
+		Map<Long, List<UpcomingClass>> upcoming = findUpcoming(null).stream()
+			.collect(Collectors.groupingBy(UpcomingSession::getInstitutionId,
+				Collectors.mapping(InstitutionService::toUpcomingClass, Collectors.toList())));
 		return institutionRepository.findAllByOrderByNameAscIdAsc().stream()
-			.map(institution -> InstitutionResponse.of(institution, counts.getOrDefault(institution.getId(), 0L)))
+			.map(institution -> InstitutionResponse.of(institution, counts.getOrDefault(institution.getId(), 0L),
+				upcoming.getOrDefault(institution.getId(), List.of())))
 			.toList();
 	}
 
@@ -82,7 +91,7 @@ public class InstitutionService {
 			.longitude(request.longitude())
 			.build();
 		institutionRepository.save(institution);
-		return InstitutionResponse.of(institution, 0);
+		return InstitutionResponse.of(institution, 0, List.of());
 	}
 
 	@Transactional
@@ -91,7 +100,8 @@ public class InstitutionService {
 		Institution institution = getInstitution(institutionId);
 		institution.update(request.name().strip(), request.address().strip(), request.latitude(),
 			request.longitude());
-		return InstitutionResponse.of(institution, classSessionRepository.countByInstitutionId(institutionId));
+		return InstitutionResponse.of(institution, classSessionRepository.countByInstitutionId(institutionId),
+			findUpcoming(institutionId).stream().map(InstitutionService::toUpcomingClass).toList());
 	}
 
 	/**
@@ -151,6 +161,16 @@ public class InstitutionService {
 			imageKeys.removeAll(stillUsed);
 		}
 		eventPublisher.publishEvent(new AttendanceImagesDeletedEvent(List.copyOf(imageKeys)));
+	}
+
+	// 아직 끝나지 않은 수업 (오늘은 끝 시각이 지나지 않은 수업만). institutionId가 null이면 모든 기관
+	private List<UpcomingSession> findUpcoming(Long institutionId) {
+		LocalDateTime now = LocalDateTime.now(clock);
+		return classSessionRepository.findUpcoming(now.toLocalDate(), now.toLocalTime(), institutionId);
+	}
+
+	private static UpcomingClass toUpcomingClass(UpcomingSession session) {
+		return new UpcomingClass(session.getClassDate(), session.getStartTime(), session.getEndTime());
 	}
 
 	Institution getInstitution(Long institutionId) {

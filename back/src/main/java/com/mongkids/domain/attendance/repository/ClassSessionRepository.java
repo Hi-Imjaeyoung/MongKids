@@ -1,6 +1,7 @@
 package com.mongkids.domain.attendance.repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,29 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 		group by s.institution.id
 		""")
 	List<InstitutionSessionCount> countByInstitution();
+
+	// 기관 표에 보여 줄 앞으로 수업 (EMP-SCR-006). 오늘은 끝 시각이 지나지 않은 수업만. institutionId가 null이면 전체
+	@Query("""
+		select s.institution.id as institutionId, s.classDate as classDate, s.startTime as startTime,
+		       s.endTime as endTime
+		from ClassSession s
+		where (s.classDate > :today or (s.classDate = :today and s.endTime > :now))
+		  and (:institutionId is null or s.institution.id = :institutionId)
+		order by s.classDate, s.startTime, s.id
+		""")
+	List<UpcomingSession> findUpcoming(@Param("today") LocalDate today, @Param("now") LocalTime now,
+		@Param("institutionId") Long institutionId);
+
+	interface UpcomingSession {
+
+		Long getInstitutionId();
+
+		LocalDate getClassDate();
+
+		LocalTime getStartTime();
+
+		LocalTime getEndTime();
+	}
 
 	interface InstitutionSessionCount {
 

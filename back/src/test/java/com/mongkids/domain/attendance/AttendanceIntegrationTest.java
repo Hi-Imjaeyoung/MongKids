@@ -606,7 +606,11 @@ class AttendanceIntegrationTest {
 	void institutions() throws Exception {
 		LoginMemberResponse staff = register("1", MemberRole.STAFF);
 		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		// 08:00–09:00 수업은 지금(09:00) 끝나 앞으로 수업에서 빠진다
+		session(staff, institution, TODAY, 8);
 		session(staff, institution, TODAY, 10);
+		session(staff, institution, TODAY.plusDays(2), 10);
+		session(staff, institution, TODAY.plusDays(7), 14);
 		startDay(tokenCookie(staff), TODAY, NEAR_LAT).andExpect(jsonPath("$.data.confirmed").value(true));
 
 		mockMvc.perform(get("/api/v1/admin/institutions").cookie(tokenCookie(staff)))
@@ -625,12 +629,25 @@ class AttendanceIntegrationTest {
 		mockMvc.perform(get("/api/v1/admin/institutions").cookie(admin))
 			.andExpect(jsonPath("$.data.length()").value(3))
 			.andExpect(jsonPath("$.data[0].name").value("별빛유치원"))
-			.andExpect(jsonPath("$.data[2].classSessionCount").value(1));
+			.andExpect(jsonPath("$.data[2].classSessionCount").value(4))
+			.andExpect(jsonPath("$.data[2].upcomingClassCount").value(3))
+			.andExpect(jsonPath("$.data[2].nextClass.classDate").value("2026-11-02"))
+			.andExpect(jsonPath("$.data[2].nextClass.startTime").value("10:00:00"))
+			.andExpect(jsonPath("$.data[2].schedules.length()").value(2))
+			.andExpect(jsonPath("$.data[2].schedules[0].daysOfWeek.length()").value(2))
+			.andExpect(jsonPath("$.data[2].schedules[0].daysOfWeek[0]").value("MONDAY"))
+			.andExpect(jsonPath("$.data[2].schedules[0].daysOfWeek[1]").value("WEDNESDAY"))
+			.andExpect(jsonPath("$.data[2].schedules[0].startTime").value("10:00:00"))
+			.andExpect(jsonPath("$.data[2].schedules[1].daysOfWeek[0]").value("MONDAY"))
+			.andExpect(jsonPath("$.data[2].schedules[1].endTime").value("15:00:00"))
+			.andExpect(jsonPath("$.data[0].nextClass").doesNotExist())
+			.andExpect(jsonPath("$.data[0].schedules.length()").value(0));
 
 		saveInstitution(admin, put("/api/v1/admin/institutions/{id}", institution.getId()), 37.51)
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.data.latitude").value(37.51))
-			.andExpect(jsonPath("$.data.classSessionCount").value(1));
+			.andExpect(jsonPath("$.data.classSessionCount").value(4))
+			.andExpect(jsonPath("$.data.upcomingClassCount").value(3));
 		mockMvc.perform(get("/api/v1/admin/attendance/days").cookie(admin)
 				.param("from", TODAY.toString()).param("to", TODAY.toString()))
 			.andExpect(jsonPath("$.data[0].day.start.distanceMeters").value(56));
