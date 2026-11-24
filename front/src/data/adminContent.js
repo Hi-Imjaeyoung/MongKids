@@ -17,6 +17,14 @@ export const adminPage = {
 // 헤더 이름 옆 진입 링크 (ADMIN만)
 export const headerAdminLink = '관리자'
 
+// 관리자 화면 전용 헤더: 로고 | 오늘 날짜 / [이름]님 / 로그아웃 (2026-11-24, #117)
+export const adminHeader = {
+  homeLabel: '몽키즈 홈',
+  today: (date) => `${date.getMonth() + 1}월 ${date.getDate()}일`,
+  memberSuffix: '님',
+  logout: '로그아웃',
+}
+
 // 처리하지 않은(신규) 상담 건수 배지 (FR-005). 화면에는 숫자만 보이고 화면 읽기 프로그램에는 이 문구를 읽어 준다
 export const newConsultationCountLabel = (count) => `신규 상담 ${count}건`
 
@@ -25,6 +33,7 @@ export const adminTabs = [
   { id: 'consultations', label: '상담 신청' },
   { id: 'reviews', label: '후기 관리' },
   { id: 'members', label: '회원 · 직원 권한' },
+  { id: 'review-codes', label: '후기 작성 코드' },
   { id: 'work-calendar', label: '근무 캘린더', group: '근태 관리' },
   { id: 'class-starts', label: '수업 시작·종료 승인', group: '근태 관리' },
   { id: 'class-records', label: '수업 기록', group: '근태 관리' },
@@ -150,4 +159,60 @@ export const memberAdmin = {
   grantConfirm: (name) => `${name} 님을 직원으로 지정할까요?\n수업 현장·연구소 게시물을 쓰고 자기 글을 수정·삭제할 수 있게 됩니다.`,
   revokeConfirm: (name) =>
     `${name} 님의 직원 권한을 해제할까요?\n이미 쓴 게시물은 남지만, 새 글 작성과 자기 글 수정·삭제는 할 수 없게 됩니다.`,
+}
+
+// 후기 작성 코드 (FR-029, ADR-005). 후기 작성 때 코드 확인(FR-030)은 따로 만든다
+export const reviewCodeKinds = [
+  { id: 'SINGLE', label: '1회용', description: '1:1 고객에게 줘요. 한 번 쓰면 끝나요.', tone: 'yellow' },
+  { id: 'BUNDLE', label: '묶음', description: '기관을 통해 보호자에게 나눠 줘요. 사용 횟수를 정해요.', tone: 'blue' },
+]
+
+export const reviewCodeStatuses = {
+  ACTIVE: { label: '사용 가능', tone: 'green' },
+  USED_UP: { label: '다 씀', tone: 'gray' },
+  EXPIRED: { label: '만료', tone: 'gray' },
+  REVOKED: { label: '폐기', tone: 'red' },
+}
+
+// active 조건: ALL은 전체, ACTIVE는 사용 가능한 코드만, ENDED는 끝난 코드(다 씀·만료·폐기)만
+export const reviewCodeFilters = [
+  { id: 'ALL', label: '전체' },
+  { id: 'ACTIVE', label: '사용 가능' },
+  { id: 'ENDED', label: '끝난 코드' },
+]
+
+export const reviewCodeAdmin = {
+  title: '후기 작성 코드',
+  description:
+    '후기는 코드를 받은 회원만 쓸 수 있어요. 1:1 고객에게는 1회용 코드를, 기관에는 보호자에게 나눠 줄 묶음 코드를 발급해요.',
+  formTitle: '새 코드 발급',
+  kind: '종류',
+  maxUses: '사용 횟수',
+  expiresOn: '만료일',
+  expiresHint: '만료일까지 쓸 수 있어요. 오늘부터 1년 안으로 정해요.',
+  memo: '배포처 메모 (선택)',
+  memoPlaceholder: '예: 햇살어린이집 11월 수업',
+  memoHint: '어디에 나눠 준 코드인지 적어 두세요. 보호자 이름 같은 개인정보는 적지 않아요.',
+  issue: '코드 발급',
+  issuing: '발급하는 중…',
+  issued: '코드를 발급했어요. 고객이나 기관에 전달해 주세요.',
+  copy: '복사',
+  copied: '복사됨',
+  // 처음 열 때 기본값 (사용자 결정 2026-11-24: 만료 30일 뒤, 묶음 30회)
+  defaultExpiryDays: 30,
+  defaultMaxUses: 30,
+  maxMaxUses: 500,
+  maxExpiryDays: 365,
+  memoMaxLength: 50,
+  filterLabel: '코드 상태',
+  listLabel: '발급한 코드 목록',
+  columns: { code: '코드', kind: '종류', usage: '사용', expiresOn: '만료일', status: '상태' },
+  issuedAt: '발급',
+  bundleUsage: (used, max) => `${used} / ${max}회`,
+  singleUsed: '사용함',
+  singleUnused: '안 씀',
+  empty: '조건에 맞는 코드가 없어요.',
+  revoke: '폐기',
+  revokeLabel: (code) => `${code} 폐기`,
+  revokeConfirm: (code) => `${code} 코드를 폐기할까요?\n폐기하면 이 코드로 더는 후기를 쓸 수 없어요. 이미 쓴 후기는 그대로 남아요.`,
 }

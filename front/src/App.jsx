@@ -5,6 +5,7 @@ import LoginModal from './components/auth/LoginModal'
 import InstitutionConsultationModal from './components/consultation/InstitutionConsultationModal'
 import PersonalConsultationModal from './components/consultation/PersonalConsultationModal'
 import QuoteConsultationModal from './components/consultation/QuoteConsultationModal'
+import AdminHeader from './components/layout/AdminHeader'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import FloatingMenu from './components/layout/FloatingMenu'
@@ -42,6 +43,9 @@ const NO_MOBILE_CTA_PREFIXES = ['/programs/']
 const STAFF_TOOL_PATHS = ['/attendance']
 // 빠른 상담 버튼만 두지 않는 화면 (SCR-014 관리자: 목록·모달 버튼을 가린다)
 const NO_FLOATING_MENU_PATHS = ['/admin']
+// 사이트 헤더 대신 관리자 헤더(로고 · 날짜 · 이름 · 로그아웃)를 쓰고 푸터를 두지 않는 화면 (SCR-014, #117).
+// 관리자 헤더는 관리자로 로그인했을 때만 쓰고, 그 전에는 로그인할 수 있게 사이트 헤더를 둔다
+const ADMIN_TOOL_PATHS = ['/admin']
 
 function hasMobileCta(pathname) {
   return (
@@ -104,6 +108,7 @@ function App() {
   // 하단 상담 바가 없는 화면은 바 높이만큼 비워 둔 여백(--mobile-cta-height)도 없앤다
   const showMobileCta = hasMobileCta(pathname)
   const isStaffTool = STAFF_TOOL_PATHS.includes(pathname)
+  const isAdminTool = ADMIN_TOOL_PATHS.includes(pathname)
   useEffect(() => {
     document.documentElement.classList.toggle('no-mobile-cta', !showMobileCta)
   }, [showMobileCta])
@@ -136,14 +141,18 @@ function App() {
 
   return (
     <>
-      <Header
-        member={member}
-        newConsultationCount={newConsultationCount}
-        onLoginClick={openLogin}
-        onLogoutClick={handleLogout}
-        onInstitutionConsultClick={openConsult}
-        onPersonalConsultClick={openPersonalConsult}
-      />
+      {isAdminTool && isAdmin(member) ? (
+        <AdminHeader member={member} onLogoutClick={handleLogout} />
+      ) : (
+        <Header
+          member={member}
+          newConsultationCount={newConsultationCount}
+          onLoginClick={openLogin}
+          onLogoutClick={handleLogout}
+          onInstitutionConsultClick={openConsult}
+          onPersonalConsultClick={openPersonalConsult}
+        />
+      )}
       <main className={`main ${isStaffTool ? 'main--staff-tool' : ''}`}>
         <Suspense fallback={null}>
           <Routes>
@@ -183,7 +192,7 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      {!isStaffTool && <Footer />}
+      {!isStaffTool && !isAdminTool && <Footer />}
       {!isStaffTool && !NO_FLOATING_MENU_PATHS.includes(pathname) && <FloatingMenu />}
       {showMobileCta && (
         <MobileCtaBar onInstitutionConsultClick={openConsult} onPersonalConsultClick={openPersonalConsult} />

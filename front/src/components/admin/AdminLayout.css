@@ -1,10 +1,13 @@
+/* 관리자 헤더(AdminHeader) 아래 화면 전체. 푸터가 없어 남은 높이를 다 채운다 */
 .admin-layout {
-  min-height: calc(100vh - var(--header-height));
-  padding: 32px 0 64px;
+  min-height: calc(100vh - var(--admin-header-height));
+  padding: 24px 0 48px;
   background: var(--bg-soft);
 }
 
+/* 업무 화면이라 최대 폭을 두지 않고 좌우 24px만 띄운다 (#117) */
 .admin-layout__inner {
+  padding: 0 24px;
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -13,7 +16,7 @@
 
 .admin-layout__nav {
   display: flex;
-  flex: 1 1 200px;
+  flex: 0 1 220px;
   flex-direction: column;
   gap: 6px;
   max-width: 100%;
@@ -88,6 +91,14 @@
 @media (max-width: 640px) {
   .admin-layout {
     padding-top: 20px;
+  }
+
+  .admin-layout__inner {
+    padding: 0 16px;
+  }
+
+  .admin-layout__nav {
+    flex-basis: 100%;
   }
 
   .admin-layout__nav {
