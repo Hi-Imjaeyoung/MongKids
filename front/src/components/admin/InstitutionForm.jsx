@@ -11,7 +11,7 @@ function toNumber(value) {
 
 // 기관 등록·수정 (EMP-FR-012). 기관명(키워드)이나 주소로 찾기 → 지도에서 핀 보정 → 위도·경도 확인 후 저장.
 // 지도를 못 불러오면(키 없음·실패) 위도·경도를 직접 입력한다.
-// institution이 null이면 새 기관. onSave(body), onDelete(), onCancel(). 부모가 key로 폼을 새로 만든다
+// institution이 null이면 새 기관. onSave(body), onDelete()(삭제 확인으로 넘어감), onCancel(). 부모가 key로 폼을 새로 만든다
 function InstitutionForm({ institution, busy, onSave, onDelete, onCancel }) {
   const [form, setForm] = useState(() => ({
     name: institution?.name ?? '',
@@ -102,7 +102,6 @@ function InstitutionForm({ institution, busy, onSave, onDelete, onCancel }) {
   }
 
   const mapReady = map.status === 'ready'
-  const inUse = institution && institution.classSessionCount > 0
   const title = institution ? text.editTitle(institution.name) : text.createTitle
 
   return (
@@ -276,8 +275,7 @@ function InstitutionForm({ institution, busy, onSave, onDelete, onCancel }) {
           <button
             type="button"
             className="admin-form__button admin-form__button--danger institution-form__delete"
-            disabled={busy || inUse}
-            title={inUse ? text.deleteLocked : undefined}
+            disabled={busy}
             onClick={onDelete}
           >
             {text.delete}

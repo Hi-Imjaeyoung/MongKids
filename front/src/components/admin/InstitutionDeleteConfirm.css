@@ -1,0 +1,36 @@
+.institution-delete__lead {
+  margin: 0;
+  font-size: 14px;
+  word-break: keep-all;
+}
+
+.institution-delete__counts {
+  grid-template-columns: 120px minmax(0, 1fr);
+}
+
+.institution-delete__hint {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-sub);
+  font-size: 13px;
+  word-break: keep-all;
+}
+
+.institution-delete__agree {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 700;
+  word-break: keep-all;
+  cursor: pointer;
+}
+
+.institution-delete__agree-input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--danger);
+}
