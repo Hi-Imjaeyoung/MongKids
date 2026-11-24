@@ -1,0 +1,32 @@
+.class-assign-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--yellow);
+  border-radius: var(--radius-md);
+  background: var(--yellow-soft);
+}
+
+.class-assign-bar__title {
+  align-self: center;
+  font-size: 15px;
+}
+
+.class-assign-bar__field {
+  width: min(100%, 220px);
+}
+
+.class-assign-bar__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.class-assign-bar__hint {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--yellow-text);
+  font-size: 13px;
+  word-break: keep-all;
+}

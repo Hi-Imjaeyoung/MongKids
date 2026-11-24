@@ -1,9 +1,16 @@
 import { useCallback, useState } from 'react'
-import { createClassSessions, deleteClassSession, getClassRecords, updateClassSession } from '../../api/admin'
+import {
+  assignClassSessionsStaff,
+  createClassSessions,
+  deleteClassSession,
+  getClassRecords,
+  updateClassSession,
+} from '../../api/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import AdminNotice from '../../components/admin/AdminNotice'
 import AdminQueryBody from '../../components/admin/AdminQueryBody'
 import AdminSection from '../../components/admin/AdminSection'
+import ClassAssignBar from '../../components/admin/ClassAssignBar'
 import ClassFilters from '../../components/admin/ClassFilters'
 import ClassSessionForm from '../../components/admin/ClassSessionForm'
 import ClassSessionTable from '../../components/admin/ClassSessionTable'
@@ -19,11 +26,18 @@ import '../../components/admin/AdminForm.css'
 const NEW = 'new'
 
 // 수업 할당 (EMP-FR-004). 기본은 오늘부터 2주.
-// "수업 등록"을 누르면 반복 등록 폼을, 목록의 수정을 누르면 그 수업 수정 폼을 모달로 연다
+// "수업 등록"을 누르면 반복 등록 폼을, 목록의 수정을 누르면 그 수업 수정 폼을 모달로 연다.
+// 직원 미정 수업(EMP-FR-021)은 고르기 칸으로 골라 직원 한 명에게 한꺼번에 배정한다
 function ClassSessionsTab() {
   const today = toIsoDate(new Date())
   const { staffs, institutions } = useAttendanceOptions()
-  const [filters, setFilters] = useState({ from: today, to: addDays(today, 13), staffId: null, institutionId: null })
+  const [filters, setFilters] = useState({
+    from: today,
+    to: addDays(today, 13),
+    staffId: null,
+    unassigned: false,
+    institutionId: null,
+  })
   const validPeriod = isValidPeriod(filters.from, filters.to)
   const sessions = useAdminQuery(getClassRecords, validPeriod ? filters : null)
   // null이면 모달 닫힘, NEW면 반복 등록, AdminClassSessionResponse면 그 수업 수정
@@ -31,6 +45,8 @@ function ClassSessionsTab() {
   const [busy, setBusy] = useState(false)
   const [busyId, setBusyId] = useState(null)
   const [message, setMessage] = useState('')
+  // 일괄 배정할 직원 미정 수업 id
+  const [selectedIds, setSelectedIds] = useState(() => new Set())
 
   const close = useCallback(() => setEditing(null), [])
   const openForm = (target) => {
@@ -43,6 +59,7 @@ function ClassSessionsTab() {
     try {
       const result = await action()
       setEditing(null)
+      setSelectedIds(new Set())
       setMessage(doneMessage(result))
       sessions.reload()
     } catch (error) {
@@ -67,6 +84,34 @@ function ClassSessionsTab() {
     }
   }
 
+  const toggle = (id) =>
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  const toggleAll = (ids, checked) =>
+    setSelectedIds((current) => {
+      const next = new Set(current)
+      ids.forEach((id) => (checked ? next.add(id) : next.delete(id)))
+      return next
+    })
+  const changeFilters = (patch) => {
+    setSelectedIds(new Set())
+    setFilters((current) => ({ ...current, ...patch }))
+  }
+  const assign = (staffId) => {
+    setMessage('')
+    const name = staffs.find((staff) => staff.id === staffId)?.name ?? ''
+    return save(
+      () => assignClassSessionsStaff(visibleSelected, staffId),
+      (assigned) => classSessionAdmin.assigned(assigned.length, name),
+    )
+  }
+  // 보이는 목록에 남은 것만 (필터를 바꾸면 고른 것을 비운다)
+  const visibleSelected = [...selectedIds].filter((id) => sessions.data?.some((row) => row.classSession.id === id))
+
   const editingSession = editing === NEW ? null : editing
   return (
     <AdminSection
@@ -77,7 +122,8 @@ function ClassSessionsTab() {
           value={filters}
           staffs={staffs}
           institutions={institutions}
-          onChange={(patch) => setFilters((current) => ({ ...current, ...patch }))}
+          allowUnassigned
+          onChange={changeFilters}
         >
           <button type="button" className="admin-form__button admin-form__button--dark" onClick={() => openForm(NEW)}>
             {classSessionAdmin.add}
@@ -90,10 +136,28 @@ function ClassSessionsTab() {
           {message}
         </p>
       )}
+      {visibleSelected.length > 0 && (
+        <ClassAssignBar
+          count={visibleSelected.length}
+          staffs={staffs}
+          busy={busy}
+          onAssign={assign}
+          onClear={() => setSelectedIds(new Set())}
+        />
+      )}
       {validPeriod ? (
         <AdminQueryBody query={sessions} empty={classSessionAdmin.empty}>
           {(rows) => (
-            <ClassSessionTable items={rows} busyId={busyId} onEdit={openForm} onDelete={remove} />
+            <ClassSessionTable
+              items={rows}
+              busyId={busyId}
+              today={today}
+              selectedIds={selectedIds}
+              onToggle={toggle}
+              onToggleAll={toggleAll}
+              onEdit={openForm}
+              onDelete={remove}
+            />
           )}
         </AdminQueryBody>
       ) : (

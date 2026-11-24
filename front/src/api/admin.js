@@ -104,8 +104,19 @@ export function registerDay(staffId, date, type, reason) {
 }
 
 // 기간(최대 31일)·직원·기관별 수업 (수업 할당 EMP-FR-004). 날짜는 'YYYY-MM-DD'
-export function getClassRecords({ from, to, staffId, institutionId }) {
-  return request(`/api/v1/admin/attendance/classes?${query({ from, to, staffId, institutionId })}`)
+// unassigned면 직원 미정 수업만 (EMP-FR-021). 항목의 staffId·staffName이 null이면 미정
+export function getClassRecords({ from, to, staffId, unassigned, institutionId }) {
+  return request(
+    `/api/v1/admin/attendance/classes?${query({ from, to, staffId, unassigned: unassigned || null, institutionId })}`,
+  )
+}
+
+// 직원 미정 수업 여러 회에 직원 한 명을 한꺼번에 배정 (EMP-FR-021). 겹치거나 이미 배정된 수업이 있으면 하나도 배정하지 않는다
+export function assignClassSessionsStaff(classSessionIds, staffId) {
+  return request('/api/v1/admin/attendance/classes/staff', {
+    method: 'PUT',
+    ...jsonBody({ classSessionIds, staffId }),
+  })
 }
 
 // 수업 반복 등록 (EMP-FR-004). { institutionId, staffId, firstDate, lastDate, daysOfWeek, startTime, endTime, target }

@@ -1,11 +1,20 @@
 import { useCallback, useState } from 'react'
-import { approveDay, getAdminDays, getWorkCalendar, registerDay, rejectDay } from '../../api/admin'
+import {
+  approveDay,
+  assignClassSessionsStaff,
+  getAdminDays,
+  getClassRecords,
+  getWorkCalendar,
+  registerDay,
+  rejectDay,
+} from '../../api/admin'
 import AdminModal from '../../components/admin/AdminModal'
 import AdminNotice from '../../components/admin/AdminNotice'
 import AdminQueryBody from '../../components/admin/AdminQueryBody'
 import AdminSection from '../../components/admin/AdminSection'
 import DayDetail from '../../components/admin/DayDetail'
 import DirectStartDialog from '../../components/admin/DirectStartDialog'
+import UnassignedDayList from '../../components/admin/UnassignedDayList'
 import WorkCalendarFootnotes from '../../components/admin/WorkCalendarFootnotes'
 import WorkCalendarLegend from '../../components/admin/WorkCalendarLegend'
 import WorkCalendarNav from '../../components/admin/WorkCalendarNav'
@@ -22,7 +31,7 @@ import {
 } from '../../components/admin/attendanceAdminFormat'
 import { formatRoute } from '../../components/attendance/attendanceFormat'
 import { adminPage } from '../../data/adminContent'
-import { dayRecordAdmin, workCalendarAdmin } from '../../data/attendanceAdminContent'
+import { dayRecordAdmin, longDateLabel, workCalendarAdmin } from '../../data/attendanceAdminContent'
 import useAdminQuery from '../useAdminQuery'
 import useAttendanceOptions from './useAttendanceOptions'
 
@@ -62,6 +71,30 @@ function WorkCalendarTab() {
   const [busy, setBusy] = useState(false)
   const closeDetail = useCallback(() => setOpened(null), [setOpened])
   const closeRegister = useCallback(() => setRegistering(null), [setRegistering])
+
+  // 직원 미정 수업 (EMP-FR-021): 미정 칸을 누른 날짜와 그날 미정 수업
+  const [unassignedDate, setUnassignedDate] = useState(null)
+  const unassignedClasses = useAdminQuery(
+    getClassRecords,
+    unassignedDate ? { from: unassignedDate, to: unassignedDate, unassigned: true } : null,
+  )
+  const [assigningId, setAssigningId] = useState(null)
+  const closeUnassigned = useCallback(() => setUnassignedDate(null), [setUnassignedDate])
+  const assignOne = async (classSessionId, assigneeId) => {
+    setAssigningId(classSessionId)
+    try {
+      await assignClassSessionsStaff([classSessionId], assigneeId)
+      unassignedClasses.setData((current) => current.filter((row) => row.classSession.id !== classSessionId))
+      calendar.reload()
+    } catch (error) {
+      window.alert(error.message)
+    } finally {
+      setAssigningId(null)
+    }
+  }
+  const unassignedDays = calendar.data?.unassigned ?? []
+  // 직원 줄이나 미정 줄이 하나라도 있으면 표를 그린다
+  const rows = calendar.data && (calendar.data.staffs.length > 0 || unassignedDays.length > 0) ? calendar.data.staffs : []
 
   const move = (step) => {
     setAnchor(view === 'week' ? addDays(weekStart, step * 7) : addMonths(month, step))
@@ -112,18 +145,31 @@ function WorkCalendarTab() {
       }
     >
       <WorkCalendarLegend />
-      <AdminQueryBody query={calendar} items={calendar.data?.staffs} empty={workCalendarAdmin.empty}>
-        {(rows) =>
+      <AdminQueryBody
+        query={calendar}
+        items={calendar.data && (rows.length > 0 || unassignedDays.length > 0) ? [rows] : []}
+        empty={workCalendarAdmin.empty}
+      >
+        {() =>
           view === 'week' ? (
             <WorkWeekTable
               dates={weekDates(weekStart)}
               staffs={rows}
+              unassigned={unassignedDays}
               today={today}
               onSelect={(id, date) => setOpened({ staffId: id, date })}
+              onSelectUnassigned={setUnassignedDate}
             />
           ) : (
             <>
-              <WorkMonthCalendar weeks={monthWeeks(month)} month={month} staffs={rows} today={today} onSelectDate={showWeek} />
+              <WorkMonthCalendar
+                weeks={monthWeeks(month)}
+                month={month}
+                staffs={rows}
+                unassigned={unassignedDays}
+                today={today}
+                onSelectDate={showWeek}
+              />
               <WorkCalendarTotals title={workCalendarAdmin.totalsTitle(month)} staffs={rows} />
             </>
           )
@@ -143,6 +189,29 @@ function WorkCalendarTab() {
             />
           ) : (
             <AdminNotice inline error={Boolean(detail.error)} message={detail.error?.message ?? adminPage.loading} />
+          )}
+        </AdminModal>
+      )}
+      {unassignedDate && (
+        <AdminModal
+          label={workCalendarAdmin.unassignedTitle(longDateLabel(unassignedDate))}
+          closeLabel={workCalendarAdmin.close}
+          onClose={closeUnassigned}
+        >
+          {unassignedClasses.data && !unassignedClasses.loading ? (
+            <UnassignedDayList
+              date={unassignedDate}
+              items={unassignedClasses.data}
+              staffs={staffs}
+              busyId={assigningId}
+              onAssign={assignOne}
+            />
+          ) : (
+            <AdminNotice
+              inline
+              error={Boolean(unassignedClasses.error)}
+              message={unassignedClasses.error?.message ?? adminPage.loading}
+            />
           )}
         </AdminModal>
       )}

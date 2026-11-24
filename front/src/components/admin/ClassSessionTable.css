@@ -60,3 +60,17 @@
   display: flex;
   gap: 6px;
 }
+
+/* 직원 미정 수업 고르기 칸 (EMP-FR-021) */
+.class-session-table__check {
+  width: 44px;
+  text-align: center;
+}
+
+.class-session-table__checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--text);
+  vertical-align: middle;
+}
