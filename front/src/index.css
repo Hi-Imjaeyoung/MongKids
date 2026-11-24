@@ -113,6 +113,13 @@ button {
   padding-bottom: 0;
 }
 
+/* 관리자 화면 (SCR-014): 푸터 앞 여백 없이 관리자 레이아웃(AdminLayout)이 남은 높이를 다 채운다 */
+.main--admin-tool {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+}
+
 /* 섹션 공통 제목 */
 .section-heading {
   margin-bottom: 36px;

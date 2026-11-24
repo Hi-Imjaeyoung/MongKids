@@ -109,6 +109,7 @@ function App() {
   const showMobileCta = hasMobileCta(pathname)
   const isStaffTool = STAFF_TOOL_PATHS.includes(pathname)
   const isAdminTool = ADMIN_TOOL_PATHS.includes(pathname)
+  const showAdminHeader = isAdminTool && isAdmin(member)
   useEffect(() => {
     document.documentElement.classList.toggle('no-mobile-cta', !showMobileCta)
   }, [showMobileCta])
@@ -141,7 +142,7 @@ function App() {
 
   return (
     <>
-      {isAdminTool && isAdmin(member) ? (
+      {showAdminHeader ? (
         <AdminHeader member={member} onLogoutClick={handleLogout} />
       ) : (
         <Header
@@ -153,7 +154,7 @@ function App() {
           onPersonalConsultClick={openPersonalConsult}
         />
       )}
-      <main className={`main ${isStaffTool ? 'main--staff-tool' : ''}`}>
+      <main className={`main ${isStaffTool ? 'main--staff-tool' : ''} ${showAdminHeader ? 'main--admin-tool' : ''}`}>
         <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={homePage} />

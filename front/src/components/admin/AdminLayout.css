@@ -1,6 +1,6 @@
-/* 관리자 헤더(AdminHeader) 아래 화면 전체. 푸터가 없어 남은 높이를 다 채운다 */
+/* 관리자 헤더(AdminHeader) 아래 화면 전체. main(.main--admin-tool) 안에서 남은 높이를 다 채운다 */
 .admin-layout {
-  min-height: calc(100vh - var(--admin-header-height));
+  flex: 1;
   padding: 24px 0 48px;
   background: var(--bg-soft);
 }
