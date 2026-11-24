@@ -61,7 +61,7 @@ public enum ErrorCode {
 	CLASS_END_IMAGE_COUNT(HttpStatus.BAD_REQUEST, "E009", "수업 사진은 1장 이상 20장 이하로 올려 주세요."),
 	INVALID_CLASS_END_IMAGE(HttpStatus.BAD_REQUEST, "E010", "올바르지 않은 사진입니다."),
 	INSTITUTION_NOT_FOUND(HttpStatus.NOT_FOUND, "E011", "기관을 찾을 수 없습니다."),
-	INSTITUTION_IN_USE(HttpStatus.CONFLICT, "E012", "할당된 수업이 있는 기관은 삭제할 수 없습니다."),
+	// E012(할당된 수업이 있는 기관 삭제 불가)는 기관 삭제 시 수업·기록을 함께 지우면서 없앴다 (EMP-FR-012)
 	CLASS_SESSION_LOCKED(HttpStatus.CONFLICT, "E013", "수업 시작·종료 기록이 있는 날의 수업은 추가·수정·삭제할 수 없습니다."),
 	CLASS_SESSION_OVERLAP(HttpStatus.CONFLICT, "E014", "같은 직원의 같은 시간에 이미 수업이 있습니다."),
 	INVALID_CLASS_STAFF(HttpStatus.BAD_REQUEST, "E015", "직원 권한이 있는 회원에게만 수업을 할당할 수 있습니다."),

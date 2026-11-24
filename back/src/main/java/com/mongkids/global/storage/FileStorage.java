@@ -1,5 +1,7 @@
 package com.mongkids.global.storage;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,4 +29,11 @@ public interface FileStorage {
 	 * 받은 쪽이 {@link StoredFile#content()}를 닫아야 한다.
 	 */
 	Optional<StoredFile> open(String key);
+
+	/**
+	 * 파일을 지운다 (기관 삭제 시 수업 사진, EMP-FR-012). 없는 키는 지운 것으로 본다.
+	 *
+	 * @return 지우지 못한 키
+	 */
+	List<String> delete(Collection<String> keys);
 }

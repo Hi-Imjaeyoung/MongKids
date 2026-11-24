@@ -1,0 +1,77 @@
+.institution-delete__lead {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 14px;
+  word-break: keep-all;
+}
+
+/* 함께 지워질 항목 (초안의 붉은 "삭제" 상자) */
+.institution-delete__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.institution-delete__item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: 14px;
+  word-break: keep-all;
+}
+
+.institution-delete__item strong {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.institution-delete__hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.institution-delete__note {
+  margin: 0;
+  color: var(--text-sub);
+  font-size: 13px;
+}
+
+.institution-delete__agree {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 700;
+  word-break: keep-all;
+  cursor: pointer;
+}
+
+.institution-delete__agree-input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--danger);
+}
+
+.institution-delete__submit {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: var(--bg);
+}
+
+.institution-delete__submit:disabled {
+  border-color: var(--danger-border);
+  background: var(--danger-border);
+  cursor: not-allowed;
+}

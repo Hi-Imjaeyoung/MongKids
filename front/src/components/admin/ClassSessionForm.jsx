@@ -4,7 +4,7 @@ import { repeatDates, toTimeInput } from './attendanceAdminFormat'
 import './AdminForm.css'
 import './ClassSessionForm.css'
 
-function initialForm(editing, defaultDate) {
+function initialForm(editing, defaultDate, defaultInstitutionId) {
   if (editing) {
     const { classSession } = editing
     return {
@@ -19,7 +19,7 @@ function initialForm(editing, defaultDate) {
     }
   }
   return {
-    institutionId: '',
+    institutionId: defaultInstitutionId ? String(defaultInstitutionId) : '',
     staffId: '',
     target: '',
     firstDate: defaultDate,
@@ -31,9 +31,20 @@ function initialForm(editing, defaultDate) {
 }
 
 // 수업 반복 등록과 한 회 수정 (EMP-FR-004). editing(AdminClassSessionResponse)이 있으면 그 수업 수정.
-// 등록은 onCreate(body), 수정은 onUpdate(classSessionId, body). 부모가 key로 폼을 새로 만든다
-function ClassSessionForm({ institutions, staffs, editing, defaultDate, busy, onCreate, onUpdate, onCancelEdit }) {
-  const [form, setForm] = useState(() => initialForm(editing, defaultDate))
+// 등록은 onCreate(body), 수정은 onUpdate(classSessionId, body). 부모가 key로 폼을 새로 만든다.
+// defaultInstitutionId를 주면 그 기관을 골라 둔 채로 연다 (기관 표의 "수업 추가")
+function ClassSessionForm({
+  institutions,
+  staffs,
+  editing,
+  defaultDate,
+  defaultInstitutionId = null,
+  busy,
+  onCreate,
+  onUpdate,
+  onCancelEdit,
+}) {
+  const [form, setForm] = useState(() => initialForm(editing, defaultDate, defaultInstitutionId))
   const [error, setError] = useState('')
   const text = classSessionAdmin
 

@@ -136,6 +136,12 @@ export function updateInstitution(institutionId, body) {
   return request(`/api/v1/admin/institutions/${institutionId}`, { method: 'PUT', ...jsonBody(body) })
 }
 
+// 기관을 지우면 함께 지워질 수 { classSessionCount, classRecordCount, workDayCount, noteCount, imageCount }
+export function getInstitutionDeletePreview(institutionId) {
+  return request(`/api/v1/admin/institutions/${institutionId}/delete-preview`)
+}
+
+// 기관과 그 기관의 수업·수업 기록·사진을 함께 지운다
 export function deleteInstitution(institutionId) {
   return request(`/api/v1/admin/institutions/${institutionId}`, { method: 'DELETE' })
 }
