@@ -1,7 +1,19 @@
 .institution-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+}
+
+.institution-list__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.institution-list__search {
+  width: min(100%, 280px);
 }
 
 .institution-list__count {
@@ -20,7 +32,7 @@
 
 .institution-list__table table {
   width: 100%;
-  min-width: 720px;
+  min-width: 900px;
   border-collapse: collapse;
   font-size: 14px;
 }
@@ -28,6 +40,7 @@
 .institution-list__table th {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg-soft);
   color: var(--text-sub);
   font-size: 13px;
   font-weight: 700;
@@ -36,10 +49,10 @@
 }
 
 .institution-list__table td {
-  padding: 8px 14px;
+  padding: 14px;
   border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-  white-space: nowrap;
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
 }
 
 .institution-list__table tbody tr:last-child td {
@@ -47,43 +60,60 @@
 }
 
 .institution-list__row--selected td {
-  background: var(--bg-soft);
+  background: var(--blue-soft);
 }
 
 .institution-list__name {
-  min-height: 40px;
   padding: 0;
   border: 0;
   background: none;
   color: var(--text);
   font: inherit;
-  font-weight: 700;
+  font-weight: 800;
   text-align: left;
-  text-decoration: underline;
-  text-decoration-color: var(--border-strong);
-  text-underline-offset: 3px;
   cursor: pointer;
 }
 
 .institution-list__name:hover {
-  color: var(--blue);
+  text-decoration: underline;
 }
 
-/* 주소는 길어서 줄바꿈을 허용한다 */
-.institution-list__table td.institution-list__address {
-  min-width: 220px;
-  white-space: normal;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
-
-.institution-list__location {
+.institution-list__sub {
+  display: block;
+  margin-top: 2px;
   color: var(--text-sub);
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  word-break: keep-all;
 }
 
 .institution-list__table .institution-list__number {
   text-align: right;
-  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.institution-list__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.institution-list__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.institution-list__footnotes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-sub);
+  font-size: 13px;
 }

@@ -29,7 +29,7 @@ export const adminTabs = [
   { id: 'class-starts', label: '수업 시작·종료 승인', group: '근태 관리' },
   { id: 'class-records', label: '수업 기록', group: '근태 관리' },
   { id: 'class-sessions', label: '수업 할당', group: '근태 관리' },
-  { id: 'institutions', label: '기관 위치', group: '근태 관리' },
+  { id: 'institutions', label: '기관', group: '근태 관리' },
 ]
 
 // 상담 신청 (FR-004, FR-026)
