@@ -108,9 +108,11 @@ public class AdminAttendanceController {
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
 		@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
 		@RequestParam(required = false) Long staffId,
+		@RequestParam(defaultValue = "false") boolean unassigned,
 		@RequestParam(required = false) Long institutionId
 	) {
-		return ApiResponse.success(attendanceService.getClassRecords(memberId, from, to, staffId, institutionId));
+		return ApiResponse.success(
+			attendanceService.getClassRecords(memberId, from, to, staffId, unassigned, institutionId));
 	}
 
 	@PostMapping("/classes/{classSessionId}/start/approve")

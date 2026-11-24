@@ -14,7 +14,8 @@ import jakarta.validation.constraints.Size;
  */
 public record ClassSessionCreateRequest(
 	@NotNull Long institutionId,
-	@NotNull Long staffId,
+	// null이면 직원 미정 (EMP-FR-021)
+	Long staffId,
 	@NotNull LocalDate firstDate,
 	@NotNull LocalDate lastDate,
 	@NotEmpty Set<DayOfWeek> daysOfWeek,

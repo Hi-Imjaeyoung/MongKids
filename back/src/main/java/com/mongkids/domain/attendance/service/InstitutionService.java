@@ -170,7 +170,8 @@ public class InstitutionService {
 	}
 
 	private static UpcomingClass toUpcomingClass(UpcomingSession session) {
-		return new UpcomingClass(session.getClassDate(), session.getStartTime(), session.getEndTime());
+		return new UpcomingClass(session.getClassDate(), session.getStartTime(), session.getEndTime(),
+			session.getStaffId() == null);
 	}
 
 	Institution getInstitution(Long institutionId) {

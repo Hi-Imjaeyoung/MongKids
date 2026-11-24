@@ -106,13 +106,13 @@ public class AttendanceService {
 
 	/**
 	 * 관리자 수업 목록 (EMP-FR-004 수업 할당). 하루 단위 적용 전 수업은 수업 단위 기록도 함께 준다.
-	 * 기간은 최대 31일, 직원·기관을 고르지 않으면 전체.
+	 * 기간은 최대 31일, 직원·기관을 고르지 않으면 전체(직원 미정 수업 포함), unassigned면 직원 미정 수업만 (EMP-FR-021).
 	 */
 	public List<AdminClassSessionResponse> getClassRecords(Long adminId, LocalDate from, LocalDate to,
-		Long staffId, Long institutionId) {
+		Long staffId, boolean unassigned, Long institutionId) {
 		memberService.validateAdmin(adminId);
 		validateSearchPeriod(from, to);
-		return toAdminResponses(classSessionRepository.searchForAdmin(from, to, staffId, institutionId));
+		return toAdminResponses(classSessionRepository.searchForAdmin(from, to, staffId, unassigned, institutionId));
 	}
 
 	@Transactional
@@ -198,8 +198,11 @@ public class AttendanceService {
 	List<AdminClassSessionResponse> toAdminResponses(List<ClassSession> sessions) {
 		List<ClassSessionResponse> responses = toClassResponses(sessions);
 		return IntStream.range(0, sessions.size())
-			.mapToObj(i -> new AdminClassSessionResponse(sessions.get(i).getStaff().getId(),
-				sessions.get(i).getStaff().getName(), sessions.get(i).getInstitution().getId(), responses.get(i)))
+			.mapToObj(i -> {
+				Member staff = sessions.get(i).getStaff();
+				return new AdminClassSessionResponse(staff == null ? null : staff.getId(),
+					staff == null ? null : staff.getName(), sessions.get(i).getInstitution().getId(), responses.get(i));
+			})
 			.toList();
 	}
 

@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +38,7 @@ import com.mongkids.domain.attendance.dto.WorkCalendarResponse.CalendarCheckResp
 import com.mongkids.domain.attendance.dto.WorkCalendarResponse.CalendarDayResponse;
 import com.mongkids.domain.attendance.dto.WorkCalendarResponse.CalendarSummaryResponse;
 import com.mongkids.domain.attendance.dto.WorkCalendarResponse.StaffCalendarResponse;
+import com.mongkids.domain.attendance.dto.WorkCalendarResponse.UnassignedDayResponse;
 import com.mongkids.domain.attendance.dto.WorkDayResponse;
 import com.mongkids.domain.attendance.entity.ClassSession;
 import com.mongkids.domain.attendance.entity.ClassStartStatus;
@@ -260,7 +262,7 @@ public class WorkDayService {
 		Long institutionId) {
 		attendanceService.getAdmin(adminId);
 		attendanceService.validateSearchPeriod(from, to);
-		return toResponses(classSessionRepository.searchForAdmin(from, to, staffId, null), null).stream()
+		return toResponses(assignedSessions(from, to, staffId), null).stream()
 			.filter(response -> institutionId == null || response.day().classes().stream()
 				.anyMatch(dayClass -> dayClass.institutionId().equals(institutionId)))
 			.toList();
@@ -273,14 +275,29 @@ public class WorkDayService {
 	public WorkCalendarResponse getCalendar(Long adminId, LocalDate from, LocalDate to, Long staffId) {
 		attendanceService.getAdmin(adminId);
 		attendanceService.validateSearchPeriod(from, to);
+		List<ClassSession> sessions = classSessionRepository.searchForAdmin(from, to, staffId, false, null);
 		Map<Long, List<AdminWorkDayResponse>> byStaff = toResponses(
-			classSessionRepository.searchForAdmin(from, to, staffId, null), null).stream()
+			sessions.stream().filter(session -> !session.isUnassigned()).toList(), null).stream()
 			.collect(Collectors.groupingBy(AdminWorkDayResponse::staffId, LinkedHashMap::new, Collectors.toList()));
 		List<StaffCalendarResponse> staffs = byStaff.values().stream()
 			.map(WorkDayService::toStaffCalendar)
 			.sorted(Comparator.comparing(StaffCalendarResponse::staffName).thenComparing(StaffCalendarResponse::staffId))
 			.toList();
-		return new WorkCalendarResponse(from, to, staffs);
+		// 직원 미정 수업 (EMP-FR-021). 직원을 고르면 보여 주지 않는다
+		List<UnassignedDayResponse> unassigned = sessions.stream()
+			.filter(ClassSession::isUnassigned)
+			.collect(Collectors.groupingBy(ClassSession::getClassDate, TreeMap::new, Collectors.counting()))
+			.entrySet().stream()
+			.map(entry -> new UnassignedDayResponse(entry.getKey(), entry.getValue().intValue()))
+			.toList();
+		return new WorkCalendarResponse(from, to, staffs, unassigned);
+	}
+
+	// 직원이 배정된 수업만. 직원 미정 수업(EMP-FR-021)은 하루 기록이 없다
+	private List<ClassSession> assignedSessions(LocalDate from, LocalDate to, Long staffId) {
+		return classSessionRepository.searchForAdmin(from, to, staffId, false, null).stream()
+			.filter(session -> !session.isUnassigned())
+			.toList();
 	}
 
 	private static StaffCalendarResponse toStaffCalendar(List<AdminWorkDayResponse> days) {

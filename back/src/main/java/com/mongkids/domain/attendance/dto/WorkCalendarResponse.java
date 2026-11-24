@@ -10,13 +10,23 @@ import com.mongkids.domain.attendance.entity.ClassStartStatus;
 
 /**
  * 관리자 근무 캘린더 (EMP-FR-017, EMP-SCR-006). 기간 안에 수업이 있는 직원만 이름순으로 담는다.
- * 근무 시간은 계산하지 않고 수업 횟수만 집계한다.
+ * 근무 시간은 계산하지 않고 수업 횟수만 집계한다. {@code unassigned}는 직원 미정 수업이 있는 날(EMP-FR-021)이다.
  */
 public record WorkCalendarResponse(
 	LocalDate from,
 	LocalDate to,
-	List<StaffCalendarResponse> staffs
+	List<StaffCalendarResponse> staffs,
+	List<UnassignedDayResponse> unassigned
 ) {
+
+	/**
+	 * 직원 미정 수업이 있는 날과 그날 미정 수업 수 (EMP-FR-021). 날짜순.
+	 */
+	public record UnassignedDayResponse(
+		LocalDate date,
+		int classCount
+	) {
+	}
 
 	/**
 	 * 직원 한 명의 기간 안 하루들(수업 있는 날만, 날짜순)과 기간 합계.

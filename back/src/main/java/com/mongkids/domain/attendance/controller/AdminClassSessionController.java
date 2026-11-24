@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mongkids.domain.attendance.dto.AdminClassSessionResponse;
+import com.mongkids.domain.attendance.dto.ClassSessionAssignRequest;
 import com.mongkids.domain.attendance.dto.ClassSessionCreateRequest;
 import com.mongkids.domain.attendance.dto.ClassSessionUpdateRequest;
 import com.mongkids.domain.attendance.service.ClassSessionService;
@@ -37,6 +38,15 @@ public class AdminClassSessionController {
 		@Valid @RequestBody ClassSessionCreateRequest request
 	) {
 		return ApiResponse.success(classSessionService.createClassSessions(memberId, request));
+	}
+
+	// 직원 미정 수업 여러 회에 직원 한 명을 한꺼번에 배정 (EMP-FR-021)
+	@PutMapping("/staff")
+	public ApiResponse<List<AdminClassSessionResponse>> assignStaff(
+		@AuthenticationPrincipal Long memberId,
+		@Valid @RequestBody ClassSessionAssignRequest request
+	) {
+		return ApiResponse.success(classSessionService.assignStaff(memberId, request));
 	}
 
 	@PutMapping("/{classSessionId}")
