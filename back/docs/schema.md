@@ -259,7 +259,8 @@ erDiagram
 | latitude | DOUBLE | NOT NULL | 수업 시작 판정 기준 좌표 |
 | longitude | DOUBLE | NOT NULL | |
 
-- 관리자 화면(EMP-SCR-006)에서 등록·수정한다. 할당된 수업이 있으면 삭제할 수 없다. 좌표를 바꿔도 `class_start.distance_meters`는 다시 계산하지 않는다.
+- 관리자 화면(EMP-SCR-006)에서 등록·수정한다. 좌표를 바꿔도 `class_start.distance_meters`는 다시 계산하지 않는다.
+- 삭제하면 한 트랜잭션에서 함께 지운다(EMP-FR-012, #109): 이 기관의 `class_session`과 수업 단위 기록(`class_start`·`class_start_attempt`·`class_end`·`class_end_image`), 이 기관을 대조한 `day_start`·`day_end`가 있는 직원·날짜의 하루 기록 전체(`day_start`·`day_end`·`day_end_image`·`day_end_note`·`day_check_attempt`), 남는 하루의 이 기관 `day_end_note`·`day_check_attempt`. 사진 S3 객체는 커밋 뒤 지우고, 다른 행이 아직 쓰는 키는 남긴다.
 
 ### class_session — 날짜별 수업 (EMP-FR-004)
 

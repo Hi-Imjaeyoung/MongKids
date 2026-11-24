@@ -298,7 +298,8 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | GET | `/api/v1/admin/institutions` | 기관 목록, 이름순 → `InstitutionResponse[]` (EMP-FR-012) |
 | POST | `/api/v1/admin/institutions` | 기관 등록 `{name, address, latitude, longitude}` → 201 `InstitutionResponse` |
 | PUT | `/api/v1/admin/institutions/{id}` | 기관 수정 (같은 본문) → `InstitutionResponse` |
-| DELETE | `/api/v1/admin/institutions/{id}` | 기관 삭제. 할당된 수업이 있으면 409 `E012` |
+| GET | `/api/v1/admin/institutions/{id}/delete-preview` | 기관을 지우면 함께 지워질 수 → `{classSessionCount, classRecordCount, workDayCount, noteCount, imageCount}`. 삭제 확인 창용 |
+| DELETE | `/api/v1/admin/institutions/{id}` | 기관과 그 기관의 수업·기록·사진 삭제 (아래 "기관 삭제") |
 
 - `WorkDayResponse`: `{date, status, classes, start, end, images, notes, correctedAt, correctable, legacyClasses}`.
   - `status`: `NOT_STARTED`(시작 전, 앞으로 날짜는 화면에서 `예정`)·`STARTED`(수업 중)·`PENDING`(시작 승인 대기)·`REJECTED`(시작 반려)·`END_PENDING`(종료 승인 대기)·`END_REJECTED`(종료 반려)·`ENDED`(수업 종료). 저장하지 않고 기록에서 계산한다. 종료 기록이 있어도 시작이 반려되면 `REJECTED`, 시작 승인 대기 중 종료가 확정되면 `ENDED`.
@@ -313,6 +314,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - `DayCheckResultResponse`: `{confirmed, distanceMeters, radiusMeters, institutionName, day}`. `institutionName`은 대조한 기관(시작: 첫 기관, 종료: 마지막 기관).
 - `AdminWorkDayResponse`: `{staffId, staffName, day}`. `ClassSessionResponse`·`AdminClassSessionResponse`는 수업 할당·수업 단위 기록용으로 남는다: `{id, classDate, startTime, endTime, target, institutionName, institutionAddress, status, start, end}`, `{staffId, staffName, institutionId, classSession}`.
 - `InstitutionResponse`: `{id, name, address, latitude, longitude, classSessionCount}`. 위도 -90~90·경도 -180~180(그 외 400 `C001`). 없는 기관은 404 `E011`. 좌표를 바꾸면 이후 확인부터 새 좌표로 판정하고, 이미 저장된 기록의 거리는 그대로 둔다.
+- 기관 삭제(EMP-FR-012, #109): 이 기관 수업과 수업 단위 기록, 이 기관을 첫·마지막 기관으로 대조한 하루 기록(그날 다른 기관 사진·특이사항 포함)을 통째로 지우고, 남는 하루에서는 이 기관 특이사항만 지운다. 미리보기: `classRecordCount`는 수업 단위 시작·종료 기록 수, `workDayCount`는 통째로 지울 하루 수, `noteCount`는 남는 하루의 이 기관 특이사항 수, `imageCount`는 함께 지울 사진 수. 사진 S3 객체는 커밋 뒤 지우고(다른 기록이 쓰는 키는 남김), 실패하면 로그만 남긴다. `E012`(할당된 수업이 있는 기관 삭제 불가)는 없앴다.
 - 수업 반복 등록: `firstDate`~`lastDate`(최대 6개월) 안에서 `daysOfWeek`에 든 날짜마다 수업을 하나씩 만든다. 기간·시간이 잘못되면(끝 ≤ 시작) 400 `C001`, 만들 날짜가 없으면 400 `E016`. 담당은 `STAFF`·`ADMIN`만(그 외 400 `E015`). 같은 직원의 같은 날 수업과 시간이 겹치면(끝 시각 = 다음 시작 시각은 허용) 409 `E014`이고 하나도 만들지 않는다. 수정도 같은 규칙.
 - 수업 잠금(409 `E013`): 그 직원·날짜에 하루 시작 기록이 있으면 그날 수업은 추가·수정·삭제할 수 없다(다른 날·직원에서 그날로 옮기는 수정도). 수업 단위 시작·종료 기록이나 시작 시도 로그가 있는 수업도 수정·삭제할 수 없다.
 - 위치 판정: 서버가 하버사인 거리(m, 반올림)로 대조 기관 좌표 반경 100m 안이면 `confirmed=true`로 확정, 밖이면 저장하지 않고 `confirmed=false`(200)와 거리·기준 반경을 준다. 정확도로는 거절하지 않는다. 위치를 받은 시도마다 `day_check_attempt`에 남긴다. 시각은 서버 시각이고 시간 제한은 없다. 수업 사이 기관 이동은 확인하지 않는다.
