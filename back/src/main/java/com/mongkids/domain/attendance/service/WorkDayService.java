@@ -42,6 +42,7 @@ import com.mongkids.domain.attendance.dto.WorkCalendarResponse.UnassignedDayResp
 import com.mongkids.domain.attendance.dto.WorkDayResponse;
 import com.mongkids.domain.attendance.entity.ClassSession;
 import com.mongkids.domain.attendance.entity.ClassStartStatus;
+import com.mongkids.domain.attendance.entity.ClassType;
 import com.mongkids.domain.attendance.entity.DayCheck;
 import com.mongkids.domain.attendance.entity.DayCheckAttempt;
 import com.mongkids.domain.attendance.entity.DayCheckType;
@@ -306,11 +307,13 @@ public class WorkDayService {
 			.sorted(Comparator.comparing(WorkDayResponse::date))
 			.toList();
 		int assigned = 0;
+		int events = 0;
 		int completed = 0;
 		int pending = 0;
 		int rejected = 0;
 		for (WorkDayResponse day : sorted) {
 			assigned += day.classes().size();
+			events += countEvents(day);
 			if (!day.legacyClasses().isEmpty()) {
 				completed += countLegacy(day, ClassStatus.ENDED);
 				pending += countLegacy(day, ClassStatus.PENDING);
@@ -326,15 +329,19 @@ public class WorkDayService {
 		AdminWorkDayResponse first = days.get(0);
 		return new StaffCalendarResponse(first.staffId(), first.staffName(),
 			sorted.stream().map(WorkDayService::toCalendarDay).toList(),
-			new CalendarSummaryResponse(assigned, completed, pending, rejected));
+			new CalendarSummaryResponse(assigned, events, completed, pending, rejected));
 	}
 
 	private static CalendarDayResponse toCalendarDay(WorkDayResponse day) {
 		List<String> institutionNames = day.classes().stream().map(DayClassResponse::institutionName).distinct()
 			.toList();
 		return new CalendarDayResponse(day.date(), day.status(), !day.legacyClasses().isEmpty(), day.classes().size(),
-			day.classes().get(0).startTime(), CalendarCheckResponse.from(day.start()),
+			countEvents(day), day.classes().get(0).startTime(), CalendarCheckResponse.from(day.start()),
 			CalendarCheckResponse.from(day.end()), institutionNames);
+	}
+
+	private static int countEvents(WorkDayResponse day) {
+		return (int)day.classes().stream().filter(dayClass -> dayClass.classType() == ClassType.EVENT).count();
 	}
 
 	private static int countLegacy(WorkDayResponse day, ClassStatus status) {

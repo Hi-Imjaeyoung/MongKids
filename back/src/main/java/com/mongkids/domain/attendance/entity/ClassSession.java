@@ -8,6 +8,8 @@ import com.mongkids.global.common.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -60,15 +62,21 @@ public class ClassSession extends BaseTimeEntity {
 	@Column(length = 50)
 	private String target;
 
+	// 정기 수업 / 행사·특별활동 (EMP-FR-004)
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, columnDefinition = "varchar(20)")
+	private ClassType classType;
+
 	@Builder
 	private ClassSession(Institution institution, Member staff, LocalDate classDate, LocalTime startTime,
-		LocalTime endTime, String target) {
+		LocalTime endTime, String target, ClassType classType) {
 		this.institution = institution;
 		this.staff = staff;
 		this.classDate = classDate;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.target = target;
+		this.classType = classType == null ? ClassType.REGULAR : classType;
 	}
 
 	public boolean isAssignedTo(Long memberId) {
@@ -87,13 +95,14 @@ public class ClassSession extends BaseTimeEntity {
 	}
 
 	public void update(Institution institution, Member staff, LocalDate classDate, LocalTime startTime,
-		LocalTime endTime, String target) {
+		LocalTime endTime, String target, ClassType classType) {
 		this.institution = institution;
 		this.staff = staff;
 		this.classDate = classDate;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.target = target;
+		this.classType = classType == null ? ClassType.REGULAR : classType;
 	}
 
 	// 같은 날 시간이 겹치는지 (끝 시각과 다음 시작 시각이 같으면 겹치지 않음)

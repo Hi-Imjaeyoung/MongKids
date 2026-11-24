@@ -98,6 +98,7 @@ public class ClassSessionService {
 				.startTime(request.startTime())
 				.endTime(request.endTime())
 				.target(target)
+				.classType(request.classType())
 				.build())
 			.toList();
 		classSessionRepository.saveAll(sessions);
@@ -126,7 +127,7 @@ public class ClassSessionService {
 		}
 
 		session.update(institution, staff, request.classDate(), request.startTime(), request.endTime(),
-			blankToNull(request.target()));
+			blankToNull(request.target()), request.classType());
 		return attendanceService.toAdminResponses(List.of(session)).get(0);
 	}
 

@@ -3,6 +3,7 @@ package com.mongkids.domain.attendance.dto;
 import java.time.LocalTime;
 
 import com.mongkids.domain.attendance.entity.ClassSession;
+import com.mongkids.domain.attendance.entity.ClassType;
 import com.mongkids.domain.attendance.entity.Institution;
 
 /**
@@ -13,6 +14,7 @@ public record DayClassResponse(
 	LocalTime startTime,
 	LocalTime endTime,
 	String target,
+	ClassType classType,
 	Long institutionId,
 	String institutionName,
 	String institutionAddress
@@ -21,6 +23,6 @@ public record DayClassResponse(
 	public static DayClassResponse from(ClassSession session) {
 		Institution institution = session.getInstitution();
 		return new DayClassResponse(session.getId(), session.getStartTime(), session.getEndTime(),
-			session.getTarget(), institution.getId(), institution.getName(), institution.getAddress());
+			session.getTarget(), session.getClassType(), institution.getId(), institution.getName(), institution.getAddress());
 	}
 }

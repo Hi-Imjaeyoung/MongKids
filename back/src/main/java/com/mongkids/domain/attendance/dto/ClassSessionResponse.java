@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.mongkids.domain.attendance.entity.ClassSession;
+import com.mongkids.domain.attendance.entity.ClassType;
 import com.mongkids.domain.attendance.entity.Institution;
 
 /**
@@ -15,6 +16,7 @@ public record ClassSessionResponse(
 	LocalTime startTime,
 	LocalTime endTime,
 	String target,
+	ClassType classType,
 	String institutionName,
 	String institutionAddress,
 	ClassStatus status,
@@ -26,7 +28,7 @@ public record ClassSessionResponse(
 		ClassEndResponse end) {
 		Institution institution = session.getInstitution();
 		return new ClassSessionResponse(session.getId(), session.getClassDate(), session.getStartTime(),
-			session.getEndTime(), session.getTarget(), institution.getName(), institution.getAddress(), status, start,
+			session.getEndTime(), session.getTarget(), session.getClassType(), institution.getName(), institution.getAddress(), status, start,
 			end);
 	}
 }
