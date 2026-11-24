@@ -334,7 +334,7 @@ DDL 변경 없음. 사진 S3 삭제에 새 권한이 필요하다.
 ## M-3. 수업 유형 정기 / 행사·특별활동 (EMP-FR-004, #110)
 
 병합 전 (백엔드가 `validate`로 기동한다)
-- [ ] 1. 운영 RDS에 [`back/docs/sql/2026-11-class-type-ddl.sql`](../back/docs/sql/2026-11-class-type-ddl.sql) 실행 (`class_session.class_type` 추가, 기본값 `REGULAR`) — 사용자. 기본값이 있어 지금 운영 중인 jar에도 영향이 없다. 없으면 새 jar가 기동하지 못한다
+- [x] 1. (2026-11-24 적용, 사용자) 운영 RDS에 [`back/docs/sql/2026-11-class-type-ddl.sql`](../back/docs/sql/2026-11-class-type-ddl.sql) 실행 (`class_session.class_type` 추가, 기본값 `REGULAR`) — 사용자. 기본값이 있어 지금 운영 중인 jar에도 영향이 없다. 없으면 새 jar가 기동하지 못한다
 
 배포 후
 - [ ] 2. 관리자 "수업 할당" → 수업 등록에서 수업 유형 "행사·특별활동" → 목록에 "행사" 태그. 기존 수업은 정기 수업
