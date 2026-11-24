@@ -268,7 +268,7 @@ erDiagram
 |---|---|---|---|
 | id | BIGINT | PK | |
 | institution_id | BIGINT | NOT NULL, FK → institution.id | |
-| staff_id | BIGINT | NOT NULL, FK → member.id | 담당 직원 |
+| staff_id | BIGINT | NULL, FK → member.id | 담당 직원. NULL이면 직원 미정(EMP-FR-021): 직원 화면·하루 시작·종료 판정에 들어가지 않는다. 운영 DDL `back/docs/sql/2026-11-unassigned-class-session-ddl.sql` |
 | class_date | DATE | NOT NULL | |
 | start_time | TIME | NOT NULL | |
 | end_time | TIME | NOT NULL | |
