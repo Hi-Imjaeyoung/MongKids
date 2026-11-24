@@ -68,6 +68,11 @@ function WorkMonthCalendar({ weeks, month, staffs, unassigned = [], today, onSel
                       <span className="work-month-calendar__count">
                         {workCalendarAdmin.monthCount(line.day.classCount)}
                       </span>
+                      {line.day.eventCount > 0 && (
+                        <AdminBadge tone="purple" shape="tag">
+                          {workCalendarAdmin.eventCount(line.day.eventCount)}
+                        </AdminBadge>
+                      )}
                     </span>
                   ))}
                   {unassignedCount && (

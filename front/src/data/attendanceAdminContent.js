@@ -17,6 +17,13 @@ export const longDateLabel = (isoDate) => {
   return `${month}월 ${day}일(${WEEKDAYS[new Date(year, month - 1, day).getDay()]})`
 }
 
+// 수업 유형 (EMP-FR-004). 행사 장소는 기관과 같이 등록한다
+export const classTypes = [
+  { id: 'REGULAR', label: '정기 수업' },
+  { id: 'EVENT', label: '행사·특별활동' },
+]
+export const eventTag = '행사'
+
 // 백엔드 DayOfWeek 순서(월~일)
 export const daysOfWeek = [
   { id: 'MONDAY', label: '월', index: 1 },
@@ -185,6 +192,8 @@ export const classSessionAdmin = {
   assignHint: '미정 수업만 고를 수 있어요. 고른 수업이나 그 직원의 수업과 시간이 하나라도 겹치면 아무것도 배정하지 않아요.',
   assigned: (count, name) => `수업 ${count}회를 ${name}님에게 배정했어요.`,
   target: '대상 (반)',
+  classType: '수업 유형',
+  classTypeHint: '행사·특별활동 장소도 기관 메뉴에서 기관처럼 등록해 고르면 돼요',
   period: '기간',
   firstDate: '첫날',
   lastDate: '마지막 날',
@@ -331,6 +340,7 @@ export const workCalendarAdmin = {
     { label: '승인 대기', tone: 'yellow' },
     { label: '반려', tone: 'red' },
     { label: '수업 종료', tone: 'green' },
+    { label: '행사 · 특별활동 포함', tone: 'purple' },
   ],
   // 칸 배지. 월간은 칸이 좁아 짧은 이름을 쓴다. 앞으로 날짜의 시작 전은 `예정`
   statuses: {
@@ -374,7 +384,16 @@ export const workCalendarAdmin = {
   monthCount: (count) => `${count}개`,
   totalsTitle: (isoDate) => `${Number(isoDate.slice(5, 7))}월 직원별 합계`,
   totalsLabel: '직원별 합계',
-  totalsColumns: { staff: '직원', assigned: '할당 수업', completed: '수업 종료', pending: '승인 대기', rejected: '반려' },
+  totalsColumns: {
+    staff: '직원',
+    assigned: '할당 수업',
+    regular: '정기',
+    events: '행사·특별활동',
+    completed: '수업 종료',
+    pending: '승인 대기',
+    rejected: '반려',
+  },
+  eventCount: (count) => `행사 ${count}`,
   classes: (count) => `${count}개`,
   cases: (count) => `${count}건`,
   footnotes: {
@@ -384,7 +403,7 @@ export const workCalendarAdmin = {
       '이번 주: 수업 종료가 확정된 수업 수 / 이번 주 할당 수업 수',
     ],
     month: [
-      '할당 수업: 이달 전체 (앞으로 예정 포함)',
+      '할당 수업: 이달 전체 (앞으로 예정 포함), 정기 / 행사·특별활동으로 나눠 표시',
       '수업 종료: 하루 종료가 확정된 날의 수업 수',
       '승인 대기 · 반려: 하루 시작·종료 건수',
     ],
