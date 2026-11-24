@@ -10,43 +10,80 @@
   font-size: 13px;
 }
 
-.institution-list__items {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.institution-list__item {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  gap: 2px;
-  width: 100%;
-  padding: 16px;
+/* 좁은 화면에서는 표만 가로로 스크롤한다 */
+.institution-list__table {
+  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--bg);
+}
+
+.institution-list__table table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.institution-list__table th {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.institution-list__table td {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.institution-list__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.institution-list__row--selected td {
+  background: var(--bg-soft);
+}
+
+.institution-list__name {
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--text);
   font: inherit;
+  font-weight: 700;
   text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
   cursor: pointer;
 }
 
-.institution-list__item:hover {
-  border-color: var(--border-strong);
+.institution-list__name:hover {
+  color: var(--blue);
 }
 
-.institution-list__item--selected,
-.institution-list__item--selected:hover {
-  border-color: var(--text);
-  box-shadow: var(--shadow-sm);
+/* 주소는 길어서 줄바꿈을 허용한다 */
+.institution-list__table td.institution-list__address {
+  min-width: 220px;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
-.institution-list__meta {
+.institution-list__location {
   color: var(--text-sub);
   font-size: 13px;
-  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.institution-list__table .institution-list__number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
