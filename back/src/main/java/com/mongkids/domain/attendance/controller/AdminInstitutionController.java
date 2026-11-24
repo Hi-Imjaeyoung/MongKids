@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mongkids.domain.attendance.dto.InstitutionDeletePreviewResponse;
 import com.mongkids.domain.attendance.dto.InstitutionRequest;
 import com.mongkids.domain.attendance.dto.InstitutionResponse;
 import com.mongkids.domain.attendance.service.InstitutionService;
@@ -53,6 +54,14 @@ public class AdminInstitutionController {
 		return ApiResponse.success(institutionService.updateInstitution(memberId, institutionId, request));
 	}
 
+	// 삭제 확인 창에 보여 줄, 함께 지워질 수
+	@GetMapping("/{institutionId}/delete-preview")
+	public ApiResponse<InstitutionDeletePreviewResponse> getDeletePreview(@AuthenticationPrincipal Long memberId,
+		@PathVariable Long institutionId) {
+		return ApiResponse.success(institutionService.getDeletePreview(memberId, institutionId));
+	}
+
+	// 기관과 그 기관의 수업·수업 기록·사진을 함께 지운다
 	@DeleteMapping("/{institutionId}")
 	public ApiResponse<Void> deleteInstitution(@AuthenticationPrincipal Long memberId,
 		@PathVariable Long institutionId) {

@@ -28,6 +28,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,6 +41,7 @@ import com.mongkids.domain.attendance.entity.ClassSession;
 import com.mongkids.domain.attendance.entity.ClassStart;
 import com.mongkids.domain.attendance.entity.GeoPoint;
 import com.mongkids.domain.attendance.entity.Institution;
+import com.mongkids.domain.attendance.service.AttendanceImagesDeletedEvent;
 import com.mongkids.domain.member.dto.LoginMemberResponse;
 import com.mongkids.domain.member.dto.SocialLoginRequest;
 import com.mongkids.domain.member.entity.Member;
@@ -58,6 +61,7 @@ import tools.jackson.databind.ObjectMapper;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
+@RecordApplicationEvents
 class AttendanceIntegrationTest {
 
 	private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
@@ -93,6 +97,9 @@ class AttendanceIntegrationTest {
 
 	@MockitoBean
 	private FileStorage fileStorage;
+
+	@Autowired
+	private ApplicationEvents applicationEvents;
 
 	private Institution institution;
 
@@ -628,13 +635,76 @@ class AttendanceIntegrationTest {
 				.param("from", TODAY.toString()).param("to", TODAY.toString()))
 			.andExpect(jsonPath("$.data[0].day.start.distanceMeters").value(56));
 
-		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", institution.getId()).cookie(admin))
-			.andExpect(status().isConflict())
-			.andExpect(jsonPath("$.error.code").value("E012"));
+		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", newId).cookie(tokenCookie(staff)))
+			.andExpect(status().isForbidden());
 		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", newId).cookie(admin))
 			.andExpect(status().isOk());
 		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", newId).cookie(admin))
 			.andExpect(jsonPath("$.error.code").value("E011"));
+		mockMvc.perform(get("/api/v1/admin/institutions/{id}/delete-preview", newId).cookie(admin))
+			.andExpect(jsonPath("$.error.code").value("E011"));
+	}
+
+	@Test
+	@DisplayName("기관 삭제: 수업·수업 단위 기록과 이 기관을 대조한 하루 기록을 통째로 지우고, 남는 하루의 이 기관 특이사항만 지운다. 다른 기록이 쓰는 사진 키는 S3에서 지우지 않는다")
+	void deleteInstitutionWithRecords() throws Exception {
+		// given: staff1은 이 기관에서 하루 시작(통째로 지움), staff2는 이 기관이 가운데 수업(하루는 남음)
+		LoginMemberResponse staff1 = register("1", MemberRole.STAFF);
+		LoginMemberResponse staff2 = register("2", MemberRole.STAFF);
+		Cookie admin = tokenCookie(register("9", MemberRole.ADMIN));
+		legacyEnded(session(staff1, institution, TODAY.minusDays(2), 10));
+		session(staff1, institution, TODAY, 10);
+		session(staff1, lastInstitution, TODAY, 14);
+		session(staff2, lastInstitution, TODAY, 9);
+		session(staff2, institution, TODAY, 11);
+		session(staff2, lastInstitution, TODAY, 14);
+		Cookie cookie1 = tokenCookie(staff1);
+		Cookie cookie2 = tokenCookie(staff2);
+		startDay(cookie1, TODAY, NEAR_LAT).andExpect(jsonPath("$.data.confirmed").value(true));
+		startDay(cookie2, TODAY, NEAR_LAST_LAT).andExpect(jsonPath("$.data.confirmed").value(true));
+		clock.setDateTime(TODAY, LocalTime.of(15, 10));
+		// staff1 사진 0·1번, staff2 사진 0번(같은 키). 둘 다 이 기관 특이사항을 쓴다
+		endDay(cookie1, TODAY, NEAR_LAST_LAT, 2).andExpect(jsonPath("$.data.confirmed").value(true));
+		endDay(cookie2, TODAY, NEAR_LAST_LAT, 1).andExpect(jsonPath("$.data.confirmed").value(true));
+		long staff2Attempts = count("select count(a) from DayCheckAttempt a where a.staff.id = " + staff2.id());
+
+		mockMvc.perform(get("/api/v1/admin/institutions/{id}/delete-preview", institution.getId())
+				.cookie(tokenCookie(staff1)))
+			.andExpect(status().isForbidden());
+		mockMvc.perform(get("/api/v1/admin/institutions/{id}/delete-preview", institution.getId()).cookie(admin))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.classSessionCount").value(3))
+			.andExpect(jsonPath("$.data.classRecordCount").value(2))
+			.andExpect(jsonPath("$.data.workDayCount").value(1))
+			.andExpect(jsonPath("$.data.noteCount").value(1))
+			.andExpect(jsonPath("$.data.imageCount").value(3));
+
+		// when
+		applicationEvents.clear();
+		mockMvc.perform(delete("/api/v1/admin/institutions/{id}", institution.getId()).cookie(admin))
+			.andExpect(status().isOk());
+
+		// then
+		assertThat(count("select count(s) from ClassSession s")).isEqualTo(3);
+		assertThat(count("select count(c) from ClassStart c") + count("select count(e) from ClassEnd e")
+			+ count("select count(i) from ClassEndImage i")).isZero();
+		assertThat(count("select count(d) from DayStart d where d.staff.id = " + staff1.id())).isZero();
+		assertThat(count("select count(d) from DayEnd d where d.staff.id = " + staff1.id())).isZero();
+		assertThat(count("select count(a) from DayCheckAttempt a where a.staff.id = " + staff1.id())).isZero();
+		assertThat(count("select count(a) from DayCheckAttempt a")).isEqualTo(staff2Attempts);
+		assertThat(count("select count(n) from DayEndNote n")).isZero();
+		assertThat(count("select count(i) from DayEndImage i")).isEqualTo(1);
+		assertThat(applicationEvents.stream(AttendanceImagesDeletedEvent.class))
+			.singleElement()
+			.extracting(AttendanceImagesDeletedEvent::imageKeys)
+			.isEqualTo(List.of("attendance/2026/10/legacy.jpg", "attendance/2026/11/1.jpg"));
+
+		mockMvc.perform(get("/api/v1/admin/attendance/days").cookie(admin)
+				.param("from", TODAY.toString()).param("to", TODAY.toString()))
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.data[?(@.staffId == %d)].day.status", staff1.id()).value("NOT_STARTED"))
+			.andExpect(jsonPath("$.data[?(@.staffId == %d)].day.status", staff2.id()).value("ENDED"))
+			.andExpect(jsonPath("$.data[?(@.staffId == %d)].day.classes.length()", staff2.id()).value(2));
 	}
 
 	@Test
@@ -754,6 +824,10 @@ class AttendanceIntegrationTest {
 	private MockHttpServletRequestBuilder calendar(Cookie cookie, LocalDate from, LocalDate to) {
 		return get("/api/v1/admin/attendance/calendar").cookie(cookie)
 			.param("from", from.toString()).param("to", to.toString());
+	}
+
+	private long count(String jpql) {
+		return entityManager.createQuery(jpql, Long.class).getSingleResult();
 	}
 
 	private long countAttempts() {

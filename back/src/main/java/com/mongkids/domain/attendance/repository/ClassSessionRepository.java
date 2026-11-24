@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -34,6 +35,11 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 		LocalDate from, LocalDate to);
 
 	long countByInstitutionId(Long institutionId);
+
+	// 기관 삭제 (EMP-FR-012). 수업 시작·종료 기록과 시도 로그를 먼저 지운다
+	@Modifying(flushAutomatically = true, clearAutomatically = true)
+	@Query("delete from ClassSession s where s.institution.id = :institutionId")
+	void deleteByInstitutionId(@Param("institutionId") Long institutionId);
 
 	// 기관 목록에 보여 줄 기관별 수업 수
 	@Query("""

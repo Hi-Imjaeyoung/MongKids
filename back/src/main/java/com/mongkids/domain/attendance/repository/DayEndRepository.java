@@ -21,4 +21,7 @@ public interface DayEndRepository extends JpaRepository<DayEnd, Long> {
 
 	// 관리자 승인 대기 목록 (EMP-FR-020)
 	List<DayEnd> findByStatus(ClassStartStatus status);
+
+	// 기관 삭제 (EMP-FR-012): 이 기관을 대조한 하루 기록
+	List<DayEnd> findByInstitutionId(Long institutionId);
 }
