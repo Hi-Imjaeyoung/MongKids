@@ -42,6 +42,9 @@ public enum ErrorCode {
 	REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "후기를 찾을 수 없습니다."),
 	REVIEW_IMAGE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "R002", "후기 사진은 최대 5장까지 올릴 수 있습니다."),
 	INVALID_REVIEW_IMAGE(HttpStatus.BAD_REQUEST, "R003", "올바르지 않은 사진입니다."),
+	REVIEW_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "R004", "후기 작성 코드를 찾을 수 없습니다."),
+	REVIEW_CODE_NOT_ACTIVE(HttpStatus.CONFLICT, "R005", "이미 쓸 수 없는 후기 작성 코드입니다."),
+	INVALID_REVIEW_CODE_OPTION(HttpStatus.BAD_REQUEST, "R006", "후기 작성 코드의 사용 횟수나 만료일이 올바르지 않습니다."),
 
 	// 수업 계획안
 	CLASS_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "L001", "수업 계획안을 찾을 수 없습니다."),

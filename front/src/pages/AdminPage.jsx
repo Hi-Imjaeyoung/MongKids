@@ -9,6 +9,7 @@ import { adminPage, adminTabs, newConsultationCountLabel } from '../data/adminCo
 import { pendingStartCountLabel } from '../data/attendanceAdminContent'
 import ConsultationsTab from './admin/ConsultationsTab'
 import MembersTab from './admin/MembersTab'
+import ReviewCodesTab from './admin/ReviewCodesTab'
 import ReviewsTab from './admin/ReviewsTab'
 import { pageMeta } from '../data/seoContent'
 import usePageMeta from './usePageMeta'
@@ -24,6 +25,7 @@ const TAB_COMPONENTS = {
   consultations: ConsultationsTab,
   reviews: ReviewsTab,
   members: MembersTab,
+  'review-codes': ReviewCodesTab,
   'work-calendar': WorkCalendarTab,
   'class-starts': ClassStartsTab,
   'class-records': ClassRecordsTab,

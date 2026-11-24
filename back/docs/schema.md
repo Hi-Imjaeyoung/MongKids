@@ -54,7 +54,7 @@ erDiagram
 | member | `member` | FR-018, FR-019, FR-022 |
 | consultation | `consultation`, `institution_consultation`, `personal_consultation`, `quote_consultation` | FR-001~004, FR-023, FR-031 |
 | post | `post`, `post_image`, `post_comment`, `post_like` (수업 현장), `lab_post`, `lab_post_image`, `lab_post_like` (몽키즈 연구소) | FR-008~012 |
-| review | `review`, `review_image` | FR-012~017, FR-021 |
+| review | `review`, `review_image`, `review_code` | FR-012~017, FR-021, FR-029 |
 | attendance | `institution`, `class_session`, `day_start`, `day_end`, `day_end_image`, `day_end_note`, `day_check_attempt` (근태 관리, 하루 단위), `class_start`, `class_start_attempt`, `class_end`, `class_end_image` (수업 단위, 보관만) | EMP-FR-001~004, 010~015, 020 |
 
 ## 3. 테이블 정의
@@ -248,6 +248,23 @@ erDiagram
 | review_id | BIGINT | NOT NULL, FK → review.id | |
 | image_key | VARCHAR(255) | NOT NULL | S3 객체 키 |
 | sort_order | INT | NOT NULL | 표시 순서 |
+
+### review_code — 후기 작성 코드 (FR-029, [ADR-005](../../docs/adr/ADR-005-review-author-eligibility.md))
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| code | VARCHAR(20) | NOT NULL, UNIQUE | `MK-XXXX-XXXX` |
+| kind | VARCHAR(10) | NOT NULL | `SINGLE`(1회용) / `BUNDLE`(묶음) |
+| max_uses | INT | NOT NULL | 사용 횟수 한도. 1회용은 1 |
+| used_count | INT | NOT NULL | 쓴 횟수. 후기 작성(FR-030)에서 늘린다 |
+| expires_on | DATE | NOT NULL | 이날까지 사용 가능 |
+| memo | VARCHAR(50) | NULL | 묶음 코드 배포처 메모. 개인정보는 적지 않는다 |
+| revoked_at | DATETIME(6) | NULL | 관리자 폐기 시각 |
+
+- 상태(사용 가능·다 씀·만료·폐기)는 저장하지 않고 위 컬럼과 오늘 날짜로 계산한다.
+- 아직 후기와 연결하지 않는다. 어느 후기가 어느 코드로 쓰였는지 남길지는 FR-030에서 정한다.
+- 운영 DDL: `back/docs/sql/2026-11-review-code-ddl.sql`.
 
 ### institution — 기관 (EMP-FR-012)
 

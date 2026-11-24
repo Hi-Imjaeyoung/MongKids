@@ -163,3 +163,20 @@ export function deleteInstitution(institutionId) {
 export function getWorkCalendar({ from, to, staffId }) {
   return request(`/api/v1/admin/attendance/calendar?${query({ from, to, staffId })}`)
 }
+
+// 후기 작성 코드 (FR-029) ---------------------------------------------------------
+// 항목은 ReviewCodeResponse { id, code, kind, maxUses, usedCount, expiresOn, memo, status, revokedAt, createdAt }
+
+// active: true(사용 가능만) | false(끝난 코드만) | undefined(전체). 최근 발급 순
+export function getReviewCodes({ active, page = 0, size = 20 } = {}) {
+  return request(`/api/v1/admin/review-codes?${query({ active, page, size })}`)
+}
+
+// { kind: 'SINGLE' | 'BUNDLE', maxUses?(묶음만), expiresOn: 'YYYY-MM-DD', memo?(묶음만) }
+export function createReviewCode(body) {
+  return request('/api/v1/admin/review-codes', { method: 'POST', ...jsonBody(body) })
+}
+
+export function revokeReviewCode(reviewCodeId) {
+  return request(`/api/v1/admin/review-codes/${reviewCodeId}/revoke`, { method: 'POST' })
+}

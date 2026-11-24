@@ -8,7 +8,7 @@ import './AdminLayout.css'
 function AdminLayout({ tabs, activeTab, onTabChange, children }) {
   return (
     <div className="admin-layout">
-      <div className="admin-layout__inner container">
+      <div className="admin-layout__inner">
         <nav className="admin-layout__nav" aria-label={adminPage.menuLabel}>
           <p className="admin-layout__eyebrow">{adminPage.eyebrow}</p>
           {tabs.map((tab, index) => (

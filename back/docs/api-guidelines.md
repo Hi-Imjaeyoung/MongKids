@@ -235,7 +235,7 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - 답글 `content`: 일반 텍스트, 공백만은 안 됨, 1,000자 이내(400 `C001`).
 - 없거나 삭제된 후기 `R001`(404).
 
-## 10. 관리자 API (SCR-014: FR-004, FR-005, FR-021, FR-022, FR-026)
+## 10. 관리자 API (SCR-014: FR-004, FR-005, FR-021, FR-022, FR-026, FR-029)
 
 관리자 화면 전용 API는 `/api/v1/admin/**`에 모은다. 모두 인증이 필요하고(비로그인 401 `A001`), 각 Service가 `MemberService.validateAdmin`으로 DB의 현재 역할이 `ADMIN`인지 확인한다(직원 `STAFF`도 403 `A002`). 후기 답글(FR-017)은 SCR-012 카드에서 입력하므로 §9의 `/api/v1/reviews/{reviewId}/reply`를 쓴다.
 
@@ -249,6 +249,9 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 | PUT | `/api/v1/admin/reviews/{reviewId}/hidden` | 숨김 `{hidden: true}`·다시 공개 `{hidden: false}` → `AdminReviewResponse` |
 | GET | `/api/v1/admin/members?role=&keyword=&page=&size=` | 탈퇴하지 않은 회원 최근 가입 순 목록 (`PageResponse<AdminMemberResponse>`) |
 | PUT | `/api/v1/admin/members/{memberId}/role` | 직원 지정 `{role: "STAFF"}`·해제 `{role: "MEMBER"}` → `AdminMemberResponse` |
+| GET | `/api/v1/admin/review-codes?active=&page=&size=` | 후기 작성 코드 최근 발급 순 목록 (`PageResponse<ReviewCodeResponse>`). `active=true`면 사용 가능한 코드만, `false`면 끝난 코드(다 씀·만료·폐기)만, 없으면 전체 |
+| POST | `/api/v1/admin/review-codes` | 코드 발급 `{kind, maxUses?, expiresOn, memo?}` → 201 `ReviewCodeResponse` |
+| POST | `/api/v1/admin/review-codes/{reviewCodeId}/revoke` | 코드 폐기 → `ReviewCodeResponse` |
 
 - 신규 건수 구독(FR-005, [ADR-004](../../docs/adr/ADR-004-admin-web-notification-transport.md)):
   - 권한은 연결할 때 한 번 확인한다. 권한 오류는 다른 API처럼 JSON(401 `A001`, 403 `A002`)으로 내려간다.
@@ -259,6 +262,9 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 - `ConsultationDetailResponse`: `{id, type, phone, status, privacyAgreedAt, completedAt, createdAt, institution, personal}`. 유형에 맞는 쪽만 채우고 나머지는 `null`. `institution`은 기관 신청 항목(§8), `personal`은 개인 신청 항목과 `healthAgreedAt`.
 - 상태는 어느 단계로든 바꿀 수 있다. `COMPLETED`가 되면 `completedAt`을 남기고(이미 완료면 처음 시각 유지), 다른 상태로 되돌리면 `null`. 이 시각이 보관 기간(FR-023)의 기준이다. 없는 신청은 404 `S001`.
 - `AdminReviewResponse`: `{review: ReviewResponse, hidden, hiddenAt}`. 작성자 이름은 공개 응답처럼 가린다(FR-014). 숨긴 후기는 §9 공개 목록에서 빠진다. 없거나 삭제된 후기 404 `R001`.
+- `ReviewCodeResponse`(FR-029): `{id, code, kind, maxUses, usedCount, expiresOn, memo, status, revokedAt, createdAt}`. `kind`: `SINGLE`(1회용)·`BUNDLE`(묶음). `status`는 저장하지 않고 오늘 날짜로 계산한다: `REVOKED`(폐기) → `USED_UP`(`usedCount >= maxUses`) → `EXPIRED`(`expiresOn`이 오늘 전) → `ACTIVE` 순.
+- 코드 발급: `code`는 `MK-XXXX-XXXX`(0·O·1·I를 뺀 32글자, SecureRandom). `expiresOn`은 오늘부터 365일 안(그날까지 사용 가능). `SINGLE`은 `maxUses`·`memo`를 무시하고 1회·메모 없음으로 저장한다. `BUNDLE`은 `maxUses`(1~500)가 필요하고 `memo`(50자, 선택)는 앞뒤 공백을 지운다. 만료일 범위 밖이나 묶음 사용 횟수 없음은 400 `R006`, 형식 오류(501회 등)는 400 `C001`.
+- 코드 폐기: `ACTIVE`인 코드만 폐기하고 `revokedAt`을 남긴다. 이미 끝난 코드는 409 `R005`, 없는 코드는 404 `R004`. 이미 쓴 후기는 그대로 둔다. 후기 작성 때 코드 확인·사용 횟수 차감(FR-030)은 따로 만든다.
 - `AdminMemberResponse`: `{id, name, phone, provider, role, createdAt}`. `keyword`는 이름 부분 일치, 숫자가 있으면 전화번호(하이픈 무시) 부분 일치로도 찾는다.
 - 권한 변경: 대상이 `ADMIN`이거나 `role`이 `ADMIN`이면 400 `M003`. 없는 회원 404 `M001`, 탈퇴 회원 403 `M002`. 회수해도 작성한 게시물은 남고 새 글 작성·자기 글 수정·삭제만 막힌다(FR-009).
 

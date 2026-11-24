@@ -1,0 +1,14 @@
+.review-codes-tab {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.review-codes-tab__list {
+  display: flex;
+  flex: 2 1 560px;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
