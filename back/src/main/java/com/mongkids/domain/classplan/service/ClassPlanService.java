@@ -15,7 +15,6 @@ import com.mongkids.domain.classplan.dto.ClassPlanFileUploadUrlResponse;
 import com.mongkids.domain.classplan.dto.ClassPlanResponse;
 import com.mongkids.domain.classplan.dto.ClassPlanUpdateRequest;
 import com.mongkids.domain.classplan.entity.ClassPlan;
-import com.mongkids.domain.classplan.entity.ClassPlanKind;
 import com.mongkids.domain.classplan.repository.ClassPlanRepository;
 import com.mongkids.domain.member.service.MemberService;
 import com.mongkids.global.exception.BusinessException;
@@ -28,8 +27,9 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * 수업 계획안 등록·열람 (SCR-027, FR-032, ADR-009).
- * 연간은 공개 PDF 하나, 월간은 관리자가 블러 처리한 공개 PDF와 원본 PDF 두 파일이다.
- * 공개 PDF는 누구나, 월간 원본은 기관 인증 방법이 정해지기 전까지 관리자만 받는다.
+ * 연간·월간 모두 관리자가 블러 처리한 공개 PDF와 원본 PDF 두 파일이다 (연간 포함은 2026-11-26).
+ * 공개 PDF는 누구나, 원본은 기관 인증 방법이 정해지기 전까지 관리자만 받는다.
+ * 2026-11-26 이전에 올린 연간 계획안은 원본이 없을 수 있고, 수정으로 원본을 붙인다.
  * PDF는 공개 CloudFront URL로 내보내지 않고 서버가 읽어 같은 출처로 전달한다 (파일 키가 응답에 나가지 않는다).
  */
 @Service
@@ -53,12 +53,12 @@ public class ClassPlanService {
 			.toList();
 	}
 
-	/** 누구나 보는 PDF (연간 계획안, 월간 블러본) */
+	/** 누구나 보는 블러본 PDF */
 	public StoredFile openFile(Long classPlanId) {
 		return openStored(getClassPlan(classPlanId).getFileKey());
 	}
 
-	/** 월간 원본 PDF. 기관 인증 방법이 정해지기 전까지 관리자만 받는다 (FR-032) */
+	/** 원본 PDF. 기관 인증 방법이 정해지기 전까지 관리자만 받는다 (FR-032) */
 	public StoredFile openOriginalFile(Long adminId, Long classPlanId) {
 		memberService.validateAdmin(adminId);
 		ClassPlan classPlan = getClassPlan(classPlanId);
@@ -86,18 +86,15 @@ public class ClassPlanService {
 	@Transactional
 	public ClassPlanResponse createClassPlan(Long adminId, ClassPlanCreateRequest request) {
 		memberService.validateAdmin(adminId);
-		ClassPlanKind kind = request.kind();
-		String originalFileKey = StringUtils.hasText(request.originalFileKey()) ? request.originalFileKey() : null;
-		if (kind.hasOriginal() != (originalFileKey != null)) {
-			throw new BusinessException(ErrorCode.CLASS_PLAN_ORIGINAL_MISMATCH);
+		String originalFileKey = request.originalFileKey();
+		if (!StringUtils.hasText(originalFileKey)) {
+			throw new BusinessException(ErrorCode.CLASS_PLAN_ORIGINAL_REQUIRED);
 		}
 		validateUploaded(request.fileKey(), PUBLIC_KEY_PREFIX);
-		if (originalFileKey != null) {
-			validateUploaded(originalFileKey, ORIGINAL_KEY_PREFIX);
-		}
+		validateUploaded(originalFileKey, ORIGINAL_KEY_PREFIX);
 
 		ClassPlan classPlan = classPlanRepository.saveAndFlush(ClassPlan.builder()
-			.kind(kind)
+			.kind(request.kind())
 			.title(request.title().strip())
 			.period(request.period().strip())
 			.fileKey(request.fileKey())
@@ -114,9 +111,6 @@ public class ClassPlanService {
 		memberService.validateAdmin(adminId);
 		ClassPlan classPlan = getClassPlan(classPlanId);
 		boolean newOriginal = StringUtils.hasText(request.originalFileKey());
-		if (newOriginal && !classPlan.getKind().hasOriginal()) {
-			throw new BusinessException(ErrorCode.CLASS_PLAN_ORIGINAL_MISMATCH);
-		}
 		if (StringUtils.hasText(request.fileKey())) {
 			validateUploaded(request.fileKey(), PUBLIC_KEY_PREFIX);
 			classPlan.changeFile(request.fileKey());
