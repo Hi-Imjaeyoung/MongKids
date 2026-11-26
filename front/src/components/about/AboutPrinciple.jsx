@@ -1,4 +1,6 @@
 import { Fragment } from 'react'
+import { Link } from 'react-router-dom'
+import ChevronIcon from '../common/ChevronIcon'
 import AboutAgeCards from './AboutAgeCards'
 import AboutCurriculum from './AboutCurriculum'
 import './AboutPrinciple.css'
@@ -88,6 +90,12 @@ function AboutPrinciple({ principle, curriculumEdit }) {
               </div>
             ))}
           </dl>
+        )}
+        {principle.planLink && (
+          <Link to={principle.planLink.to} className="about-principle__button">
+            {principle.planLink.label}
+            <ChevronIcon />
+          </Link>
         )}
       </div>
 

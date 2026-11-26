@@ -25,12 +25,11 @@
   text-decoration: underline;
 }
 
-/* 3열 격자(3×3). 카드 크기를 줄여 폭을 제한하고, 9명이 넘으면 같은 3열로 줄이 늘어난다 (SCR-002, 2026-11-12) */
+/* 데스크톱은 한 줄에 5명, 넘으면 같은 5열로 줄이 늘어난다 (SCR-002, 2026-11-26) */
 .teacher-list__items {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 20px;
-  max-width: 760px;
 }
 
 .teacher-card__photo {
@@ -52,11 +51,35 @@
   font-weight: 800;
 }
 
-/* 전담 분야 (예: 이벤트·행사 전문, 영아 전담). 학력·경력은 두지 않는다 (2026-11-05) */
+/* 전담 분야: "전담 분야" 글자 + 분야마다 뱃지 하나 (예: 이벤트 및 레크레이션). 뱃지 안에서는 줄을 바꾸지 않는다.
+ * 학력·경력은 두지 않는다 (2026-11-05, 뱃지 분리 2026-11-26) */
+.teacher-card__specialties {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.teacher-card__specialty-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+.teacher-card__specialty-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .teacher-card__specialty {
-  display: inline-block;
-  margin: 8px 0 0;
   padding: 4px 12px;
+  white-space: nowrap;
   border-radius: 999px;
   background: var(--blue-soft);
   font-size: 14px;
@@ -80,6 +103,16 @@
   color: var(--blue-text);
 }
 
+.teacher-card__specialty--pink {
+  background: #fde4e4;
+  color: var(--danger);
+}
+
+.teacher-card__specialty--purple {
+  background: #e6d9f7;
+  color: var(--purple-text);
+}
+
 @media (max-width: 768px) {
   .teacher-list {
     margin-top: 64px;
@@ -99,8 +132,9 @@
     margin-bottom: 12px;
   }
 
-  /* 모바일도 3열. 사진 아래 이름·전담 분야를 작게 */
+  /* 모바일은 3열 격자(3×3) 유지. 사진 아래 이름·전담 분야를 작게 */
   .teacher-list__items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px 10px;
   }
 
@@ -113,8 +147,23 @@
     font-size: 14px;
   }
 
-  .teacher-card__specialty {
+  .teacher-card__specialties,
+  .teacher-card__specialty-list {
+    gap: 4px;
+  }
+
+  /* 모바일: 모든 강사가 같은 모양이 되도록 "전담 분야" 아래 줄에 뱃지를 둔다 */
+  .teacher-card__specialties {
+    flex-direction: column;
+    align-items: flex-start;
     margin-top: 4px;
+  }
+
+  .teacher-card__specialty-label {
+    font-size: 11px;
+  }
+
+  .teacher-card__specialty {
     padding: 2px 8px;
     font-size: 11px;
   }

@@ -21,7 +21,7 @@ function PostDetail({ post, canEdit, deleting, onDelete, basePath = '/news', cat
         <CategoryChip category={post.category} categories={categories} />
         <h1 className="post-detail__title">{post.title}</h1>
         <p className="post-detail__meta">
-          {post.authorName} · {formatDate(post.createdAt)}
+          {formatDate(post.createdAt)}
         </p>
       </header>
 

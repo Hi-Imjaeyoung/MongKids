@@ -161,8 +161,8 @@
   margin: 14px 0 0;
   padding: 14px 20px;
   border-radius: 999px;
-  background: var(--text);
-  color: var(--bg);
+  background: var(--accent-soft);
+  color: var(--accent);
   font-size: 14px;
   font-weight: 700;
   text-align: center;
@@ -247,6 +247,26 @@
 
 .about-principle__link:hover {
   text-decoration: underline;
+}
+
+/* 새로운 활동 경험: 테마 예시 아래 세부 수업(수업 계획안) 버튼 */
+.about-principle__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  margin-top: 20px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.about-principle__button:hover {
+  opacity: 0.9;
 }
 
 /* 새로운 활동 경험: 테마 · 교구 예시 */
@@ -390,6 +410,12 @@
 
   .about-principle__examples {
     gap: 10px;
+    margin-top: 16px;
+  }
+
+  .about-principle__button {
+    display: flex;
+    width: 100%;
     margin-top: 16px;
   }
 

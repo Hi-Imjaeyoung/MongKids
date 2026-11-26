@@ -7,6 +7,8 @@ import themeClassImage from '../assets/about-theme-class.jpg'
 import teacherImage1 from '../assets/teacher-1.jpg'
 import teacherImage2 from '../assets/teacher-2.jpg'
 import teacherImage3 from '../assets/teacher-3.jpg'
+import rabbitTeacherImage from '../assets/rabbit_teacher.png'
+import whaleTeacherImage from '../assets/whale_teacher.png'
 
 export const aboutHero = {
   eyebrow: 'ABOUT MONGKIZ',
@@ -91,8 +93,6 @@ export const aboutPrinciples = [
         { month: '[월]', topic: '[활동 주제]', goal: '[목표]' },
       ],
       link: { label: '정규 체육수업 프로그램 보기', to: '/programs/school' },
-      // 수업 계획안(SCR-027) 진입
-      planLink: { label: '세부 수업 보러가기', to: '/plans' },
     },
   },
   {
@@ -109,6 +109,8 @@ export const aboutPrinciples = [
       { label: '테마 예시', value: '폴짝! 개구리' },
       { label: '사용 교구', value: '포트리스, 연잎, 개구리' },
     ],
+    // 수업 계획안(SCR-027) 진입. 테마 예시 아래 버튼으로 둔다 (#120)
+    planLink: { label: '세부 수업 보러가기', to: '/plans' },
   },
 ]
 
@@ -157,11 +159,14 @@ export const aboutTeachers = {
   title: '강사를 소개합니다',
   recruit: { label: '함께할 강사를 찾습니다 · 강사 채용', to: '/recruit' },
   photoLabel: '강사 사진',
+  // 전담 분야: "전담 분야" 글자 뒤에 분야마다 뱃지 하나
   specialtyLabel: '전담 분야',
   items: [
-    { id: 1, theme: 'mint', photo: teacherImage1, name: '몽키쌤', specialty: '이벤트 및 레크레이션 행사' },
-    { id: 2, theme: 'yellow', photo: teacherImage2, name: '상어쌤', specialty: '0~3세' },
-    { id: 3, theme: 'sky', photo: teacherImage3, name: '악어쌤', specialty: '3~7세' },
+    { id: 1, theme: 'mint', photo: teacherImage1, name: '몽키쌤', specialties: ['이벤트 및 레크레이션'] },
+    { id: 2, theme: 'purple', photo: whaleTeacherImage, name: '고래쌤', specialties: ['0~3세'] },
+    { id: 3, theme: 'sky', photo: teacherImage3, name: '악어쌤', specialties: ['3~7세'] },
+    { id: 4, theme: 'pink', photo: rabbitTeacherImage, name: '토끼쌤', specialties: ['특수 체육'] },
+    { id: 5, theme: 'yellow', photo: teacherImage2, name: '상어쌤', specialties: ['1대1 가정 방문'] },
   ],
 }
 
