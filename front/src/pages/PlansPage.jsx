@@ -12,7 +12,7 @@ import usePageMeta from './usePageMeta'
 // 서버 응답의 종류(ANNUAL·MONTHLY)를 화면 키(annual·monthly)로 바꾼다
 const toViewPlan = (plan) => ({ ...plan, kind: plan.kind.toLowerCase() })
 
-// 수업 계획안 (SCR-027, FR-032, ADR-009). ABOUT 월별 커리큘럼의 "세부 수업 보러가기"에서 들어온다.
+// 수업 계획안 (SCR-027, FR-032, ADR-009). ABOUT 새로운 활동 경험의 "세부 수업 바로가기"에서 들어온다.
 // 연간·월간 모두 관리자가 블러 처리한 PDF만 공개한다(원본은 서버가 권한 확인 후 전달, 연간 포함은 2026-11-26).
 // 관리자는 이 화면에서 계획안을 추가·수정·삭제한다. form: null(보기) | { plan: null }(추가) | { plan }(수정)
 function PlansPage({ member, onLoginClick }) {

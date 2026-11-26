@@ -110,7 +110,7 @@ export const aboutPrinciples = [
       { label: '사용 교구', value: '포트리스, 연잎, 개구리' },
     ],
     // 수업 계획안(SCR-027) 진입. 테마 예시 아래 버튼으로 둔다 (#120)
-    planLink: { label: '세부 수업 보러가기', to: '/plans' },
+    planLink: { label: '세부 수업 바로가기', to: '/plans' },
   },
 ]
 
