@@ -7,8 +7,8 @@ import themeClassImage from '../assets/about-theme-class.jpg'
 import teacherImage1 from '../assets/teacher-1.jpg'
 import teacherImage2 from '../assets/teacher-2.jpg'
 import teacherImage3 from '../assets/teacher-3.jpg'
-import rabbitTeacherImage from '../assets/rabbit_teacher.png'
-import whaleTeacherImage from '../assets/whale_teacher.png'
+import rabbitTeacherImage from '../assets/rabbit_teacher.jpg'
+import whaleTeacherImage from '../assets/whale_teacher.jpg'
 
 export const aboutHero = {
   eyebrow: 'ABOUT MONGKIZ',
