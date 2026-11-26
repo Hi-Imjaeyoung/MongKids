@@ -11,17 +11,17 @@ function jsonBody(body) {
   return { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
 }
 
-// [{ id, kind: 'ANNUAL' | 'MONTHLY', title, period, updatedAt }]. 연간이 먼저, 같은 종류는 올린 순서
+// [{ id, kind: 'ANNUAL' | 'MONTHLY', title, period, updatedAt, hasOriginal }]. 연간이 먼저, 같은 종류는 올린 순서
 export function getClassPlans() {
   return request('/api/v1/class-plans')
 }
 
-// 누구나 보는 PDF(연간 계획안, 월간 블러본). 파일을 바꾸면 updatedAt이 바뀌어 새로 받는다
+// 누구나 보는 블러본 PDF. 파일을 바꾸면 updatedAt이 바뀌어 새로 받는다
 export function classPlanFileUrl(plan) {
   return `/api/v1/class-plans/${plan.id}/file?v=${encodeURIComponent(plan.updatedAt ?? '')}`
 }
 
-// 월간 원본 PDF. 기관 인증 방법이 정해지기 전까지 관리자만 받는다
+// 원본 PDF. 기관 인증 방법이 정해지기 전까지 관리자만 받는다
 export function classPlanOriginalFileUrl(plan) {
   return `/api/v1/admin/class-plans/${plan.id}/original-file`
 }
@@ -49,7 +49,7 @@ export async function uploadClassPlanFiles(files) {
   return uploads.map(({ fileKey }) => fileKey)
 }
 
-// plan: { kind, title, period, fileKey, originalFileKey }. 월간은 원본 키가 꼭 있어야 한다
+// plan: { kind, title, period, fileKey, originalFileKey }. 연간·월간 모두 원본 키가 꼭 있어야 한다
 export function createClassPlan(plan) {
   return request('/api/v1/admin/class-plans', { method: 'POST', ...jsonBody(plan) })
 }

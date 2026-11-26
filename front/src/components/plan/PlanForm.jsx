@@ -13,7 +13,7 @@ function checkFile(file) {
 }
 
 // 수업 계획안 등록·수정 (SCR-027, FR-032, ADR-009). 관리자만 /plans 화면에서 연다.
-// 연간은 공개 PDF 하나, 월간은 관리자가 블러 처리한 공개 PDF와 원본 PDF 두 가지를 구분해 올린다.
+// 연간·월간 모두 관리자가 블러 처리한 공개 PDF와 원본 PDF 두 가지를 구분해 올린다 (연간 포함은 2026-11-26).
 // plan이 있으면 수정: 종류는 바꾸지 않고, 새로 고른 파일만 교체한다. 저장하면 onSaved(저장된 계획안)를 부른다
 function PlanForm({ plan, onSaved, onCancel }) {
   const editing = Boolean(plan)
@@ -44,9 +44,13 @@ function PlanForm({ plan, onSaved, onCancel }) {
       setError(form.emptyError)
       return
     }
-    // 새로 등록할 때는 파일이 모두 있어야 한다. 수정은 고른 파일만 바꾼다
-    if (!editing && (!publicFile || (monthly && !originalFile))) {
-      setError(monthly ? form.monthlyFileError : form.annualFileError)
+    // 새로 등록할 때는 파일이 모두 있어야 한다. 수정은 고른 파일만 바꾸되, 원본이 없던 계획안(예전 연간)은 원본을 꼭 올린다
+    if (!editing && (!publicFile || !originalFile)) {
+      setError(form.fileError)
+      return
+    }
+    if (editing && !plan.hasOriginal && !originalFile) {
+      setError(form.originalMissingError)
       return
     }
 
@@ -55,7 +59,7 @@ function PlanForm({ plan, onSaved, onCancel }) {
     try {
       const files = [
         publicFile && { target: 'PUBLIC', file: publicFile },
-        monthly && originalFile && { target: 'ORIGINAL', file: originalFile },
+        originalFile && { target: 'ORIGINAL', file: originalFile },
       ].filter(Boolean)
       const keys = await uploadClassPlanFiles(files)
       const keyOf = (target) => keys[files.findIndex((item) => item.target === target)] ?? null
@@ -110,20 +114,20 @@ function PlanForm({ plan, onSaved, onCancel }) {
       </label>
 
       <label className="plan-form__field plan-form__file">
-        <span className="plan-form__label">{monthly ? form.previewFileLabel : form.annualFileLabel}</span>
-        <span className="plan-form__hint">{monthly ? form.previewFileHint : form.annualFileHint}</span>
+        <span className="plan-form__label">{form.previewFileLabel}</span>
+        <span className="plan-form__hint">{form.previewFileHint}</span>
         <input type="file" accept={classPlanFileRules.type} disabled={saving} onChange={pickFile(setPublicFile)} />
         {editing && !publicFile && <span className="plan-form__hint">{form.keepFile}</span>}
       </label>
 
-      {monthly && (
-        <label className="plan-form__field plan-form__file plan-form__file--original">
-          <span className="plan-form__label">{form.originalFileLabel}</span>
-          <span className="plan-form__hint">{form.originalFileHint}</span>
-          <input type="file" accept={classPlanFileRules.type} disabled={saving} onChange={pickFile(setOriginalFile)} />
-          {editing && !originalFile && <span className="plan-form__hint">{form.keepFile}</span>}
-        </label>
-      )}
+      <label className="plan-form__field plan-form__file plan-form__file--original">
+        <span className="plan-form__label">{form.originalFileLabel}</span>
+        <span className="plan-form__hint">{form.originalFileHint}</span>
+        <input type="file" accept={classPlanFileRules.type} disabled={saving} onChange={pickFile(setOriginalFile)} />
+        {editing && !originalFile && (
+          <span className="plan-form__hint">{plan.hasOriginal ? form.keepFile : form.originalMissing}</span>
+        )}
+      </label>
 
       {error && (
         <p className="plan-form__error" role="alert">
