@@ -26,7 +26,7 @@ function PostCard({ post }) {
         </div>
         <strong className="post-card__title">{post.title}</strong>
         <span className="post-card__meta">
-          {post.authorName} · {formatDate(post.createdAt)}
+          {formatDate(post.createdAt)}
         </span>
       </div>
     </Link>

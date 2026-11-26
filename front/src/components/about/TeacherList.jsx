@@ -29,9 +29,17 @@ function TeacherList() {
             </div>
             <div>
               <h3 className="teacher-card__name">{teacher.name}</h3>
-              <p className={`teacher-card__specialty teacher-card__specialty--${teacher.theme}`}>
-                {aboutTeachers.specialtyLabel}: {teacher.specialty}
-              </p>
+              {/* "전담 분야" 글자 뒤에 분야마다 뱃지 하나. 한 강사의 뱃지는 같은 색이다 */}
+              <div className="teacher-card__specialties">
+                <span className="teacher-card__specialty-label">{aboutTeachers.specialtyLabel}</span>
+                <ul className="teacher-card__specialty-list">
+                  {teacher.specialties.map((specialty) => (
+                    <li key={specialty} className={`teacher-card__specialty teacher-card__specialty--${teacher.theme}`}>
+                      {specialty}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </article>
         ))}
