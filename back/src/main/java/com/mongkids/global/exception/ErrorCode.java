@@ -73,7 +73,10 @@ public enum ErrorCode {
 	DAY_CHECK_PAST(HttpStatus.CONFLICT, "E018", "지난 날짜의 수업 시작·종료는 관리자에게 요청해 주세요."),
 	DAY_NO_CLASSES(HttpStatus.CONFLICT, "E019", "그날 할당된 수업이 없습니다."),
 	DAY_CHECK_NOT_PENDING(HttpStatus.CONFLICT, "E020", "승인 대기 중인 기록이 아닙니다."),
-	CLASS_SESSION_ALREADY_ASSIGNED(HttpStatus.CONFLICT, "E021", "이미 직원이 배정된 수업이 있습니다.");
+	CLASS_SESSION_ALREADY_ASSIGNED(HttpStatus.CONFLICT, "E021", "이미 직원이 배정된 수업이 있습니다."),
+	TRAVEL_TIME_UNAVAILABLE(HttpStatus.BAD_GATEWAY, "E022", "기관 사이 이동 시간을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."),
+	CLASS_SERIES_NOT_FOUND(HttpStatus.NOT_FOUND, "E023", "정기 수업을 찾을 수 없습니다."),
+	NO_UNASSIGNED_UPCOMING_CLASS(HttpStatus.CONFLICT, "E024", "오늘 이후 직원 미정 수업이 없습니다.");
 
 	private final HttpStatus status;
 	private final String code;

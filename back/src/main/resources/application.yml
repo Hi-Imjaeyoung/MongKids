@@ -77,3 +77,6 @@ app:
     region: ${AWS_REGION:ap-northeast-2}
     public-base-url: ${STORAGE_PUBLIC_BASE_URL}
     upload-url-duration: 10m
+  # 기관 사이 이동 시간 (EMP-FR-023). 키가 없어도 기동하고, 추천에서 이동 시간 조회만 실패한다
+  kakao-mobility:
+    rest-api-key: ${KAKAO_MOBILITY_REST_KEY:}

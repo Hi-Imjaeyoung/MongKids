@@ -15,9 +15,11 @@ import com.mongkids.domain.attendance.dto.AdminClassSessionResponse;
 import com.mongkids.domain.attendance.dto.ClassSessionAssignRequest;
 import com.mongkids.domain.attendance.dto.ClassSessionCreateRequest;
 import com.mongkids.domain.attendance.dto.ClassSessionUpdateRequest;
+import com.mongkids.domain.attendance.entity.ClassSeries;
 import com.mongkids.domain.attendance.entity.ClassSession;
 import com.mongkids.domain.attendance.entity.Institution;
 import com.mongkids.domain.attendance.repository.ClassEndRepository;
+import com.mongkids.domain.attendance.repository.ClassSeriesRepository;
 import com.mongkids.domain.attendance.repository.ClassSessionRepository;
 import com.mongkids.domain.attendance.repository.ClassStartAttemptRepository;
 import com.mongkids.domain.attendance.repository.ClassStartRepository;
@@ -41,10 +43,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClassSessionService {
 
-	// 한 번에 등록할 수 있는 기간
-	static final int MAX_REPEAT_MONTHS = 6;
+	// 한 번에 등록할 수 있는 기간 (2026-11-26 6개월 → 1년, EMP-FR-024)
+	static final int MAX_REPEAT_MONTHS = 12;
 
 	private final ClassSessionRepository classSessionRepository;
+	private final ClassSeriesRepository classSeriesRepository;
 	private final ClassStartRepository classStartRepository;
 	private final ClassStartAttemptRepository classStartAttemptRepository;
 	private final ClassEndRepository classEndRepository;
@@ -55,6 +58,7 @@ public class ClassSessionService {
 
 	/**
 	 * 기간 안의 고른 요일마다 수업을 만든다. 같은 직원의 수업과 시간이 하나라도 겹치면 하나도 만들지 않는다.
+	 * 반복 등록 한 건은 정기 수업(EMP-FR-024)으로 저장하고, 만든 회차마다 그 정기 수업을 연결한다.
 	 * 직원이 없으면(미정) 겹침·잠금을 검사하지 않는다.
 	 */
 	@Transactional
@@ -90,8 +94,20 @@ public class ClassSessionService {
 		}
 
 		String target = blankToNull(request.target());
+		ClassSeries series = classSeriesRepository.save(ClassSeries.builder()
+			.institution(institution)
+			.staff(staff)
+			.target(target)
+			.classType(request.classType())
+			.daysOfWeek(request.daysOfWeek())
+			.startTime(request.startTime())
+			.endTime(request.endTime())
+			.firstDate(request.firstDate())
+			.lastDate(request.lastDate())
+			.build());
 		List<ClassSession> sessions = dates.stream()
 			.map(date -> ClassSession.builder()
+				.series(series)
 				.institution(institution)
 				.staff(staff)
 				.classDate(date)

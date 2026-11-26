@@ -1,5 +1,7 @@
 package com.mongkids.domain.member.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -126,6 +128,13 @@ public class MemberService {
 			member.revokeStaff();
 		}
 		return AdminMemberResponse.from(member);
+	}
+
+	/**
+	 * 탈퇴하지 않은 직원(STAFF) 전체, 이름순. 수업 담당 직원 추천(EMP-FR-022)의 후보다.
+	 */
+	public List<Member> getActiveStaffs() {
+		return memberRepository.findByRoleAndDeletedAtIsNullOrderByNameAscIdAsc(MemberRole.STAFF);
 	}
 
 	/**

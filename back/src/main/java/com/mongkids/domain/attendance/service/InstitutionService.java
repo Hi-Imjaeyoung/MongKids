@@ -26,6 +26,7 @@ import com.mongkids.domain.attendance.entity.DayStart;
 import com.mongkids.domain.attendance.entity.Institution;
 import com.mongkids.domain.attendance.repository.ClassEndImageRepository;
 import com.mongkids.domain.attendance.repository.ClassEndRepository;
+import com.mongkids.domain.attendance.repository.ClassSeriesRepository;
 import com.mongkids.domain.attendance.repository.ClassSessionRepository;
 import com.mongkids.domain.attendance.repository.ClassSessionRepository.InstitutionSessionCount;
 import com.mongkids.domain.attendance.repository.ClassSessionRepository.UpcomingSession;
@@ -54,6 +55,8 @@ public class InstitutionService {
 
 	private final InstitutionRepository institutionRepository;
 	private final ClassSessionRepository classSessionRepository;
+	private final ClassSeriesRepository classSeriesRepository;
+	private final TravelTimeService travelTimeService;
 	private final ClassStartRepository classStartRepository;
 	private final ClassStartAttemptRepository classStartAttemptRepository;
 	private final ClassEndRepository classEndRepository;
@@ -98,8 +101,15 @@ public class InstitutionService {
 	public InstitutionResponse updateInstitution(Long adminId, Long institutionId, InstitutionRequest request) {
 		memberService.validateAdmin(adminId);
 		Institution institution = getInstitution(institutionId);
+		boolean moved = institution.getLatitude() != request.latitude()
+			|| institution.getLongitude() != request.longitude();
 		institution.update(request.name().strip(), request.address().strip(), request.latitude(),
 			request.longitude());
+		// 좌표가 바뀌면 저장된 이동 시간을 지우고 다음 추천 때 다시 조회한다 (EMP-FR-023).
+		// 일괄 삭제가 영속성 컨텍스트를 비우므로 기관 수정을 먼저 반영한 뒤 지운다
+		if (moved) {
+			travelTimeService.deleteByInstitution(institutionId);
+		}
 		return InstitutionResponse.of(institution, classSessionRepository.countByInstitutionId(institutionId),
 			findUpcoming(institutionId).stream().map(InstitutionService::toUpcomingClass).toList());
 	}
@@ -153,6 +163,8 @@ public class InstitutionService {
 		classStartRepository.deleteByInstitutionId(institutionId);
 		classStartAttemptRepository.deleteByInstitutionId(institutionId);
 		classSessionRepository.deleteByInstitutionId(institutionId);
+		classSeriesRepository.deleteByInstitutionId(institutionId);
+		travelTimeService.deleteByInstitution(institutionId);
 		institutionRepository.deleteById(institutionId);
 
 		if (!imageKeys.isEmpty()) {

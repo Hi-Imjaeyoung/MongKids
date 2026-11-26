@@ -1,5 +1,6 @@
 package com.mongkids.domain.member.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +16,8 @@ import com.mongkids.domain.member.entity.Provider;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	Optional<Member> findByProviderAndProviderId(Provider provider, String providerId);
+
+	List<Member> findByRoleAndDeletedAtIsNullOrderByNameAscIdAsc(MemberRole role);
 
 	// 관리자 회원 목록 (FR-022). 조건이 null이면 거르지 않는다. 전화번호는 숫자만 저장된다고 보고 숫자로만 찾는다
 	@Query("""
