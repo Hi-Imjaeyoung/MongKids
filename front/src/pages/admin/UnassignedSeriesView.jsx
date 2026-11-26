@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import { assignSeriesStaff, getSeriesStaffSuggestions, getUnassignedSeries } from '../../api/admin'
 import AdminNotice from '../../components/admin/AdminNotice'
 import AdminQueryBody from '../../components/admin/AdminQueryBody'
-import AdminSplit from '../../components/admin/AdminSplit'
 import SeriesFilter from '../../components/admin/SeriesFilter'
 import SeriesSuggestion from '../../components/admin/SeriesSuggestion'
 import SeriesTable from '../../components/admin/SeriesTable'
@@ -14,7 +13,7 @@ const loadSeries = () => getUnassignedSeries()
 const loadSuggestion = ({ seriesId }) => getSeriesStaffSuggestions(seriesId)
 
 // 수업 할당 안 "미정 수업 배정" 보기 (EMP-SCR-007, EMP-FR-022).
-// 직원 미정 정기 수업 묶음을 고르면 옆 패널에 추천 직원을 보여 주고, 고른 직원에게 오늘 이후 미정 회차를 한꺼번에 배정한다
+// 직원 미정 정기 수업 묶음을 고르면 목록 아래 카드에 추천 직원을 보여 주고, 고른 직원에게 오늘 이후 미정 회차를 한꺼번에 배정한다
 function UnassignedSeriesView() {
   const list = useAdminQuery(loadSeries, {})
   const [selectedId, setSelectedId] = useState(null)
@@ -77,17 +76,12 @@ function UnassignedSeriesView() {
           {message}
         </p>
       )}
-      <AdminSplit
-        main={
-          <>
-            <AdminQueryBody query={list} items={items} empty={seriesAdmin.empty}>
-              {(rows) => <SeriesTable items={rows} selectedId={selectedId} onSelect={select} />}
-            </AdminQueryBody>
-            <p className="admin-section__description">{seriesAdmin.singleHint}</p>
-          </>
-        }
-        side={side}
-      />
+      <AdminQueryBody query={list} items={items} empty={seriesAdmin.empty}>
+        {(rows) => <SeriesTable items={rows} selectedId={selectedId} onSelect={select} />}
+      </AdminQueryBody>
+      <p className="admin-section__description">{seriesAdmin.singleHint}</p>
+      {/* 11-26 초안 수정: 추천 카드는 목록 옆이 아니라 아래에 둔다 */}
+      {side}
     </>
   )
 }
