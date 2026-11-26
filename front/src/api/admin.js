@@ -133,6 +133,21 @@ export function deleteClassSession(classSessionId) {
   return request(`/api/v1/admin/attendance/classes/${classSessionId}`, { method: 'DELETE' })
 }
 
+// 오늘 이후 직원 미정 회차가 남은 정기 수업 (EMP-SCR-007) → UnassignedSeriesResponse[]
+export function getUnassignedSeries() {
+  return request('/api/v1/admin/attendance/series/unassigned')
+}
+
+// 정기 수업 담당 직원 추천 (EMP-FR-022) → { series, weekCount, candidates, unavailable }
+export function getSeriesStaffSuggestions(seriesId) {
+  return request(`/api/v1/admin/attendance/series/${seriesId}/staff-suggestions`)
+}
+
+// 정기 수업의 오늘 이후 미정 회차를 직원 한 명에게 배정 → AdminClassSessionResponse[]
+export function assignSeriesStaff(seriesId, staffId) {
+  return request(`/api/v1/admin/attendance/series/${seriesId}/staff`, { method: 'PUT', ...jsonBody({ staffId }) })
+}
+
 // 기관 위치 (EMP-FR-012). 항목은 { id, name, address, latitude, longitude, classSessionCount }
 export function getInstitutions() {
   return request('/api/v1/admin/institutions')
