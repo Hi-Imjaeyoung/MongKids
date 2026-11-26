@@ -145,16 +145,6 @@
   color: var(--text-sub);
 }
 
-.plan-list__public {
-  flex-shrink: 0;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--green-soft);
-  color: var(--green-text);
-  font-size: 12px;
-  font-weight: 800;
-}
-
 .plan-list__note {
   margin: 0;
   padding: 14px 16px;
@@ -215,9 +205,5 @@
   .plan-list__lock {
     color: inherit;
     font-size: 0;
-  }
-
-  .plan-list__public {
-    display: none;
   }
 }

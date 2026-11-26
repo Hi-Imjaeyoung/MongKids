@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * 수업 계획안 (SCR-027, FR-032, ADR-009).
- * fileKey는 누구나 보는 공개 PDF(연간은 계획안 자체, 월간은 관리자가 블러 처리한 PDF)이고,
- * originalFileKey는 월간 원본 PDF다. 원본은 공개 URL로 내보내지 않고 서버가 권한을 확인한 뒤 전달한다.
+ * fileKey는 누구나 보는 공개 PDF(관리자가 블러 처리한 PDF)이고, originalFileKey는 원본 PDF다
+ * (연간 포함은 2026-11-26. 그 전에 올린 연간은 NULL일 수 있다). 원본은 공개 URL로 내보내지 않고 서버가 권한을 확인한 뒤 전달한다.
  */
 @Entity
 @Table(name = "class_plan")

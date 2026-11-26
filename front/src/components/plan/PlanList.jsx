@@ -18,7 +18,7 @@ const LockIcon = () => (
   </svg>
 )
 
-// 수업 계획안 목록 (SCR-027). 연간·월간으로 묶고, 월간은 잠김 표시를 붙인다
+// 수업 계획안 목록 (SCR-027). 연간·월간으로 묶고, 모두 잠김 표시를 붙인다 (연간 포함은 2026-11-26)
 function PlanList({ plans, selectedId, onSelect }) {
   const groups = ['annual', 'monthly']
     .map((kind) => ({ kind, items: plans.filter((plan) => plan.kind === kind) }))
@@ -32,7 +32,6 @@ function PlanList({ plans, selectedId, onSelect }) {
           <ul className="plan-list__items">
             {group.items.map((plan) => {
               const selected = plan.id === selectedId
-              const locked = plan.kind === 'monthly'
               return (
                 <li key={plan.id}>
                   <button
@@ -45,14 +44,10 @@ function PlanList({ plans, selectedId, onSelect }) {
                       <span className="plan-list__title">{plan.title}</span>
                       <span className="plan-list__period">{plan.period}</span>
                     </span>
-                    {locked ? (
-                      <span className="plan-list__lock">
-                        <LockIcon />
-                        {plansText.lockedBadge}
-                      </span>
-                    ) : (
-                      <span className="plan-list__public">{plansText.publicBadge}</span>
-                    )}
+                    <span className="plan-list__lock">
+                      <LockIcon />
+                      {plansText.lockedBadge}
+                    </span>
                   </button>
                 </li>
               )

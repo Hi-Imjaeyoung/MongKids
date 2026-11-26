@@ -86,68 +86,55 @@
   margin: 0 auto;
 }
 
-/* 월간(잠김): 미리보기는 판 크기에 맞추고, 그 위에 안내 카드를 띄운다 */
-.plan-viewer__stage--locked {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.plan-viewer__stage--locked .plan-viewer__page {
-  position: absolute;
-  inset: 32px;
-  width: auto;
-  overflow: hidden;
-  box-shadow: none;
-}
-
+/* 잠김 안내 (2026-11-26): PDF를 덮지 않고 판 위쪽에 한 줄로 둬서 블러 없는 부분(월간 1주차 등)이 그대로 보이게 한다 */
 .plan-viewer__lock {
-  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 14px;
-  width: 100%;
-  max-width: 480px;
-  padding: 40px 36px;
-  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   background: var(--bg);
-  box-shadow: var(--shadow-md);
-  text-align: center;
+  box-shadow: var(--shadow-sm);
   word-break: keep-all;
 }
 
 .plan-viewer__lock-icon {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--yellow-soft);
   color: var(--yellow-text);
 }
 
 .plan-viewer__lock-icon svg {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
+}
+
+.plan-viewer__lock-body {
+  flex: 1;
+  min-width: 0;
 }
 
 .plan-viewer__lock-title {
   margin: 0;
-  font-size: 22px;
+  font-size: 16px;
   font-weight: 800;
 }
 
 .plan-viewer__lock-text {
-  margin: 0;
-  font-size: 15px;
+  margin: 2px 0 0;
+  font-size: 14px;
   color: var(--text-sub);
 }
 
 .plan-viewer__lock-button {
-  width: 100%;
+  flex-shrink: 0;
 }
 
 /* 관리자: 블러본·원본 고르기, 수정·삭제 */
@@ -188,6 +175,11 @@
   color: var(--bg);
 }
 
+.plan-viewer__version:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .plan-viewer__admin-button--danger {
   border-color: var(--danger-border);
   color: var(--danger);
@@ -221,26 +213,22 @@
     border-radius: var(--radius-md);
   }
 
-  .plan-viewer__stage--locked .plan-viewer__page {
-    inset: 16px 12px;
-  }
-
   .plan-viewer__lock {
-    gap: 12px;
-    padding: 28px 20px;
-  }
-
-  .plan-viewer__lock-icon {
-    width: 56px;
-    height: 56px;
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    padding: 12px 14px;
   }
 
   .plan-viewer__lock-title {
-    font-size: 19px;
+    font-size: 15px;
   }
 
   .plan-viewer__lock-text {
-    font-size: 14px;
+    font-size: 13px;
+  }
+
+  .plan-viewer__lock-button {
+    width: 100%;
   }
 
   .plan-viewer__note {

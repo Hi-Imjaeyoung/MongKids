@@ -436,8 +436,8 @@ erDiagram
 | kind | VARCHAR(10) | NOT NULL | `ANNUAL`(연간) / `MONTHLY`(월간) |
 | title | VARCHAR(50) | NOT NULL | 제목 (예: 3월 계획안) |
 | period | VARCHAR(100) | NOT NULL | 기간·대상 설명 (예: 2027.03 · 1~5주차 · 영아/유아) |
-| file_key | VARCHAR(255) | NOT NULL | 공개 PDF S3 키(`plans/public/`). 연간은 계획안 자체, 월간은 관리자가 블러 처리한 PDF |
-| original_file_key | VARCHAR(255) | NULL | 월간 원본 PDF S3 키(`plans/original/`). 연간은 NULL |
+| file_key | VARCHAR(255) | NOT NULL | 공개 PDF S3 키(`plans/public/`). 관리자가 블러 처리한 PDF |
+| original_file_key | VARCHAR(255) | NULL | 원본 PDF S3 키(`plans/original/`). 새 등록은 연간·월간 모두 필수(서비스 검증, 2026-11-26). 그 전에 올린 연간은 NULL일 수 있음 |
 
 - PDF는 서버가 S3에서 읽어 전달하고, 원본은 기관 인증 방법이 정해지기 전까지 관리자만 받는다 ([ADR-009](../../docs/adr/ADR-009-monthly-plan-restricted-preview.md)).
 - 운영 DDL: `back/docs/sql/2026-11-class-plan-ddl.sql`.

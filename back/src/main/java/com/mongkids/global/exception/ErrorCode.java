@@ -49,7 +49,7 @@ public enum ErrorCode {
 	// 수업 계획안
 	CLASS_PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "L001", "수업 계획안을 찾을 수 없습니다."),
 	INVALID_CLASS_PLAN_FILE(HttpStatus.BAD_REQUEST, "L002", "올바르지 않은 PDF 파일입니다."),
-	CLASS_PLAN_ORIGINAL_MISMATCH(HttpStatus.BAD_REQUEST, "L003", "월간 계획안은 원본 PDF가 필요하고, 연간 계획안에는 원본을 올리지 않습니다."),
+	CLASS_PLAN_ORIGINAL_REQUIRED(HttpStatus.BAD_REQUEST, "L003", "계획안은 블러 처리한 PDF와 원본 PDF가 모두 필요합니다."),
 	CLASS_PLAN_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "L004", "계획안 파일을 찾을 수 없습니다."),
 
 	// 근태 관리

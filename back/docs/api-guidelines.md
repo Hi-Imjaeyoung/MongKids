@@ -350,20 +350,20 @@ public record ApiResponse<T>(boolean success, T data, ErrorResponse error) {
 
 ## 11-2. 수업 계획안 API (SCR-027, FR-032, [ADR-009](../../docs/adr/ADR-009-monthly-plan-restricted-preview.md))
 
-연간 계획안은 공개 PDF 하나, 월간 계획안은 관리자가 블러 처리한 공개 PDF와 원본 PDF 두 파일이다. PDF는 공개 CloudFront URL로 내보내지 않고 서버가 S3에서 읽어 같은 출처로 전달한다(파일 키는 응답에 없다).
+연간·월간 계획안 모두 관리자가 블러 처리한 공개 PDF와 원본 PDF 두 파일이다(연간 포함은 2026-11-26). PDF는 공개 CloudFront URL로 내보내지 않고 서버가 S3에서 읽어 같은 출처로 전달한다(파일 키는 응답에 없다).
 
 | 메서드 | URL | 설명 |
 |---|---|---|
-| GET | `/api/v1/class-plans` | 목록 `[{id, kind(ANNUAL\|MONTHLY), title, period, updatedAt}]`. 연간이 먼저, 같은 종류는 올린 순서. 인증 불필요 |
-| GET | `/api/v1/class-plans/{classPlanId}/file` | 공개 PDF(연간 계획안·월간 블러본). `application/pdf`, `Content-Disposition: inline`, `Cache-Control: no-cache`. 인증 불필요 |
-| GET | `/api/v1/admin/class-plans/{classPlanId}/original-file` | 월간 원본 PDF. 기관 인증 방법이 정해지기 전까지 관리자만. `Cache-Control: no-store`. 원본이 없는 연간은 404 `L004` |
+| GET | `/api/v1/class-plans` | 목록 `[{id, kind(ANNUAL\|MONTHLY), title, period, updatedAt, hasOriginal}]`. `hasOriginal`은 원본 PDF가 있는지(2026-11-26 이전에 올린 연간은 false일 수 있음). 연간이 먼저, 같은 종류는 올린 순서. 인증 불필요 |
+| GET | `/api/v1/class-plans/{classPlanId}/file` | 공개 PDF(블러본). `application/pdf`, `Content-Disposition: inline`, `Cache-Control: no-cache`. 인증 불필요 |
+| GET | `/api/v1/admin/class-plans/{classPlanId}/original-file` | 원본 PDF. 기관 인증 방법이 정해지기 전까지 관리자만. `Cache-Control: no-store`. 원본이 없는 예전 연간은 404 `L004` |
 | POST | `/api/v1/admin/class-plans/file-upload-urls` | 관리자만. `{files: [{target(PUBLIC\|ORIGINAL), contentType, size}]}`(최대 2개) → `[{fileKey, uploadUrl}]`. 키는 `plans/public/` 또는 `plans/original/{yyyy}/{MM}/{uuid}.pdf` |
 | POST | `/api/v1/admin/class-plans` | 관리자만. `{kind, title, period, fileKey, originalFileKey}` → 201 `ClassPlanResponse` |
-| PUT | `/api/v1/admin/class-plans/{classPlanId}` | 관리자만. `{title, period, fileKey?, originalFileKey?}` → `ClassPlanResponse`. 종류는 바꾸지 않고, 파일 키를 보낸 파일만 교체 |
+| PUT | `/api/v1/admin/class-plans/{classPlanId}` | 관리자만. `{title, period, fileKey?, originalFileKey?}` → `ClassPlanResponse`. 종류는 바꾸지 않고, 파일 키를 보낸 파일만 교체. 원본이 없는 예전 연간도 `originalFileKey`로 원본을 붙인다 |
 | DELETE | `/api/v1/admin/class-plans/{classPlanId}` | 관리자만. 계획안 삭제 (`data: null`) |
 
 - 파일: `application/pdf`만, 한 파일 20MB 이하(가정값). 어긋나면 400 `L002`. 등록·수정 때 키 경로(공개본은 `plans/public/`, 원본은 `plans/original/`)와 실제 업로드·크기를 확인하고, 맞지 않으면 400 `L002`.
-- 종류: 월간은 `originalFileKey`가 꼭 있어야 하고, 연간은 원본을 둘 수 없다(수정 포함). 어긋나면 400 `L003`.
+- 원본: 등록할 때 연간·월간 모두 `originalFileKey`가 꼭 있어야 한다(2026-11-26). 없으면 400 `L003`.
 - 제목 50자·기간 100자 이하, 공백 아님. 어긋나면 400 `C001`. 앞뒤 공백은 지우고 저장한다.
 - 없는 계획안 404 `L001`, S3에 파일이 없으면 404 `L004`. 교체·삭제로 빠진 S3 객체는 지우지 않는다.
 - 권한: 관리자 API는 비로그인 401 `A001`, 관리자가 아니면 403 `A002`.

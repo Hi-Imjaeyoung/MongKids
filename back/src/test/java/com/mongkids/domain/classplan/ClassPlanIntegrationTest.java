@@ -24,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
+import com.mongkids.domain.classplan.entity.ClassPlan;
+import com.mongkids.domain.classplan.entity.ClassPlanKind;
+import com.mongkids.domain.classplan.repository.ClassPlanRepository;
 import com.mongkids.domain.member.dto.LoginMemberResponse;
 import com.mongkids.domain.member.dto.SocialLoginRequest;
 import com.mongkids.domain.member.entity.MemberRole;
@@ -62,6 +65,9 @@ class ClassPlanIntegrationTest {
 
 	@Autowired
 	private JwtProvider jwtProvider;
+
+	@Autowired
+	private ClassPlanRepository classPlanRepository;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -138,14 +144,12 @@ class ClassPlanIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("월간 계획안을 등록하면 누구나 목록과 블러본을 받고, 원본은 관리자만 받는다. 목록에 파일 키는 없다")
+	@DisplayName("연간·월간 계획안을 등록하면 누구나 목록과 블러본을 받고, 원본은 관리자만 받는다. 목록에 파일 키는 없다")
 	void create_list_files() throws Exception {
 		// given
 		Cookie admin = tokenCookie(registerMember("admin", "대표", MemberRole.ADMIN));
 		Long monthlyId = createPlan(admin, monthlyBody(" 3월 계획안 "));
-		Long annualId = createPlan(admin, """
-			{"kind": "ANNUAL", "title": "2027 연간 계획안", "period": "2027.03 ~ 2028.02", "fileKey": "%s"}
-			""".formatted(PUBLIC_KEY));
+		Long annualId = createPlan(admin, annualBody("2027 연간 계획안"));
 
 		// when, then: 연간이 먼저, 월간은 올린 순서
 		mockMvc.perform(get(URL))
@@ -153,6 +157,7 @@ class ClassPlanIntegrationTest {
 			.andExpect(jsonPath("$.data.length()").value(2))
 			.andExpect(jsonPath("$.data[0].id").value(annualId))
 			.andExpect(jsonPath("$.data[0].kind").value("ANNUAL"))
+			.andExpect(jsonPath("$.data[0].hasOriginal").value(true))
 			.andExpect(jsonPath("$.data[1].id").value(monthlyId))
 			.andExpect(jsonPath("$.data[1].title").value("3월 계획안"))
 			.andExpect(jsonPath("$.data[1].updatedAt").exists())
@@ -171,12 +176,12 @@ class ClassPlanIntegrationTest {
 			.andExpect(content().bytes(ORIGINAL_PDF));
 
 		mockMvc.perform(get(ADMIN_URL + "/" + annualId + "/original-file").cookie(admin))
-			.andExpect(status().isNotFound())
-			.andExpect(jsonPath("$.error.code").value("L004"));
+			.andExpect(status().isOk())
+			.andExpect(content().bytes(ORIGINAL_PDF));
 	}
 
 	@Test
-	@DisplayName("월간은 원본이 꼭 있어야 하고 연간은 원본을 둘 수 없으며, 경로가 다르거나 올라가지 않은 파일은 거부한다")
+	@DisplayName("연간·월간 모두 원본이 꼭 있어야 하고, 경로가 다르거나 올라가지 않은 파일은 거부한다")
 	void create_invalid() throws Exception {
 		Cookie admin = tokenCookie(registerMember("admin", "대표", MemberRole.ADMIN));
 		given(fileStorage.findSize("plans/public/missing.pdf")).willReturn(Optional.empty());
@@ -186,17 +191,17 @@ class ClassPlanIntegrationTest {
 				{"kind": "MONTHLY", "title": "3월", "period": "2027.03", "fileKey": "%s"}
 				""".formatted(PUBLIC_KEY), "L003"},
 			{"""
-				{"kind": "ANNUAL", "title": "연간", "period": "2027", "fileKey": "%s", "originalFileKey": "%s"}
-				""".formatted(PUBLIC_KEY, ORIGINAL_KEY), "L003"},
+				{"kind": "ANNUAL", "title": "연간", "period": "2027", "fileKey": "%s"}
+				""".formatted(PUBLIC_KEY), "L003"},
 			{"""
 				{"kind": "MONTHLY", "title": "3월", "period": "2027.03", "fileKey": "%s", "originalFileKey": "%s"}
 				""".formatted(ORIGINAL_KEY, ORIGINAL_KEY), "L002"},
 			{"""
-				{"kind": "ANNUAL", "title": "연간", "period": "2027", "fileKey": "plans/public/missing.pdf"}
-				""", "L002"},
+				{"kind": "ANNUAL", "title": "연간", "period": "2027", "fileKey": "plans/public/missing.pdf", "originalFileKey": "%s"}
+				""".formatted(ORIGINAL_KEY), "L002"},
 			{"""
-				{"kind": "ANNUAL", "title": " ", "period": "2027", "fileKey": "%s"}
-				""".formatted(PUBLIC_KEY), "C001"},
+				{"kind": "ANNUAL", "title": " ", "period": "2027", "fileKey": "%s", "originalFileKey": "%s"}
+				""".formatted(PUBLIC_KEY, ORIGINAL_KEY), "C001"},
 		};
 		for (String[] testCase : cases) {
 			mockMvc.perform(post(ADMIN_URL).cookie(admin).contentType(MediaType.APPLICATION_JSON).content(testCase[0]))
@@ -237,18 +242,38 @@ class ClassPlanIntegrationTest {
 	}
 
 	@Test
-	@DisplayName("연간 계획안에는 수정으로도 원본을 붙일 수 없다")
-	void update_annualOriginal_rejected() throws Exception {
+	@DisplayName("원본 없이 올라간 예전 연간 계획안은 수정으로 원본을 붙인다")
+	void update_annualOriginal_attached() throws Exception {
+		// given: 2026-11-26 이전처럼 원본 없는 연간 계획안
 		Cookie admin = tokenCookie(registerMember("admin", "대표", MemberRole.ADMIN));
-		Long id = createPlan(admin, """
-			{"kind": "ANNUAL", "title": "2027 연간 계획안", "period": "2027", "fileKey": "%s"}
-			""".formatted(PUBLIC_KEY));
+		Long id = classPlanRepository.saveAndFlush(ClassPlan.builder()
+			.kind(ClassPlanKind.ANNUAL)
+			.title("2027 연간 계획안")
+			.period("2027")
+			.fileKey(PUBLIC_KEY)
+			.build()).getId();
+		mockMvc.perform(get(URL)).andExpect(jsonPath("$.data[0].hasOriginal").value(false));
+		mockMvc.perform(get(ADMIN_URL + "/" + id + "/original-file").cookie(admin))
+			.andExpect(status().isNotFound())
+			.andExpect(jsonPath("$.error.code").value("L004"));
 
+		// when
 		mockMvc.perform(put(ADMIN_URL + "/" + id).cookie(admin).contentType(MediaType.APPLICATION_JSON).content("""
 				{"title": "2027 연간 계획안", "period": "2027", "originalFileKey": "%s"}
 				""".formatted(ORIGINAL_KEY)))
-			.andExpect(status().isBadRequest())
-			.andExpect(jsonPath("$.error.code").value("L003"));
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.data.hasOriginal").value(true));
+
+		// then
+		mockMvc.perform(get(ADMIN_URL + "/" + id + "/original-file").cookie(admin))
+			.andExpect(status().isOk())
+			.andExpect(content().bytes(ORIGINAL_PDF));
+	}
+
+	private static String annualBody(String title) {
+		return """
+			{"kind": "ANNUAL", "title": "%s", "period": "2027.03 ~ 2028.02", "fileKey": "%s", "originalFileKey": "%s"}
+			""".formatted(title, PUBLIC_KEY, ORIGINAL_KEY);
 	}
 
 	private static String monthlyBody(String title) {

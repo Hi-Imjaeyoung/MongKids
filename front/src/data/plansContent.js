@@ -1,17 +1,16 @@
 // 수업 계획안(SCR-027) 화면 문구. 계획안 목록과 PDF는 관리자가 /plans 화면에서 올리고 서버가 내려준다 (FR-032, ADR-009).
-// 연간 계획안은 누구나 보고, 월간 계획안은 관리자가 블러 처리한 PDF만 공개한다. 월간 원본은 서버가 권한을 확인한 뒤에만 내려준다
+// 연간·월간 계획안 모두 관리자가 블러 처리한 PDF만 공개한다(연간 포함은 2026-11-26). 원본은 서버가 권한을 확인한 뒤에만 내려준다
 // (기관 인증 방법이 정해지기 전까지 관리자만, 사용자 결정 2026-11-19)
 
 export const plansHero = {
   eyebrow: 'CLASS PLAN',
   title: '한 해 동안 아이들이 할 체육 수업을 미리 확인하세요.',
-  description: '연간 계획안은 누구나 볼 수 있고, 주차별 수업 내용이 담긴 월간 계획안은 인증된 기관 회원만 볼 수 있어요.',
+  description: '계획안 일부는 누구나 볼 수 있고, 전체 내용은 인증된 기관 회원만 볼 수 있어요.',
 }
 
 export const plansText = {
   listLabel: '계획안 목록',
   groups: { annual: '연간 계획안', monthly: '월간 계획안' },
-  publicBadge: '공개',
   lockedBadge: '잠김',
   listNote: '계획안은 관리자가 올리며, 새 달 계획안은 올라오는 대로 목록에 추가돼요.',
   toolbarLabel: '보기 도구',
@@ -36,6 +35,7 @@ export const plansText = {
     originalVersion: '원본',
     previewNote: '방문자에게는 이 블러본 위에 잠김 안내가 보여요.',
     originalNote: '원본은 관리자만 볼 수 있어요. 기관 인증 기능이 생기면 인증된 기관 회원에게도 보여요.',
+    noOriginalNote: '이 계획안은 원본 PDF가 아직 없어요. 수정에서 원본 PDF를 올려 주세요.',
   },
   form: {
     createTitle: '계획안 추가',
@@ -50,27 +50,25 @@ export const plansText = {
     periodMaxLength: 100,
     annualPeriodPlaceholder: '예: 2027.03 ~ 2028.02 · 월별 주차 프로그램',
     monthlyPeriodPlaceholder: '예: 2027.03 · 1~5주차 · 영아/유아',
-    annualFileLabel: '계획안 PDF',
-    annualFileHint: '누구나 볼 수 있어요. PDF 1개, 20MB 이하.',
     previewFileLabel: '블러 처리한 PDF (공개)',
     previewFileHint: '가릴 부분을 직접 블러 처리한 PDF예요. 누구나 이 파일을 볼 수 있어요. 20MB 이하.',
     originalFileLabel: '원본 PDF (비공개)',
     originalFileHint: '블러 없는 원본이에요. 관리자만 볼 수 있어요. 20MB 이하.',
     keepFile: '파일을 고르지 않으면 지금 파일을 그대로 써요.',
+    originalMissing: '원본 PDF가 아직 없어요. 원본 PDF를 골라 주세요.',
     typeError: 'PDF 파일만 올릴 수 있어요.',
     sizeError: 'PDF는 20MB 이하만 올릴 수 있어요.',
     emptyError: '제목과 기간·대상을 입력해 주세요.',
-    annualFileError: '계획안 PDF를 골라 주세요.',
-    monthlyFileError: '블러 처리한 PDF와 원본 PDF를 모두 골라 주세요.',
+    fileError: '블러 처리한 PDF와 원본 PDF를 모두 골라 주세요.',
+    originalMissingError: '원본 PDF를 골라 주세요.',
     cancel: '취소',
     save: '저장',
     saving: '저장 중...',
   },
   lock: {
-    title: '월간 계획안은 인증된 기관 회원만 볼 수 있어요',
-    guest: '로그인한 뒤 기관 인증을 받으면 월별 상세 계획안을 볼 수 있어요.',
+    title: '전체 계획안은 인증된 기관 회원만 볼 수 있어요',
+    guest: '로그인한 뒤 기관 인증을 받으면 흐리게 처리된 부분까지 모두 볼 수 있어요.',
     member: '기관 인증 신청은 준비 중이에요. 지금 계획안이 필요하면 기관 프로그램 문의로 알려 주세요.',
     login: '로그인하기',
-    showAnnual: '연간 계획안 보기',
   },
 }
