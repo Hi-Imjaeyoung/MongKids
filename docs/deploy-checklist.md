@@ -340,6 +340,18 @@ DDL 변경 없음. 사진 S3 삭제에 새 권한이 필요하다.
 - [ ] 2. 관리자 "수업 할당" → 수업 등록에서 수업 유형 "행사·특별활동" → 목록에 "행사" 태그. 기존 수업은 정기 수업
 - [ ] 3. "근무 캘린더" 주간 칸 "행사 N", 월간 날짜 줄 "행사 N"·직원별 합계 정기/행사·특별활동 열, 하루 근무 상세 수업 목록 "행사" 태그
 
+## M-4. 정기 수업 묶음 담당 직원 추천 (EMP-SCR-007, EMP-FR-022~024, #125)
+
+병합 전 (백엔드가 `validate`로 기동한다. 새 jar는 `class_series`·`travel_time`·`class_session.series_id`가 있어야 기동한다)
+- [ ] 1. 운영 RDS에 [`back/docs/sql/2026-11-class-series-ddl.sql`](../back/docs/sql/2026-11-class-series-ddl.sql) 실행 — 사용자. 새 테이블 두 개와 NULL 허용 컬럼만 추가하므로 지금 운영 중인 jar에도 영향이 없다
+- [ ] 2. 카카오 개발자 콘솔에서 카카오모빌리티 길찾기 API 사용 설정, REST API 키를 Parameter Store `/mongkiz/prod/KAKAO_MOBILITY_REST_KEY`(SecureString)에 등록 — 사용자. 로컬은 `back/.env`의 `KAKAO_MOBILITY_REST_KEY`. 없으면 기동은 되고 추천만 502 `E022`
+
+배포 후
+- [ ] 3. 관리자 "수업 할당" → "미정 수업 배정" → 직원 미정으로 반복 등록한 묶음이 보이는지 (정기 수업 기능 전에 등록한 수업은 안 나옴)
+- [ ] 4. 묶음을 고르면 추천 직원 순위(주 평균 수업 수 → 추가 이동)·앞뒤 수업 이동 시간, 배정 불가 직원 사유가 나오는지. 처음 조회한 이동 시간이 실제 길찾기와 비슷한지
+- [ ] 5. "OO님에게 N회 배정" → 오늘 이후 미정 회차만 그 직원에게 들어가고, 지난 미정 회차는 그대로인지
+- [ ] 6. 반복 등록 기간 1년이 등록되는지 (1년 넘으면 거절)
+
 ## O. 수업 계획안 PDF (SCR-027, FR-032, #107, [ADR-009](adr/ADR-009-monthly-plan-restricted-preview.md))
 
 관리자가 `/plans`에서 PDF를 Presigned URL로 사진 버킷 `plans/*`에 올리고, 화면은 서버가 S3에서 읽어 주는 PDF(`/api/v1/class-plans/{id}/file`, 원본은 `/api/v1/admin/class-plans/{id}/original-file`)를 pdf.js로 그린다. 공개 CloudFront 주소는 쓰지 않는다.
