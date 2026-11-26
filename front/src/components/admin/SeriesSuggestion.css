@@ -32,6 +32,10 @@
   color: var(--text);
 }
 
+.series-suggestion__actions {
+  display: flex;
+}
+
 .series-suggestion__group {
   display: flex;
   flex-direction: column;

@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { assignSeriesStaff, getSeriesStaffSuggestions, getUnassignedSeries } from '../../api/admin'
 import AdminNotice from '../../components/admin/AdminNotice'
 import AdminQueryBody from '../../components/admin/AdminQueryBody'
 import AdminSplit from '../../components/admin/AdminSplit'
+import SeriesFilter from '../../components/admin/SeriesFilter'
 import SeriesSuggestion from '../../components/admin/SeriesSuggestion'
 import SeriesTable from '../../components/admin/SeriesTable'
 import { seriesAdmin } from '../../data/attendanceAdminContent'
@@ -20,6 +21,18 @@ function UnassignedSeriesView() {
   const suggestion = useAdminQuery(loadSuggestion, selectedId === null ? null : { seriesId: selectedId })
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
+  const [institutionId, setInstitutionId] = useState(null)
+  // 기관 필터는 목록에 나온 기관만 고를 수 있게 한다
+  const institutions = useMemo(() => {
+    const byId = new Map((list.data ?? []).map((series) => [series.institutionId, series.institutionName]))
+    return [...byId].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+  }, [list.data])
+  const items = list.data?.filter((series) => institutionId === null || series.institutionId === institutionId)
+
+  const changeInstitution = (value) => {
+    setInstitutionId(value)
+    setSelectedId(null)
+  }
 
   const select = (seriesId) => {
     setMessage('')
@@ -58,6 +71,7 @@ function UnassignedSeriesView() {
   return (
     <>
       <p className="admin-section__description">{seriesAdmin.description}</p>
+      <SeriesFilter institutions={institutions} value={institutionId} onChange={changeInstitution} />
       {message && (
         <p className="admin-callout admin-callout--info" role="status">
           {message}
@@ -66,8 +80,8 @@ function UnassignedSeriesView() {
       <AdminSplit
         main={
           <>
-            <AdminQueryBody query={list} empty={seriesAdmin.empty}>
-              {(items) => <SeriesTable items={items} selectedId={selectedId} onSelect={select} />}
+            <AdminQueryBody query={list} items={items} empty={seriesAdmin.empty}>
+              {(rows) => <SeriesTable items={rows} selectedId={selectedId} onSelect={select} />}
             </AdminQueryBody>
             <p className="admin-section__description">{seriesAdmin.singleHint}</p>
           </>

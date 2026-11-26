@@ -17,7 +17,7 @@ function NeighborLine({ position, neighbors, total }) {
 }
 
 // 정기 수업 담당 직원 추천 패널 (EMP-SCR-007, EMP-FR-022). suggestion은 SeriesStaffSuggestionResponse.
-// 추천 직원을 순위대로 고르기(기본 1순위)로 보여 주고, onAssign(staffId, name)으로 바로 배정한다.
+// 추천 직원을 순위대로 고르기(기본 1순위)로 보여 주고, 위쪽 배정 버튼 onAssign(staffId, name)으로 바로 배정한다.
 // 배정할 수 없는 직원은 사유·날짜와 함께 따로 보여 준다
 function SeriesSuggestion({ suggestion, busy, onAssign }) {
   const { series, candidates, unavailable } = suggestion
@@ -54,6 +54,14 @@ function SeriesSuggestion({ suggestion, busy, onAssign }) {
       <p className="series-suggestion__rule">
         <strong>{text.ruleTitle}</strong> {text.rule}
       </p>
+      {/* 11-26 초안 수정: 배정 버튼을 추천 목록 위에 둔다 */}
+      {picked && (
+        <div className="series-suggestion__actions">
+          <button type="submit" className="admin-form__button admin-form__button--dark" disabled={busy}>
+            {text.submit(picked.staffName, total)}
+          </button>
+        </div>
+      )}
 
       {candidates.length === 0 ? (
         <p className="admin-callout admin-callout--warn">{text.noCandidates}</p>
@@ -120,13 +128,6 @@ function SeriesSuggestion({ suggestion, busy, onAssign }) {
         </section>
       )}
 
-      {picked && (
-        <div className="admin-form__actions">
-          <button type="submit" className="admin-form__button admin-form__button--dark" disabled={busy}>
-            {text.submit(picked.staffName, total)}
-          </button>
-        </div>
-      )}
       <p className="admin-form__hint">{text.travelNote}</p>
     </form>
   )
