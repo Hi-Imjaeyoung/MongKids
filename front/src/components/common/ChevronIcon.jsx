@@ -1,5 +1,5 @@
 // 오른쪽 화살표 (자세히 보기, 다른 프로그램 링크)
-function ChevronIcon({ size = 16 }) {
+function ChevronIcon({ size = 16, strokeWidth = 2.4 }) {
   return (
     <svg
       width={size}
@@ -7,7 +7,7 @@ function ChevronIcon({ size = 16 }) {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2.4"
+      strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"

@@ -249,24 +249,117 @@
   text-decoration: underline;
 }
 
-/* 새로운 활동 경험: 테마 예시 아래 세부 수업(수업 계획안) 버튼 */
+/*
+ * 새로운 활동 경험: 테마 예시 아래 세부 수업(수업 계획안) 버튼.
+ * 노란 알약 + 진초록 테두리·아래 그림자(눌리는 느낌), 왼쪽 달력, 오른쪽 초록 원 화살표,
+ * 뒤에 연초록 얼룩, 오른쪽 위 노란 반짝임.
+ */
+.about-principle__plan {
+  --plan-line: color-mix(in srgb, var(--green-text) 85%, #000);
+  --plan-depth: color-mix(in srgb, var(--green-text) 65%, #000);
+  --plan-yellow: #ffe01b;
+  --plan-yellow-edge: #f2bd00;
+
+  position: relative;
+  isolation: isolate;
+  width: 72%;
+  margin: 38px auto 0;
+}
+
+/* 버튼 뒤 연초록 연잎: 크게 구불한 물결 테두리 + 위쪽 얕은 홈. 모양은 SVG 마스크, 색은 변수로 칠한다 */
+.about-principle__plan::before {
+  --lily-pad: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M198.3 50.0C199.0 51.4 199.4 52.9 199.4 54.3C199.4 55.7 199.0 57.2 198.4 58.6C197.7 60.0 196.7 61.3 195.4 62.7C194.2 64.0 192.7 65.2 191.1 66.4C189.5 67.6 187.8 68.7 186.0 69.8C184.3 70.9 182.4 72.0 180.6 73.0C178.8 74.1 177.1 75.1 175.3 76.1C173.5 77.1 171.7 78.0 169.8 79.0C168.0 79.9 166.1 80.9 164.2 81.8C162.2 82.6 160.2 83.5 158.1 84.3C156.0 85.1 153.8 85.8 151.6 86.4C149.3 87.1 147.0 87.7 144.6 88.2C142.3 88.8 139.8 89.2 137.4 89.7C135.0 90.2 132.6 90.6 130.2 91.0C127.8 91.5 125.4 91.9 123.0 92.4C120.5 92.9 118.1 93.4 115.7 93.9C113.2 94.4 110.7 95.0 108.1 95.6C105.4 96.1 102.8 96.7 100.0 97.1C97.2 97.6 94.3 98.1 91.5 98.3C88.6 98.6 85.5 98.8 82.6 98.8C79.7 98.7 76.7 98.6 73.9 98.2C71.1 97.8 68.3 97.2 65.8 96.5C63.2 95.8 60.8 94.9 58.6 93.9C56.4 93.0 54.4 91.8 52.5 90.7C50.6 89.6 48.9 88.4 47.3 87.3C45.6 86.1 44.1 84.9 42.6 83.8C41.0 82.8 39.5 81.7 38.0 80.7C36.4 79.7 34.8 78.7 33.2 77.7C31.5 76.8 29.8 75.9 28.1 74.9C26.4 73.9 24.7 73.0 23.0 72.0C21.4 71.0 19.8 69.9 18.3 68.8C16.8 67.8 15.5 66.6 14.3 65.4C13.1 64.3 12.1 63.0 11.2 61.8C10.3 60.5 9.6 59.2 8.9 57.9C8.2 56.7 7.7 55.3 7.3 54.0C6.8 52.7 6.4 51.4 6.0 50.0C5.7 48.6 5.3 47.3 5.1 45.9C4.9 44.5 4.6 43.1 4.6 41.7C4.6 40.3 4.7 38.8 5.0 37.4C5.4 36.0 5.9 34.6 6.8 33.2C7.6 31.9 8.8 30.5 10.2 29.3C11.6 28.1 13.4 26.9 15.4 25.8C17.3 24.8 19.6 23.8 22.0 23.0C24.3 22.1 26.9 21.4 29.5 20.7C32.0 20.1 34.6 19.5 37.2 18.9C39.7 18.4 42.2 17.8 44.8 17.5C47.4 17.1 50.1 16.8 52.8 16.7C55.6 16.6 58.8 17.0 61.4 17.0C64.0 17.0 66.6 17.3 68.6 16.6C70.5 16.0 71.5 14.7 73.0 13.3C74.4 11.9 75.6 9.7 77.4 8.2C79.2 6.7 81.4 5.4 83.8 4.4C86.1 3.5 88.9 3.0 91.6 2.6C94.3 2.2 97.2 2.1 100.0 2.0C102.8 2.0 105.7 2.1 108.5 2.2C111.2 2.4 114.0 2.6 116.8 2.9C119.5 3.2 122.2 3.6 124.9 4.0C127.6 4.4 130.2 4.9 132.8 5.4C135.5 5.9 138.0 6.4 140.6 7.0C143.1 7.6 145.5 8.2 147.9 9.0C150.2 9.7 152.5 10.5 154.6 11.4C156.7 12.4 158.6 13.4 160.4 14.4C162.1 15.5 163.6 16.7 165.0 17.8C166.4 19.0 167.6 20.3 168.7 21.5C169.8 22.7 170.7 24.0 171.7 25.2C172.6 26.4 173.5 27.6 174.5 28.7C175.5 29.9 176.5 31.0 177.7 32.1C178.8 33.2 180.2 34.2 181.6 35.3C183.0 36.4 184.6 37.5 186.2 38.6C187.7 39.7 189.5 40.8 191.0 42.1C192.5 43.3 194.1 44.6 195.3 45.9C196.5 47.2 197.6 48.6 198.3 50.0Z'/%3E%3C/svg%3E");
+
+  content: '';
+  position: absolute;
+  inset: -26px -30px -29px -34px;
+  z-index: -1;
+  background: var(--green-soft);
+  -webkit-mask: var(--lily-pad) center / 100% 100% no-repeat;
+  mask: var(--lily-pad) center / 100% 100% no-repeat;
+}
+
 .about-principle__button {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 48px;
-  margin-top: 20px;
-  padding: 0 24px;
+  gap: 10px;
+  width: 100%;
+  min-height: 72px;
+  padding: 7px 10px 7px 15px;
+  border: 3.5px solid var(--plan-line);
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 15px;
-  font-weight: 700;
+  background: var(--plan-yellow);
+  box-shadow:
+    inset 0 5px 0 rgb(255 255 255 / 0.45),
+    inset 0 -6px 0 var(--plan-yellow-edge),
+    0 6px 0 var(--plan-depth);
+  color: var(--plan-line);
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .about-principle__button:hover {
-  opacity: 0.9;
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 5px 0 rgb(255 255 255 / 0.45),
+    inset 0 -6px 0 var(--plan-yellow-edge),
+    0 4px 0 var(--plan-depth);
+}
+
+.about-principle__button:active {
+  transform: translateY(6px);
+  box-shadow:
+    inset 0 5px 0 rgb(255 255 255 / 0.45),
+    inset 0 -4px 0 var(--plan-yellow-edge);
+}
+
+.about-principle__button:focus-visible {
+  outline: 3px solid var(--plan-line);
+  outline-offset: 4px;
+}
+
+.about-principle__button-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--plan-line);
+  transform: rotate(-8deg);
+}
+
+.about-principle__button-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.about-principle__button-arrow {
+  display: inline-flex;
+  flex: 0 0 50px;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--plan-line);
+  color: var(--bg);
+}
+
+.about-principle__sparkle {
+  position: absolute;
+  top: -40px;
+  right: -12px;
+  color: var(--plan-yellow-edge);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-principle__button {
+    transition: none;
+  }
 }
 
 /* 새로운 활동 경험: 테마 · 교구 예시 */
@@ -293,6 +386,31 @@
   margin: 6px 0 0;
   font-size: 16px;
   font-weight: 700;
+}
+
+/* 태블릿: 글 칸이 좁아 버튼을 칸 너비로 채우고 글씨·그림을 줄인다 */
+@media (max-width: 1024px) {
+  .about-principle__plan {
+    width: auto;
+  }
+
+  .about-principle__button {
+    gap: 8px;
+    min-height: 68px;
+    padding: 6px 8px 6px 12px;
+    font-size: 22px;
+  }
+
+  .about-principle__button-icon svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .about-principle__button-arrow {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -413,10 +531,40 @@
     margin-top: 16px;
   }
 
+  .about-principle__plan {
+    width: auto;
+    margin: 36px 6px 0;
+  }
+
+  .about-principle__plan::before {
+    inset: -16px -14px -20px -14px;
+  }
+
   .about-principle__button {
-    display: flex;
-    width: 100%;
-    margin-top: 16px;
+    gap: 8px;
+    min-height: 66px;
+    padding: 6px 8px 6px 12px;
+    border-width: 3px;
+    /* 390px 이상 24px, 360px 23px. 좁은 폭에서도 한 줄에 들어가게 화면 폭에 맞춰 줄인다 */
+    font-size: clamp(19px, 6.4vw, 24px);
+  }
+
+  .about-principle__button-icon svg {
+    width: 38px;
+    height: 38px;
+  }
+
+  .about-principle__button-arrow {
+    flex-basis: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .about-principle__sparkle {
+    top: -34px;
+    right: -6px;
+    width: 38px;
+    height: 35px;
   }
 
   .about-principle__example {
@@ -436,6 +584,22 @@
 
 /* 아주 좁은 폭(320px 안팎)에서 연령 칩 글자가 칸을 넘지 않게 */
 @media (max-width: 340px) {
+  .about-principle__button {
+    gap: 6px;
+    padding-left: 10px;
+  }
+
+  .about-principle__button-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .about-principle__button-arrow {
+    flex-basis: 38px;
+    width: 38px;
+    height: 38px;
+  }
+
   .about-principle__age {
     font-size: 11px;
     letter-spacing: -0.3px;
