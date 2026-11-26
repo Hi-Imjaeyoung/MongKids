@@ -1,0 +1,17 @@
+.series-filter {
+  align-self: flex-start;
+}
+
+.series-filter__select {
+  width: 168px;
+}
+
+@media (max-width: 480px) {
+  .series-filter {
+    align-self: stretch;
+  }
+
+  .series-filter__select {
+    width: 100%;
+  }
+}

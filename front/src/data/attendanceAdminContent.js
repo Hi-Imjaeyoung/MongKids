@@ -158,6 +158,55 @@ export const directStartDialog = {
   required: '등록 사유를 적어 주세요.',
 }
 
+// 수업 할당 안 "미정 수업 배정" 보기: 정기 수업 묶음 담당 직원 추천 (EMP-SCR-007, EMP-FR-022)
+export const seriesAdmin = {
+  viewsLabel: '수업 할당 보기',
+  views: { sessions: '전체 수업', series: '미정 수업 배정' },
+  description:
+    '담당 직원이 정해지지 않은 정기 수업 묶음이에요. 묶음을 고르면 오늘 이후 수업을 맡을 수 있는 직원을 순서대로 추천해요.',
+  listLabel: '직원 미정 정기 수업 목록',
+  columns: { series: '수업 묶음', schedule: '요일 · 시간', period: '기간', count: '오늘 이후 미정' },
+  count: (count) => `${count}회`,
+  pick: (label) => `${label} 추천 보기`,
+  empty: '오늘 이후 직원 미정 수업이 남은 정기 수업이 없어요.',
+  singleHint:
+    '한 회만 다른 직원에게 맡기거나 지난 미정 수업을 배정하려면 "전체 수업"이나 근무 캘린더에서 그 수업을 고쳐요. 정기 수업 기능이 생기기 전에 등록한 수업은 여기에 나오지 않아요.',
+  choose: '목록에서 수업 묶음을 고르면 추천 직원을 보여 줘요.',
+  loading: '추천 직원을 계산하고 있어요. 처음 쓰는 기관 사이 이동 시간은 길찾기로 불러와서 조금 걸릴 수 있어요.',
+  panelLabel: (title) => `${title} 담당 직원 추천`,
+  facts: { schedule: '요일·시간', period: '기간', target: '배정 대상' },
+  target: (count, first, last) => `오늘 이후 미정 수업 ${count}회 (${first} ~ ${last})`,
+  ruleTitle: '추천 순서',
+  rule: '남은 기간 주 평균 수업이 적은 순 → 같으면 회차 평균 추가 이동 시간이 짧은 순. 모든 회차에서 겹치지 않고, 앞뒤 수업에서 차로 이동해 수업 시작 3분 전까지 도착할 수 있는 직원만 추천해요.',
+  candidatesLegend: (count) => `추천 직원 ${count}명`,
+  noCandidates: '모든 회차를 맡을 수 있는 직원이 없어요. 아래 사유를 보고 수업 시간을 바꾸거나 한 회씩 배정해 주세요.',
+  weekly: (average) => `주 평균 ${average}회`,
+  extraAverage: (minutes) => `추가 이동 평균 ${minutes}분`,
+  extraMax: (minutes) => `최대 ${minutes}분`,
+  position: { BEFORE: '앞', AFTER: '뒤' },
+  noNeighbor: (position) => `${position}: 없음`,
+  neighbor: (position, item, timeRange, arrival, partial) =>
+    `${position}: ${item.institutionName} ${timeRange} · 차 ${item.travelMinutes}분, ${arrival} 도착${
+      partial ? ` (${item.count}회)` : ''
+    }`,
+  unavailableTitle: (count) => `배정할 수 없는 직원 ${count}명`,
+  reasons: {
+    OVERLAP: (reason) => `${reason.count}회 시간 겹침`,
+    TRAVEL_SHORT: (reason) => `${reason.count}회 이동 시간 부족`,
+    DAY_LOCKED: () => '오늘 하루 시작 기록 있음',
+  },
+  reasonDetail: {
+    OVERLAP: (reason, timeRange) => `${reason.institutionName} ${timeRange} 수업이 있어요`,
+    TRAVEL_SHORT: (reason) =>
+      `${reason.institutionName} 수업과 사이 차 ${reason.requiredMinutes}분 필요, 여유 ${reason.availableMinutes}분 (수업 3분 전 도착 기준)`,
+    DAY_LOCKED: () => '오늘 수업은 바꿀 수 없어요',
+  },
+  dates: (labels, rest) => `${labels.join(', ')}${rest > 0 ? ` 외 ${rest}회` : ''}`,
+  submit: (name, count) => `${name}님에게 ${count}회 배정`,
+  assigned: (count, name) => `수업 ${count}회를 ${name}님에게 배정했어요.`,
+  travelNote: '이동 시간은 기관 사이 자동차 길찾기(추천 경로) 기준이에요. 직원 집에서 오가는 시간은 계산하지 않아요.',
+}
+
 // 수업 할당 (EMP-FR-004)
 export const classSessionAdmin = {
   title: '수업 할당',

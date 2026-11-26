@@ -870,7 +870,7 @@ class AttendanceIntegrationTest {
 			.andExpect(jsonPath("$.error.code").value("E015"));
 		createSessions(admin, staff.id(), TODAY, TODAY, List.of("TUESDAY"), "10:00", "10:50")
 			.andExpect(jsonPath("$.error.code").value("E016"));
-		createSessions(admin, staff.id(), TODAY, TODAY.plusMonths(6).plusDays(1), List.of("MONDAY"), "10:00", "10:50")
+		createSessions(admin, staff.id(), TODAY, TODAY.plusMonths(12).plusDays(1), List.of("MONDAY"), "10:00", "10:50")
 			.andExpect(jsonPath("$.error.code").value("C001"));
 		createSessions(admin, staff.id(), TODAY, TODAY, List.of("MONDAY"), "10:00", "10:00")
 			.andExpect(jsonPath("$.error.code").value("C001"));

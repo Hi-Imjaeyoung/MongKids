@@ -1,0 +1,50 @@
+.series-table table {
+  min-width: 520px;
+}
+
+.series-table td {
+  vertical-align: top;
+}
+
+.series-table__row--selected td {
+  background: var(--bg-soft);
+}
+
+.series-table__row--selected td:first-child {
+  box-shadow: inset 3px 0 0 var(--blue);
+}
+
+.series-table__pick {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.series-table__pick strong {
+  display: block;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+
+.series-table__pick:hover strong {
+  color: var(--blue);
+}
+
+.series-table__sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-sub);
+  font-size: 12px;
+}
+
+.series-table__count {
+  text-align: right;
+}

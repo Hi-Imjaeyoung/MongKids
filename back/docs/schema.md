@@ -35,6 +35,9 @@ erDiagram
 	consultation ||--o| personal_consultation : "type=PERSONAL"
 	consultation ||--o| quote_consultation : "type=QUOTE"
 	institution ||--o{ class_session : 열림
+	institution ||--o{ class_series : 정기
+	class_series ||--o{ class_session : "반복 등록 회차"
+	institution ||--o{ travel_time : "이동 시간(출발·도착)"
 	member ||--o{ class_session : "할당(직원)"
 	class_session ||--o| class_start : 기록
 	class_session ||--o{ class_start_attempt : 시도
@@ -55,7 +58,7 @@ erDiagram
 | consultation | `consultation`, `institution_consultation`, `personal_consultation`, `quote_consultation` | FR-001~004, FR-023, FR-031 |
 | post | `post`, `post_image`, `post_comment`, `post_like` (수업 현장), `lab_post`, `lab_post_image`, `lab_post_like` (몽키즈 연구소) | FR-008~012 |
 | review | `review`, `review_image`, `review_code` | FR-012~017, FR-021, FR-029 |
-| attendance | `institution`, `class_session`, `day_start`, `day_end`, `day_end_image`, `day_end_note`, `day_check_attempt` (근태 관리, 하루 단위), `class_start`, `class_start_attempt`, `class_end`, `class_end_image` (수업 단위, 보관만) | EMP-FR-001~004, 010~015, 020 |
+| attendance | `institution`, `class_series` (정기 수업), `class_session`, `travel_time` (기관 사이 이동 시간), `day_start`, `day_end`, `day_end_image`, `day_end_note`, `day_check_attempt` (근태 관리, 하루 단위), `class_start`, `class_start_attempt`, `class_end`, `class_end_image` (수업 단위, 보관만) | EMP-FR-001~004, 010~015, 020~024 |
 
 ## 3. 테이블 정의
 
@@ -291,9 +294,38 @@ erDiagram
 | end_time | TIME | NOT NULL | |
 | target | VARCHAR(50) | NULL | 대상(반) |
 | class_type | VARCHAR(20) | NOT NULL, DEFAULT 'REGULAR' | `REGULAR`(정기 수업)·`EVENT`(행사·특별활동, EMP-FR-004). 행사 장소는 `institution`에 기관처럼 등록. 운영 DDL `back/docs/sql/2026-11-class-type-ddl.sql` |
+| series_id | BIGINT | NULL, FK → class_series.id | 반복 등록한 정기 수업(EMP-FR-024). 정기 수업 도입 전에 등록한 수업은 NULL(옮기지 않음). 운영 DDL `back/docs/sql/2026-11-class-series-ddl.sql` |
 
-- 수업 1행 = 한 날짜의 한 회. 반복 일정은 테이블로 두지 않고, 관리자가 기간·요일로 반복 등록하면 날짜마다 행을 만든다(EMP-FR-004). 수업 단위 시작·종료 기록이나 시도 로그가 있는 행은 수정·삭제하지 않고, 그 직원·날짜에 `day_start`가 있으면 그날 수업은 추가·수정·삭제하지 않는다(첫·마지막 기관이 바뀌지 않게).
+- 수업 1행 = 한 날짜의 한 회. 관리자가 기간(최대 1년)·요일로 반복 등록하면 `class_series` 1행과 날짜마다 수업 행을 만든다(EMP-FR-004·024). 한 회 수정은 그 행만 바꾸고 `class_series`는 그대로 둔다. 수업 단위 시작·종료 기록이나 시도 로그가 있는 행은 수정·삭제하지 않고, 그 직원·날짜에 `day_start`가 있으면 그날 수업은 추가·수정·삭제하지 않는다(첫·마지막 기관이 바뀌지 않게).
 - INDEX (`staff_id`, `class_date`)
+
+### class_series — 정기 수업(수업 묶음) (EMP-FR-024)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| institution_id | BIGINT | NOT NULL, FK → institution.id | |
+| staff_id | BIGINT | NULL, FK → member.id | 담당 직원. NULL이면 미정. 묶음 단위 배정(EMP-FR-022) 때 바뀐다 |
+| target | VARCHAR(50) | NULL | 대상(반) |
+| class_type | VARCHAR(20) | NOT NULL | `REGULAR`·`EVENT` |
+| days_of_week | VARCHAR(70) | NOT NULL | 요일 이름을 쉼표로 이은 값 (`MONDAY,WEDNESDAY`) |
+| start_time, end_time | TIME | NOT NULL | |
+| first_date, last_date | DATE | NOT NULL | 반복 등록 기간 |
+
+- 반복 등록 한 건 = 1행. 기관을 지우면 그 기관의 회차를 지운 뒤 함께 지운다.
+
+### travel_time — 기관 사이 차량 이동 시간 (EMP-FR-023)
+
+| 컬럼 | 타입 | 제약 | 설명 |
+|---|---|---|---|
+| id | BIGINT | PK | |
+| from_institution_id | BIGINT | NOT NULL, FK → institution.id | 출발 기관 |
+| to_institution_id | BIGINT | NOT NULL, FK → institution.id | 도착 기관 |
+| duration_seconds | INT | NOT NULL | 카카오모빌리티 자동차 길찾기(추천 경로, 교통 미반영) 소요 시간 |
+| distance_meters | INT | NOT NULL | 거리 |
+
+- UNIQUE (`from_institution_id`, `to_institution_id`). 방향별로 따로 저장한다. 같은 기관끼리는 저장하지 않고 0분으로 본다.
+- 한 번 조회한 값을 계속 쓴다. 기관 좌표를 바꾸거나 기관을 지우면 그 기관이 들어간 행을 지운다.
 
 ### day_start, day_end — 하루 시작·종료 기록 (EMP-FR-020)
 

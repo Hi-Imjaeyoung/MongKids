@@ -45,6 +45,44 @@ public interface ClassSessionRepository extends JpaRepository<ClassSession, Long
 
 	long countByInstitutionId(Long institutionId);
 
+	// 묶음 추천 (EMP-FR-022): 후보 직원들의 기간 안 수업
+	@EntityGraph(attributePaths = {"institution", "staff"})
+	List<ClassSession> findByStaffIdInAndClassDateBetween(Collection<Long> staffIds, LocalDate from, LocalDate to);
+
+	// 정기 수업의 오늘 이후 미정 회차 (EMP-FR-022). 오늘은 시작 시각이 지나지 않은 수업만
+	@EntityGraph(attributePaths = "institution")
+	@Query("""
+		select s from ClassSession s
+		where s.series.id = :seriesId and s.staff is null
+		  and (s.classDate > :today or (s.classDate = :today and s.startTime > :now))
+		order by s.classDate, s.startTime, s.id
+		""")
+	List<ClassSession> findUnassignedUpcomingBySeries(@Param("seriesId") Long seriesId,
+		@Param("today") LocalDate today, @Param("now") LocalTime now);
+
+	// 오늘 이후 미정 회차가 남은 정기 수업 (EMP-SCR-007)
+	@Query("""
+		select s.series.id as seriesId, count(s) as unassignedCount, min(s.classDate) as nextDate,
+		       max(s.classDate) as lastDate
+		from ClassSession s
+		where s.series is not null and s.staff is null
+		  and (s.classDate > :today or (s.classDate = :today and s.startTime > :now))
+		group by s.series.id
+		""")
+	List<SeriesUnassignedCount> countUnassignedUpcomingBySeries(@Param("today") LocalDate today,
+		@Param("now") LocalTime now);
+
+	interface SeriesUnassignedCount {
+
+		Long getSeriesId();
+
+		long getUnassignedCount();
+
+		LocalDate getNextDate();
+
+		LocalDate getLastDate();
+	}
+
 	// 기관 삭제 (EMP-FR-012). 수업 시작·종료 기록과 시도 로그를 먼저 지운다
 	@Modifying(flushAutomatically = true, clearAutomatically = true)
 	@Query("delete from ClassSession s where s.institution.id = :institutionId")

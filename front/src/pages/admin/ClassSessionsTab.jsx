@@ -14,21 +14,41 @@ import ClassAssignBar from '../../components/admin/ClassAssignBar'
 import ClassFilters from '../../components/admin/ClassFilters'
 import ClassSessionForm from '../../components/admin/ClassSessionForm'
 import ClassSessionTable from '../../components/admin/ClassSessionTable'
+import FilterChips from '../../components/admin/FilterChips'
 import { addDays, toIsoDate } from '../../components/admin/attendanceAdminFormat'
 import { formatTime } from '../../components/attendance/attendanceFormat'
-import { classFilters, classSessionAdmin, shortDateLabel } from '../../data/attendanceAdminContent'
+import { classFilters, classSessionAdmin, seriesAdmin, shortDateLabel } from '../../data/attendanceAdminContent'
 import useAdminQuery from '../useAdminQuery'
 import { isValidPeriod } from './attendancePeriod'
+import UnassignedSeriesView from './UnassignedSeriesView'
 import useAttendanceOptions from './useAttendanceOptions'
 import '../../components/admin/AdminForm.css'
 
 // 모달에서 새 수업을 등록하는 중
 const NEW = 'new'
+const VIEWS = [
+  { id: 'sessions', label: seriesAdmin.views.sessions },
+  { id: 'series', label: seriesAdmin.views.series },
+]
 
 // 수업 할당 (EMP-FR-004). 기본은 오늘부터 2주.
 // "수업 등록"을 누르면 반복 등록 폼을, 목록의 수정을 누르면 그 수업 수정 폼을 모달로 연다.
-// 직원 미정 수업(EMP-FR-021)은 고르기 칸으로 골라 직원 한 명에게 한꺼번에 배정한다
+// 직원 미정 수업(EMP-FR-021)은 고르기 칸으로 골라 직원 한 명에게 한꺼번에 배정한다.
+// "미정 수업 배정" 보기(EMP-SCR-007)에서는 정기 수업 묶음마다 추천 직원을 보고 오늘 이후 회차를 배정한다
 function ClassSessionsTab() {
+  const [view, setView] = useState('sessions')
+  const viewSwitch = <FilterChips label={seriesAdmin.viewsLabel} options={VIEWS} value={view} onChange={setView} />
+  if (view === 'series') {
+    return (
+      <AdminSection title={classSessionAdmin.title} description={classSessionAdmin.description} toolbar={viewSwitch}>
+        <UnassignedSeriesView />
+      </AdminSection>
+    )
+  }
+  return <SessionsView viewSwitch={viewSwitch} />
+}
+
+function SessionsView({ viewSwitch }) {
   const today = toIsoDate(new Date())
   const { staffs, institutions } = useAttendanceOptions()
   const [filters, setFilters] = useState({
@@ -118,17 +138,20 @@ function ClassSessionsTab() {
       title={classSessionAdmin.title}
       description={classSessionAdmin.description}
       toolbar={
-        <ClassFilters
-          value={filters}
-          staffs={staffs}
-          institutions={institutions}
-          allowUnassigned
-          onChange={changeFilters}
-        >
-          <button type="button" className="admin-form__button admin-form__button--dark" onClick={() => openForm(NEW)}>
-            {classSessionAdmin.add}
-          </button>
-        </ClassFilters>
+        <>
+          {viewSwitch}
+          <ClassFilters
+            value={filters}
+            staffs={staffs}
+            institutions={institutions}
+            allowUnassigned
+            onChange={changeFilters}
+          >
+            <button type="button" className="admin-form__button admin-form__button--dark" onClick={() => openForm(NEW)}>
+              {classSessionAdmin.add}
+            </button>
+          </ClassFilters>
+        </>
       }
     >
       {message && (

@@ -67,9 +67,15 @@ public class ClassSession extends BaseTimeEntity {
 	@Column(nullable = false, columnDefinition = "varchar(20)")
 	private ClassType classType;
 
+	// 반복 등록한 정기 수업 (EMP-FR-024). 정기 수업 도입 전에 등록한 수업은 null
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "series_id")
+	private ClassSeries series;
+
 	@Builder
 	private ClassSession(Institution institution, Member staff, LocalDate classDate, LocalTime startTime,
-		LocalTime endTime, String target, ClassType classType) {
+		LocalTime endTime, String target, ClassType classType, ClassSeries series) {
+		this.series = series;
 		this.institution = institution;
 		this.staff = staff;
 		this.classDate = classDate;
